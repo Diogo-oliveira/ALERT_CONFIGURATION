@@ -252,6 +252,7 @@ Public Class REMOVE_IMAGING
     End Sub
 
     Private Sub ComboBox4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
+
         Try
 
             CheckedListBox2.Items.Clear()
@@ -259,7 +260,6 @@ Public Class REMOVE_IMAGING
             Dim l_exam_cat(l_total_cats)
 
             l_exam_cat(0) = 0 ''Referente ao all
-
 
             Dim dr_exam_cat As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
 
@@ -471,9 +471,35 @@ Public Class REMOVE_IMAGING
 
                 End Try
 
+                If ((result = DialogResult.Yes)) Then
+
+                    ComboBox4.Items.Clear()
+                    ComboBox4.Text = ""
+
+                    Try
+
+                        Dim dr_exam_cat_new As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
+
+                        ComboBox4.Items.Add("ALL")
+
+                        While dr_exam_cat_new.Read()
+
+                            ComboBox4.Items.Add(dr_exam_cat_new.Item(0))
+                            l_total_cats = l_total_cats + 1
+
+                        End While
+
+                    Catch ex As Exception
+
+                        MsgBox("ERROR LOADING EXAMS CATEGORIES - Button5_Click", MsgBoxStyle.Critical)
+
+                    End Try
+
+                End If
+
             End If
 
-        Else
+            Else
 
             MsgBox("No selected records!")
 
