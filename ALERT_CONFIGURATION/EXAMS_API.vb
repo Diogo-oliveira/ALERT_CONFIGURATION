@@ -652,7 +652,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               te.desc_lang_6,
               10,
               te.desc_lang_9,
-              12,
+              12, 
               te.desc_lang_16,
               16,
               te.desc_lang_17,
