@@ -768,4 +768,97 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
+    Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select distinct ec.id_content, 
+       decode(v.id_market,
+              1,
+              tc.desc_lang_1,
+              2,
+              tc.desc_lang_2,
+              3,
+              tc.desc_lang_11,
+              4,
+              tc.desc_lang_5,
+              5,
+              tc.desc_lang_4,
+              6,
+              tc.desc_lang_3,
+              7,
+              tc.desc_lang_10,
+              8,
+              tc.desc_lang_7,
+              9,
+              tc.desc_lang_6,
+              10,
+              tc.desc_lang_9,
+              12,
+              tc.desc_lang_16,
+              16,
+              tc.desc_lang_17,
+              17,
+              tc.desc_lang_18,
+              19,
+              tc.desc_lang_19)
+  From alert_default.exam e
+  Join alert_default.exam_mrk_vrs v
+    On v.id_exam = e.id_exam
+    Join alert_default.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
+    Join alert_default.translation tc on tc.code_translation=ec.code_exam_cat
+    Join alert_default.exam_clin_serv ecs on ecs.id_exam=e.id_exam 
+    join institution i on i.id_market=v.id_market
+ where i.id_institution= " & i_institution & "
+   And v.version = '" & i_version & "'
+   And e.flg_type='I'
+   And e.flg_available='Y'
+   And ecs.id_software= " & i_software & " 
+   And ecs.flg_type='P'
+   order by 2 asc"
+
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Return dr
+
+    End Function
+
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select distinct v.version
+  from alert_default.exam e
+  join alert_default.exam_mrk_vrs v
+    on v.id_exam = e.id_exam
+  join alert_default.exam_clin_serv ecs
+    on ecs.id_exam = e.id_exam
+   and ecs.flg_type = 'P'
+  join institution i
+    on i.id_market = v.id_market
+ where i.id_institution = 470
+ order by 1 asc"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Return dr
+
+    End Function
+
+
 End Class

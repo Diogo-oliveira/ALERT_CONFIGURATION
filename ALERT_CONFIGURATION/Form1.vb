@@ -20,4 +20,14 @@
         Application.Exit()
 
     End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        Dim FORM_ADD_IMAGING As New INSERT_IMAGING_EXAMS
+
+        Me.Hide()
+
+        FORM_ADD_IMAGING.ShowDialog()
+
+    End Sub
 End Class
