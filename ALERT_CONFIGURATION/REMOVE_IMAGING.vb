@@ -301,172 +301,183 @@ Public Class REMOVE_IMAGING
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        If CheckedListBox2.CheckedIndices.Count() Then
+        If CheckedListBox2.CheckedIndices.Count() > 0 Then
 
-            Dim indexChecked As Integer
+            Dim result As Integer = 0
 
-            Dim total_selected_exams As Integer = 0
+            If (CheckedListBox2.CheckedIndices.Count = CheckedListBox2.Items.Count()) Then
 
-            For Each indexChecked In CheckedListBox2.CheckedIndices
+                result = MsgBox("All records from the chosen category will be deleted! Confirm?", MessageBoxButtons.YesNo)
 
-                total_selected_exams = total_selected_exams + 1
-
-            Next
-
-            ReDim l_selected_exam(total_selected_exams - 1)
-
-            ''Determinar ID_EXAM
-            '' 1 - Determinar a categoria selecionada
-            '' 2 - Fazer um search a todos os exames da cat selecionada
-            '' 3 - Ecolher os ids dos exames selecionados
-            '' 4 - Apagar os exames selecionados
-            '' 5 - Refresh à grid de exames
-
-            '1
-
-            Dim l_index_cat As Integer = ComboBox4.SelectedIndex
-            Dim l_id_cat_exam As Int64 = 0
-
-            Dim dr_exam_cat As OracleDataReader
-
-            Dim i_index As Integer = 0
-
-            Try
-
-                dr_exam_cat = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
-
-                While dr_exam_cat.Read()
-
-                    If l_index_cat = 0 Then
-
-                        l_id_cat_exam = 0
-                        Exit While
-
-                    ElseIf i_index = l_index_cat - 1 Then
-
-                        l_id_cat_exam = dr_exam_cat.Item(1)
-                        Exit While
-
-                    End If
-
-                    i_index = i_index + 1
-
-                End While
-
-            Catch ex As Exception
-
-                MsgBox("ERROR GETTING EXAM CATEGORY - Button5_Click", vbCritical)
-
-            End Try
-
-            '2 e 3
-
-            Dim l_array_exams(CheckedListBox2.Items.Count() - 1) As Int64
-
-            Dim dr_exams As OracleDataReader
-
-            Dim l_array_selected_exams(CheckedListBox2.CheckedIndices.Count() - 1) As Int64 ''Array que vai guardar o id dos exames selecionados
+            End If
 
 
-            Try
+            If (result = DialogResult.Yes Or CheckedListBox2.CheckedIndices.Count < CheckedListBox2.Items.Count()) Then
 
-                'Lista de exames de categoria selecionada
-                dr_exams = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, oradb)
+                Dim indexChecked As Integer
 
-                'Lista de indexes de exames selecionados
-                Dim l_array_selected_indexes(CheckedListBox2.CheckedIndices.Count()) As Integer
-                Dim i_index_checked_aux As Integer = 0
+                Dim total_selected_exams As Integer = 0
 
                 For Each indexChecked In CheckedListBox2.CheckedIndices
 
-                    l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
-
-                    i_index_checked_aux = i_index_checked_aux + 1
+                    total_selected_exams = total_selected_exams + 1
 
                 Next
 
-                ''Lista de exames selecionados - ERRO
-                i_index_checked_aux = 0
-                Dim i_selected_exams_aux As Int16 = 0
+                ReDim l_selected_exam(total_selected_exams - 1)
 
-                Dim l_index_selected_exams As Integer = 0
+                ''Determinar ID_EXAM
+                '' 1 - Determinar a categoria selecionada
+                '' 2 - Fazer um search a todos os exames da cat selecionada
+                '' 3 - Ecolher os ids dos exames selecionados
+                '' 4 - Apagar os exames selecionados
+                '' 5 - Refresh à grid de exames
 
-                If (CheckedListBox2.CheckedIndices.Count() > 0) Then
+                '1
 
-                    While dr_exams.Read() ''Ler todos os exames da categoria selecionada
+                Dim l_index_cat As Integer = ComboBox4.SelectedIndex
+                Dim l_id_cat_exam As Int64 = 0
 
-                        For ii As Integer = 0 To (CheckedListBox2.CheckedIndices.Count() - 1)
+                Dim dr_exam_cat As OracleDataReader
 
-                            If (l_array_selected_indexes(ii) = i_selected_exams_aux) Then
+                Dim i_index As Integer = 0
 
-                                l_array_selected_exams(l_index_selected_exams) = dr_exams.Item(2)
-                                l_index_selected_exams = l_index_selected_exams + 1
+                Try
 
-                            End If
+                    dr_exam_cat = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
 
-                        Next
+                    While dr_exam_cat.Read()
 
-                        i_selected_exams_aux = i_selected_exams_aux + 1
+                        If l_index_cat = 0 Then
+
+                            l_id_cat_exam = 0
+                            Exit While
+
+                        ElseIf i_index = l_index_cat - 1 Then
+
+                            l_id_cat_exam = dr_exam_cat.Item(1)
+                            Exit While
+
+                        End If
+
+                        i_index = i_index + 1
 
                     End While
 
-                End If
+                Catch ex As Exception
+
+                    MsgBox("ERROR GETTING EXAM CATEGORY - Button5_Click", vbCritical)
+
+                End Try
+
+                '2 e 3
+
+                Dim l_array_exams(CheckedListBox2.Items.Count() - 1) As Int64
+
+                Dim dr_exams As OracleDataReader
+
+                Dim l_array_selected_exams(CheckedListBox2.CheckedIndices.Count() - 1) As Int64 ''Array que vai guardar o id dos exames selecionados
 
 
-            Catch ex As Exception
+                Try
 
-                MsgBox("ERROR GETTING SELECTED EXAMS - Button5_Click", vbCritical)
+                    'Lista de exames de categoria selecionada
+                    dr_exams = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, oradb)
 
-            End Try
+                    'Lista de indexes de exames selecionados
+                    Dim l_array_selected_indexes(CheckedListBox2.CheckedIndices.Count()) As Integer
+                    Dim i_index_checked_aux As Integer = 0
 
-            '4
-            Try
-                If db_acces.DELETE_EXAMS(l_array_selected_exams, TextBox1.Text, l_selected_soft, oradb) Then
+                    For Each indexChecked In CheckedListBox2.CheckedIndices
 
-                    MsgBox("Record(s) deleted!")
+                        l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
 
-                Else
+                        i_index_checked_aux = i_index_checked_aux + 1
 
-                    MsgBox("No records deleted.")
+                    Next
 
-                End If
-            Catch ex As Exception
+                    ''Lista de exames selecionados - ERRO
+                    i_index_checked_aux = 0
+                    Dim i_selected_exams_aux As Int16 = 0
 
-                MsgBox("ERROR DELETING EXAMS - Button5_Click", vbCritical)
+                    Dim l_index_selected_exams As Integer = 0
 
-            End Try
+                    If (CheckedListBox2.CheckedIndices.Count() > 0) Then
 
-            '5
+                        While dr_exams.Read() ''Ler todos os exames da categoria selecionada
 
-            Try
-                CheckedListBox1.Items.Clear()
-                CheckedListBox2.Items.Clear()
-                ComboBox3.SelectedItem = ""
+                            For ii As Integer = 0 To (CheckedListBox2.CheckedIndices.Count() - 1)
+
+                                If (l_array_selected_indexes(ii) = i_selected_exams_aux) Then
+
+                                    l_array_selected_exams(l_index_selected_exams) = dr_exams.Item(2)
+                                    l_index_selected_exams = l_index_selected_exams + 1
+
+                                End If
+
+                            Next
+
+                            i_selected_exams_aux = i_selected_exams_aux + 1
+
+                        End While
+
+                    End If
 
 
-                Dim dr_exams_cat As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, oradb)
+                Catch ex As Exception
 
-                Dim i As Integer = 0
+                    MsgBox("ERROR GETTING SELECTED EXAMS - Button5_Click", vbCritical)
 
-                While dr_exams_cat.Read()
+                End Try
 
-                    CheckedListBox2.Items.Add(dr_exams_cat.Item(0))
+                '4
+                Try
+                    If db_acces.DELETE_EXAMS(l_array_selected_exams, TextBox1.Text, l_selected_soft, oradb) Then
 
-                End While
+                        MsgBox("Record(s) deleted!")
 
-            Catch ex As Exception
+                    Else
 
-                MsgBox("ERROR GETTING EXAMS BY CATEGORY - Button5_Click", vbCritical)
+                        MsgBox("No records deleted.")
 
-            End Try
+                    End If
+                Catch ex As Exception
+
+                    MsgBox("ERROR DELETING EXAMS - Button5_Click", vbCritical)
+
+                End Try
+
+                '5
+
+                Try
+                    CheckedListBox1.Items.Clear()
+                    CheckedListBox2.Items.Clear()
+                    ComboBox3.SelectedItem = ""
+
+
+                    Dim dr_exams_cat As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, oradb)
+
+                    Dim i As Integer = 0
+
+                    While dr_exams_cat.Read()
+
+                        CheckedListBox2.Items.Add(dr_exams_cat.Item(0))
+
+                    End While
+
+                Catch ex As Exception
+
+                    MsgBox("ERROR GETTING EXAMS BY CATEGORY - Button5_Click", vbCritical)
+
+                End Try
+
+            End If
 
         Else
 
             MsgBox("No selected records!")
 
         End If
-
-
 
     End Sub
 

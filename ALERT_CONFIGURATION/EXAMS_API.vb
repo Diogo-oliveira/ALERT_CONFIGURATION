@@ -607,7 +607,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  and e.flg_type='I'
  and e.flg_available='Y' and ec.flg_available='Y'
  and d.id_software= " & i_id_soft & "
- and d.flg_type not in ('P')
+ and d.flg_type = 'P'
  order by 1 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
@@ -669,8 +669,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  where d.id_institution = " & i_id_inst & "
  and e.flg_type='I'
  and e.flg_available='Y' and ec.flg_available='Y'
- and d.id_software=11
- and d.flg_type not in ('P')
+ and d.id_software= " & i_id_soft & "
+ and d.flg_type = 'P'
  order by 1 asc"
 
         Else
@@ -713,8 +713,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  where d.id_institution = " & i_id_inst & "
  and e.flg_type='I'
  and e.flg_available='Y' and ec.flg_available='Y'
- and d.id_software=11
- and d.flg_type not in ('P')
+ and d.id_software=" & i_id_soft & "
+ and d.flg_type = 'P'
  and e.id_exam_cat = " & i_id_exam_cat & " 
  order by 1 asc"
 
