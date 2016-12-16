@@ -862,3 +862,83 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
 
 End Class
+
+'"--Lista de exames disponíveis no default para o mercado, versão e software
+'Select ec.id_content, 
+'       decode(v.id_market,
+'              1,
+'              tc.desc_lang_1,
+'              2,
+'              tc.desc_lang_2,
+'              3,
+'              tc.desc_lang_11,
+'              4,
+'              tc.desc_lang_5,
+'              5,
+'              tc.desc_lang_4,
+'              6,
+'              tc.desc_lang_3,
+'              7,
+'              tc.desc_lang_10,
+'              8,
+'              tc.desc_lang_7,
+'              9,
+'              tc.desc_lang_6,
+'              10,
+'              tc.desc_lang_9,
+'              12,
+'              tc.desc_lang_16,
+'              16,
+'              tc.desc_lang_17,
+'              17,
+'              tc.desc_lang_18,
+'              19,
+'              tc.desc_lang_19), 
+'       e.id_content, 
+'       decode(v.id_market,
+'              1,
+'              te.desc_lang_1,
+'              2,
+'              te.desc_lang_2,
+'              3,
+'              te.desc_lang_11,
+'              4,
+'              te.desc_lang_5,
+'              5,
+'              te.desc_lang_4,
+'              6,
+'              te.desc_lang_3,
+'              7,
+'              te.desc_lang_10,
+'              8,
+'              te.desc_lang_7,
+'              9,
+'              te.desc_lang_6,
+'              10,
+'              te.desc_lang_9,
+'              12,
+'              te.desc_lang_16,
+'              16,
+'              te.desc_lang_17,
+'              17,
+'              te.desc_lang_18,
+'              19,
+'              te.desc_lang_19),
+'       ecs.flg_first_result, ecs.flg_execute, ecs.flg_timeout, ecs.flg_result_notes, ecs.flg_first_execute
+'  from alert_default.exam e
+'  join alert_default.exam_mrk_vrs v
+'    on v.id_exam = e.id_exam
+'    join alert_default.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
+'    join alert_default.translation te on te.code_translation=e.code_exam
+'    join alert_default.translation tc on tc.code_translation=ec.code_exam_cat
+'    join alert_default.exam_clin_serv ecs on ecs.id_exam=e.id_exam
+
+'    join institution i on i.id_market=v.id_market
+
+' where i.id_institution= 470
+'   and v.version = 'CLIENT-AHP'
+'   and e.flg_type='I'
+'   and e.flg_available='Y'
+'   and ecs.id_software=1
+'   and ecs.flg_type='P'
+'   order by 2 asc, 4 asc;"
