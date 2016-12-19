@@ -171,13 +171,49 @@ Public Class INSERT_IMAGING_EXAMS
 
             loaded_exams(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
             loaded_exams(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
-            loaded_exams(l_dimension_array_loaded_exams).flg_first_result = dr.Item(3)
-            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(4)
-            loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(5)
-            loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(6)
-            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(7)
+            loaded_exams(l_dimension_array_loaded_exams).flg_first_result = dr.Item(4)
+            loaded_exams(l_dimension_array_loaded_exams).flg_execute = dr.Item(5)
+            loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(6)
+            loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(7)
+            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
+
+            ''Determinar as idades e gender dos exames
+            ''se não houver idades minimas/maximas, devolve -1
+            ''se não houver gender, devolve vazio
+
+            Try
+
+                loaded_exams(l_dimension_array_loaded_exams).age_min = dr.Item(9)
+
+            Catch ex As Exception
+
+                loaded_exams(l_dimension_array_loaded_exams).age_min = -1
+
+            End Try
+
+            Try
+
+                loaded_exams(l_dimension_array_loaded_exams).age_max = dr.Item(10)
+
+            Catch ex As Exception
+
+                loaded_exams(l_dimension_array_loaded_exams).age_max = -1
+
+            End Try
+
+            Try
+
+                loaded_exams(l_dimension_array_loaded_exams).gender = dr.Item(11)
+
+            Catch ex As Exception
+
+                loaded_exams(l_dimension_array_loaded_exams).gender = ""
+
+            End Try
 
             l_dimension_array_loaded_exams = l_dimension_array_loaded_exams + 1
+
+
         End While
 
         ''4 criar função que vai inserir os registos no alert. Função será chamada no botão >>
@@ -203,15 +239,25 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-        For Each indexChecked In CheckedListBox2.CheckedIndices
+        ' For Each indexChecked In CheckedListBox2.CheckedIndices
 
-            ' l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
+        ' l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
 
-            'i_index_checked_aux = i_index_checked_aux + 1
+        'i_index_checked_aux = i_index_checked_aux + 1
 
 
 
-        Next
+        '  Next
+
+        If db_access.SET_EXAM_ALERT(470, 11, loaded_exams, oradb) Then
+
+            MsgBox("SUCESS")
+
+        Else
+
+            MsgBox("ERROR")
+
+        End If
 
     End Sub
 End Class
