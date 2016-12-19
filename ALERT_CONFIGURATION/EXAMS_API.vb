@@ -1,6 +1,17 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class EXAMS_API
 
+    ''Estrutura dos exames carregados do default
+    Public Structure exams_default
+        Public id_content_category As String
+        Public id_content_exam As String
+        Public flg_first_result As String
+        Public flg_execute As String
+        Public flg_timeout As String
+        Public flg_result_notes As String
+        Public flg_first_execute As String
+    End Structure
+
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
 
         Dim oradb As String = i_oradb
@@ -860,85 +871,114 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
+    Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_oradb As String) As OracleDataReader
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ec.id_content, 
+       decode(v.id_market,
+              1,
+              tc.desc_lang_1,
+              2,
+              tc.desc_lang_2,
+              3,
+              tc.desc_lang_11,
+              4,
+              tc.desc_lang_5,
+              5,
+              tc.desc_lang_4,
+              6,
+              tc.desc_lang_3,
+              7,
+              tc.desc_lang_10,
+              8,
+              tc.desc_lang_7,
+              9,
+              tc.desc_lang_6,
+              10,
+              tc.desc_lang_9,
+             12,
+              tc.desc_lang_16,
+              16,
+              tc.desc_lang_17,
+              17,
+              tc.desc_lang_18,
+              19,
+              tc.desc_lang_19), 
+       e.id_content, 
+       decode(v.id_market,
+              1,
+              te.desc_lang_1,
+              2,
+              te.desc_lang_2,
+              3,
+              te.desc_lang_11,
+              4,
+              te.desc_lang_5,
+              5,
+              te.desc_lang_4,
+              6,
+              te.desc_lang_3,
+              7,
+              te.desc_lang_10,
+              8,
+              te.desc_lang_7,
+              9,
+              te.desc_lang_6,
+              10,
+              te.desc_lang_9,
+              12,
+              te.desc_lang_16,
+              16,
+              te.desc_lang_17,
+              17,
+              te.desc_lang_18,
+              19,
+              te.desc_lang_19),
+       ecs.flg_first_result, ecs.flg_execute, ecs.flg_timeout, ecs.flg_result_notes, ecs.flg_first_execute
+  from alert_default.exam e
+  join alert_default.exam_mrk_vrs v
+    on v.id_exam = e.id_exam
+    join alert_default.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
+    join alert_default.translation te on te.code_translation=e.code_exam
+    join alert_default.translation tc on tc.code_translation=ec.code_exam_cat
+    join alert_default.exam_clin_serv ecs on ecs.id_exam=e.id_exam
+    join institution i on i.id_market=v.id_market
+ where i.id_institution=  " & i_institution & "
+   and v.version = '" & i_version & "'
+   and e.flg_type='I'
+   and e.flg_available='Y'
+   and ecs.id_software= " & i_software & "
+   and ecs.flg_type='P'"
+
+        If i_id_cat = "0" Then
+
+            sql = sql & " order by 2 asc, 4 asc"
+
+        Else
+
+            sql = sql & " And ec.id_content = '" & i_id_cat & "'
+                         order by 2 asc, 4 asc"
+        End If
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Return dr
+
+    End Function
+
+    'Function insert() exam
+    '1 - VEr se já existe no lado do alert
+    '2 - Se não existir, será necessário inserir exame e tradução
+    '3 - Fazer o mesmo para a categoria
+    '4 - Inserir o registo na alert.exam_dep_clin_serv
+    '5 - correr o lucene?
 
 End Class
-
-'"--Lista de exames disponíveis no default para o mercado, versão e software
-'Select ec.id_content, 
-'       decode(v.id_market,
-'              1,
-'              tc.desc_lang_1,
-'              2,
-'              tc.desc_lang_2,
-'              3,
-'              tc.desc_lang_11,
-'              4,
-'              tc.desc_lang_5,
-'              5,
-'              tc.desc_lang_4,
-'              6,
-'              tc.desc_lang_3,
-'              7,
-'              tc.desc_lang_10,
-'              8,
-'              tc.desc_lang_7,
-'              9,
-'              tc.desc_lang_6,
-'              10,
-'              tc.desc_lang_9,
-'              12,
-'              tc.desc_lang_16,
-'              16,
-'              tc.desc_lang_17,
-'              17,
-'              tc.desc_lang_18,
-'              19,
-'              tc.desc_lang_19), 
-'       e.id_content, 
-'       decode(v.id_market,
-'              1,
-'              te.desc_lang_1,
-'              2,
-'              te.desc_lang_2,
-'              3,
-'              te.desc_lang_11,
-'              4,
-'              te.desc_lang_5,
-'              5,
-'              te.desc_lang_4,
-'              6,
-'              te.desc_lang_3,
-'              7,
-'              te.desc_lang_10,
-'              8,
-'              te.desc_lang_7,
-'              9,
-'              te.desc_lang_6,
-'              10,
-'              te.desc_lang_9,
-'              12,
-'              te.desc_lang_16,
-'              16,
-'              te.desc_lang_17,
-'              17,
-'              te.desc_lang_18,
-'              19,
-'              te.desc_lang_19),
-'       ecs.flg_first_result, ecs.flg_execute, ecs.flg_timeout, ecs.flg_result_notes, ecs.flg_first_execute
-'  from alert_default.exam e
-'  join alert_default.exam_mrk_vrs v
-'    on v.id_exam = e.id_exam
-'    join alert_default.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
-'    join alert_default.translation te on te.code_translation=e.code_exam
-'    join alert_default.translation tc on tc.code_translation=ec.code_exam_cat
-'    join alert_default.exam_clin_serv ecs on ecs.id_exam=e.id_exam
-
-'    join institution i on i.id_market=v.id_market
-
-' where i.id_institution= 470
-'   and v.version = 'CLIENT-AHP'
-'   and e.flg_type='I'
-'   and e.flg_available='Y'
-'   and ecs.id_software=1
-'   and ecs.flg_type='P'
-'   order by 2 asc, 4 asc;"

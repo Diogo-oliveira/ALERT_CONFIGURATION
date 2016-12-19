@@ -6,10 +6,14 @@ Public Class INSERT_IMAGING_EXAMS
     Dim l_selected_soft As Int16 = -1
     Dim l_selected_category As String = ""
 
+
+    ''Estrutura dos exames carregados do default
+    Dim loaded_exams() As EXAMS_API.exams_default
+
+
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
-
 
         Dim i As Integer = 0
 
@@ -89,6 +93,8 @@ Public Class INSERT_IMAGING_EXAMS
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
 
+        CheckedListBox2.Items.Clear()
+
         Try
 
             Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, oradb)
@@ -151,14 +157,61 @@ Public Class INSERT_IMAGING_EXAMS
         CheckedListBox2.Items.Clear()
 
         ''2 - Carregar a grelha de exames (fazer função - vai ser parecida à última que foi feita)
+        ''3 Criar estrutura com os elementos dos exames carregados
+        Dim dr As OracleDataReader = db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, oradb)
 
-        CheckedListBox2.Items.Add(l_selected_category) 'APAGAR
+        ReDim loaded_exams(0) ''Limpar estrutura
+        Dim l_dimension_array_loaded_exams As Int64 = 0
 
+        While dr.Read()
 
+            CheckedListBox2.Items.Add(dr.Item(3))
+
+            ReDim Preserve loaded_exams(l_dimension_array_loaded_exams)
+
+            loaded_exams(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
+            loaded_exams(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
+            loaded_exams(l_dimension_array_loaded_exams).flg_first_result = dr.Item(3)
+            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(4)
+            loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(5)
+            loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(6)
+            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(7)
+
+            l_dimension_array_loaded_exams = l_dimension_array_loaded_exams + 1
+        End While
+
+        ''4 criar função que vai inserir os registos no alert. Função será chamada no botão >>
 
     End Sub
 
     Private Sub CheckedListBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox2.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, True)
+
+            Next
+
+        End If
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        For Each indexChecked In CheckedListBox2.CheckedIndices
+
+            ' l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
+
+            'i_index_checked_aux = i_index_checked_aux + 1
+
+
+
+        Next
 
     End Sub
 End Class
