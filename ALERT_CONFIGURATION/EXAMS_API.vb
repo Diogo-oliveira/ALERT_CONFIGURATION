@@ -4,7 +4,9 @@ Public Class EXAMS_API
     ''Estrutura dos exames carregados do default
     Public Structure exams_default
         Public id_content_category As String
+        Public desc_category As String
         Public id_content_exam As String
+        Public desc_exam As String
         Public flg_first_result As String
         Public flg_execute As String
         Public flg_timeout As String
@@ -118,6 +120,8 @@ Public Class EXAMS_API
 
         conn_new.Close()
 
+        conn_new.Dispose()
+
         Return l_id_inst
 
     End Function
@@ -211,6 +215,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End While
 
         conn_new.Close()
+
+        conn_new.Dispose()
 
         Return l_inst
 
@@ -447,6 +453,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End While
 
+        conn.Close()
+        conn.Dispose()
+
         Return l_soft
 
     End Function
@@ -563,6 +572,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             Next
 
             conn.Close()
+            conn.Dispose()
 
             Return True
 
@@ -771,6 +781,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             Next
 
             conn.Close()
+            conn.Dispose()
 
             Return True
 
@@ -989,7 +1000,68 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim sql As String = "Select count(*)
   from alert.exam_cat ec
-  join translation t
+ where ec.id_content = '" & i_id_content_cat & "'
+   and ec.flg_available = 'Y'"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Try
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            Dim l_cat_exist As Integer = 0
+
+            While dr.Read()
+
+                l_cat_exist = dr.Item(0)
+
+            End While
+
+            If l_cat_exist > 0 Then
+
+
+                conn.Close()
+
+                conn.Dispose()
+
+                Return True
+
+            Else
+
+
+                conn.Close()
+
+                conn.Dispose()
+
+                Return False
+
+            End If
+
+        Catch ex As Exception
+
+
+            conn.Close()
+
+            conn.Dispose()
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function CHECK_CATEGORY_TRANSLATION_EXISTANCE(ByVal i_id_content_cat, ByVal i_id_institution, ByVal i_oradb) As Boolean
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select count(*)
+  from alert.exam_cat ec
+  left join translation t
     on t.code_translation = ec.code_exam_cat
   join institution i
     on i.id_institution = " & i_id_institution & "
@@ -1042,9 +1114,19 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             If l_cat_exist > 0 Then
 
+
+                conn.Close()
+
+                conn.Dispose()
+
                 Return True
 
             Else
+
+
+                conn.Close()
+
+                conn.Dispose()
 
                 Return False
 
@@ -1052,115 +1134,21 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            conn.Close()
+
+            conn.Dispose()
+
             Return False
 
         End Try
 
     End Function
 
-    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_oradb As String) As Boolean
+    Function GET_LANGUAGE_ID(ByVal i_institution As Int64, ByVal i_oradb As String) As Integer
 
-        'Function insert() exam
-        '1 - VEr se categoria já existe no lado do alert
-        Dim oradb As String = i_oradb
+        Dim l_id_lang As Integer = 0
 
-        ' Dim conn As New OracleConnection(oradb)
-
-        ' conn.Open()
-
-        Try
-
-            Dim conn As New OracleConnection(oradb)
-
-            conn.Open()
-
-            For i As Integer = 0 To i_set_exams.Count() - 1
-
-                If Not CHECK_CATEGORY_EXISTANCE(i_set_exams(i).id_content_category, i_institution, i_oradb) Then
-
-
-                    ''1 - Inserir a Categoria
-                    Dim sql As String = "insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, ADW_LAST_UPDATE, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK)
-                                         values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.'||alert.seq_exam_cat.nextval, null, 'Y', 'N','" & i_set_exams(i).id_content_category & "' , 'N', 0)"
-
-
-                    Dim cmd As New OracleCommand(sql, conn)
-                    cmd.CommandType = CommandType.Text
-
-                    cmd.ExecuteNonQuery()
-
-                    ''2 - Inserir a tradução da categoria
-
-                    ''2.1 - Obter code DE TRADUÇÃO do exame
-
-                    Dim l_code_desc As String = ""
-
-                    sql = "Select ec.code_exam_cat from alert.exam_cat ec
-                           where ec.id_content ='" & i_set_exams(i).id_content_category & "'"
-
-                    Dim cmd_get_code_trans As New OracleCommand(sql, conn)
-                    cmd_get_code_trans.CommandType = CommandType.Text
-                    Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
-
-                    While dr.Read()
-
-                        l_code_desc = dr.Item(0)
-
-                    End While
-
-                    ''2.2 - Obter a tradução (TRANSFORMAR Em FUNÇÂO)
-
-                    Dim l_ec_translation As String = ""
-
-                    sql = "Select decode(i.id_market,
-              1,
-              t.desc_lang_1,
-              2,
-              t.desc_lang_2,
-              3,
-              t.desc_lang_11,
-              4,
-              t.desc_lang_5,
-              5,
-              t.desc_lang_4,
-              6,
-              t.desc_lang_3,
-              7,
-              t.desc_lang_10,
-              8,
-              t.desc_lang_7,
-              9,
-              t.desc_lang_6,
-              10,
-              t.desc_lang_9,
-              12,
-              t.desc_lang_16,
-              16,
-              t.desc_lang_17,
-              17,
-              t.desc_lang_18,
-              19,
-              t.desc_lang_19) from alert_default.translation t
-join alert_default.exam_cat ec on ec.code_exam_cat=t.code_translation
-join institution i on i.id_institution= " & i_institution & " 
-where ec.id_content='" & i_set_exams(i).id_content_category & "'"
-
-                    '
-                    Dim cmd_get_trans As New OracleCommand(sql, conn)
-                    cmd_get_trans.CommandType = CommandType.Text
-                    dr = cmd_get_trans.ExecuteReader()
-
-                    While dr.Read()
-
-                        l_ec_translation = dr.Item(0)
-
-                    End While
-
-                    ''2.3 - Obter ID da lingua da instituição  (TRANSFORMAR Em FUNÇÂO)
-
-                    Dim l_id_lang As Integer = 0
-
-                    sql = "Select decode(i.id_market,
+        Dim Sql = "Select decode(i.id_market,
               1,
               1,
               2,
@@ -1192,20 +1180,198 @@ where ec.id_content='" & i_set_exams(i).id_content_category & "'"
   from institution i
     where i.id_institution = " & i_institution
 
-                    Dim cmd_get_id_lang As New OracleCommand(sql, conn)
-                    cmd_get_id_lang.CommandType = CommandType.Text
-                    dr = cmd_get_id_lang.ExecuteReader()
+        Dim conn As New OracleConnection(i_oradb)
+
+        conn.Open()
+
+        Dim cmd_get_id_lang As New OracleCommand(Sql, conn)
+        cmd_get_id_lang.CommandType = CommandType.Text
+        Dim dr As OracleDataReader = cmd_get_id_lang.ExecuteReader()
+
+        While dr.Read()
+
+            l_id_lang = dr.Item(0)
+
+        End While
+
+        conn.Close()
+
+        conn.Dispose()
+
+        Return l_id_lang
+
+    End Function
+
+    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, i_oradb As String) As Boolean
+
+        Dim conn As New OracleConnection(i_oradb)
+
+        conn.Open()
+
+        Try
+
+            Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+
+            Dim cmd_insert_trans As New OracleCommand(Sql, conn)
+            cmd_insert_trans.CommandType = CommandType.Text
+
+            cmd_insert_trans.ExecuteNonQuery()
+
+
+            conn.Close()
+
+            conn.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            conn.Close()
+
+            conn.Dispose()
+
+            Return False
+
+        End Try
+
+
+    End Function
+
+    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_oradb As String) As Boolean
+
+        'Function insert() exam
+        '1 - VEr se categoria já existe no lado do alert
+        Dim oradb As String = i_oradb
+
+        Try
+
+            Dim conn As New OracleConnection(oradb)
+
+            conn.Open()
+
+            For i As Integer = 0 To i_set_exams.Count() - 1
+
+                'Verificar se existe a categoria na tabela exam_cat
+                If Not CHECK_CATEGORY_EXISTANCE(i_set_exams(i).id_content_category, i_institution, i_oradb) Then
+
+
+                    ''1 - Inserir a Categoria
+                    Dim sql As String = "insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, ADW_LAST_UPDATE, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK)
+                                         values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.'||alert.seq_exam_cat.nextval, null, 'Y', 'N','" & i_set_exams(i).id_content_category & "' , 'N', 0)"
+
+                    Try
+                        Dim cmd As New OracleCommand(sql, conn)
+                        cmd.CommandType = CommandType.Text
+
+                        cmd.ExecuteNonQuery()
+                    Catch ex As Exception
+
+                        MsgBox("ERROR IN EXAMS_API.SET_EXAM_ALERT - INSERT INTO ALERT.EXAM_CAT", vbCritical)
+                        Return False
+
+                    End Try
+
+                    ''2 - Inserir a tradução da categoria
+                    ''2.1 - Obter code DE TRADUÇÃO do exame
+
+                    Dim l_code_desc As String = ""
+
+                    sql = "Select ec.code_exam_cat from alert.exam_cat ec
+                           where ec.id_content ='" & i_set_exams(i).id_content_category & "'"
+
+                    Try
+                        Dim cmd_get_code_trans As New OracleCommand(sql, conn)
+                        cmd_get_code_trans.CommandType = CommandType.Text
+                        Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
+
+                        While dr.Read()
+
+                            l_code_desc = dr.Item(0)
+
+                        End While
+
+                    Catch ex As Exception
+
+                        MsgBox("SELECT FROM ALERT.EXAM_CAT", vbCritical)
+                        Return False
+
+                    End Try
+
+
+                    ''2.2 - Obter a tradução (TRANSFORMAR Em FUNÇÂO)  - CURSOR i_set_exams DEVOLVE A TRADUÇÂO!!!!!
+
+                    Dim l_ec_translation As String = i_set_exams(i).desc_category
+
+                    ''2.3 - Obter ID da lingua da instituição  (TRANSFORMAR EM FUNÇÂO)
+
+                    Dim l_id_lang As Integer = 0
+
+                    Try
+
+                        l_id_lang = GET_LANGUAGE_ID(i_institution, i_oradb)
+
+                    Catch ex As Exception
+
+                        MsgBox("ERROR IN EXAMS_API.SET_EXAM_ALERT - CAT GET_LANGUAGE_ID", vbCritical)
+
+                        Return False
+
+                    End Try
+
+                    ''2.4 - Fazer INSERT
+                    sql = "begin pk_translation.insert_into_translation( " & l_id_lang & " , '" & l_code_desc & "' , '" & l_ec_translation & "' ); end;"
+
+                    Try
+
+                        Dim cmd_insert_trans As New OracleCommand(sql, conn)
+                        cmd_insert_trans.CommandType = CommandType.Text
+
+                        cmd_insert_trans.ExecuteNonQuery()
+
+                    Catch ex As Exception
+
+                        MsgBox("ERROR IN EXAMS_API.SET_EXAM_ALERT - INSERT CAT INTO TRANSLATION", vbCritical)
+
+                        Return False
+
+                    End Try
+
+
+                    'Existe na tabela de categorias. Verificar se tem tradução para a língua da instituição
+                ElseIf Not CHECK_CATEGORY_TRANSLATION_EXISTANCE(i_set_exams(i).id_content_category, i_institution, i_oradb) Then
+
+                    ''2 - Inserir a tradução da categoria
+
+                    ''2.1 - Obter code DE TRADUÇÃO do exame
+
+                    Dim l_code_desc As String = ""
+
+                    Dim Sql = "Select ec.code_exam_cat from alert.exam_cat ec
+                           where ec.id_content ='" & i_set_exams(i).id_content_category & "'"
+
+                    Dim cmd_get_code_trans As New OracleCommand(Sql, conn)
+                    cmd_get_code_trans.CommandType = CommandType.Text
+                    Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
 
                     While dr.Read()
 
-                        l_id_lang = dr.Item(0)
+                        l_code_desc = dr.Item(0)
 
                     End While
 
-                    ''2.4 - Fazer INSERT  (TRANSFORMAR Em FUNÇÂO)
-                    sql = "begin pk_translation.insert_into_translation( " & l_id_lang & " , '" & l_code_desc & "' , '" & l_ec_translation & "' ); end;"
+                    ''2.2 - Obter a tradução (TRANSFORMAR Em FUNÇÂO)  - CURSOR i_set_exams DEVOLVE A TRADUÇÂO!!!!!
 
-                    Dim cmd_insert_trans As New OracleCommand(sql, conn)
+                    Dim l_ec_translation As String = i_set_exams(i).desc_category
+
+                    ''2.3 - Obter ID da lingua da instituição  (TRANSFORMAR EM FUNÇÂO)
+
+                    Dim l_id_lang As Integer = GET_LANGUAGE_ID(i_institution, i_oradb)
+
+
+                    ''2.4 - Fazer INSERT  (TRANSFORMAR Em FUNÇÂO)
+                    Sql = "begin pk_translation.insert_into_translation( " & l_id_lang & " , '" & l_code_desc & "' , '" & l_ec_translation & "' ); end;"
+
+                    Dim cmd_insert_trans As New OracleCommand(Sql, conn)
                     cmd_insert_trans.CommandType = CommandType.Text
 
                     cmd_insert_trans.ExecuteNonQuery()
@@ -1215,8 +1381,14 @@ where ec.id_content='" & i_set_exams(i).id_content_category & "'"
             Next
 
             conn.Close()
+
+            conn.Dispose()
+
         Catch ex As Exception
+
+            MsgBox("ERROR IN EXAMS_API.SET_EXAM_ALERT!", vbCritical)
             Return False
+
         End Try
 
         '2 - Se não existir, será necessário inserir exame e tradução
