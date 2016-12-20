@@ -44,6 +44,10 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button5 = New System.Windows.Forms.Button()
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.ComboBox5 = New System.Windows.Forms.ComboBox()
+        Me.Button6 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -233,11 +237,53 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.CheckedListBox4.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox4.TabIndex = 32
         '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(499, 512)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(172, 13)
+        Me.Label5.TabIndex = 35
+        Me.Label5.Text = "IMAGING EXAMS BY CATEGORY"
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(22, 485)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(99, 13)
+        Me.Label8.TabIndex = 34
+        Me.Label8.Text = "EXAM CATEGORY"
+        '
+        'ComboBox5
+        '
+        Me.ComboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox5.FormattingEnabled = True
+        Me.ComboBox5.ItemHeight = 16
+        Me.ComboBox5.Location = New System.Drawing.Point(25, 501)
+        Me.ComboBox5.Name = "ComboBox5"
+        Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox5.TabIndex = 33
+        '
+        'Button6
+        '
+        Me.Button6.Location = New System.Drawing.Point(677, 654)
+        Me.Button6.Name = "Button6"
+        Me.Button6.Size = New System.Drawing.Size(41, 39)
+        Me.Button6.TabIndex = 36
+        Me.Button6.Text = ">>"
+        Me.Button6.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1384, 849)
+        Me.Controls.Add(Me.Button6)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.Label8)
+        Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.CheckedListBox4)
         Me.Controls.Add(Me.CheckedListBox3)
         Me.Controls.Add(Me.Button5)
@@ -288,4 +334,8 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button5 As Button
     Friend WithEvents CheckedListBox3 As CheckedListBox
     Friend WithEvents CheckedListBox4 As CheckedListBox
+    Friend WithEvents Label5 As Label
+    Friend WithEvents Label8 As Label
+    Friend WithEvents ComboBox5 As ComboBox
+    Friend WithEvents Button6 As Button
 End Class

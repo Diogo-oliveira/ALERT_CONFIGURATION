@@ -16,6 +16,8 @@ Public Class INSERT_IMAGING_EXAMS
 
     Dim l_index_selected_exams_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
+    Dim l_total_cats As Int64 = 0
+
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
@@ -27,7 +29,6 @@ Public Class INSERT_IMAGING_EXAMS
             ComboBox1.Items.Add(dr.Item(0))
 
         End While
-
 
     End Sub
 
@@ -62,6 +63,7 @@ Public Class INSERT_IMAGING_EXAMS
     End Sub
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
+
         CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
 
@@ -72,7 +74,6 @@ Public Class INSERT_IMAGING_EXAMS
 
         ComboBox3.Items.Clear()
         ComboBox3.SelectedItem = ""
-
 
         Try
 
@@ -90,10 +91,31 @@ Public Class INSERT_IMAGING_EXAMS
 
         End Try
 
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+
+        Try
+
+            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
+
+            ComboBox5.Items.Add("ALL")
+
+            While dr_exam_cat.Read()
+
+                ComboBox5.Items.Add(dr_exam_cat.Item(0))
+                l_total_cats = l_total_cats + 1
+
+            End While
+
+        Catch ex As Exception
+
+            MsgBox("Error Loading Exams Categories!", MsgBoxStyle.Critical)
+
+        End Try
+
     End Sub
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
-
 
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
@@ -313,20 +335,66 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        ''Função para inserir no ALERT os exames selecionados
-        If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_selected_default_exams, oradb) Then
-            '
-            MsgBox("Record(s) inserted!")
+        If CheckedListBox1.Items.Count() > 0 Then
 
-            CheckedListBox1.Items.Clear()
+            ''Função para inserir no ALERT os exames selecionados
+            If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_selected_default_exams, oradb) Then
+                '
+                MsgBox("Record(s) inserted!")
 
-            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                CheckedListBox1.Items.Clear()
 
-                CheckedListBox2.SetItemChecked(i, False)
+                For i As Integer = 0 To CheckedListBox2.Items.Count - 1
 
-            Next
+                    CheckedListBox2.SetItemChecked(i, False)
+
+                Next
+
+            End If
+
+        Else
+
+            MsgBox("No records selected!", vbInformation)
 
         End If
+
+    End Sub
+
+    Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
+
+        Try
+
+            CheckedListBox3.Items.Clear()
+
+            Dim l_exam_cat(l_total_cats)
+
+            l_exam_cat(0) = 0 ''Referente ao all
+
+            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, oradb)
+
+            Dim i_cats As Integer = 1
+
+            While dr_exam_cat.Read()
+
+                l_exam_cat(i_cats) = dr_exam_cat.Item(1)
+                i_cats = i_cats + 1
+            End While
+
+            Dim dr As OracleDataReader = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox5.SelectedIndex), oradb)
+
+            Dim i As Integer = 0
+
+            While dr.Read()
+
+                CheckedListBox3.Items.Add(dr.Item(0))
+
+            End While
+
+        Catch ex As Exception
+
+            MsgBox("Error selecting exams - GET_EXAMS", MsgBoxStyle.Critical)
+
+        End Try
 
     End Sub
 End Class
