@@ -13,6 +13,9 @@ Public Class INSERT_IMAGING_EXAMS
     'Estrutura que vai guardar os exames de default selecionados
     Dim l_selected_default_exams() As EXAMS_API.exams_default
 
+
+    Dim l_index_selected_exams_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
+
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
@@ -243,40 +246,50 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-        Dim i As Integer = 0
-
         For Each indexChecked In CheckedListBox2.CheckedIndices
 
-            ReDim Preserve l_selected_default_exams(i)
+            'If para verificar se já está incluido na checkbox da direita
 
-            l_selected_default_exams(i).age_max = loaded_exams(indexChecked.ToString()).age_max
-            l_selected_default_exams(i).age_min = loaded_exams(indexChecked.ToString()).age_min
-            l_selected_default_exams(i).desc_category = loaded_exams(indexChecked.ToString()).desc_category
-            l_selected_default_exams(i).flg_execute = loaded_exams(indexChecked.ToString()).flg_execute
-            l_selected_default_exams(i).flg_first_execute = loaded_exams(indexChecked.ToString()).flg_first_execute
-            l_selected_default_exams(i).flg_first_result = loaded_exams(indexChecked.ToString()).flg_first_result
-            l_selected_default_exams(i).flg_result_notes = loaded_exams(indexChecked.ToString()).flg_result_notes
-            l_selected_default_exams(i).flg_timeout = loaded_exams(indexChecked.ToString()).flg_timeout
-            l_selected_default_exams(i).gender = loaded_exams(indexChecked.ToString()).gender
-            l_selected_default_exams(i).id_content_category = loaded_exams(indexChecked.ToString()).id_content_category
-            l_selected_default_exams(i).id_content_exam = loaded_exams(indexChecked.ToString()).id_content_exam
-            l_selected_default_exams(i).desc_exam = loaded_exams(indexChecked.ToString()).desc_exam
+            Dim l_record_already_selected As Boolean = False
 
-            CheckedListBox1.Items.Add(l_selected_default_exams(i).desc_exam)
+            Dim j As Integer = 0
 
+            For j = 0 To CheckedListBox1.Items.Count() - 1
 
-            i = i + 1
+                If (loaded_exams(indexChecked.ToString()).id_content_exam = l_selected_default_exams(j).id_content_exam) Then
 
+                    l_record_already_selected = True
+                    Exit For
+
+                End If
+
+            Next
+
+            If l_record_already_selected = False Then
+
+                ReDim Preserve l_selected_default_exams(l_index_selected_exams_from_default)
+
+                l_selected_default_exams(l_index_selected_exams_from_default).age_max = loaded_exams(indexChecked.ToString()).age_max
+                l_selected_default_exams(l_index_selected_exams_from_default).age_min = loaded_exams(indexChecked.ToString()).age_min
+                l_selected_default_exams(l_index_selected_exams_from_default).desc_category = loaded_exams(indexChecked.ToString()).desc_category
+                l_selected_default_exams(l_index_selected_exams_from_default).flg_execute = loaded_exams(indexChecked.ToString()).flg_execute
+                l_selected_default_exams(l_index_selected_exams_from_default).flg_first_execute = loaded_exams(indexChecked.ToString()).flg_first_execute
+                l_selected_default_exams(l_index_selected_exams_from_default).flg_first_result = loaded_exams(indexChecked.ToString()).flg_first_result
+                l_selected_default_exams(l_index_selected_exams_from_default).flg_result_notes = loaded_exams(indexChecked.ToString()).flg_result_notes
+                l_selected_default_exams(l_index_selected_exams_from_default).flg_timeout = loaded_exams(indexChecked.ToString()).flg_timeout
+                l_selected_default_exams(l_index_selected_exams_from_default).gender = loaded_exams(indexChecked.ToString()).gender
+                l_selected_default_exams(l_index_selected_exams_from_default).id_content_category = loaded_exams(indexChecked.ToString()).id_content_category
+                l_selected_default_exams(l_index_selected_exams_from_default).id_content_exam = loaded_exams(indexChecked.ToString()).id_content_exam
+                l_selected_default_exams(l_index_selected_exams_from_default).desc_exam = loaded_exams(indexChecked.ToString()).desc_exam
+
+                CheckedListBox1.Items.Add(l_selected_default_exams(l_index_selected_exams_from_default).desc_exam)
+                CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+
+                l_index_selected_exams_from_default = l_index_selected_exams_from_default + 1
+
+            End If
 
         Next
-
-
-        ''Função para inserir no ALERT os exames selecionados
-        If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_selected_default_exams, oradb) Then
-            '
-            MsgBox("Record(s) inserted!")
-
-        End If
 
     End Sub
 
@@ -295,6 +308,25 @@ Public Class INSERT_IMAGING_EXAMS
     End Sub
 
     Private Sub CheckedListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox1.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        ''Função para inserir no ALERT os exames selecionados
+        If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_selected_default_exams, oradb) Then
+            '
+            MsgBox("Record(s) inserted!")
+
+            CheckedListBox1.Items.Clear()
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, False)
+
+            Next
+
+        End If
 
     End Sub
 End Class

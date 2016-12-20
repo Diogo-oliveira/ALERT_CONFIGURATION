@@ -22,6 +22,7 @@ Partial Class INSERT_IMAGING_EXAMS
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(INSERT_IMAGING_EXAMS))
         Me.Label3 = New System.Windows.Forms.Label()
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -38,6 +39,12 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button4 = New System.Windows.Forms.Button()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.Button5 = New System.Windows.Forms.Button()
+        Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
+        Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label3
@@ -141,14 +148,14 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(762, 170)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(724, 170)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox1.TabIndex = 23
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(697, 281)
+        Me.Button2.Location = New System.Drawing.Point(677, 281)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 24
@@ -158,7 +165,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'ComboBox3
         '
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(187, 81)
+        Me.ComboBox3.Location = New System.Drawing.Point(697, 31)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 25
@@ -181,11 +188,61 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button4.Text = "CLEAR"
         Me.Button4.UseVisualStyleBackColor = True
         '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(694, 16)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(55, 13)
+        Me.Label4.TabIndex = 28
+        Me.Label4.Text = "VERSION"
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
+        Me.PictureBox1.Location = New System.Drawing.Point(1143, 12)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
+        Me.PictureBox1.TabIndex = 29
+        Me.PictureBox1.TabStop = False
+        '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(1295, 464)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(75, 23)
+        Me.Button5.TabIndex = 30
+        Me.Button5.Text = "SAVE"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
+        'CheckedListBox3
+        '
+        Me.CheckedListBox3.CheckOnClick = True
+        Me.CheckedListBox3.FormattingEnabled = True
+        Me.CheckedListBox3.Location = New System.Drawing.Point(25, 531)
+        Me.CheckedListBox3.Name = "CheckedListBox3"
+        Me.CheckedListBox3.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox3.TabIndex = 31
+        '
+        'CheckedListBox4
+        '
+        Me.CheckedListBox4.CheckOnClick = True
+        Me.CheckedListBox4.FormattingEnabled = True
+        Me.CheckedListBox4.Location = New System.Drawing.Point(724, 531)
+        Me.CheckedListBox4.Name = "CheckedListBox4"
+        Me.CheckedListBox4.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox4.TabIndex = 32
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1460, 532)
+        Me.ClientSize = New System.Drawing.Size(1384, 849)
+        Me.Controls.Add(Me.CheckedListBox4)
+        Me.Controls.Add(Me.CheckedListBox3)
+        Me.Controls.Add(Me.Button5)
+        Me.Controls.Add(Me.PictureBox1)
+        Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.ComboBox3)
@@ -204,6 +261,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.ComboBox1)
         Me.Name = "INSERT_IMAGING_EXAMS"
         Me.Text = "INSERT_IMAGING_EXAMS"
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -225,4 +283,9 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents ComboBox3 As ComboBox
     Friend WithEvents Button3 As Button
     Friend WithEvents Button4 As Button
+    Friend WithEvents Label4 As Label
+    Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents Button5 As Button
+    Friend WithEvents CheckedListBox3 As CheckedListBox
+    Friend WithEvents CheckedListBox4 As CheckedListBox
 End Class
