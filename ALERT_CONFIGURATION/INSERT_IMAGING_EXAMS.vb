@@ -63,11 +63,62 @@ Public Class INSERT_IMAGING_EXAMS
             ComboBox3.Text = ""
             ComboBox3.Items.Clear()
 
+            ComboBox4.Text = ""
+            ComboBox4.Items.Clear()
+
+            CheckedListBox2.Items.Clear()
+
+            CheckedListBox1.Items.Clear()
+
+            ComboBox5.Text = ""
+            ComboBox5.Items.Clear()
+            CheckedListBox3.Items.Clear()
+
+            ComboBox6.Text = ""
+            ComboBox6.Items.Clear()
+            CheckedListBox4.Items.Clear()
+
         End If
 
     End Sub
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        TextBox1.Text = db_access.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, oradb)
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+
+        Dim dr As OracleDataReader = db_access.GET_SOFT_INST(TextBox1.Text, oradb)
+
+        Dim i As Integer = 0
+
+        While dr.Read()
+
+            ComboBox2.Items.Add(dr.Item(1))
+
+        End While
+
+        'l_selected_all_most_frequent = False
+
+        ComboBox3.Text = ""
+        ComboBox3.Items.Clear()
+
+        ComboBox4.Text = ""
+        ComboBox4.Items.Clear()
+
+        CheckedListBox2.Items.Clear()
+
+        CheckedListBox1.Items.Clear()
+
+        ComboBox5.Text = ""
+        ComboBox5.Items.Clear()
+        CheckedListBox3.Items.Clear()
+
+        ComboBox6.Text = ""
+        ComboBox6.Items.Clear()
+        CheckedListBox4.Items.Clear()
 
     End Sub
 
@@ -143,6 +194,11 @@ Public Class INSERT_IMAGING_EXAMS
             l_index_dep_clin_serv = l_index_dep_clin_serv + 1
         End While
 
+        ''''''''''''''''''''''''''''
+
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
+
     End Sub
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
@@ -169,6 +225,8 @@ Public Class INSERT_IMAGING_EXAMS
             MsgBox("ERROR LOADING DEFAULT EXAMS CATEGORY -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
         End Try
+
+        CheckedListBox1.Items.Clear()
 
     End Sub
 
@@ -366,6 +424,8 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
+        Dim l_error As Boolean = False
+
         If CheckedListBox1.Items.Count() > 0 Then
 
             For Each indexChecked In CheckedListBox1.CheckedIndices
@@ -387,20 +447,28 @@ Public Class INSERT_IMAGING_EXAMS
                 l_checked_default_exams_temp(0).id_content_exam = l_selected_default_exams(indexChecked).id_content_exam
 
                 ''Função para inserir no ALERT os exames selecionados
-                If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, oradb) Then
-                    '
-                    MsgBox("Record(s) inserted!")
+                If Not db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, oradb) Then
 
-                    CheckedListBox1.Items.Clear()
-
-                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
-
-                        CheckedListBox2.SetItemChecked(i, False)
-
-                    Next
+                    MsgBox("ERROR INSERTING EXAM(S)!", vbCritical)
+                    l_error = True
 
                 End If
             Next
+
+            If l_error = False Then
+
+                MsgBox("Record(s) inserted!")
+
+            End If
+
+            CheckedListBox1.Items.Clear()
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, False)
+
+            Next
+
 
         Else
 
