@@ -52,6 +52,8 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox6 = New System.Windows.Forms.ComboBox()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Button8 = New System.Windows.Forms.Button()
+        Me.Button9 = New System.Windows.Forms.Button()
+        Me.Button10 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -319,11 +321,31 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button8.Text = "SAVE"
         Me.Button8.UseVisualStyleBackColor = True
         '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(596, 793)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(75, 23)
+        Me.Button9.TabIndex = 42
+        Me.Button9.Text = "CLEAR"
+        Me.Button9.UseVisualStyleBackColor = True
+        '
+        'Button10
+        '
+        Me.Button10.Location = New System.Drawing.Point(465, 793)
+        Me.Button10.Name = "Button10"
+        Me.Button10.Size = New System.Drawing.Size(102, 23)
+        Me.Button10.TabIndex = 41
+        Me.Button10.Text = "SELECT ALL"
+        Me.Button10.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1384, 849)
+        Me.Controls.Add(Me.Button9)
+        Me.Controls.Add(Me.Button10)
         Me.Controls.Add(Me.Button8)
         Me.Controls.Add(Me.Label9)
         Me.Controls.Add(Me.ComboBox6)
@@ -390,4 +412,6 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents ComboBox6 As ComboBox
     Friend WithEvents Label9 As Label
     Friend WithEvents Button8 As Button
+    Friend WithEvents Button9 As Button
+    Friend WithEvents Button10 As Button
 End Class

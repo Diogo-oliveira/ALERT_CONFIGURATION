@@ -410,7 +410,7 @@ Public Class REMOVE_IMAGING
 
                                 If (l_array_selected_indexes(ii) = i_selected_exams_aux) Then
 
-                                    l_array_selected_exams(l_index_selected_exams) = dr_exams.Item(2)
+                                    l_array_selected_exams(l_index_selected_exams) = dr_exams.Item(3)
                                     l_index_selected_exams = l_index_selected_exams + 1
 
                                 End If

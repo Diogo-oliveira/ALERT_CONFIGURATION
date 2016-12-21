@@ -294,6 +294,7 @@ Public Class INSERT_IMAGING_EXAMS
             Next
 
         End If
+
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -367,20 +368,39 @@ Public Class INSERT_IMAGING_EXAMS
 
         If CheckedListBox1.Items.Count() > 0 Then
 
-            ''Função para inserir no ALERT os exames selecionados
-            If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_selected_default_exams, oradb) Then
-                '
-                MsgBox("Record(s) inserted!")
+            For Each indexChecked In CheckedListBox1.CheckedIndices
 
-                CheckedListBox1.Items.Clear()
+                'Estrutura auxiliar para ir gravando os dados dos exames marcados com o check
+                Dim l_checked_default_exams_temp(0) As EXAMS_API.exams_default
 
-                For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                l_checked_default_exams_temp(0).age_max = l_selected_default_exams(indexChecked).age_max
+                l_checked_default_exams_temp(0).age_min = l_selected_default_exams(indexChecked).age_min
+                l_checked_default_exams_temp(0).desc_category = l_selected_default_exams(indexChecked).desc_category
+                l_checked_default_exams_temp(0).desc_exam = l_selected_default_exams(indexChecked).desc_exam
+                l_checked_default_exams_temp(0).flg_execute = l_selected_default_exams(indexChecked).flg_execute
+                l_checked_default_exams_temp(0).flg_first_execute = l_selected_default_exams(indexChecked).flg_first_execute
+                l_checked_default_exams_temp(0).flg_first_result = l_selected_default_exams(indexChecked).flg_first_result
+                l_checked_default_exams_temp(0).flg_result_notes = l_selected_default_exams(indexChecked).flg_result_notes
+                l_checked_default_exams_temp(0).flg_timeout = l_selected_default_exams(indexChecked).flg_timeout
+                l_checked_default_exams_temp(0).gender = l_selected_default_exams(indexChecked).gender
+                l_checked_default_exams_temp(0).id_content_category = l_selected_default_exams(indexChecked).id_content_category
+                l_checked_default_exams_temp(0).id_content_exam = l_selected_default_exams(indexChecked).id_content_exam
 
-                    CheckedListBox2.SetItemChecked(i, False)
+                ''Função para inserir no ALERT os exames selecionados
+                If db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, oradb) Then
+                    '
+                    MsgBox("Record(s) inserted!")
 
-                Next
+                    CheckedListBox1.Items.Clear()
 
-            End If
+                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                        CheckedListBox2.SetItemChecked(i, False)
+
+                    Next
+
+                End If
+            Next
 
         Else
 
@@ -492,33 +512,77 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
-        Dim l_id_dep_clin_serv As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+        If ComboBox6.SelectedItem = "" Then
 
-
-        If CheckedListBox4.Items.Count() > 0 Then
-
-            ''Função para inserir no ALERT.exam_dep_clin_serv os exames selecionados
-            For i As Int64 = 0 To a_selected_exams_alert.Count() - 1
-
-                If Not db_access.SET_EXAM_DEP_CLIN_SERV(a_selected_exams_alert(i).id_exam, l_id_dep_clin_serv, "M", TextBox1.Text,
-                                                        l_selected_soft, "DT", "Y", "N",
-                                                        "N", "DT", oradb) Then
-
-                    MsgBox("ERROR INSERTING EXAM AS FREQUENT", vbCritical)
-
-                End If
-
-            Next
-
-            For ii As Integer = 0 To CheckedListBox3.Items.Count - 1
-
-                CheckedListBox3.SetItemChecked(ii, False)
-
-            Next
+            MsgBox("No clincial Service selected", vbCritical)
 
         Else
 
-            MsgBox("No records selected!", vbInformation)
+            Dim l_id_dep_clin_serv As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+
+            If CheckedListBox4.Items.Count() > 0 Then
+
+                For Each indexChecked In CheckedListBox4.CheckedIndices
+
+                    'Estrutura auxiliar para ir gravando os dados dos exames marcados com o check
+                    Dim l_checked_alert_exams_temp(0) As EXAMS_API.exams_alert
+
+                    l_checked_alert_exams_temp(0).desc_exam = a_selected_exams_alert(indexChecked).desc_exam
+                    l_checked_alert_exams_temp(0).id_exam = a_selected_exams_alert(indexChecked).id_exam
+
+                    If Not db_access.SET_EXAM_DEP_CLIN_SERV(l_checked_alert_exams_temp(0).id_exam, l_id_dep_clin_serv, "M", TextBox1.Text,
+                                                                l_selected_soft, "DT", "Y", "N",
+                                                                "N", "DT", oradb) Then
+
+                        MsgBox("ERROR INSERTING EXAM AS FREQUENT", vbCritical)
+
+                    End If
+
+                Next
+
+                MsgBox("Selected record(s) saved.", vbInformation)
+
+                CheckedListBox4.Items.Clear()
+
+                For ii As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                    CheckedListBox3.SetItemChecked(ii, False)
+
+                Next
+
+            Else
+
+                MsgBox("No records selected!", vbInformation)
+
+            End If
+
+        End If
+
+    End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, False)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, True)
+
+            Next
 
         End If
 

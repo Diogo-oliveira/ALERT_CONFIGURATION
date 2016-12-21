@@ -690,7 +690,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               17,
               te.desc_lang_18,
               19,
-              te.desc_lang_19)),ec.id_exam_cat,e.id_content
+              te.desc_lang_19)),ec.id_exam_cat,e.id_content,e.id_exam
               
               from alert.exam_dep_clin_serv d
  join alert.exam e on e.id_exam=d.id_exam
@@ -734,7 +734,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               17,
               te.desc_lang_18,
               19,
-              te.desc_lang_19)),ec.id_exam_cat,e.id_content
+              te.desc_lang_19)),ec.id_exam_cat,e.id_content,e.id_exam
               
               from alert.exam_dep_clin_serv d
  join alert.exam e on e.id_exam=d.id_exam
@@ -1459,7 +1459,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-
             Dim Sql As String = ""
 
             If i_id_dep_clin_serv < 0 Then
@@ -1504,8 +1503,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             when dup_val_on_index then
                             l_id_exam:=-1;
                         end;"
-
-                MsgBox(i_id_exam)
 
             End If
 
