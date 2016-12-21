@@ -93,6 +93,7 @@ Partial Class REMOVE_IMAGING
         '
         'ComboBox2
         '
+        Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
         Me.ComboBox2.Location = New System.Drawing.Point(449, 26)
         Me.ComboBox2.Name = "ComboBox2"

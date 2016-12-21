@@ -48,6 +48,10 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Label8 = New System.Windows.Forms.Label()
         Me.ComboBox5 = New System.Windows.Forms.ComboBox()
         Me.Button6 = New System.Windows.Forms.Button()
+        Me.Button7 = New System.Windows.Forms.Button()
+        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.Button8 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -62,6 +66,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'ComboBox2
         '
+        Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
         Me.ComboBox2.Location = New System.Drawing.Point(443, 31)
         Me.ComboBox2.Name = "ComboBox2"
@@ -90,7 +95,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.Button1.Location = New System.Drawing.Point(23, 63)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(142, 39)
+        Me.Button1.Size = New System.Drawing.Size(142, 34)
         Me.Button1.TabIndex = 9
         Me.Button1.Text = "SEARCH INSTITUTION"
         Me.Button1.UseVisualStyleBackColor = True
@@ -113,7 +118,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(499, 149)
+        Me.Label7.Location = New System.Drawing.Point(499, 131)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(172, 13)
         Me.Label7.TabIndex = 22
@@ -123,7 +128,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(25, 170)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(25, 152)
         Me.CheckedListBox2.Name = "CheckedListBox2"
         Me.CheckedListBox2.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox2.TabIndex = 21
@@ -131,7 +136,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(22, 122)
+        Me.Label6.Location = New System.Drawing.Point(22, 104)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(99, 13)
         Me.Label6.TabIndex = 20
@@ -143,7 +148,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(25, 138)
+        Me.ComboBox4.Location = New System.Drawing.Point(25, 120)
         Me.ComboBox4.Name = "ComboBox4"
         Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox4.TabIndex = 19
@@ -152,14 +157,14 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(724, 170)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(724, 152)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox1.TabIndex = 23
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(677, 281)
+        Me.Button2.Location = New System.Drawing.Point(677, 263)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 24
@@ -168,6 +173,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'ComboBox3
         '
+        Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
         Me.ComboBox3.Location = New System.Drawing.Point(697, 31)
         Me.ComboBox3.Name = "ComboBox3"
@@ -176,7 +182,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(465, 464)
+        Me.Button3.Location = New System.Drawing.Point(465, 432)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 26
@@ -185,7 +191,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(596, 464)
+        Me.Button4.Location = New System.Drawing.Point(596, 432)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(75, 23)
         Me.Button4.TabIndex = 27
@@ -212,7 +218,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(1295, 464)
+        Me.Button5.Location = New System.Drawing.Point(1295, 432)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(75, 23)
         Me.Button5.TabIndex = 30
@@ -223,7 +229,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox3.CheckOnClick = True
         Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(25, 531)
+        Me.CheckedListBox3.Location = New System.Drawing.Point(25, 513)
         Me.CheckedListBox3.Name = "CheckedListBox3"
         Me.CheckedListBox3.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox3.TabIndex = 31
@@ -232,7 +238,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox4.CheckOnClick = True
         Me.CheckedListBox4.FormattingEnabled = True
-        Me.CheckedListBox4.Location = New System.Drawing.Point(724, 531)
+        Me.CheckedListBox4.Location = New System.Drawing.Point(724, 513)
         Me.CheckedListBox4.Name = "CheckedListBox4"
         Me.CheckedListBox4.Size = New System.Drawing.Size(646, 274)
         Me.CheckedListBox4.TabIndex = 32
@@ -240,7 +246,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(499, 512)
+        Me.Label5.Location = New System.Drawing.Point(499, 494)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(172, 13)
         Me.Label5.TabIndex = 35
@@ -249,7 +255,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(22, 485)
+        Me.Label8.Location = New System.Drawing.Point(22, 467)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(99, 13)
         Me.Label8.TabIndex = 34
@@ -261,25 +267,67 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox5.FormattingEnabled = True
         Me.ComboBox5.ItemHeight = 16
-        Me.ComboBox5.Location = New System.Drawing.Point(25, 501)
+        Me.ComboBox5.Location = New System.Drawing.Point(25, 483)
         Me.ComboBox5.Name = "ComboBox5"
         Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox5.TabIndex = 33
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(677, 654)
+        Me.Button6.Location = New System.Drawing.Point(677, 636)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(41, 39)
         Me.Button6.TabIndex = 36
         Me.Button6.Text = ">>"
         Me.Button6.UseVisualStyleBackColor = True
         '
+        'Button7
+        '
+        Me.Button7.Location = New System.Drawing.Point(23, 806)
+        Me.Button7.Name = "Button7"
+        Me.Button7.Size = New System.Drawing.Size(100, 23)
+        Me.Button7.TabIndex = 37
+        Me.Button7.Text = "BACK"
+        Me.Button7.UseVisualStyleBackColor = True
+        '
+        'ComboBox6
+        '
+        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox6.FormattingEnabled = True
+        Me.ComboBox6.ItemHeight = 16
+        Me.ComboBox6.Location = New System.Drawing.Point(724, 483)
+        Me.ComboBox6.Name = "ComboBox6"
+        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.TabIndex = 38
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(721, 467)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(110, 13)
+        Me.Label9.TabIndex = 39
+        Me.Label9.Text = "CLINICAL SERVICES"
+        '
+        'Button8
+        '
+        Me.Button8.Location = New System.Drawing.Point(1295, 793)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(75, 23)
+        Me.Button8.TabIndex = 40
+        Me.Button8.Text = "SAVE"
+        Me.Button8.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1384, 849)
+        Me.Controls.Add(Me.Button8)
+        Me.Controls.Add(Me.Label9)
+        Me.Controls.Add(Me.ComboBox6)
+        Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.Label8)
@@ -338,4 +386,8 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Label8 As Label
     Friend WithEvents ComboBox5 As ComboBox
     Friend WithEvents Button6 As Button
+    Friend WithEvents Button7 As Button
+    Friend WithEvents ComboBox6 As ComboBox
+    Friend WithEvents Label9 As Label
+    Friend WithEvents Button8 As Button
 End Class

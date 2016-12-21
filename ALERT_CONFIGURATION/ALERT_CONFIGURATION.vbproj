@@ -108,6 +108,12 @@
     <Compile Include="REMOVE_IMAGING.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SYS_CONFIGS.Designer.vb">
+      <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SYS_CONFIGS.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
@@ -124,6 +130,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="REMOVE_IMAGING.resx">
       <DependentUpon>REMOVE_IMAGING.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SYS_CONFIGS.resx">
+      <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

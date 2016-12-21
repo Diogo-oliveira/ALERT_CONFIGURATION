@@ -17,6 +17,13 @@ Public Class EXAMS_API
         Public gender As String
     End Structure
 
+    Public Structure exams_alert
+
+        Public id_exam As String
+        Public desc_exam As String
+
+    End Structure
+
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
 
         Dim oradb As String = i_oradb
@@ -683,7 +690,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               17,
               te.desc_lang_18,
               19,
-              te.desc_lang_19)),ec.id_exam_cat,e.id_exam
+              te.desc_lang_19)),ec.id_exam_cat,e.id_content
               
               from alert.exam_dep_clin_serv d
  join alert.exam e on e.id_exam=d.id_exam
@@ -727,7 +734,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               17,
               te.desc_lang_18,
               19,
-              te.desc_lang_19)),ec.id_exam_cat,e.id_exam
+              te.desc_lang_19)),ec.id_exam_cat,e.id_content
               
               from alert.exam_dep_clin_serv d
  join alert.exam e on e.id_exam=d.id_exam
@@ -869,11 +876,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
   join alert_default.exam_mrk_vrs v
     on v.id_exam = e.id_exam
   join alert_default.exam_clin_serv ecs
-    on ecs.id_exam = e.id_exam
+    on ecs.id_exam = e.id_exam and ecs.id_software in (0, " & i_software & ")
    and ecs.flg_type = 'P'
   join institution i
     on i.id_market = v.id_market
- where i.id_institution = 470
+ where i.id_institution = " & i_institution & "
  order by 1 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
@@ -1442,7 +1449,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_EXAM_DEP_CLIN_SER(ByVal i_id_exam As String, ByVal i_id_dep_clin_serv As String, ByVal i_flg_type As String, ByVal i_id_institution As Int64,
+    Function SET_EXAM_DEP_CLIN_SERV(ByVal i_id_exam As String, ByVal i_id_dep_clin_serv As String, ByVal i_flg_type As String, ByVal i_id_institution As Int64,
                                    ByVal i_id_soft As Int64, ByVal i_flg_first_result As String, ByVal flg_execute As String, ByVal flg_timeout As String,
                                    ByVal flg_result_notes As String, ByVal flg_first_execute As String, ByVal i_oradb As String) As Boolean
 
@@ -1498,18 +1505,20 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             l_id_exam:=-1;
                         end;"
 
+                MsgBox(i_id_exam)
+
             End If
 
             Dim cmd_insert_trans As New OracleCommand(Sql, conn)
-                cmd_insert_trans.CommandType = CommandType.Text
+            cmd_insert_trans.CommandType = CommandType.Text
 
-                cmd_insert_trans.ExecuteNonQuery()
+            cmd_insert_trans.ExecuteNonQuery()
 
-                conn.Close()
+            conn.Close()
 
-                conn.Dispose()
+            conn.Dispose()
 
-                Return True
+            Return True
 
         Catch ex As Exception
 
@@ -1948,7 +1957,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 '4 - Inserir o registo na alert.exam_dep_clin_serv
 
-                If Not SET_EXAM_DEP_CLIN_SER(i_set_exams(i).id_content_exam, -1, "P", i_institution,
+                If Not SET_EXAM_DEP_CLIN_SERV(i_set_exams(i).id_content_exam, -1, "P", i_institution,
                                              i_software, i_set_exams(i).flg_first_result, i_set_exams(i).flg_execute, i_set_exams(i).flg_timeout,
                                              i_set_exams(i).flg_result_notes, i_set_exams(i).flg_first_execute, oradb) Then
 
@@ -1969,9 +1978,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End Try
 
-        '2 - Se não existir, será necessário inserir exame e tradução
-        '3 - Fazer o mesmo para a categoria
-        '4 - Inserir o registo na alert.exam_dep_clin_serv
         '5 - correr o lucene?
 
         Return True

@@ -30,4 +30,14 @@
         FORM_ADD_IMAGING.ShowDialog()
 
     End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+        Dim Form_SYS_CONFIG As New SYS_CONFIGS
+
+        Me.Hide()
+
+        Form_SYS_CONFIG.ShowDialog()
+
+    End Sub
 End Class
