@@ -375,6 +375,8 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
+        Me.MaximumSize = New System.Drawing.Size(1400, 888)
+        Me.MinimumSize = New System.Drawing.Size(1400, 858)
         Me.Name = "INSERT_IMAGING_EXAMS"
         Me.Text = "INSERT_IMAGING_EXAMS"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()

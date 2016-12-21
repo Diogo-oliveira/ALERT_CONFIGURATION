@@ -40,4 +40,29 @@
         Form_SYS_CONFIG.ShowDialog()
 
     End Sub
+
+    Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
+
+
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        Dim Form_Remove_Other As New REMOVE_OTHER_EXAMS
+
+        Me.Hide()
+
+        Form_Remove_Other.ShowDialog()
+
+    End Sub
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
+
+        Dim form_insert_other As New INSERT_OTHER_EXAM
+
+        Me.Hide()
+
+        form_insert_other.ShowDialog()
+
+    End Sub
 End Class

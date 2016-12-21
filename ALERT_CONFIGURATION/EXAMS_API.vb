@@ -467,7 +467,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_FREQ_EXAM(ByVal I_ID_SOFT As Int16, ByVal I_ID_DEP_CLIN_SERV As Int64, ByVal I_ID_INST As Int64, ByVal i_oradb As String) As OracleDataReader
+    Function GET_FREQ_EXAM(ByVal I_ID_SOFT As Int16, ByVal I_ID_DEP_CLIN_SERV As Int64, ByVal I_ID_INST As Int64, ByVal i_id_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -514,7 +514,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  and s.flg_type='M'
  and s.id_dep_clin_serv = " & I_ID_DEP_CLIN_SERV & "
  and e.flg_available='Y'
- and e.flg_type='I'
+ and e.flg_type='" & i_id_exam_type & "'
  order by 2 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
@@ -554,7 +554,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Integer(), ByVal i_dep_clin_serv As Int64, ByVal i_oradb As String) As Boolean
+    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Int64(), ByVal i_dep_clin_serv As Int64, ByVal i_oradb As String) As Boolean
 
         Try
 
@@ -591,7 +591,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS_CAT(ByVal i_id_inst As Int64, ByVal i_id_soft As Int64, ByVal i_oradb As String) As OracleDataReader
+    Function GET_EXAMS_CAT(ByVal i_id_inst As Int64, ByVal i_id_soft As Int64, ByVal i_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -635,7 +635,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  join translation tec on tec.code_translation=ec.code_exam_cat
  join institution i on i.id_institution= " & i_id_inst & "
  where d.id_institution = " & i_id_inst & "
- and e.flg_type='I'
+ and e.flg_type='" & i_exam_type & "'
  and e.flg_available='Y' and ec.flg_available='Y'
  and d.id_software= " & i_id_soft & "
  and d.flg_type = 'P'
@@ -650,7 +650,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Int64, ByVal i_id_exam_cat As Int64, ByVal i_oradb As String) As OracleDataReader
+    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Int64, ByVal i_id_exam_cat As Int64, ByVal i_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -698,7 +698,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  join alert.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
  join institution i on i.id_institution= " & i_id_inst & "
  where d.id_institution = " & i_id_inst & "
- and e.flg_type='I'
+ and e.flg_type='" & i_exam_type & "'
  and e.flg_available='Y' and ec.flg_available='Y'
  and d.id_software= " & i_id_soft & "
  and d.flg_type = 'P'
@@ -742,7 +742,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  join alert.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
  join institution i on i.id_institution= " & i_id_inst & "
  where d.id_institution = " & i_id_inst & "
- and e.flg_type='I'
+ and e.flg_type='" & i_exam_type & "'
  and e.flg_available='Y' and ec.flg_available='Y'
  and d.id_software=" & i_id_soft & "
  and d.flg_type = 'P'
@@ -800,7 +800,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+    Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -847,7 +847,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     join institution i on i.id_market=v.id_market
  where i.id_institution= " & i_institution & "
    And v.version = '" & i_version & "'
-   And e.flg_type='I'
+   And e.flg_type='" & i_exam_type & "'
    And e.flg_available='Y'
    And ecs.id_software= " & i_software & " 
    And ecs.flg_type='P'
@@ -893,7 +893,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_oradb As String) As OracleDataReader
+    Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -973,7 +973,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     join institution i on i.id_market=v.id_market
  where i.id_institution=  " & i_institution & "
    and v.version = '" & i_version & "'
-   and e.flg_type='I'
+   and e.flg_type='" & i_exam_type & "'
    and e.flg_available='Y'
    and ecs.id_software= " & i_software & "
    and ecs.flg_type='P'"

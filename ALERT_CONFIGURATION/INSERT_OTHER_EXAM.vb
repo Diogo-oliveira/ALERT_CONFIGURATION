@@ -1,5 +1,5 @@
 ﻿Imports Oracle.DataAccess.Client
-Public Class INSERT_IMAGING_EXAMS
+Public Class INSERT_OTHER_EXAM
 
     Dim db_access As New EXAMS_API
     Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
@@ -24,7 +24,7 @@ Public Class INSERT_IMAGING_EXAMS
 
     Dim a_dep_clin_serv_inst() As Int64 ''Array que vai guardar os dep_clin_serv da instituição
 
-    Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub INSERT_OTHER_EXAM_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
 
@@ -158,7 +158,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Try
 
-            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
             ComboBox5.Items.Add("ALL")
 
@@ -212,7 +212,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Try
 
-            Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "I", oradb)
+            Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "E", oradb)
 
             ComboBox4.Items.Add("ALL")
 
@@ -244,7 +244,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             Try
 
-                Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "I", oradb)
+                Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "E", oradb)
                 Dim l_index_aux As Int64 = 1
 
 
@@ -275,7 +275,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         ''2 - Carregar a grelha de exames (fazer função - vai ser parecida à última que foi feita)
         ''3 Criar estrutura com os elementos dos exames carregados
-        Dim dr As OracleDataReader = db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, "I", oradb)
+        Dim dr As OracleDataReader = db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, "E", oradb)
 
         ReDim loaded_exams(0) ''Limpar estrutura
         Dim l_dimension_array_loaded_exams As Int64 = 0
@@ -490,7 +490,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             l_exam_cat(0) = 0 ''Referente ao all
 
-            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
             Dim i_cats As Integer = 1
 
@@ -500,7 +500,7 @@ Public Class INSERT_IMAGING_EXAMS
                 i_cats = i_cats + 1
             End While
 
-            Dim dr As OracleDataReader = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox5.SelectedIndex), "I", oradb)
+            Dim dr As OracleDataReader = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox5.SelectedIndex), "E", oradb)
 
             Dim i As Integer = 0
 

@@ -1,5 +1,7 @@
 ﻿Imports Oracle.DataAccess.Client
-Public Class REMOVE_IMAGING
+
+Public Class REMOVE_OTHER_EXAMS
+
     Dim db_acces As New EXAMS_API
 
     Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
@@ -14,7 +16,7 @@ Public Class REMOVE_IMAGING
     Dim l_exam_cat() As Integer
     Dim l_total_cats As Int64 = 0
 
-    Private Sub REMOVE_IMAGING_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub REMOVE_OTHER_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         CheckedListBox1.CheckOnClick = True
 
@@ -30,7 +32,6 @@ Public Class REMOVE_IMAGING
         End While
 
     End Sub
-
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
 
         TextBox1.Text = db_acces.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, oradb)
@@ -122,7 +123,7 @@ Public Class REMOVE_IMAGING
 
         Try
 
-            Dim dr_exam_cat As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+            Dim dr_exam_cat As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
             ComboBox4.Items.Add("ALL")
 
@@ -147,7 +148,7 @@ Public Class REMOVE_IMAGING
 
         l_selected_dep_clin_serv = db_acces.GET_SELECTED_DEP_CLIN_SERV(TextBox1.Text, l_selected_soft, ComboBox3.SelectedIndex, oradb) 'Colocar IDs
 
-        Dim dr As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "I", oradb)
+        Dim dr As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "E", oradb)
 
         Dim i As Integer = 0
 
@@ -179,7 +180,7 @@ Public Class REMOVE_IMAGING
 
         For Each indexChecked In CheckedListBox1.CheckedIndices
 
-            Dim dr As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "I", oradb)
+            Dim dr As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "E", oradb)
 
             Dim i_index As Integer = 0
 
@@ -207,7 +208,7 @@ Public Class REMOVE_IMAGING
 
             l_selected_dep_clin_serv = db_acces.GET_SELECTED_DEP_CLIN_SERV(TextBox1.Text, l_selected_soft, ComboBox3.SelectedIndex, oradb)
 
-            Dim dr_new As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "I", oradb)
+            Dim dr_new As OracleDataReader = db_acces.GET_FREQ_EXAM(l_selected_soft, l_selected_dep_clin_serv, TextBox1.Text, "E", oradb)
 
             Dim i_new As Integer = 0
 
@@ -261,7 +262,7 @@ Public Class REMOVE_IMAGING
 
             l_exam_cat(0) = 0 ''Referente ao all
 
-            Dim dr_exam_cat As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+            Dim dr_exam_cat As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
             Dim i_cats As Integer = 1
 
@@ -271,7 +272,7 @@ Public Class REMOVE_IMAGING
                 i_cats = i_cats + 1
             End While
 
-            Dim dr As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox4.SelectedIndex), "I", oradb)
+            Dim dr As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox4.SelectedIndex), "E", oradb)
 
             Dim i As Integer = 0
 
@@ -344,7 +345,7 @@ Public Class REMOVE_IMAGING
 
                 Try
 
-                    dr_exam_cat = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+                    dr_exam_cat = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
                     While dr_exam_cat.Read()
 
@@ -382,7 +383,7 @@ Public Class REMOVE_IMAGING
                 Try
 
                     'Lista de exames de categoria selecionada
-                    dr_exams = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "I", oradb)
+                    dr_exams = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "E", oradb)
 
                     'Lista de indexes de exames selecionados
                     Dim l_array_selected_indexes(CheckedListBox2.CheckedIndices.Count()) As Integer
@@ -455,7 +456,7 @@ Public Class REMOVE_IMAGING
                     ComboBox3.SelectedItem = ""
 
 
-                    Dim dr_exams_cat As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "I", oradb)
+                    Dim dr_exams_cat As OracleDataReader = db_acces.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "E", oradb)
 
                     Dim i As Integer = 0
 
@@ -478,7 +479,7 @@ Public Class REMOVE_IMAGING
 
                     Try
 
-                        Dim dr_exam_cat_new As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+                        Dim dr_exam_cat_new As OracleDataReader = db_acces.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
 
                         ComboBox4.Items.Add("ALL")
 
@@ -499,7 +500,7 @@ Public Class REMOVE_IMAGING
 
             End If
 
-            Else
+        Else
 
             MsgBox("No selected records!")
 
@@ -533,7 +534,4 @@ Public Class REMOVE_IMAGING
 
     End Sub
 
-    Private Sub Label6_Click(sender As Object, e As EventArgs) Handles Label6.Click
-
-    End Sub
 End Class

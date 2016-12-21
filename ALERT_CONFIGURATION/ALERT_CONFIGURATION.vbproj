@@ -87,6 +87,12 @@
     <Compile Include="INSERT_IMAGING_EXAMS.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="INSERT_OTHER_EXAM.Designer.vb">
+      <DependentUpon>INSERT_OTHER_EXAM.vb</DependentUpon>
+    </Compile>
+    <Compile Include="INSERT_OTHER_EXAM.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -108,6 +114,12 @@
     <Compile Include="REMOVE_IMAGING.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="REMOVE_OTHER_EXAMS.Designer.vb">
+      <DependentUpon>REMOVE_OTHER_EXAMS.vb</DependentUpon>
+    </Compile>
+    <Compile Include="REMOVE_OTHER_EXAMS.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="SYS_CONFIGS.Designer.vb">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
     </Compile>
@@ -122,6 +134,9 @@
     <EmbeddedResource Include="INSERT_IMAGING_EXAMS.resx">
       <DependentUpon>INSERT_IMAGING_EXAMS.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="INSERT_OTHER_EXAM.resx">
+      <DependentUpon>INSERT_OTHER_EXAM.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -130,6 +145,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="REMOVE_IMAGING.resx">
       <DependentUpon>REMOVE_IMAGING.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="REMOVE_OTHER_EXAMS.resx">
+      <DependentUpon>REMOVE_OTHER_EXAMS.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SYS_CONFIGS.resx">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
