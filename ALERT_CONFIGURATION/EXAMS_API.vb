@@ -863,7 +863,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -881,6 +881,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
   join institution i
     on i.id_market = v.id_market
  where i.id_institution = " & i_institution & "
+     and e.flg_type = '" & i_exam_type & "'
  order by 1 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
@@ -1530,7 +1531,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_oradb As String) As Boolean
+    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_exam_type As String, ByVal i_oradb As String) As Boolean
 
         'Function insert() exam
         '1 - VEr se categoria já existe no lado do alert
@@ -1689,7 +1690,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          where ec.id_content= '" & i_set_exams(i).id_content_category & "'
                                          and ec.flg_available='Y';
                                          insert into alert.exam (ID_EXAM, CODE_EXAM, FLG_PAT_RESP, FLG_PAT_PREP, FLG_MOV_PAT, FLG_AVAILABLE, RANK, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, ID_EXAM_CAT, ID_CONTENT)
-                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, 'I', '" & i_set_exams(i).gender & "' , null, null , l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
+                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , null, null , l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
                     ElseIf i_set_exams(i).age_min < 0 Then
@@ -1703,7 +1704,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          where ec.id_content= '" & i_set_exams(i).id_content_category & "'
                                          and ec.flg_available='Y';
                                          insert into alert.exam (ID_EXAM, CODE_EXAM, FLG_PAT_RESP, FLG_PAT_PREP, FLG_MOV_PAT, FLG_AVAILABLE, RANK, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, ID_EXAM_CAT, ID_CONTENT)
-                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, 'I', '" & i_set_exams(i).gender & "' , null, " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
+                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , null, " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
                     ElseIf i_set_exams(i).age_max < 0 Then
@@ -1718,7 +1719,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          where ec.id_content= '" & i_set_exams(i).id_content_category & "'
                                          and ec.flg_available='Y';
                                          insert into alert.exam (ID_EXAM, CODE_EXAM, FLG_PAT_RESP, FLG_PAT_PREP, FLG_MOV_PAT, FLG_AVAILABLE, RANK, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, ID_EXAM_CAT, ID_CONTENT)
-                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, 'I', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", null, l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
+                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", null, l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
                     Else
@@ -1733,7 +1734,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          where ec.id_content= '" & i_set_exams(i).id_content_category & "'
                                          and ec.flg_available='Y';
                                          insert into alert.exam (ID_EXAM, CODE_EXAM, FLG_PAT_RESP, FLG_PAT_PREP, FLG_MOV_PAT, FLG_AVAILABLE, RANK, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, ID_EXAM_CAT, ID_CONTENT)
-                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, 'I', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
+                                         values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
                     End If

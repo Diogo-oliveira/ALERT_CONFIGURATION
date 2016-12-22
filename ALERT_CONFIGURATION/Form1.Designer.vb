@@ -35,7 +35,7 @@ Partial Class Form1
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(102, 276)
+        Me.Button2.Location = New System.Drawing.Point(102, 302)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(116, 40)
         Me.Button2.TabIndex = 2
@@ -53,7 +53,7 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(488, 322)
+        Me.Button1.Location = New System.Drawing.Point(488, 302)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(114, 40)
         Me.Button1.TabIndex = 4
@@ -62,7 +62,7 @@ Partial Class Form1
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(102, 322)
+        Me.Button3.Location = New System.Drawing.Point(102, 256)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(116, 40)
         Me.Button3.TabIndex = 5
@@ -71,7 +71,7 @@ Partial Class Form1
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(488, 276)
+        Me.Button4.Location = New System.Drawing.Point(488, 256)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(114, 40)
         Me.Button4.TabIndex = 6
@@ -80,7 +80,7 @@ Partial Class Form1
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(224, 276)
+        Me.Button5.Location = New System.Drawing.Point(224, 302)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(114, 40)
         Me.Button5.TabIndex = 7
@@ -89,7 +89,7 @@ Partial Class Form1
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(224, 322)
+        Me.Button6.Location = New System.Drawing.Point(224, 256)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(114, 40)
         Me.Button6.TabIndex = 8

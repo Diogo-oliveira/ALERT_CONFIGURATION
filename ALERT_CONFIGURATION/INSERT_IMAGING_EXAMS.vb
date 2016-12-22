@@ -139,7 +139,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Try
 
-            Dim dr_def_versions As OracleDataReader = db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, oradb)
+            Dim dr_def_versions As OracleDataReader = db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, "I", oradb)
 
             While dr_def_versions.Read()
 
@@ -449,7 +449,7 @@ Public Class INSERT_IMAGING_EXAMS
                 l_checked_default_exams_temp(0).id_content_exam = l_selected_default_exams(indexChecked).id_content_exam
 
                 ''Função para inserir no ALERT os exames selecionados
-                If Not db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, oradb) Then
+                If Not db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, "I", oradb) Then
 
                     MsgBox("ERROR INSERTING EXAM(S)!", vbCritical)
                     l_error = True
