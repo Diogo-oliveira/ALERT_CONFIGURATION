@@ -54,6 +54,8 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button8 = New System.Windows.Forms.Button()
         Me.Button9 = New System.Windows.Forms.Button()
         Me.Button10 = New System.Windows.Forms.Button()
+        Me.Button11 = New System.Windows.Forms.Button()
+        Me.Button12 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -314,36 +316,56 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(1295, 793)
+        Me.Button8.Location = New System.Drawing.Point(1270, 793)
         Me.Button8.Name = "Button8"
-        Me.Button8.Size = New System.Drawing.Size(75, 23)
+        Me.Button8.Size = New System.Drawing.Size(100, 23)
         Me.Button8.TabIndex = 40
         Me.Button8.Text = "SAVE"
         Me.Button8.UseVisualStyleBackColor = True
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(596, 793)
+        Me.Button9.Location = New System.Drawing.Point(464, 793)
         Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(75, 23)
+        Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 42
         Me.Button9.Text = "CLEAR"
         Me.Button9.UseVisualStyleBackColor = True
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(465, 793)
+        Me.Button10.Location = New System.Drawing.Point(356, 793)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 41
         Me.Button10.Text = "SELECT ALL"
         Me.Button10.UseVisualStyleBackColor = True
         '
+        'Button11
+        '
+        Me.Button11.Location = New System.Drawing.Point(569, 793)
+        Me.Button11.Name = "Button11"
+        Me.Button11.Size = New System.Drawing.Size(102, 23)
+        Me.Button11.TabIndex = 43
+        Me.Button11.Text = "DELETE"
+        Me.Button11.UseVisualStyleBackColor = True
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(1153, 793)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(100, 23)
+        Me.Button12.TabIndex = 44
+        Me.Button12.Text = "DELETE"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1384, 849)
+        Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Button12)
+        Me.Controls.Add(Me.Button11)
         Me.Controls.Add(Me.Button9)
         Me.Controls.Add(Me.Button10)
         Me.Controls.Add(Me.Button8)
@@ -375,8 +397,8 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
-        Me.MaximumSize = New System.Drawing.Size(1400, 888)
-        Me.MinimumSize = New System.Drawing.Size(1400, 858)
+        Me.MaximumSize = New System.Drawing.Size(1600, 880)
+        Me.MinimumSize = New System.Drawing.Size(1598, 858)
         Me.Name = "INSERT_IMAGING_EXAMS"
         Me.Text = "INSERT_IMAGING_EXAMS"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -416,4 +438,6 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button8 As Button
     Friend WithEvents Button9 As Button
     Friend WithEvents Button10 As Button
+    Friend WithEvents Button11 As Button
+    Friend WithEvents Button12 As Button
 End Class

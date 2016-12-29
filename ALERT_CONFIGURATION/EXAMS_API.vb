@@ -24,6 +24,14 @@ Public Class EXAMS_API
 
     End Structure
 
+    Public Structure exams_alert_flg
+
+        Public id_exam As String
+        Public desc_exam As String
+        Public flg_new As String
+
+    End Structure
+
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
 
         Dim oradb As String = i_oradb
@@ -503,7 +511,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               17,
               T.desc_lang_18,
               19,
-              T.desc_lang_19) from alert.exam_dep_clin_serv s
+              T.desc_lang_19), e.id_content from alert.exam_dep_clin_serv s
  join alert.exam e on e.id_exam=s.id_exam
  join translation t on t.code_translation=e.code_exam
  join alert.dep_clin_serv dps on dps.id_dep_clin_serv=s.id_dep_clin_serv

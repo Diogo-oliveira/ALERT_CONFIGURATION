@@ -5,16 +5,6 @@
 
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-
-        Dim FORM_REMOVE_IMAGING As New REMOVE_IMAGING
-
-        Me.Hide()
-
-        FORM_REMOVE_IMAGING.ShowDialog()
-
-    End Sub
-
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
         Application.Exit()

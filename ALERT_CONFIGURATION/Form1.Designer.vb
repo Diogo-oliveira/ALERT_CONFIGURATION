@@ -23,7 +23,6 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Me.Button2 = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
@@ -32,15 +31,6 @@ Partial Class Form1
         Me.Button6 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(102, 302)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(116, 40)
-        Me.Button2.TabIndex = 2
-        Me.Button2.Text = "Remove Imaging Exams"
-        Me.Button2.UseVisualStyleBackColor = True
         '
         'PictureBox1
         '
@@ -66,7 +56,7 @@ Partial Class Form1
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(116, 40)
         Me.Button3.TabIndex = 5
-        Me.Button3.Text = "Insert Imaging Exams"
+        Me.Button3.Text = "Imaging Exams"
         Me.Button3.UseVisualStyleBackColor = True
         '
         'Button4
@@ -80,7 +70,7 @@ Partial Class Form1
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(224, 302)
+        Me.Button5.Location = New System.Drawing.Point(368, 256)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(114, 40)
         Me.Button5.TabIndex = 7
@@ -89,7 +79,7 @@ Partial Class Form1
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(224, 256)
+        Me.Button6.Location = New System.Drawing.Point(102, 302)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(114, 40)
         Me.Button6.TabIndex = 8
@@ -100,21 +90,19 @@ Partial Class Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(693, 382)
+        Me.ClientSize = New System.Drawing.Size(693, 415)
         Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.PictureBox1)
-        Me.Controls.Add(Me.Button2)
         Me.Name = "Form1"
         Me.Text = "ALERT Configuration"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents Button2 As Button
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Button1 As Button
     Friend WithEvents Button3 As Button

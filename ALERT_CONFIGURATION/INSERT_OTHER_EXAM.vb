@@ -471,6 +471,29 @@ Public Class INSERT_OTHER_EXAM
 
             Next
 
+            ComboBox5.Items.Clear()
+            ComboBox5.SelectedItem = ""
+
+            Try
+
+                Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "E", oradb)
+
+                ComboBox5.Items.Add("ALL")
+
+                While dr_exam_cat.Read()
+
+                    ComboBox5.Items.Add(dr_exam_cat.Item(0))
+                    l_total_cats = l_total_cats + 1
+
+                End While
+
+            Catch ex As Exception
+
+                MsgBox("Error Loading Exams Categories!", MsgBoxStyle.Critical)
+
+            End Try
+
+            CheckedListBox3.Items.Clear()
 
         Else
 
