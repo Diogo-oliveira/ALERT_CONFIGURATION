@@ -34,6 +34,8 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
 
         Dim i As Integer = 0
@@ -469,7 +471,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             If l_error = False Then
 
-                MsgBox("Record(s) inserted!")
+                MsgBox("Record(s) inserted!", vbInformation)
 
 
             End If
@@ -506,7 +508,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             CheckedListBox3.Items.Clear()
 
-            ReDim l_selected_default_exams(0) ''erro
+            ReDim l_selected_default_exams(0)
             l_index_selected_exams_from_default = 0
 
         Else
@@ -684,6 +686,8 @@ Public Class INSERT_IMAGING_EXAMS
                     MsgBox("ERROR INSERTING EXAM AS FREQUENT - ComboBox6_SelectedIndexChanged", vbCritical)
 
                 Else
+
+                    MsgBox("Selected record(s) saved.", vbInformation)
                     CheckedListBox4.Items.Clear()
 
                 End If
@@ -1062,7 +1066,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Else
 
-            MsgBox("No selected records!")
+            MsgBox("No selected exams!")
 
         End If
 
@@ -1070,88 +1074,125 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
 
-        Dim i As Integer = 0
+        If CheckedListBox4.CheckedIndices.Count() > 0 Then
 
-        Dim indexChecked As Integer
+            Dim i As Integer = 0
 
-        Dim total_selected_exams As Integer = 0
+            Dim indexChecked As Integer
 
-        For Each indexChecked In CheckedListBox4.CheckedIndices
+            Dim total_selected_exams As Integer = 0
 
-            total_selected_exams = total_selected_exams + 1
+            For Each indexChecked In CheckedListBox4.CheckedIndices
 
-        Next
+                total_selected_exams = total_selected_exams + 1
 
-        ReDim l_selected_exam(total_selected_exams - 1)
+            Next
 
-        For Each indexChecked In CheckedListBox4.CheckedIndices
+            ReDim l_selected_exam(total_selected_exams - 1)
 
-            Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
+            For Each indexChecked In CheckedListBox4.CheckedIndices
 
-            Dim i_index As Integer = 0
+                Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
 
-            While dr.Read()
+                Dim i_index As Integer = 0
 
-                If i_index = indexChecked.ToString() Then
+                While dr.Read()
 
-                    l_selected_exam(i) = dr.Item(0)
+                    If i_index = indexChecked.ToString() Then
 
-                End If
+                        l_selected_exam(i) = dr.Item(0)
 
-                i_index = i_index + 1
+                    End If
 
-            End While
+                    i_index = i_index + 1
 
-            i = i + 1
-        Next
+                End While
+
+                i = i + 1
+            Next
 
 
-        If db_access.DELETE_EXAMS_DEP_CLIN_SERV(l_selected_exam, l_id_dep_clin_serv, oradb) Then
+            If db_access.DELETE_EXAMS_DEP_CLIN_SERV(l_selected_exam, l_id_dep_clin_serv, oradb) Then
 
-            MsgBox("Record(s) Deleted")
+                MsgBox("Record(s) Deleted")
 
-            'Bloco para limpar os arrays
+                'Bloco para limpar os arrays
 
-            ReDim Preserve a_exams_for_clinical_service(0)
-            l_dimension_exams_cs = 0
+                ReDim Preserve a_exams_for_clinical_service(0)
+                l_dimension_exams_cs = 0
 
-            ReDim a_selected_exams_alert(0)
-            l_index_selected_exams_from_alert = 0
+                ReDim a_selected_exams_alert(0)
+                l_index_selected_exams_from_alert = 0
 
-            'Fim bloco
-
-            CheckedListBox4.Items.Clear()
-
-            Dim dr_new As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
-
-            Dim i_new As Integer = 0
-
-            While dr_new.Read()
-
-                CheckedListBox4.Items.Add(dr_new.Item(1))
-
-                'Bloco para repopular os arrays
-                ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
-                a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = dr_new.Item(2)
-                a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = dr_new.Item(1)
-                a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "N"
-
-                l_dimension_exams_cs = l_dimension_exams_cs + 1
-
-                ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
-
-                a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = dr_new.Item(2)
-                a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = dr_new.Item(1)
-
-                l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
                 'Fim bloco
 
-            End While
+                CheckedListBox4.Items.Clear()
+
+                Dim dr_new As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
+
+                Dim i_new As Integer = 0
+
+                While dr_new.Read()
+
+                    CheckedListBox4.Items.Add(dr_new.Item(1))
+
+                    'Bloco para repopular os arrays
+                    ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
+                    a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = dr_new.Item(2)
+                    a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = dr_new.Item(1)
+                    a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "N"
+
+                    l_dimension_exams_cs = l_dimension_exams_cs + 1
+
+                    ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
+
+                    a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = dr_new.Item(2)
+                    a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = dr_new.Item(1)
+
+                    l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
+                    'Fim bloco
+
+                End While
+
+            Else
+
+                MsgBox("ERROR!")
+
+            End If
 
         Else
 
-            MsgBox("ERROR!")
+            MsgBox("No selected exams!")
 
         End If
+
+    End Sub
+
+    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+
+        If CheckedListBox4.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox4.Items.Count - 1
+
+                CheckedListBox4.SetItemChecked(i, True)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+
+        If CheckedListBox4.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox4.Items.Count - 1
+
+                CheckedListBox4.SetItemChecked(i, False)
+
+            Next
+
+        End If
+
     End Sub
 End Class

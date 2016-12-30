@@ -56,6 +56,9 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button10 = New System.Windows.Forms.Button()
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button12 = New System.Windows.Forms.Button()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -122,7 +125,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(499, 131)
+        Me.Label7.Location = New System.Drawing.Point(593, 143)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(172, 13)
         Me.Label7.TabIndex = 22
@@ -132,19 +135,19 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(25, 152)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(25, 164)
         Me.CheckedListBox2.Name = "CheckedListBox2"
-        Me.CheckedListBox2.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox2.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox2.TabIndex = 21
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(22, 104)
+        Me.Label6.Location = New System.Drawing.Point(22, 116)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(99, 13)
+        Me.Label6.Size = New System.Drawing.Size(142, 13)
         Me.Label6.TabIndex = 20
-        Me.Label6.Text = "EXAM CATEGORY"
+        Me.Label6.Text = "EXAM CATEGORY (Default)"
         '
         'ComboBox4
         '
@@ -152,7 +155,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(25, 120)
+        Me.ComboBox4.Location = New System.Drawing.Point(25, 132)
         Me.ComboBox4.Name = "ComboBox4"
         Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox4.TabIndex = 19
@@ -161,14 +164,14 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(724, 152)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(832, 164)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox1.TabIndex = 23
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(677, 263)
+        Me.Button2.Location = New System.Drawing.Point(778, 276)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 24
@@ -186,7 +189,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(465, 432)
+        Me.Button3.Location = New System.Drawing.Point(556, 444)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 26
@@ -195,9 +198,9 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(596, 432)
+        Me.Button4.Location = New System.Drawing.Point(664, 444)
         Me.Button4.Name = "Button4"
-        Me.Button4.Size = New System.Drawing.Size(75, 23)
+        Me.Button4.Size = New System.Drawing.Size(101, 23)
         Me.Button4.TabIndex = 27
         Me.Button4.Text = "CLEAR"
         Me.Button4.UseVisualStyleBackColor = True
@@ -214,7 +217,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1143, 12)
+        Me.PictureBox1.Location = New System.Drawing.Point(1363, 28)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
         Me.PictureBox1.TabIndex = 29
@@ -222,9 +225,9 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(1295, 432)
+        Me.Button5.Location = New System.Drawing.Point(1470, 444)
         Me.Button5.Name = "Button5"
-        Me.Button5.Size = New System.Drawing.Size(75, 23)
+        Me.Button5.Size = New System.Drawing.Size(102, 23)
         Me.Button5.TabIndex = 30
         Me.Button5.Text = "SAVE"
         Me.Button5.UseVisualStyleBackColor = True
@@ -235,22 +238,22 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.CheckedListBox3.FormattingEnabled = True
         Me.CheckedListBox3.Location = New System.Drawing.Point(25, 513)
         Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox3.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox3.TabIndex = 31
         '
         'CheckedListBox4
         '
         Me.CheckedListBox4.CheckOnClick = True
         Me.CheckedListBox4.FormattingEnabled = True
-        Me.CheckedListBox4.Location = New System.Drawing.Point(724, 513)
+        Me.CheckedListBox4.Location = New System.Drawing.Point(831, 513)
         Me.CheckedListBox4.Name = "CheckedListBox4"
-        Me.CheckedListBox4.Size = New System.Drawing.Size(646, 274)
+        Me.CheckedListBox4.Size = New System.Drawing.Size(741, 274)
         Me.CheckedListBox4.TabIndex = 32
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(499, 494)
+        Me.Label5.Location = New System.Drawing.Point(593, 494)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(172, 13)
         Me.Label5.TabIndex = 35
@@ -261,9 +264,9 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Label8.AutoSize = True
         Me.Label8.Location = New System.Drawing.Point(22, 467)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(99, 13)
+        Me.Label8.Size = New System.Drawing.Size(129, 13)
         Me.Label8.TabIndex = 34
-        Me.Label8.Text = "EXAM CATEGORY"
+        Me.Label8.Text = "EXAM CATEGORY (Alert)"
         '
         'ComboBox5
         '
@@ -278,7 +281,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(677, 636)
+        Me.Button6.Location = New System.Drawing.Point(778, 639)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(41, 39)
         Me.Button6.TabIndex = 36
@@ -287,7 +290,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(23, 806)
+        Me.Button7.Location = New System.Drawing.Point(23, 793)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(100, 23)
         Me.Button7.TabIndex = 37
@@ -300,7 +303,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox6.FormattingEnabled = True
         Me.ComboBox6.ItemHeight = 16
-        Me.ComboBox6.Location = New System.Drawing.Point(724, 483)
+        Me.ComboBox6.Location = New System.Drawing.Point(831, 483)
         Me.ComboBox6.Name = "ComboBox6"
         Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox6.TabIndex = 38
@@ -308,7 +311,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(721, 467)
+        Me.Label9.Location = New System.Drawing.Point(829, 467)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(110, 13)
         Me.Label9.TabIndex = 39
@@ -316,7 +319,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(1270, 793)
+        Me.Button8.Location = New System.Drawing.Point(1470, 793)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(100, 23)
         Me.Button8.TabIndex = 40
@@ -325,7 +328,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(464, 793)
+        Me.Button9.Location = New System.Drawing.Point(555, 793)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 42
@@ -334,7 +337,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(356, 793)
+        Me.Button10.Location = New System.Drawing.Point(447, 793)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 41
@@ -343,7 +346,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(569, 793)
+        Me.Button11.Location = New System.Drawing.Point(663, 793)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(102, 23)
         Me.Button11.TabIndex = 43
@@ -352,18 +355,48 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button12
         '
-        Me.Button12.Location = New System.Drawing.Point(1153, 793)
+        Me.Button12.Location = New System.Drawing.Point(1363, 793)
         Me.Button12.Name = "Button12"
         Me.Button12.Size = New System.Drawing.Size(100, 23)
         Me.Button12.TabIndex = 44
         Me.Button12.Text = "DELETE"
         Me.Button12.UseVisualStyleBackColor = True
         '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(1363, 494)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(209, 13)
+        Me.Label10.TabIndex = 45
+        Me.Label10.Text = "IMAGING EXAMS BY CLINICAL SERVICE"
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(1255, 793)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(102, 23)
+        Me.Button13.TabIndex = 47
+        Me.Button13.Text = "CLEAR"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button14
+        '
+        Me.Button14.Location = New System.Drawing.Point(1147, 793)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(102, 23)
+        Me.Button14.TabIndex = 46
+        Me.Button14.Text = "SELECT ALL"
+        Me.Button14.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Button13)
+        Me.Controls.Add(Me.Button14)
+        Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.Button12)
         Me.Controls.Add(Me.Button11)
         Me.Controls.Add(Me.Button9)
@@ -440,4 +473,7 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button10 As Button
     Friend WithEvents Button11 As Button
     Friend WithEvents Button12 As Button
+    Friend WithEvents Label10 As Label
+    Friend WithEvents Button13 As Button
+    Friend WithEvents Button14 As Button
 End Class
