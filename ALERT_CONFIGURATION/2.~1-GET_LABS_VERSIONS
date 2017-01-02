@@ -142,7 +142,7 @@ Select distinct dec.id_content, decode(dav.id_market,
 
 
 --3 Tradução do analysis sample type (com sample recipient)
-Select dast.id_content, decode(dav.id_market,
+Select distinct dast.id_content, decode(dav.id_market,
               1,
               dtast.desc_lang_1,
               2,
@@ -170,37 +170,7 @@ Select dast.id_content, decode(dav.id_market,
               17,
               dtast.desc_lang_18,
               19,
-              dtast.desc_lang_19), dsr.id_content, 
-              
-              decode(dav.id_market,
-              1,
-              dtsr.desc_lang_1,
-              2,
-              dtsr.desc_lang_2,
-              3,
-              dtsr.desc_lang_11,
-              4,
-              dtsr.desc_lang_5,
-              5,
-              dtsr.desc_lang_4,
-              6,
-              dtsr.desc_lang_3,
-              7,
-              dtsr.desc_lang_10,
-              8,
-              dtsr.desc_lang_7,
-              9,
-              dtsr.desc_lang_6,
-              10,
-              dtsr.desc_lang_9,
-              12,
-              dtsr.desc_lang_16,
-              16,
-              dtsr.desc_lang_17,
-              17,
-              dtsr.desc_lang_18,
-              19,
-              dtsr.desc_lang_19)
+              dtast.desc_lang_19), dtsr.desc_lang_6
               
   from alert_default.analysis da
   join alert_default.analysis_sample_type dast
@@ -259,3 +229,20 @@ Select dast.id_content, decode(dav.id_market,
    
  order by 2 asc, 3 asc;
  -----------------------------------------------------------
+ Select * from alert.analysis_sample_type ast
+ where ast.id_content='CNT314.13320';
+ 
+ Select * from alert.analysis_room ar
+ where ar.id_analysis=702000011671
+ and ar.id_sample_type=7600723;
+ 
+
+insert into alert.analysis_room (ID_ANALYSIS_ROOM, ID_ANALYSIS, ID_ROOM, RANK, ADW_LAST_UPDATE, FLG_TYPE, FLG_AVAILABLE, DESC_EXEC_DESTINATION, FLG_DEFAULT, ID_INSTITUTION, CREATE_USER, CREATE_TIME, CREATE_INSTITUTION, UPDATE_USER, UPDATE_TIME, UPDATE_INSTITUTION, ID_SAMPLE_TYPE, ID_ANALYSIS_INSTIT_SOFT)
+values (alert.seq_analysis_room.nextval, 702000011671, 47000000066, 0, to_date('28-04-2015 11:04:10', 'dd-mm-yyyy hh24:mi:ss'), 'M', 'Y', null, 'Y', 470, 'ALERT_CONFIG', '28-APR-15 10.04.10.961843 AM', null, null, null, null, 7600723, null);
+
+
+Select * from alert.room r
+where r.id_room=47000000066;
+
+Select * from alert.department d
+where d.id_department=47000000001;

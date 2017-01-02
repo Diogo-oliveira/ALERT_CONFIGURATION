@@ -85,9 +85,9 @@ Partial Class INSERT_OTHER_EXAM
         Me.Label10.AutoSize = True
         Me.Label10.Location = New System.Drawing.Point(1359, 498)
         Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(209, 13)
+        Me.Label10.Size = New System.Drawing.Size(201, 13)
         Me.Label10.TabIndex = 81
-        Me.Label10.Text = "IMAGING EXAMS BY CLINICAL SERVICE"
+        Me.Label10.Text = "OTHER EXAMS BY CLINICAL SERVICE"
         '
         'Button12
         '
@@ -177,9 +177,9 @@ Partial Class INSERT_OTHER_EXAM
         Me.Label5.AutoSize = True
         Me.Label5.Location = New System.Drawing.Point(589, 498)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(172, 13)
+        Me.Label5.Size = New System.Drawing.Size(164, 13)
         Me.Label5.TabIndex = 71
-        Me.Label5.Text = "IMAGING EXAMS BY CATEGORY"
+        Me.Label5.Text = "OTHER EXAMS BY CATEGORY"
         '
         'Label8
         '
@@ -296,9 +296,9 @@ Partial Class INSERT_OTHER_EXAM
         Me.Label7.AutoSize = True
         Me.Label7.Location = New System.Drawing.Point(589, 147)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(172, 13)
+        Me.Label7.Size = New System.Drawing.Size(164, 13)
         Me.Label7.TabIndex = 58
-        Me.Label7.Text = "IMAGING EXAMS BY CATEGORY"
+        Me.Label7.Text = "OTHER EXAMS BY CATEGORY"
         '
         'CheckedListBox2
         '

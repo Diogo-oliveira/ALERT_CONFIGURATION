@@ -32,6 +32,10 @@ Partial Class LAB_TESTS
         Me.Button7 = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.ComboBox4 = New System.Windows.Forms.ComboBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.SuspendLayout()
         '
         'Label3
@@ -121,11 +125,53 @@ Partial Class LAB_TESTS
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 39
         '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(9, 116)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(164, 13)
+        Me.Label6.TabIndex = 42
+        Me.Label6.Text = "ANALYSIS CATEGORY (Default)"
+        '
+        'ComboBox4
+        '
+        Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox4.FormattingEnabled = True
+        Me.ComboBox4.ItemHeight = 16
+        Me.ComboBox4.Location = New System.Drawing.Point(12, 132)
+        Me.ComboBox4.Name = "ComboBox4"
+        Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox4.TabIndex = 41
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(544, 143)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(208, 13)
+        Me.Label7.TabIndex = 44
+        Me.Label7.Text = "LABORATORIAL EXAMS BY CATEGORY"
+        '
+        'CheckedListBox2
+        '
+        Me.CheckedListBox2.CheckOnClick = True
+        Me.CheckedListBox2.FormattingEnabled = True
+        Me.CheckedListBox2.Location = New System.Drawing.Point(12, 162)
+        Me.CheckedListBox2.Name = "CheckedListBox2"
+        Me.CheckedListBox2.Size = New System.Drawing.Size(740, 274)
+        Me.CheckedListBox2.TabIndex = 43
+        '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.CheckedListBox2)
+        Me.Controls.Add(Me.Label6)
+        Me.Controls.Add(Me.ComboBox4)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.ComboBox3)
         Me.Controls.Add(Me.Button7)
@@ -155,4 +201,8 @@ Partial Class LAB_TESTS
     Friend WithEvents Button7 As Button
     Friend WithEvents Label4 As Label
     Friend WithEvents ComboBox3 As ComboBox
+    Friend WithEvents Label6 As Label
+    Friend WithEvents ComboBox4 As ComboBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents CheckedListBox2 As CheckedListBox
 End Class
