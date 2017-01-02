@@ -32,8 +32,6 @@ Public Class INSERT_OTHER_EXAM
 
     Private Sub INSERT_OTHER_EXAM_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
 
         Dim i As Integer = 0
@@ -45,6 +43,8 @@ Public Class INSERT_OTHER_EXAM
         End While
 
         dr.Dispose()
+
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
     End Sub
 

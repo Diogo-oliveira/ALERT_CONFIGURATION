@@ -28,6 +28,7 @@ Partial Class Form1
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Button6 = New System.Windows.Forms.Button()
+        Me.Button2 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -71,16 +72,26 @@ Partial Class Form1
         '
         Me.Button6.Location = New System.Drawing.Point(102, 302)
         Me.Button6.Name = "Button6"
-        Me.Button6.Size = New System.Drawing.Size(114, 40)
+        Me.Button6.Size = New System.Drawing.Size(116, 40)
         Me.Button6.TabIndex = 8
         Me.Button6.Text = "Other Exams"
         Me.Button6.UseVisualStyleBackColor = True
+        '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(102, 348)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(116, 40)
+        Me.Button2.TabIndex = 9
+        Me.Button2.Text = "Lab Tests"
+        Me.Button2.UseVisualStyleBackColor = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(693, 415)
+        Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
@@ -97,4 +108,5 @@ Partial Class Form1
     Friend WithEvents Button3 As Button
     Friend WithEvents Button4 As Button
     Friend WithEvents Button6 As Button
+    Friend WithEvents Button2 As Button
 End Class

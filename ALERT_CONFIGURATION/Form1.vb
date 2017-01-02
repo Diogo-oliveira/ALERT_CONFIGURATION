@@ -45,4 +45,14 @@
         form_insert_other.ShowDialog()
 
     End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        Dim FORM_LAB_TESTS As New LAB_TESTS
+
+        Me.Hide()
+
+        FORM_LAB_TESTS.ShowDialog()
+
+    End Sub
 End Class

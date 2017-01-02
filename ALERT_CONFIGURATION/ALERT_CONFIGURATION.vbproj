@@ -128,6 +128,7 @@
       <DependentUpon>Form1.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="General.vb" />
     <Compile Include="INSERT_IMAGING_EXAMS.Designer.vb">
       <DependentUpon>INSERT_IMAGING_EXAMS.vb</DependentUpon>
     </Compile>
@@ -138,6 +139,13 @@
       <DependentUpon>INSERT_OTHER_EXAM.vb</DependentUpon>
     </Compile>
     <Compile Include="INSERT_OTHER_EXAM.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LABS_API.vb" />
+    <Compile Include="LAB_TESTS.Designer.vb">
+      <DependentUpon>LAB_TESTS.vb</DependentUpon>
+    </Compile>
+    <Compile Include="LAB_TESTS.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -171,6 +179,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="INSERT_OTHER_EXAM.resx">
       <DependentUpon>INSERT_OTHER_EXAM.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LAB_TESTS.resx">
+      <DependentUpon>LAB_TESTS.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

@@ -32,8 +32,6 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
-
         Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
 
         Dim i As Integer = 0
@@ -45,6 +43,8 @@ Public Class INSERT_IMAGING_EXAMS
         End While
 
         dr.Dispose()
+
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
     End Sub
 
@@ -145,6 +145,8 @@ Public Class INSERT_IMAGING_EXAMS
         ComboBox3.Items.Clear()
         ComboBox3.Text = ""
 
+        Cursor = Cursors.WaitCursor
+
         Try
 
             Dim dr_def_versions As OracleDataReader = db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, "I", oradb)
@@ -208,6 +210,8 @@ Public Class INSERT_IMAGING_EXAMS
 
         CheckedListBox3.Items.Clear()
         CheckedListBox4.Items.Clear()
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
