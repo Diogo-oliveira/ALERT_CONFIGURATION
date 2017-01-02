@@ -6,7 +6,6 @@ Public Class INSERT_IMAGING_EXAMS
     Dim l_selected_soft As Int16 = -1
     Dim l_selected_category As String = ""
 
-
     ''Estrutura dos exames carregados do default
     Dim loaded_exams() As EXAMS_API.exams_default
 
@@ -30,7 +29,6 @@ Public Class INSERT_IMAGING_EXAMS
     Dim l_dimension_exams_cs As Integer = 0
 
     Dim l_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
-    'FIM TESTE
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -631,11 +629,13 @@ Public Class INSERT_IMAGING_EXAMS
         Dim l_unsaved_records As Boolean = False
         Dim l_sucess As Boolean = True
 
+        Dim l_first_time As Boolean = False 'Variavel para determinar se é a primeira vez que se está a colocar o Clinical Service
+
         '1 - DEterminar o dep_clin_serv_selecionado
         Dim l_id_dep_clin_serv_aux As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
 
         '2 - Determinar se existem registos a serem guardados
-        If (l_dimension_exams_cs > 0) Then
+        If (l_dimension_exams_cs > 0 And l_id_dep_clin_serv <> 0) Then
 
             For j As Int16 = 0 To a_exams_for_clinical_service.Count() - 1
 
@@ -653,6 +653,7 @@ Public Class INSERT_IMAGING_EXAMS
         If (l_id_dep_clin_serv = 0) Then
 
             l_id_dep_clin_serv = l_id_dep_clin_serv_aux
+            l_first_time = True
 
         End If
 
@@ -696,21 +697,25 @@ Public Class INSERT_IMAGING_EXAMS
 
         End If
 
-        'Limpar a box e os arrays
-        ReDim Preserve a_exams_for_clinical_service(0)
-        l_dimension_exams_cs = 0
+        If (l_first_time = False) Then
 
-        ReDim a_selected_exams_alert(0)
-        l_index_selected_exams_from_alert = 0
+            '4 - Limpar a box e os arrays
+            ReDim Preserve a_exams_for_clinical_service(0)
+            l_dimension_exams_cs = 0
 
-        CheckedListBox4.Items.Clear()
+            ReDim a_selected_exams_alert(0)
+            l_index_selected_exams_from_alert = 0
 
-        '4 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+            CheckedListBox4.Items.Clear()
+
+        End If
+
+        '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
         Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv_aux, TextBox1.Text, "I", oradb)
 
         l_id_dep_clin_serv = l_id_dep_clin_serv_aux
 
-        '3 - Ler cursor e popular o campo
+        '6 - Ler cursor e popular o campo
         Dim i As Integer = 0
 
         While dr.Read()
