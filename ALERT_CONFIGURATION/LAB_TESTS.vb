@@ -9,6 +9,11 @@ Public Class LAB_TESTS
     Dim l_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim l_selected_category As String = ""
 
+    Dim l_loaded_analysis_default() As LABS_API.analysis_default 'Array que vai guardar os id_contents das análises carregadas do default
+    Dim l_selected_default_analysis() As LABS_API.analysis_default 'Array que vai guardar os id_contents das análises selecionadas do default
+
+    Dim l_index_selected_analysis_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
+
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Dim dr As OracleDataReader = db_access_general.GET_ALL_INSTITUTIONS(oradb)
@@ -161,65 +166,29 @@ Public Class LAB_TESTS
 
         CheckedListBox2.Items.Clear()
 
-        ''2 - Carregar a grelha de exames (fazer função - vai ser parecida à última que foi feita)
-        ''3 Criar estrutura com os elementos dos exames carregados
+        ''2 - Carregar a grelha de análises por categoria
+        ''e    
+        ''3 - Criar estrutura com os elementos das análises carregados
         Dim dr As OracleDataReader = db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, oradb)
 
-        'ReDim loaded_exams(0) ''Limpar estrutura
-        'Dim l_dimension_array_loaded_exams As Int64 = 0
+        ReDim l_loaded_analysis_default(0) ''Limpar estrutura
+        Dim l_dimension_array_loaded_analysis As Int64 = 0
 
         While dr.Read()
 
             CheckedListBox2.Items.Add(dr.Item(1) & " [" & dr.Item(3) & "]")
 
-            ' ReDim Preserve loaded_exams(l_dimension_array_loaded_exams)
+            ReDim Preserve l_loaded_analysis_default(l_dimension_array_loaded_analysis)
 
-            'loaded_exams(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
-            ' loaded_exams(l_dimension_array_loaded_exams).desc_category = dr.Item(1)
-            'loaded_exams(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
-            'loaded_exams(l_dimension_array_loaded_exams).desc_exam = dr.Item(3)
-            ' loaded_exams(l_dimension_array_loaded_exams).flg_first_result = dr.Item(4)
-            ' loaded_exams(l_dimension_array_loaded_exams).flg_execute = dr.Item(5)
-            ' loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(6)
-            '  loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(7)
-            'loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
-            '
-            ''Determinar as idades e gender dos exames
-            ''se não houver idades minimas/maximas, devolve -1
-            ''se não houver gender, devolve vazio
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = l_selected_category
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = dr.Item(0)
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = dr.Item(1)
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = dr.Item(2)
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = dr.Item(3)
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis = dr.Item(4)
+            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_type = dr.Item(5)
 
-            ' Try
-
-            'loaded_exams(l_dimension_array_loaded_exams).age_min = dr.Item(9)
-
-            ' Catch ex As Exception
-
-            'loaded_exams(l_dimension_array_loaded_exams).age_min = -1
-
-            ' End Try
-
-            'Try
-
-            'loaded_exams(l_dimension_array_loaded_exams).age_max = dr.Item(10)
-
-            ' Catch ex As Exception
-
-            'loaded_exams(l_dimension_array_loaded_exams).age_max = -1
-
-            'End Try
-
-            ' Try
-
-            'loaded_exams(l_dimension_array_loaded_exams).gender = dr.Item(11)
-
-            ' Catch ex As Exception
-
-            'loaded_exams(l_dimension_array_loaded_exams).gender = ""
-
-            ' End Try
-
-            ' l_dimension_array_loaded_exams = l_dimension_array_loaded_exams + 1
-
+            l_dimension_array_loaded_analysis = l_dimension_array_loaded_analysis + 1
 
         End While
 
@@ -257,53 +226,46 @@ Public Class LAB_TESTS
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-        '  For Each indexChecked In CheckedListBox2.CheckedIndices
+        For Each indexChecked In CheckedListBox2.CheckedIndices
 
-        'If para verificar se já está incluido na checkbox da direita
+            'If para verificar se já está incluido na checkbox da direita
 
-        Dim l_record_already_selected As Boolean = False
+            Dim l_record_already_selected As Boolean = False
 
             Dim j As Integer = 0
 
-        '    For j = 0 To CheckedListBox1.Items.Count() - 1
+            For j = 0 To CheckedListBox1.Items.Count() - 1
 
-        '        If (loaded_exams(indexChecked.ToString()).id_content_exam = l_selected_default_exams(j).id_content_exam) Then
+                If (l_loaded_analysis_default(indexChecked.ToString()).id_content_analysis_sample_type = l_selected_default_analysis(j).id_content_analysis_sample_type) Then
 
-        '            l_record_already_selected = True
-        '            Exit For
+                    l_record_already_selected = True
+                    Exit For
 
-        '        End If
+                End If
 
-        '    Next
+            Next
 
-        '    If l_record_already_selected = False Then
+            If l_record_already_selected = False Then
 
-        '        ReDim Preserve l_selected_default_exams(l_index_selected_exams_from_default)
+                ReDim Preserve l_selected_default_analysis(l_index_selected_analysis_from_default)
 
-        '        l_selected_default_exams(l_index_selected_exams_from_default).age_max = loaded_exams(indexChecked.ToString()).age_max
-        '        l_selected_default_exams(l_index_selected_exams_from_default).age_min = loaded_exams(indexChecked.ToString()).age_min
-        '        l_selected_default_exams(l_index_selected_exams_from_default).desc_category = loaded_exams(indexChecked.ToString()).desc_category
-        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_execute = loaded_exams(indexChecked.ToString()).flg_execute
-        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_first_execute = loaded_exams(indexChecked.ToString()).flg_first_execute
-        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_first_result = loaded_exams(indexChecked.ToString()).flg_first_result
-        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_result_notes = loaded_exams(indexChecked.ToString()).flg_result_notes
-        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_timeout = loaded_exams(indexChecked.ToString()).flg_timeout
-        '        l_selected_default_exams(l_index_selected_exams_from_default).gender = loaded_exams(indexChecked.ToString()).gender
-        '        l_selected_default_exams(l_index_selected_exams_from_default).id_content_category = loaded_exams(indexChecked.ToString()).id_content_category
-        '        l_selected_default_exams(l_index_selected_exams_from_default).id_content_exam = loaded_exams(indexChecked.ToString()).id_content_exam
-        '        l_selected_default_exams(l_index_selected_exams_from_default).desc_exam = loaded_exams(indexChecked.ToString()).desc_exam
+                l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_analysis = l_loaded_analysis_default(indexChecked.ToString()).id_content_analysis
+                l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_analysis_sample_type = l_loaded_analysis_default(indexChecked.ToString()).id_content_analysis_sample_type
+                l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category = l_loaded_analysis_default(indexChecked.ToString()).id_content_category
+                l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_sample_recipient = l_loaded_analysis_default(indexChecked.ToString()).id_content_sample_recipient
+                l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_sample_type = l_loaded_analysis_default(indexChecked.ToString()).id_content_sample_type
+                l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_type = l_loaded_analysis_default(indexChecked.ToString()).desc_analysis_sample_type
+                l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_recipient = l_loaded_analysis_default(indexChecked.ToString()).desc_analysis_sample_recipient
 
-        '        CheckedListBox1.Items.Add(l_selected_default_exams(l_index_selected_exams_from_default).desc_exam)
-        '        CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+                CheckedListBox1.Items.Add((l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_type & " [" & l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_recipient & "]"))
 
-        '        l_index_selected_exams_from_default = l_index_selected_exams_from_default + 1
+                CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
 
-        '    End If
+                l_index_selected_analysis_from_default = l_index_selected_analysis_from_default + 1
 
-        'Next
+            End If
 
-        ''APAGAR
-        MsgBox(db_access_general.GET_DEFAULT_TRANSLATION((db_access_general.GET_ID_LANG(2799, oradb)), "ANALYSIS.CODE_ANALYSIS.21557", oradb))
+        Next
 
     End Sub
 End Class

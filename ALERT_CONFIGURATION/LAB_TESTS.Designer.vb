@@ -40,6 +40,7 @@ Partial Class LAB_TESTS
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.CheckedListBox1 = New System.Windows.Forms.CheckedListBox()
+        Me.Button5 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Label3
@@ -203,11 +204,21 @@ Partial Class LAB_TESTS
         Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox1.TabIndex = 48
         '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(1459, 442)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(102, 23)
+        Me.Button5.TabIndex = 49
+        Me.Button5.Text = "SAVE"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.CheckedListBox1)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
@@ -253,4 +264,5 @@ Partial Class LAB_TESTS
     Friend WithEvents Button3 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents CheckedListBox1 As CheckedListBox
+    Friend WithEvents Button5 As Button
 End Class

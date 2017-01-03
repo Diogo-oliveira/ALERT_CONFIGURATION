@@ -1,6 +1,18 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class LABS_API
 
+    Dim db_access_general As New General
+
+    Public Structure analysis_default
+        Public id_content_category As String
+        Public id_content_analysis As String
+        Public id_content_sample_type As String
+        Public id_content_analysis_sample_type As String
+        Public id_content_sample_recipient As String
+        Public desc_analysis_sample_type As String
+        Public desc_analysis_sample_recipient As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
@@ -61,6 +73,7 @@ Public Class LABS_API
    and i.id_institution= " & i_institution & "
    and dastv.id_market=i.id_market
    and dav.id_market=i.id_market
+   and alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",dast.code_analysis_sample_type) is not null
  order by 1 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
@@ -80,35 +93,7 @@ Public Class LABS_API
 
         conn.Open()
 
-        Dim sql As String = "Select distinct dec.id_content, decode(dav.id_market,
-              1,
-              dtec.desc_lang_1,
-              2,
-              dtec.desc_lang_2,
-              3,
-              dtec.desc_lang_11,
-              4,
-              dtec.desc_lang_5,
-              5,
-              dtec.desc_lang_4,
-              6,
-              dtec.desc_lang_3,
-              7,
-              dtec.desc_lang_10,
-              8,
-              dtec.desc_lang_7,
-              9,
-              dtec.desc_lang_6,
-              10,
-              dtec.desc_lang_9,
-              12,
-              dtec.desc_lang_16,
-              16,
-              dtec.desc_lang_17,
-              17,
-              dtec.desc_lang_18,
-              19,
-              dtec.desc_lang_19)
+        Dim sql As String = "Select distinct dec.id_content, alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",dec.code_exam_cat)
               
   from alert_default.analysis da
   join alert_default.analysis_sample_type dast
@@ -184,65 +169,12 @@ Public Class LABS_API
 
         conn.Open()
 
-        Dim sql As String = "Select distinct dast.id_content, decode(dav.id_market,
-              1,
-              dtast.desc_lang_1,
-              2,
-              dtast.desc_lang_2,
-              3,
-              dtast.desc_lang_11,
-              4,
-              dtast.desc_lang_5,
-              5,
-              dtast.desc_lang_4,
-              6,
-              dtast.desc_lang_3,
-              7,
-              dtast.desc_lang_10,
-              8,
-              dtast.desc_lang_7,
-              9,
-              dtast.desc_lang_6,
-              10,
-              dtast.desc_lang_9,
-              12,
-              dtast.desc_lang_16,
-              16,
-              dtast.desc_lang_17,
-              17,
-              dtast.desc_lang_18,
-              19,
-              dtast.desc_lang_19), dsr.id_content,
-              
-              decode(dav.id_market,
-              1,
-              dtsr.desc_lang_1,
-              2,
-              dtsr.desc_lang_2,
-              3,
-              dtsr.desc_lang_11,
-              4,
-              dtsr.desc_lang_5,
-              5,
-              dtsr.desc_lang_4,
-              6,
-              dtsr.desc_lang_3,
-              7,
-              dtsr.desc_lang_10,
-              8,
-              dtsr.desc_lang_7,
-              9,
-              dtsr.desc_lang_6,
-              10,
-              dtsr.desc_lang_9,
-              12,
-              dtsr.desc_lang_16,
-              16,
-              dtsr.desc_lang_17,
-              17,
-              dtsr.desc_lang_18,
-              19,
-              dtsr.desc_lang_19), da.id_content, dst.id_content
+        Dim sql As String = "Select distinct dast.id_content, 
+                                             alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ", dast.code_analysis_sample_type), 
+                                             dsr.id_content,              
+                                             alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ", dsr.code_sample_recipient), 
+                                             da.id_content, 
+                                             dst.id_content
               
   from alert_default.analysis da
   join alert_default.analysis_sample_type dast
