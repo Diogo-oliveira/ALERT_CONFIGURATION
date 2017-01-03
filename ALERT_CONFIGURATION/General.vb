@@ -102,6 +102,8 @@ Public Class General
 
         End While
 
+        dr.Dispose()
+
         conn_new.Close()
 
         conn_new.Dispose()
@@ -197,6 +199,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             l_inst = dr.Item(0)
 
         End While
+
+        dr.Dispose()
 
         conn_new.Close()
 
@@ -312,6 +316,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         conn.Close()
 
+        conn.Dispose()
+
     End Function
 
     Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_oradb As String) As OracleDataReader
@@ -399,6 +405,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
         Return dr
+
+        conn.Dispose()
+
+        dr.Dispose()
 
     End Function
 

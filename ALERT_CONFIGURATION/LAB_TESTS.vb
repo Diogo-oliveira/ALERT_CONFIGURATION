@@ -74,6 +74,8 @@ Public Class LAB_TESTS
 
             l_selected_category = ""
 
+            dr.Dispose()
+
         End If
 
 
@@ -99,6 +101,8 @@ Public Class LAB_TESTS
                 ComboBox3.Items.Add(dr_def_versions.Item(0))
 
             End While
+
+            dr_def_versions.Dispose()
 
         Catch ex As Exception
 
@@ -137,6 +141,8 @@ Public Class LAB_TESTS
                 ReDim Preserve l_loaded_categories_default(l_index_loaded_categories)
 
             End While
+
+            dr_lab_cat_def.Dispose()
 
         Catch ex As Exception
 
@@ -191,6 +197,8 @@ Public Class LAB_TESTS
             l_dimension_array_loaded_analysis = l_dimension_array_loaded_analysis + 1
 
         End While
+
+        dr.Dispose()
 
         Cursor = Cursors.Arrow
 
@@ -260,6 +268,17 @@ Public Class LAB_TESTS
                 CheckedListBox1.Items.Add((l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_type & " [" & l_selected_default_analysis(l_index_selected_analysis_from_default).desc_analysis_sample_recipient & "]"))
 
                 CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+
+                'APAGAR
+                If (db_labs.CHECK_CAT_TRANSLATION_EXISTENCE(470, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb)) Then
+
+                    MsgBox("EXISTS " & l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category)
+                Else
+
+                    MsgBox("Does not exist " & l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category)
+
+                End If
+                'Fim APAGAR
 
                 l_index_selected_analysis_from_default = l_index_selected_analysis_from_default + 1
 

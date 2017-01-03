@@ -83,6 +83,8 @@ Public Class LABS_API
 
         Return dr
 
+        conn.Dispose()
+
     End Function
 
     Function GET_LAB_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
@@ -158,6 +160,8 @@ Public Class LABS_API
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
         Return dr
+
+        conn.Dispose()
 
     End Function
 
@@ -247,6 +251,108 @@ Public Class LABS_API
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
         Return dr
+
+        conn.Dispose()
+
+    End Function
+
+    Function CHECK_CAT_EXISTENCE(ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_id_cat As Int16 = 0
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select count(*) from alert.exam_cat ec
+                             where ec.id_content='" & id_content_category & "'
+                             and ec.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+
+        While dr.Read()
+
+            l_id_cat = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        If l_id_cat > 0 Then
+
+            Return True
+
+        Else
+
+            Return False
+
+        End If
+
+    End Function
+
+    Function CHECK_CAT_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_translation As String = ""
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",ec.code_exam_cat) from alert.exam_cat ec
+                             where ec.id_content='" & id_content_category & "'
+                             and ec.flg_available='Y'"
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+
+            While dr.Read()
+
+                l_translation = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            cmd.Dispose()
+            conn.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+
+        '' 1 - Verificar s existe cat pat.
+        '' 1.1 - Se existir, verificar se cat pai e tradução existem no alert. Se não existem, inserir.
+        '' 1.2 - Se existir no alert, determinar id.
+
+        ''2 - Determinar rank
+
+        ''3 - inserir categoria e tradução (criar função para inserir tradução)
+
+        '' 4 Return true or false
+
+
 
     End Function
 
