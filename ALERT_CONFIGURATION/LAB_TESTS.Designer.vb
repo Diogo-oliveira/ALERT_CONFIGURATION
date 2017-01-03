@@ -36,6 +36,10 @@ Partial Class LAB_TESTS
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
+        Me.Button4 = New System.Windows.Forms.Button()
+        Me.Button3 = New System.Windows.Forms.Button()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.CheckedListBox1 = New System.Windows.Forms.CheckedListBox()
         Me.SuspendLayout()
         '
         'Label3
@@ -163,11 +167,51 @@ Partial Class LAB_TESTS
         Me.CheckedListBox2.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox2.TabIndex = 43
         '
+        'Button4
+        '
+        Me.Button4.Location = New System.Drawing.Point(651, 442)
+        Me.Button4.Name = "Button4"
+        Me.Button4.Size = New System.Drawing.Size(101, 23)
+        Me.Button4.TabIndex = 47
+        Me.Button4.Text = "CLEAR"
+        Me.Button4.UseVisualStyleBackColor = True
+        '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(543, 442)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(102, 23)
+        Me.Button3.TabIndex = 46
+        Me.Button3.Text = "SELECT ALL"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(765, 274)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(41, 39)
+        Me.Button2.TabIndex = 45
+        Me.Button2.Text = ">>"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'CheckedListBox1
+        '
+        Me.CheckedListBox1.CheckOnClick = True
+        Me.CheckedListBox1.FormattingEnabled = True
+        Me.CheckedListBox1.Location = New System.Drawing.Point(821, 162)
+        Me.CheckedListBox1.Name = "CheckedListBox1"
+        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
+        Me.CheckedListBox1.TabIndex = 48
+        '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.CheckedListBox1)
+        Me.Controls.Add(Me.Button4)
+        Me.Controls.Add(Me.Button3)
+        Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.Label6)
@@ -205,4 +249,8 @@ Partial Class LAB_TESTS
     Friend WithEvents ComboBox4 As ComboBox
     Friend WithEvents Label7 As Label
     Friend WithEvents CheckedListBox2 As CheckedListBox
+    Friend WithEvents Button4 As Button
+    Friend WithEvents Button3 As Button
+    Friend WithEvents Button2 As Button
+    Friend WithEvents CheckedListBox1 As CheckedListBox
 End Class

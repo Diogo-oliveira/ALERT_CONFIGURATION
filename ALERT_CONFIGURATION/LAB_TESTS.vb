@@ -226,4 +226,84 @@ Public Class LAB_TESTS
         Cursor = Cursors.Arrow
 
     End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, True)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, False)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        '  For Each indexChecked In CheckedListBox2.CheckedIndices
+
+        'If para verificar se já está incluido na checkbox da direita
+
+        Dim l_record_already_selected As Boolean = False
+
+            Dim j As Integer = 0
+
+        '    For j = 0 To CheckedListBox1.Items.Count() - 1
+
+        '        If (loaded_exams(indexChecked.ToString()).id_content_exam = l_selected_default_exams(j).id_content_exam) Then
+
+        '            l_record_already_selected = True
+        '            Exit For
+
+        '        End If
+
+        '    Next
+
+        '    If l_record_already_selected = False Then
+
+        '        ReDim Preserve l_selected_default_exams(l_index_selected_exams_from_default)
+
+        '        l_selected_default_exams(l_index_selected_exams_from_default).age_max = loaded_exams(indexChecked.ToString()).age_max
+        '        l_selected_default_exams(l_index_selected_exams_from_default).age_min = loaded_exams(indexChecked.ToString()).age_min
+        '        l_selected_default_exams(l_index_selected_exams_from_default).desc_category = loaded_exams(indexChecked.ToString()).desc_category
+        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_execute = loaded_exams(indexChecked.ToString()).flg_execute
+        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_first_execute = loaded_exams(indexChecked.ToString()).flg_first_execute
+        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_first_result = loaded_exams(indexChecked.ToString()).flg_first_result
+        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_result_notes = loaded_exams(indexChecked.ToString()).flg_result_notes
+        '        l_selected_default_exams(l_index_selected_exams_from_default).flg_timeout = loaded_exams(indexChecked.ToString()).flg_timeout
+        '        l_selected_default_exams(l_index_selected_exams_from_default).gender = loaded_exams(indexChecked.ToString()).gender
+        '        l_selected_default_exams(l_index_selected_exams_from_default).id_content_category = loaded_exams(indexChecked.ToString()).id_content_category
+        '        l_selected_default_exams(l_index_selected_exams_from_default).id_content_exam = loaded_exams(indexChecked.ToString()).id_content_exam
+        '        l_selected_default_exams(l_index_selected_exams_from_default).desc_exam = loaded_exams(indexChecked.ToString()).desc_exam
+
+        '        CheckedListBox1.Items.Add(l_selected_default_exams(l_index_selected_exams_from_default).desc_exam)
+        '        CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+
+        '        l_index_selected_exams_from_default = l_index_selected_exams_from_default + 1
+
+        '    End If
+
+        'Next
+
+        ''APAGAR
+        MsgBox(db_access_general.GET_DEFAULT_TRANSLATION((db_access_general.GET_ID_LANG(2799, oradb)), "ANALYSIS.CODE_ANALYSIS.21557", oradb))
+
+    End Sub
 End Class

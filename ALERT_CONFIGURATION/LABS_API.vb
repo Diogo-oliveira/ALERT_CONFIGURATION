@@ -242,7 +242,7 @@ Public Class LABS_API
               17,
               dtsr.desc_lang_18,
               19,
-              dtsr.desc_lang_19)
+              dtsr.desc_lang_19), da.id_content, dst.id_content
               
   from alert_default.analysis da
   join alert_default.analysis_sample_type dast

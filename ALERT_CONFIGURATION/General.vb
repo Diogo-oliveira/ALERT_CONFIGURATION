@@ -444,4 +444,128 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
+    Function GET_DEFAULT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "select alert_default.pk_translation_default.get_translation_default(" & i_lang & ",'" & i_code_translation & "') from dual"
+
+        Dim translation As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Try
+
+            While dr.Read()
+
+                translation = dr.Item(0)
+
+            End While
+
+        Catch ex As Exception
+
+            Return "No available translation!"
+
+        End Try
+
+        Return translation
+
+    End Function
+
+    Function GET_ID_LANG(ByVal i_id_institution As Int64, ByVal i_oradb As String) As Int16
+
+        Dim l_id_market As Int16 = 0
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+
+        Dim sql As String = "Select i.id_market from institution i
+                             where i.id_institution= " & i_id_institution
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+
+        While dr.Read()
+
+            l_id_market = dr.Item(0)
+
+        End While
+
+
+        If l_id_market = 1 Then
+
+            Return 1
+
+        ElseIf l_id_market = 2 Then
+
+            Return 2
+
+        ElseIf l_id_market = 3 Then
+
+            Return 11
+
+        ElseIf l_id_market = 4 Then
+
+            Return 5
+
+        ElseIf l_id_market = 5 Then
+
+            Return 4
+
+        ElseIf l_id_market = 6 Then
+
+            Return 3
+
+        ElseIf l_id_market = 7 Then
+
+            Return 10
+
+        ElseIf l_id_market = 8 Then
+
+            Return 7
+
+        ElseIf l_id_market = 9 Then
+
+            Return 6
+
+        ElseIf l_id_market = 10 Then
+
+            Return 9
+
+        ElseIf l_id_market = 12 Then
+
+            Return 16
+
+        ElseIf l_id_market = 16 Then
+
+            Return 17
+
+        ElseIf l_id_market = 17 Then
+
+            Return 18
+
+        ElseIf l_id_market = 19 Then
+
+            Return 19
+
+        End If
+
+        Return 0
+
+    End Function
+
 End Class
