@@ -989,7 +989,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         If i_id_cat = "0" Then
 
-            sql = sql & " order by 2 asc, 4 asc"
+            sql = sql & " order by 4 asc"
 
         Else
 

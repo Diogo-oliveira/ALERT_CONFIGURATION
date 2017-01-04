@@ -256,6 +256,71 @@ Public Class LABS_API
 
     End Function
 
+    Function GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ec.code_exam_cat from alert.exam_cat ec
+                             where ec.id_content='" & i_id_content_exam_cat & "'"
+
+        Dim l_code As String
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
+    Function GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ec.code_exam_cat from alert_default.exam_cat ec
+                             where ec.id_content='" & i_id_content_exam_cat & "'"
+
+        Dim l_code As String
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
+
     Function CHECK_CAT_EXISTENCE(ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
 
         Dim l_id_cat As Int16 = 0
@@ -340,11 +405,87 @@ Public Class LABS_API
 
     End Function
 
+
+
     Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
 
         '' 1 - Verificar s existe cat pat.
-        '' 1.1 - Se existir, verificar se cat pai e tradução existem no alert. Se não existem, inserir.
-        '' 1.2 - Se existir no alert, determinar id.
+        Dim l_cat_parent As Int64 = 0
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+
+        Dim sql As String = "Select ec.parent_id from alert_default.Exam_Cat ec
+                             where ec.id_content='" & id_content_category & "'"
+
+        Try
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                l_cat_parent = dr.Item(0)
+
+            End While
+
+        Catch ex As Exception
+
+            l_cat_parent = 0
+
+        End Try
+
+        If l_cat_parent > 0 Then
+
+            '' 1.1 - Se existir, verificar se cat pai e tradução existem no alert. Se não existem, inserir.
+            ''1.1.1 - Verificar se existe no ALERT
+            sql = "Select ecp.id_content
+                   from alert_default.exam_cat ec
+                   join alert_default.exam_cat ecp
+                   on ecp.id_exam_cat = ec.parent_id
+                   where ec.id_content = '" & id_content_category & "'"
+
+            Dim l_id_content_cat_parent As String = ""
+
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                l_id_content_cat_parent = dr.Item(0)
+
+            End While
+
+            If Not CHECK_CAT_EXISTENCE(l_id_content_cat_parent, i_oradb) Then
+
+                'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
+
+            ElseIf Not CHECK_CAT_TRANSLATION_EXISTENCE(i_institution, l_id_content_cat_parent, i_oradb) Then
+                ''Inserir tradução no ALERT
+                Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb)
+
+                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+
+                Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb), i_oradb)
+
+                MsgBox(l_exam_translation_default) ''APAGAR
+
+                Dim sql_insert_trasnaltion As String = "begin
+                                                        pk_translation.insert_into_translation(" & l_id_language & ",'" & l_code_cat_parent & "','" & l_exam_translation_default & "');
+                                                        end"
+
+            End If
+
+            '' 1.2 - Se existir no alert, determinar id. (Neste ponto já vai sempre existir)
+
+        End If
 
         ''2 - Determinar rank
 
@@ -352,6 +493,7 @@ Public Class LABS_API
 
         '' 4 Return true or false
 
+        Return True
 
 
     End Function

@@ -262,8 +262,6 @@ Public Class INSERT_IMAGING_EXAMS
 
                 While dr_exam_def.Read()
 
-
-
                     If l_index_aux = ComboBox4.SelectedIndex Then
 
                         l_selected_category = dr_exam_def.Item(0)

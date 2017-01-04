@@ -269,16 +269,10 @@ Public Class LAB_TESTS
 
                 CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
 
-                'APAGAR
-                If (db_labs.CHECK_CAT_TRANSLATION_EXISTENCE(470, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb)) Then
+                'apagar
+                MsgBox(db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb))
 
-                    MsgBox("EXISTS " & l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category)
-                Else
-
-                    MsgBox("Does not exist " & l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category)
-
-                End If
-                'Fim APAGAR
+                'FIM APAGAR
 
                 l_index_selected_analysis_from_default = l_index_selected_analysis_from_default + 1
 
