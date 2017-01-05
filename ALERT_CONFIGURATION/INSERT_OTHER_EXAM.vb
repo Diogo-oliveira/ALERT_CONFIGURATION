@@ -302,7 +302,16 @@ Public Class INSERT_OTHER_EXAM
             loaded_exams(l_dimension_array_loaded_exams).flg_execute = dr.Item(5)
             loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(6)
             loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(7)
-            loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
+
+            Try
+
+                loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
+
+            Catch ex As Exception
+
+                loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = ""
+
+            End Try
 
             ''Determinar as idades e gender dos exames
             ''se não houver idades minimas/maximas, devolve -1

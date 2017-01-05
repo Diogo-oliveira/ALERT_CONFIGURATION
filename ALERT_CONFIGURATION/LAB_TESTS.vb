@@ -281,4 +281,18 @@ Public Class LAB_TESTS
         Next
 
     End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        If Not db_labs.SET_EXAM_CAT(470, "TMP7.3228", oradb) Then
+
+            MsgBox("NOT SET")
+
+        Else
+
+            MsgBox("SUCCESS")
+
+        End If
+
+    End Sub
 End Class

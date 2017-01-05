@@ -1,4 +1,15 @@
 ﻿Imports Oracle.DataAccess.Client
+
+'GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
+'GET_INSTITUTION(ByVal i_ID_INST As Int16, ByVal i_oradb As String) As String
+'GET_ALL_INSTITUTIONS(ByVal i_oradb As String) As OracleDataReader
+'GET_SOFT_INST(ByVal i_ID_INST As Int16, ByVal i_oradb As String) As OracleDataReader
+'GET_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_oradb As String) As OracleDataReader
+'GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int16, ByVal i_oradb As String) As Int16
+'GET_DEFAULT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_oradb As String) As String
+'GET_ID_LANG(ByVal i_id_institution As Int64, ByVal i_oradb As String) As Int16
+'SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, i_oradb As String) As Boolean
+
 Public Class General
 
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
@@ -575,6 +586,41 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End If
 
         Return 0
+
+    End Function
+
+    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, ByVal i_oradb As String) As Boolean
+
+        Dim conn As New OracleConnection(i_oradb)
+
+        conn.Open()
+
+        Try
+
+            Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+
+            Dim cmd_insert_trans As New OracleCommand(Sql, conn)
+            cmd_insert_trans.CommandType = CommandType.Text
+
+            cmd_insert_trans.ExecuteNonQuery()
+
+
+            conn.Close()
+
+            conn.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            conn.Close()
+
+            conn.Dispose()
+
+            Return False
+
+        End Try
+
 
     End Function
 
