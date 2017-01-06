@@ -1,5 +1,20 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class LABS_API
+    'GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+    'GET_LAB_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_oradb As String) As OracleDataReader
+    'GET_LABS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_oradb As String) As OracleDataReader
+    'GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As String
+    'GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As String
+    'GET_ID_CAT_ALERT(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As Int64
+    'GET_CAT_RANK(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As Int64
+    'GET_CAT_FLG_INTERFACE(ByVal i_id_content_exam_cat As String, ByVal i_oradb As String) As Char
+
+    'CHECK_CAT_EXISTENCE(ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+    'CHECK_CAT_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+    'CHECK_ANALYSIS_EXISTENCE(ByVal i_id_content_analysis As String, ByVal i_oradb As String) As Boolean
+    'CHECK_ANALYSIS_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_analysis As String, ByVal i_oradb As String) As Boolean
+
+    'SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
 
     Dim db_access_general As New General
 
@@ -505,8 +520,6 @@ Public Class LABS_API
 
     End Function
 
-
-
     Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
 
         '' 1 - Verificar s existe cat pat.
@@ -681,7 +694,7 @@ Public Class LABS_API
 
             cmd_insert_cat.ExecuteNonQuery()
 
-            ' cmd_insert_cat.Dispose()
+            cmd_insert_cat.Dispose()
 
             Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
             Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(id_content_category, i_oradb)
@@ -702,12 +715,111 @@ Public Class LABS_API
             MsgBox("STEP - 5 >> " & id_content_category)
 
 
+            ''4 Fazer update a todas as análises que utilizavam o id da categoria antiga com o id da nova categoria
 
+            Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(id_content_category, i_oradb)
 
-            '' 4 Return true or false
+            MsgBox("STEP - 6 >> " & l_id_alert_category)
+
+            Dim sql_update_analysis_cat As String = "update alert.analysis_instit_soft ais
+                                                   set ais.id_exam_cat=" & l_id_alert_category & "
+                                                   where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & id_content_category & "')"
+
+            Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, conn)
+            cmd_update_analysis_cat.CommandType = CommandType.Text
+
+            cmd_update_analysis_cat.ExecuteNonQuery()
+
+            cmd_update_analysis_cat.Dispose()
+
+            '' 5 Return true or false
 
             Return True
 
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function CHECK_ANALYSIS_EXISTENCE(ByVal i_id_content_analysis As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_total_analysis As Int16 = 0
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select count(*) from alert.analysis a
+                             where a.id_content='" & i_id_content_analysis & "'
+                             and a.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_total_analysis = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        'Se l_total_analysis for maior que 0 significa que a análise já existe no ALERT
+
+        If l_total_analysis > 0 Then
+
+            Return True
+
+        Else
+
+            Return False
+
+        End If
+
+    End Function
+
+    Function CHECK_ANALYSIS_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_analysis As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_translation As String = ""
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",a.code_analysis) from alert.analysis a
+                             where a.id_content='" & id_content_analysis & "'
+                             and a.flg_available='Y'"
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                l_translation = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            cmd.Dispose()
+            conn.Dispose()
+
+            Return True
 
         Catch ex As Exception
 

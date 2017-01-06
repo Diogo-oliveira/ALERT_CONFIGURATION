@@ -284,7 +284,9 @@ Public Class LAB_TESTS
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        If Not db_labs.SET_EXAM_CAT(470, "TMP7.3228", oradb) Then
+        Cursor = Cursors.WaitCursor
+
+        If Not db_labs.SET_EXAM_CAT(470, "TMP7.19", oradb) Then
 
             MsgBox("NOT SET")
 
@@ -293,6 +295,8 @@ Public Class LAB_TESTS
             MsgBox("SUCCESS")
 
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 End Class
