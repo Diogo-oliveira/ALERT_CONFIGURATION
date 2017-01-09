@@ -270,6 +270,7 @@ Public Class LAB_TESTS
                 CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
 
                 'apagar
+
                 MsgBox(db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb))
 
                 'FIM APAGAR
@@ -286,7 +287,7 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
-        If Not db_labs.SET_EXAM_CAT(470, "TMP7.19", oradb) Then
+        If Not db_labs.SET_SAMPLE_TYPE(470, "TMP17.1379", oradb) Then ''db_labs.SET_EXAM_CAT(470, "TMP7.19", oradb) Then
 
             MsgBox("NOT SET")
 
