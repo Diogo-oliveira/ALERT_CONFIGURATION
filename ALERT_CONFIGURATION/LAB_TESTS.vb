@@ -287,7 +287,7 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
-        If Not db_labs.SET_SAMPLE_TYPE(470, "TMP17.1379", oradb) Then ''db_labs.SET_EXAM_CAT(470, "TMP7.19", oradb) Then
+        If Not db_labs.SET_ANALYSIS(470, "TMP1.11666", oradb) Then ''db_labs.SET_EXAM_CAT(470, "TMP7.19", oradb) Then
 
             MsgBox("NOT SET")
 
