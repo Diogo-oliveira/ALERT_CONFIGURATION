@@ -13,6 +13,8 @@ Public Class LABS_API
     'GET_DEFAULT_ST_PARAMETERS(ByVal i_id_content_sample_type As String, ByVal i_oradb As String) As OracleDataReader
     'GET_DEFAULT_ANALYSIS_PARAMETERS(ByVal i_id_content_analysis As String, ByVal i_oradb As String) As OracleDataReader
     'GET_ID_SAMPLE_TYPE_ALERT(ByVal i_id_content_st As String, ByVal i_oradb As String) As Int64
+    'GET_CODE_ANALYSIS_ALERT(ByVal i_id_content_a As String, ByVal i_oradb As String) As String
+    'GET_CODE_ANALYSIS_DEFAULT(ByVal i_id_content_a As String, ByVal i_oradb As String) As String
 
     'CHECK_CAT_EXISTENCE(ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
     'CHECK_CAT_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
@@ -23,6 +25,7 @@ Public Class LABS_API
 
     'SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
     'SET_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal id_content_sample_type As String, ByVal i_oradb As String) As Boolean
+    'SET_ANALYSIS(ByVal i_institution As Int64, ByVal id_content_analysis As String, ByVal i_oradb As String) As Boolean
 
     Dim db_access_general As New General
 
@@ -585,6 +588,39 @@ Public Class LABS_API
 
     End Function
 
+    Function GET_ID_ANALYSIS_ALERT(ByVal i_id_content_a As String, ByVal i_oradb As String) As Int64
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select a.id_analysis from alert.ANALYSIS a
+                            where a.id_content='" & i_id_content_a & "'
+                            and a.flg_available='Y'"
+
+        Dim l_id_alert As Int64 = 0
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_id_alert = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_id_alert
+
+    End Function
+
     Function GET_CODE_ANALYSIS_ALERT(ByVal i_id_content_a As String, ByVal i_oradb As String) As String
 
         Dim oradb As String = i_oradb
@@ -647,6 +683,94 @@ Public Class LABS_API
         conn.Dispose()
 
         Return l_code
+
+    End Function
+
+
+    Function GET_CODE_ANALYSIS_ST_ALERT(ByVal i_id_content_ast As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ast.code_analysis_sample_type from alert.analysis_sample_type ast
+                             where ast.id_content='" & i_id_content_ast & "'
+                             and ast.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
+    Function GET_CODE_ANALYSIS_ST_DEFAULT(ByVal i_id_content_ast As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ast.code_analysis_sample_type from alert_default.analysis_sample_type ast
+                             where ast.id_content='" & i_id_content_ast & "'
+                             and ast.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
+    Function GET_DEFAULT_ANALYSIS_ST_PARAMETERS(ByVal i_id_content_analysis_st As String, ByVal i_oradb As String) As OracleDataReader
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ast.gender, ast.age_min, ast.age_max from alert_default.analysis_sample_type ast
+                                where ast.id_content='" & i_id_content_analysis_st & "'
+                                and ast.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Return dr
 
     End Function
 
@@ -878,6 +1002,96 @@ Public Class LABS_API
         Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",st.code_sample_type) from alert.sample_type st
                              where st.id_content='" & id_content_sample_type & "'
                              and st.flg_available='Y'"
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                l_translation = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            cmd.Dispose()
+            conn.Dispose()
+
+            If l_translation = "" Then
+
+                Return False
+
+            End If
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function CHECK_ANALYSIS_SAMPLE_TYPE_EXISTENCE(ByVal i_id_content_analysis_sample_type As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_total_analysis_st As Int16 = 0
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select count(*) from alert.analysis_sample_type ast
+                             where ast.id_content='" & i_id_content_analysis_sample_type & "'
+                             and ast.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_total_analysis_st = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        'Se l_total_analysis for maior que 0 significa que a análise já existe no ALERT
+
+        If l_total_analysis_st > 0 Then
+
+            Return True
+
+        Else
+
+            Return False
+
+        End If
+
+    End Function
+
+    Function CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_analysis_st As String, ByVal i_oradb As String) As Boolean
+
+        Dim l_translation As String = ""
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & ",ast.code_analysis_sample_type) from alert.analysis_sample_type ast
+                             where ast.id_content='" & id_content_analysis_st & "'
+                             and ast.flg_available='Y'"
 
         Try
 
@@ -1522,6 +1736,172 @@ Public Class LABS_API
             Return False
 
         End Try
+
+        Return True
+
+    End Function
+
+    Function SET_ANALYSIS_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_id_content_analysis_sample_type As String, ByVal i_id_content_analysis As String, ByVal i_id_content_st As String, ByVal i_oradb As String) As Boolean
+
+        ' Try
+        '1 - Verificar se AST já existe no alert (Nesta etapa já se confirmou a existência da análise e do sample_type)
+        'Nota: Os parâmetros de entrada incluem a análise e o sample type para evitar novas consultas à BD
+        If Not CHECK_ANALYSIS_SAMPLE_TYPE_EXISTENCE(i_id_content_analysis_sample_type, i_oradb) Then
+
+            Dim l_gender As String = ""
+            Dim l_age_min As Int16 = -1
+            Dim l_age_max As Int16 = -1
+
+            Dim dr As OracleDataReader = GET_DEFAULT_ANALYSIS_ST_PARAMETERS(i_id_content_analysis_sample_type, i_oradb)
+
+            '1.1.1 - Obter os parâmetros da análise_SAMPLE_TYPE
+            While dr.Read()
+
+                Try
+
+                    l_gender = dr.Item(0)
+
+                Catch ex As Exception
+
+                    l_gender = ""
+
+                End Try
+
+                Try
+
+                    l_age_min = dr.Item(1)
+
+                Catch ex As Exception
+
+                    l_age_min = -1
+
+                End Try
+
+                Try
+
+                    l_age_max = dr.Item(2)
+
+                Catch ex As Exception
+
+                    l_age_max = -1
+
+                End Try
+
+            End While
+
+            ''1.1.2  - Obter o ID ALERT da análise
+            Dim l_id_analysis As Int64 = GET_ID_ANALYSIS_ALERT(i_id_content_analysis, i_oradb)
+
+            ''1.1.3 - Obter o ID ALERT do sample_type
+            Dim l_id_sample_type As Int64 = GET_ID_SAMPLE_TYPE_ALERT(i_id_content_st, i_oradb)
+
+            ''1.1.4 - Inserir AST
+            Dim sql_insert_ast As String = "begin
+                                                insert into alert.analysis_sample_type (ID_ANALYSIS, ID_SAMPLE_TYPE,ID_CONTENT, ID_CONTENT_ANALYSIS, ID_CONTENT_SAMPLE_TYPE, GENDER, AGE_MIN, AGE_MAX, FLG_AVAILABLE)
+                                                values (" & l_id_analysis & ", " & l_id_sample_type & ", '" & i_id_content_analysis_sample_type & "', '" & i_id_content_analysis & "', '" & i_id_content_st & "', "
+
+            If l_gender = "" Then
+
+                sql_insert_ast = sql_insert_ast & "null, "
+
+            Else
+
+                sql_insert_ast = sql_insert_ast & "'" & l_gender & "', "
+
+            End If
+
+            If l_age_min = -1 Then
+
+                sql_insert_ast = sql_insert_ast & "null, "
+
+            Else
+
+                sql_insert_ast = sql_insert_ast & l_age_min & ", "
+
+            End If
+
+            If l_age_max = -1 Then
+
+                sql_insert_ast = sql_insert_ast & "null, "
+
+            Else
+
+                sql_insert_ast = sql_insert_ast & l_age_max & ", "
+
+            End If
+
+            sql_insert_ast = sql_insert_ast & "'Y'); end;"
+
+            Try
+
+                Dim conn As New OracleConnection(i_oradb)
+                conn.Open()
+                Dim cmd_insert_ast As New OracleCommand(sql_insert_ast, conn)
+                cmd_insert_ast.CommandType = CommandType.Text
+
+                cmd_insert_ast.ExecuteNonQuery()
+
+                cmd_insert_ast.Dispose()
+
+            Catch ex As Exception 'Se não der para introduzir, seginfica que já existe mas esta a Not available. Assim, colocar a 'Y'
+
+                Dim sql_update_ast = "update alert.analysis_sample_type ast
+                                      set ast.flg_available='Y'
+                                      where ast.id_content='" & i_id_content_analysis_sample_type & "'
+                                      and ast.id_content_analysis='" & i_id_content_analysis & "'
+                                      and ast.id_content_sample_type='" & i_id_content_st & "'"
+
+                Dim conn As New OracleConnection(i_oradb)
+                conn.Open()
+                Dim cmd_update_ast As New OracleCommand(sql_update_ast, conn)
+                cmd_update_ast.CommandType = CommandType.Text
+
+                cmd_update_ast.ExecuteNonQuery()
+
+                cmd_update_ast.Dispose()
+
+            End Try
+
+            ''1.1.5 - Inserir Tradução da AST
+            'Nota: Se só se tiver feito o update, a tradução pode existir, daí a verificação
+
+            If Not CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE(i_institution, i_id_content_analysis_sample_type, i_oradb) Then
+
+                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+                Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_id_content_analysis_sample_type, i_oradb)
+                Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_id_content_analysis_sample_type, i_oradb)
+                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_oradb)), (i_oradb)) Then
+
+                    MsgBox("ERROR INSERTING ANALYSIS SAMPLE TYPE TRANSLATION - LABS_API >> CHECK_ANALYSIS_SAMPLE_TYPE_EXISTENCE >> SET_TRANSLATION")
+
+                    Return False
+
+                End If
+
+            End If
+
+        ElseIf Not CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE(i_institution, i_id_content_analysis_sample_type, i_oradb) Then
+
+            Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+            Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_id_content_analysis_sample_type, i_oradb)
+            Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_id_content_analysis_sample_type, i_oradb)
+            If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_oradb)), (i_oradb)) Then
+
+                MsgBox("ERROR INSERTING ANALYSIS SAMPLE TYPE TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+
+                Return False
+
+            End If
+
+        End If
+
+        ''2 - Verirficar se existe tradução da AST
+
+        '  Catch ex As Exception
+
+        'Return False
+
+        ' End Try
 
         Return True
 
