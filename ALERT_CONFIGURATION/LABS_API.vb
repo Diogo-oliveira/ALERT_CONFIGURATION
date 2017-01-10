@@ -743,6 +743,7 @@ Public Class LABS_API
         dr.Dispose()
         cmd.Dispose()
         conn.Dispose()
+        conn.Close()
 
         Return l_code
 
@@ -809,6 +810,7 @@ Public Class LABS_API
         dr.Dispose()
         cmd.Dispose()
         conn.Dispose()
+        conn.Close()
 
         Return l_code
 
@@ -935,8 +937,8 @@ Public Class LABS_API
         conn.Open()
 
         Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & "," & i_sql & " r
-                             where r.id_content='" & id_content_record & "'
-                             and r.flg_available='Y'"
+                                where r.id_content='" & id_content_record & "'
+                                And r.flg_available='Y'"
 
         Try
 
@@ -945,7 +947,6 @@ Public Class LABS_API
 
             Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-
             While dr.Read()
 
                 l_translation = dr.Item(0)
@@ -953,17 +954,21 @@ Public Class LABS_API
             End While
 
             dr.Dispose()
+            dr.Close()
             cmd.Dispose()
-            conn.Dispose()
-
-            MsgBox("Translation exists")
-            Return True
 
         Catch ex As Exception
 
+            conn.Dispose()
+            conn.Close()
             Return False
 
         End Try
+
+        conn.Dispose()
+        conn.Close()
+
+        Return True
 
     End Function
 
@@ -1766,6 +1771,9 @@ Public Class LABS_API
 
             End While
 
+            dr_parameters.Dispose()
+            dr_parameters.Close()
+
         Catch ex As Exception
 
             Return False
@@ -1773,6 +1781,9 @@ Public Class LABS_API
         End Try
 
         '1.2 - Verificar se parâmetros existem no ALERT
+
+        Dim conn As New OracleConnection(i_oradb)
+        conn.Open()
 
         For i As Integer = 0 To l_array_parameters.Count() - 1
 
@@ -1785,13 +1796,10 @@ Public Class LABS_API
                                                 values (alert.seq_analysis_parameter.nextval, 'ANALYSIS_PARAMETER.CODE_ANALYSIS_PARAMETER.' || seq_analysis_parameter.nextval, 0, 'Y', '" & l_array_parameters(i) & "');
                                                 end;"
 
-                Dim conn As New OracleConnection(i_oradb)
-                conn.Open()
                 Dim cmd_insert_parameter As New OracleCommand(sql_parameter, conn)
                 cmd_insert_parameter.CommandType = CommandType.Text
 
                 cmd_insert_parameter.ExecuteNonQuery()
-
                 cmd_insert_parameter.Dispose()
 
                 '1.2.2 inserir tradução
@@ -1824,6 +1832,58 @@ Public Class LABS_API
             End If
 
         Next
+
+        conn.Dispose()
+        conn.Close()
+
+        '1.3 - Ver se é necessário fazer update aos registos do ALERT (Registos que no default estão a N e no alert estão a Y)
+        If Not UPDATE_PARAMETER_AVAILABILITY(i_software, i_id_content_analysis_sample_type, i_oradb) Then
+
+            MsgBox("ERROR UPDATING PARAMETERS!", vbCritical)
+
+        End If
+
+        Return True
+
+    End Function
+
+    Function UPDATE_PARAMETER_AVAILABILITY(ByVal i_id_software As Integer, ByVal i_id_ast_content As String, i_oradb As String) As Boolean
+
+        Try
+            Dim conn As New OracleConnection(i_oradb)
+            conn.Open()
+
+            Dim sql_parameter As String = "begin
+                                                UPDATE alert.analysis_parameter app
+                                                SET app.flg_available = 'N'
+                                                WHERE app.id_content IN (SELECT DISTINCT aparam.id_content
+                                                                            FROM alert_default.analysis_sample_type ast
+                                                                            JOIN alert_default.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                                                                     AND ap.id_sample_type = ast.id_sample_type
+                                                                                                     AND ap.id_software = " & i_id_software & "
+                                                                            JOIN alert_default.analysis_parameter aparam ON aparam.id_analysis_parameter = ap.id_analysis_parameter
+                                                                            AND aparam.flg_available = 'N'                            
+                                                                            WHERE ast.id_content = '" & i_id_ast_content & "');
+                                                 end;"
+
+
+            Dim cmd_update_parameter As New OracleCommand(sql_parameter, conn)
+            cmd_update_parameter.CommandType = CommandType.Text
+            cmd_update_parameter.ExecuteNonQuery()
+            cmd_update_parameter.Dispose()
+
+            cmd_update_parameter.Dispose()
+
+            conn.Dispose()
+            conn.Close()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
 
         Return True
 

@@ -113,11 +113,11 @@ Public Class General
 
         End While
 
+        cmd.Dispose()
         dr.Dispose()
-
-        conn_new.Close()
-
+        dr.Close()
         conn_new.Dispose()
+        conn_new.Close()
 
         Return l_id_inst
 
@@ -212,10 +212,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End While
 
         dr.Dispose()
-
-        conn_new.Close()
-
+        dr.Close()
+        cmd.Dispose()
         conn_new.Dispose()
+        conn_new.Close()
 
         Return l_inst
 
@@ -231,69 +231,69 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         conn.Open()
 
         Dim sql As String = "select decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_19)
-  from institution i
-  join translation t
-    on t.code_translation = i.code_institution
- where i.flg_available = 'Y'
-   and i.flg_type = 'H'
-   and (decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_19)) is not null
- order by 1 asc"
+                                                          1,
+                                                          T.desc_lang_1,
+                                                          2,
+                                                          T.desc_lang_2,
+                                                          3,
+                                                          T.desc_lang_11,
+                                                          4,
+                                                          T.desc_lang_5,
+                                                          5,
+                                                          T.desc_lang_4,
+                                                          6,
+                                                          T.desc_lang_3,
+                                                          7,
+                                                          T.desc_lang_10,
+                                                          8,
+                                                          T.desc_lang_7,
+                                                          9,
+                                                          T.desc_lang_6,
+                                                          10,
+                                                          T.desc_lang_9,
+                                                          12,
+                                                          T.desc_lang_16,
+                                                          16,
+                                                          T.desc_lang_17,
+                                                          17,
+                                                          T.desc_lang_18,
+                                                          19,
+                                                          T.desc_lang_19)
+                                              from institution i
+                                              join translation t
+                                                on t.code_translation = i.code_institution
+                                             where i.flg_available = 'Y'
+                                               and i.flg_type = 'H'
+                                               and (decode(i.id_market,
+                                                          1,
+                                                          T.desc_lang_1,
+                                                          2,
+                                                          T.desc_lang_2,
+                                                          3,
+                                                          T.desc_lang_11,
+                                                          4,
+                                                          T.desc_lang_5,
+                                                          5,
+                                                          T.desc_lang_4,
+                                                          6,
+                                                          T.desc_lang_3,
+                                                          7,
+                                                          T.desc_lang_10,
+                                                          8,
+                                                          T.desc_lang_7,
+                                                          9,
+                                                          T.desc_lang_6,
+                                                          10,
+                                                          T.desc_lang_9,
+                                                          12,
+                                                          T.desc_lang_16,
+                                                          16,
+                                                          T.desc_lang_17,
+                                                          17,
+                                                          T.desc_lang_18,
+                                                          19,
+                                                          T.desc_lang_19)) is not null
+                                             order by 1 asc"
 
         Dim cmd As New OracleCommand(sql, conn)
         cmd.CommandType = CommandType.Text
@@ -490,12 +490,23 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             End While
 
+            cmd.Dispose()
+
         Catch ex As Exception
 
+            cmd.Dispose()
+            dr.Dispose()
+            dr.Close()
+            conn.Dispose()
+            conn.Close()
             Return "No available translation!"
 
         End Try
 
+        dr.Dispose()
+        dr.Close()
+        conn.Dispose()
+        conn.Close()
         Return translation
 
     End Function
@@ -509,7 +520,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         Dim conn As New OracleConnection(oradb)
 
         conn.Open()
-
 
         Dim sql As String = "Select i.id_market from institution i
                              where i.id_institution= " & i_id_institution
@@ -526,6 +536,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End While
 
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
+        conn.Dispose()
+        conn.Close()
 
         If l_id_market = 1 Then
 
@@ -603,24 +618,19 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd_insert_trans.CommandType = CommandType.Text
 
             cmd_insert_trans.ExecuteNonQuery()
-
-
-            conn.Close()
-
-            conn.Dispose()
-
-            Return True
+            cmd_insert_trans.Dispose()
 
         Catch ex As Exception
 
-            conn.Close()
-
             conn.Dispose()
-
+            conn.Close()
             Return False
 
         End Try
 
+        conn.Dispose()
+        conn.Close()
+        Return True
 
     End Function
 
