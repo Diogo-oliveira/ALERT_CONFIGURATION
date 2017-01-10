@@ -682,7 +682,6 @@ Public Class LABS_API
 
     End Function
 
-
     Function GET_CODE_ANALYSIS_ST_ALERT(ByVal i_id_content_ast As String, ByVal i_oradb As String) As String
 
         Dim oradb As String = i_oradb
@@ -716,6 +715,39 @@ Public Class LABS_API
 
     End Function
 
+    Function GET_CODE_PARAMETER_ALERT(ByVal i_id_content_parameter As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ap.code_analysis_parameter from alert.analysis_parameter ap
+                             where ap.id_content='" & i_id_content_parameter & "'
+                             and ap.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
     Function GET_CODE_ANALYSIS_ST_DEFAULT(ByVal i_id_content_ast As String, ByVal i_oradb As String) As String
 
         Dim oradb As String = i_oradb
@@ -727,6 +759,39 @@ Public Class LABS_API
         Dim sql As String = "Select ast.code_analysis_sample_type from alert_default.analysis_sample_type ast
                              where ast.id_content='" & i_id_content_ast & "'
                              and ast.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        cmd.Dispose()
+        conn.Dispose()
+
+        Return l_code
+
+    End Function
+
+    Function GET_CODE_PARAMETER_DEFAULT(ByVal i_id_content_parameter As String, ByVal i_oradb As String) As String
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "Select ap.code_analysis_parameter from alert_default.analysis_parameter ap
+                                where ap.id_content='" & i_id_content_parameter & "'
+                                and ap.flg_available='Y'"
 
         Dim l_code As String = ""
 
@@ -805,7 +870,6 @@ Public Class LABS_API
             MsgBox("ERROR Returning Parameters from default for ANALYSIS_SAMPLE_TYPE " & i_id_content_ast & ".", vbCritical)
 
         End Try
-
 
     End Function
 
@@ -1698,7 +1762,6 @@ Public Class LABS_API
 
                 ReDim Preserve l_array_parameters(l_index)
                 l_array_parameters(l_index) = dr_parameters.Item(0)
-                MsgBox(l_array_parameters(l_index))
                 l_index = l_index + 1
 
             End While
@@ -1711,8 +1774,56 @@ Public Class LABS_API
 
         '1.2 - Verificar se parâmetros existem no ALERT
 
+        For i As Integer = 0 To l_array_parameters.Count() - 1
 
+            '1.2.1 - Inserir registo
+            'cHECKAR SE EXISTEM NO ALERT
+            If Not CHECK_RECORD_EXISTENCE(l_array_parameters(i), "alert.analysis_parameter", i_oradb) Then
 
+                Dim sql_parameter As String = "begin
+                                                insert into alert.analysis_parameter (ID_ANALYSIS_PARAMETER, CODE_ANALYSIS_PARAMETER, RANK, FLG_AVAILABLE, ID_CONTENT)
+                                                values (alert.seq_analysis_parameter.nextval, 'ANALYSIS_PARAMETER.CODE_ANALYSIS_PARAMETER.' || seq_analysis_parameter.nextval, 0, 'Y', '" & l_array_parameters(i) & "');
+                                                end;"
+
+                Dim conn As New OracleConnection(i_oradb)
+                conn.Open()
+                Dim cmd_insert_parameter As New OracleCommand(sql_parameter, conn)
+                cmd_insert_parameter.CommandType = CommandType.Text
+
+                cmd_insert_parameter.ExecuteNonQuery()
+
+                cmd_insert_parameter.Dispose()
+
+                '1.2.2 inserir tradução
+                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+                Dim l_code_analysis_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_oradb)
+                Dim l_code_analysis_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_oradb)
+
+                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_parameter_default, i_oradb)), (i_oradb)) Then
+
+                    MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+
+                    Return False
+
+                End If
+
+            ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_array_parameters(i), "'r.code_analysis_parameter from alert.analysis_parameter", i_oradb) Then
+
+                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+                Dim l_code_analysis_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_oradb)
+                Dim l_code_analysis_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_oradb)
+
+                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_parameter_default, i_oradb)), (i_oradb)) Then
+
+                    MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+
+                    Return False
+
+                End If
+
+            End If
+
+        Next
 
         Return True
 
