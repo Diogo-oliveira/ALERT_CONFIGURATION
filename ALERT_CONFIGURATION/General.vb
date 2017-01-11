@@ -12,6 +12,8 @@
 
 Public Class General
 
+    Public g_notranslation As String = "no_translation"
+
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
 
         Dim oradb As String = i_oradb
@@ -467,6 +469,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_DEFAULT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_oradb As String) As String
 
+        'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation
+
         Dim oradb As String = i_oradb
 
         Dim conn As New OracleConnection(oradb)
@@ -499,7 +503,55 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             dr.Close()
             conn.Dispose()
             conn.Close()
-            Return "No available translation!"
+            Return g_notranslation
+
+        End Try
+
+        dr.Dispose()
+        dr.Close()
+        conn.Dispose()
+        conn.Close()
+        Return translation
+
+    End Function
+
+    Function GET_ALERT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_oradb As String) As String
+
+        'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation
+
+        Dim oradb As String = i_oradb
+
+        Dim conn As New OracleConnection(oradb)
+
+        conn.Open()
+
+        Dim sql As String = "select pk_translation.get_translation(" & i_lang & ",'" & i_code_translation & "') from dual"
+
+        Dim translation As String = ""
+
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Try
+
+            While dr.Read()
+
+                translation = dr.Item(0)
+
+            End While
+
+            cmd.Dispose()
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            dr.Dispose()
+            dr.Close()
+            conn.Dispose()
+            conn.Close()
+            Return g_notranslation
 
         End Try
 
@@ -606,32 +658,64 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, ByVal i_oradb As String) As Boolean
 
+        If i_desc = g_notranslation Then
+
+            Return False
+
+        Else
+
+            Dim conn As New OracleConnection(i_oradb)
+
+            conn.Open()
+
+            Try
+
+                Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+
+                Dim cmd_insert_trans As New OracleCommand(Sql, conn)
+                cmd_insert_trans.CommandType = CommandType.Text
+
+                cmd_insert_trans.ExecuteNonQuery()
+                cmd_insert_trans.Dispose()
+
+            Catch ex As Exception
+
+                conn.Dispose()
+                conn.Close()
+                Return False
+
+            End Try
+
+            conn.Dispose()
+            conn.Close()
+            Return True
+
+        End If
+    End Function
+
+    Function CHECK_TRANSLATIONS(ByVal i_id_lang As Integer, ByVal i_code_translation_default As String, ByVal i_code_translation_alert As String, ByVal i_oradb As String) As Boolean
+
         Dim conn As New OracleConnection(i_oradb)
 
         conn.Open()
 
-        Try
+        Dim l_desc_default As String = GET_DEFAULT_TRANSLATION(i_id_lang, i_code_translation_default, i_oradb)
+        Dim l_desc_alert As String = GET_ALERT_TRANSLATION(i_id_lang, i_code_translation_alert, i_oradb)
 
-            Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+        If l_desc_default = l_desc_alert And l_desc_default <> g_notranslation Then
 
-            Dim cmd_insert_trans As New OracleCommand(Sql, conn)
-            cmd_insert_trans.CommandType = CommandType.Text
+            Return True
 
-            cmd_insert_trans.ExecuteNonQuery()
-            cmd_insert_trans.Dispose()
+        Else
 
-        Catch ex As Exception
-
-            conn.Dispose()
-            conn.Close()
             Return False
 
-        End Try
+        End If
 
         conn.Dispose()
         conn.Close()
-        Return True
 
     End Function
+
 
 End Class

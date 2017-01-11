@@ -271,7 +271,7 @@ Public Class LAB_TESTS
 
                 'apagar
 
-                MsgBox(db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb))
+                'MsgBox(db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb))
 
                 'FIM APAGAR
 
@@ -287,15 +287,22 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
-        If Not db_labs.SET_PARAMETER(470, 11, "CNT314.10022", oradb) Then
+        Try
 
-            MsgBox("NOT SET")
+            If Not db_labs.SET_EXAM_CAT(470, l_selected_default_analysis, oradb) Then
 
-        Else
+                MsgBox("NOT SET")
 
-            MsgBox("SUCCESS")
+            Else
 
-        End If
+                MsgBox("SUCCESS")
+
+            End If
+
+        Catch ex As Exception
+
+        End Try
+
 
         Cursor = Cursors.Arrow
 

@@ -259,3 +259,8 @@ Select dast.id_content, decode(dav.id_market,
    
  order by 2 asc, 3 asc;
  -----------------------------------------------------------
+-- Check cat existance
+
+Select count(*) from alert.exam_cat ec
+where ec.id_content=''
+and ec.flg_available='Y'

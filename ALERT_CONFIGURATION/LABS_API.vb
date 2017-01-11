@@ -303,9 +303,10 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
         conn.Dispose()
-
+        conn.Close()
         Return l_code
 
     End Function
@@ -336,9 +337,10 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
         conn.Dispose()
-
+        conn.Close()
         Return l_code
 
     End Function
@@ -435,9 +437,10 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
         conn.Dispose()
-
+        conn.Close()
         Return l_id_alert
 
     End Function
@@ -468,9 +471,10 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
         conn.Dispose()
-
+        conn.Close()
         Return l_id_alert
 
     End Function
@@ -500,9 +504,10 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
         conn.Dispose()
-
+        conn.Close()
         Return l_flg_interface
 
     End Function
@@ -877,15 +882,13 @@ Public Class LABS_API
 
     Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String, ByVal i_oradb As String) As Boolean
 
+        Dim conn As New OracleConnection(i_oradb)
+
+        conn.Open()
+
         Try
 
             Dim l_total_records As Int16 = 0
-
-            Dim oradb As String = i_oradb
-
-            Dim conn As New OracleConnection(oradb)
-
-            conn.Open()
 
             Dim sql As String = "Select count(*) from " & i_sql & " r
                              where r.id_content='" & i_id_content_record & "'
@@ -903,8 +906,10 @@ Public Class LABS_API
             End While
 
             dr.Dispose()
+            dr.Close()
             cmd.Dispose()
             conn.Dispose()
+            conn.Close()
 
             'Se l_total_analysis for maior que 0 significa que a análise já existe no ALERT
 
@@ -920,6 +925,8 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            conn.Dispose()
+            conn.Close()
             Return False
 
         End Try
@@ -937,8 +944,8 @@ Public Class LABS_API
         conn.Open()
 
         Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_oradb) & "," & i_sql & " r
-                                where r.id_content='" & id_content_record & "'
-                                And r.flg_available='Y'"
+                             where r.id_content='" & id_content_record & "'
+                             And r.flg_available='Y'"
 
         Try
 
@@ -972,227 +979,268 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal id_content_category As String, ByVal i_oradb As String) As Boolean
+    Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_oradb As String) As Boolean
 
-        '' 1 - Verificar s existe cat pat.
-        Dim l_cat_parent As Int64 = 0
-        Dim l_id_alert_cat_parent As Int64 = 0
-        Dim l_rank As Int64 = 0
-        Dim l_flg_interface As Char = ""
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
+        Dim conn As New OracleConnection(i_oradb)
         conn.Open()
 
-        MsgBox("STEP - 1")
-
-        Dim sql As String = "Select ec.parent_id from alert_default.Exam_Cat ec
-                             where ec.id_content='" & id_content_category & "'"
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
 
         Try
-            Dim cmd As New OracleCommand(sql, conn)
-            cmd.CommandType = CommandType.Text
+            'Ciclo que vai correr as categorias todas enviadas à função
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+                '' 1 - Verificar se existe Categoria pai
+                Dim l_cat_parent As Int64 = 0
+                Dim l_id_alert_cat_parent As Int64 = 0
+                Dim l_rank As Int64 = 0
+                Dim l_flg_interface As Char = ""
 
-            While dr.Read()
+                Dim sql As String = "Select ec.parent_id from alert_default.Exam_Cat ec
+                                 where ec.id_content='" & i_selected_default_analysis(i).id_content_category & "'"
 
-                l_cat_parent = dr.Item(0)
+                Try
+                    Dim cmd As New OracleCommand(sql, conn)
+                    cmd.CommandType = CommandType.Text
 
-            End While
+                    Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-            MsgBox("STEP - 2")
+                    While dr.Read()
 
-        Catch ex As Exception
+                        l_cat_parent = dr.Item(0)
 
-            l_cat_parent = 0
+                    End While
 
-        End Try
+                    dr.Dispose()
+                    dr.Close()
+                    cmd.Dispose()
 
-        If l_cat_parent > 0 Then
+                Catch ex As Exception
 
-            MsgBox("STEP - 3.1")
+                    l_cat_parent = 0
 
-            '' 1.1 - Se existir, verificar se cat pai e tradução existem no alert. Se não existem, inserir.
-            ''1.1.1 - Verificar se existe no ALERT
-            sql = "Select ecp.id_content
-                   from alert_default.exam_cat ec
-                   join alert_default.exam_cat ecp
-                   on ecp.id_exam_cat = ec.parent_id
-                   where ec.id_content = '" & id_content_category & "'"
+                End Try
 
-            Dim l_id_content_cat_parent As String = ""
+                If l_cat_parent > 0 Then 'Significa que existe Categoria Pai no default
 
-            Dim cmd As New OracleCommand(sql, conn)
-            cmd.CommandType = CommandType.Text
+                    '' 1.1 - Verificar se cat pai e tradução existem no alert. Se não existem, inserir.
+                    ''1.1.1 - Verificar se existe no ALERT
+                    sql = "Select ecp.id_content
+                       from alert_default.exam_cat ec
+                       join alert_default.exam_cat ecp
+                       on ecp.id_exam_cat = ec.parent_id
+                       where ec.id_content = '" & i_selected_default_analysis(i).id_content_category & "'"
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+                    Dim l_id_content_cat_parent As String = ""
+                    Dim cmd As New OracleCommand(sql, conn)
+                    cmd.CommandType = CommandType.Text
+                    Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-            While dr.Read()
+                    While dr.Read()
 
-                l_id_content_cat_parent = dr.Item(0)
+                        l_id_content_cat_parent = dr.Item(0)
 
-            End While
+                    End While
 
-            MsgBox("STEP - 3.2")
+                    dr.Dispose()
+                    dr.Close()
+                    cmd.Dispose()
 
-            If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_oradb) Then
+                    If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_oradb) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
 
-                'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
+                        'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
+                        'Estrutura auxiliar para ser chamada na recursividade (apenas terá o  id_content da categoria pai)
+                        Dim l_analysis(0) As analysis_default
+                        l_analysis(0).id_content_category = l_id_content_cat_parent
 
-                If Not SET_EXAM_CAT(i_institution, l_id_content_cat_parent, i_oradb) Then
+                        If Not SET_EXAM_CAT(i_institution, l_analysis, i_oradb) Then
 
-                    MsgBox("ERROR INSERTING EXAM_CAT_PARENT - LABS_API >> SET_EXAM_CAT")
+                            MsgBox("ERROR INSERTING EXAM_CAT_PARENT - LABS_API >> SET_EXAM_CAT")
+                            Return False
 
-                    Return False
+                        End If
+
+                        'Uma vez que foi adicionada uma nova categoria pai, sérá necessário atualizar o id alert da categoria pai das categorias filho
+                        Dim sql_update_parents As String = "UPDATE alert.exam_cat ec
+                                                        SET ec.parent_id = (Select ecp_n.id_exam_cat from alert.exam_cat ecp_n where ecp_n.id_content='" & l_id_content_cat_parent & "' and ecp_n.flg_available='Y')
+                                                        WHERE ec.parent_id IN (SELECT ecp.id_exam_cat
+                                                                               FROM alert.exam_cat ecp
+                                                                               WHERE ecp.id_content = '" & l_id_content_cat_parent & "')"
+
+                        Dim cmd_update_parents As New OracleCommand(sql_update_parents, conn)
+                        cmd_update_parents.CommandType = CommandType.Text
+
+                        cmd_update_parents.ExecuteNonQuery()
+
+                        cmd_update_parents.Dispose()
+
+                        '1.2 - Existe registo no ALERT, verificar se eciste tradução para a língua da isntituição
+                    ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_id_content_cat_parent, "r.code_exam_cat) from alert.exam_cat", i_oradb) Then
+
+                        ''Inserir tradução no ALERT
+                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb)
+                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_oradb), i_oradb)
+
+                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default, i_oradb) Then
+
+                            MsgBox("ERROR INSERTING EXAM CATEGORY TRANSLATION - LABS_API >>  SET_TRANSLATION")
+                            Return False
+
+                        End If
+
+                        '1.3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                    ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_oradb), GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb), i_oradb) Then
+
+                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb)
+                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_oradb), i_oradb)
+
+                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default, i_oradb) Then
+
+                            MsgBox("ERROR INSERTING EXAM CATEGORY TRANSLATION - LABS_API >>  SET_TRANSLATION")
+                            Return False
+
+                        End If
+
+                    End If
+
+                    '' 1.2 - Se existir no alert, determinar id. (Neste ponto já vai sempre existir)
+                    Try
+                        l_id_alert_cat_parent = GET_ID_CAT_ALERT(l_id_content_cat_parent, i_oradb)
+
+                    Catch ex As Exception
+
+                        MsgBox("ERROR GETTING ID_EXAM_CATEGORY FROM ALERT - LABS_API >>  GET_ID_CAT_ALERT")
+                        Return False
+
+                    End Try
 
                 End If
 
-                MsgBox("STEP - 3.3")
+                '2 - Verificar se categoria já existe no ALERT
+                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_category, "alert.exam_cat", i_oradb) Then
 
-            ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_id_content_cat_parent, "'r.code_exam_cat) from alert.exam_cat", i_oradb) Then
+                    '2.1 - Não existe, Inserir.
+                    '2.1.1 - Determinar RANK da categoria E flg_interface
+                    Try
 
-                ''Inserir tradução no ALERT
-                Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb)
+                        l_rank = GET_CAT_RANK(i_selected_default_analysis(i).id_content_category, i_oradb)
 
-                Dim id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
+                    Catch ex As Exception
 
-                Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(id_language, GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_oradb), i_oradb)
+                        l_rank = 0
 
-                MsgBox(l_exam_translation_default) ''APAGAR
+                    End Try
 
-                MsgBox("STEP - 3.4")
+                    '2.1.2 - Determinar flg_interface da categoria
+                    Try
 
-                If Not db_access_general.SET_TRANSLATION(id_language, l_code_cat_parent, l_exam_translation_default, i_oradb) Then
+                        l_flg_interface = GET_CAT_FLG_INTERFACE(i_selected_default_analysis(i).id_content_category, i_oradb)
 
-                    MsgBox("ERROR INSERTING EXAM CATEGORY TRANSLATION - LABS_API >>  SET_TRANSLATION")
+                    Catch ex As Exception
+
+                        l_flg_interface = "N"
+
+                    End Try
+
+                    '2.1.3 - Inserir Categoria
+                    Dim sql_insert_cat As String
+
+                    If l_id_alert_cat_parent = 0 Then
+
+                        sql_insert_cat = "begin
+                                      insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
+                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & i_selected_default_analysis(i).id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", null);
+                                      end;"
+                    Else
+
+                        sql_insert_cat = "begin
+                                      insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
+                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & i_selected_default_analysis(i).id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", " & l_id_alert_cat_parent & ");
+                                      end;"
+
+                    End If
+
+                    Dim cmd_insert_cat As New OracleCommand(sql_insert_cat, conn)
+                    cmd_insert_cat.CommandType = CommandType.Text
+
+                    Try
+                        cmd_insert_cat.ExecuteNonQuery()
+                    Catch ex As Exception
+
+                        MsgBox("ERROR INSERTING EXAM CATEGORY")
+                        cmd_insert_cat.Dispose()
+                        Return False
+
+                    End Try
+
+                    cmd_insert_cat.Dispose()
+
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_oradb)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_oradb)
+
+                    '2.1.4 Inserir translation
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_oradb)), (i_oradb)) Then
+
+                        MsgBox("ERROR INSERTING CATEGORY TRANSLATION - LABS_API >> SET_TRANSLATION")
+                        Return False
+
+                    End If
+
+                    '2.1.5 - Fazer update a todas as análises que utilizavam o id da categoria antiga com o id da nova categoria (alert.analysis_instit_soft)
+
+                    Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_oradb)
+
+                    Dim sql_update_analysis_cat As String = "update alert.analysis_instit_soft ais 
+                                                         set ais.id_exam_cat=" & l_id_alert_category & "
+                                                         where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & i_selected_default_analysis(i).id_content_category & "')"
+
+                    Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, conn)
+                    cmd_update_analysis_cat.CommandType = CommandType.Text
+
+                    cmd_update_analysis_cat.ExecuteNonQuery()
+
+                    cmd_update_analysis_cat.Dispose()
+
+                    '2.2 - Uma vez que existe no ALERT, verificar se exsite tradução para a lingua da instituição
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_category, "r.code_exam_cat) from alert.exam_cat", i_oradb) Then
+
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_oradb)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_oradb)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_oradb)), (i_oradb)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+                        Return False
+
+                    End If
+
+                    '2.3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_oradb), GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_oradb), i_oradb) Then
+
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_oradb)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_oradb)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_oradb)), (i_oradb)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+                        Return False
+
+                    End If
 
                 End If
-
-                MsgBox("STEP - 3.5")
-
-            End If
-
-            '' 1.2 - Se existir no alert, determinar id. (Neste ponto já vai sempre existir)
-
-            Try
-                l_id_alert_cat_parent = GET_ID_CAT_ALERT(l_id_content_cat_parent, i_oradb)
-
-                MsgBox("STEP - 3.6 >> " & l_id_alert_cat_parent)
-
-            Catch ex As Exception
-
-                MsgBox("ERROR GETTING ID_EXAM_CATEGORY FROM ALERT - LABS_API >>  GET_ID_CAT_ALERT")
-
-            End Try
-
-        End If
-
-        ''2 - Determinar rank E flg_interface
-        Try
-
-            l_rank = GET_CAT_RANK(id_content_category, i_oradb)
-
-            MsgBox("STEP - 3.7 >> " & l_rank)
+            Next
 
         Catch ex As Exception
 
-            l_rank = 0
-
-        End Try
-
-        Try
-
-            l_flg_interface = GET_CAT_FLG_INTERFACE(id_content_category, i_oradb)
-
-            MsgBox("STEP - 3.8 >> " & l_flg_interface)
-
-        Catch ex As Exception
-
-            l_flg_interface = "N"
-
-        End Try
-
-        ''3 - inserir categoria e tradução (criar função para inserir tradução)
-
-        Try
-
-            MsgBox("STEP - 4.1.1 >>" & id_content_category)
-
-
-            Dim sql_insert_cat As String
-
-            If l_id_alert_cat_parent = 0 Then
-
-                MsgBox("STEP - 4.1.2 >>" & l_id_alert_cat_parent)
-
-                sql_insert_cat = "begin
-                              insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
-                              values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", null);
-                              end;"
-            Else
-
-                sql_insert_cat = "begin
-                              insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
-                              values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", " & l_id_alert_cat_parent & ");
-                              end;"
-
-            End If
-
-            Dim cmd_insert_cat As New OracleCommand(sql_insert_cat, conn)
-            cmd_insert_cat.CommandType = CommandType.Text
-
-            cmd_insert_cat.ExecuteNonQuery()
-
-            cmd_insert_cat.Dispose()
-
-            Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_oradb)
-            Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(id_content_category, i_oradb)
-            Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(id_content_category, i_oradb)
-
-            MsgBox("STEP - 4.2 >>" & l_code_ec_alert)
-
-
-            '3.2 Inserir translation
-            If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_oradb)), (i_oradb)) Then
-
-                MsgBox("ERROR INSERTING CATEGORY TRANSLATION - LABS_API >> SET_TRANSLATION")
-
-                Return False
-
-            End If
-
-            MsgBox("STEP - 5 >> " & id_content_category)
-
-
-            ''4 Fazer update a todas as análises que utilizavam o id da categoria antiga com o id da nova categoria
-
-            Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(id_content_category, i_oradb)
-
-            MsgBox("STEP - 6 >> " & l_id_alert_category)
-
-            Dim sql_update_analysis_cat As String = "update alert.analysis_instit_soft ais
-                                                   set ais.id_exam_cat=" & l_id_alert_category & "
-                                                   where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & id_content_category & "')"
-
-            Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, conn)
-            cmd_update_analysis_cat.CommandType = CommandType.Text
-
-            cmd_update_analysis_cat.ExecuteNonQuery()
-
-            cmd_update_analysis_cat.Dispose()
-
-            '' 5 Return true or false
-
-            Return True
-
-        Catch ex As Exception
-
+            conn.Dispose()
+            conn.Close()
             Return False
 
         End Try
+
+        conn.Dispose()
+        conn.Close()
+        Return True
 
     End Function
 
