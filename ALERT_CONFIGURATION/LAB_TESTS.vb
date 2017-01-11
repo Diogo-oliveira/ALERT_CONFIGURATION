@@ -14,9 +14,22 @@ Public Class LAB_TESTS
 
     Dim l_index_selected_analysis_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
+    'Ligação à BD
+    Dim conn_labs As New OracleConnection(oradb)
+
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Dim dr As OracleDataReader = db_access_general.GET_ALL_INSTITUTIONS(oradb)
+        Try
+            'Estabelecer ligação à BD
+            conn_labs.Open()
+
+        Catch ex As Exception
+
+            MsgBox("Error Connecting to DataBase!", vbCritical)
+
+        End Try
+
+        Dim dr As OracleDataReader = db_access_general.GET_ALL_INSTITUTIONS(conn_labs)
 
         Dim i As Integer = 0
 
@@ -27,12 +40,16 @@ Public Class LAB_TESTS
         End While
 
         dr.Dispose()
+        dr.Close()
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+
+        conn_labs.Dispose()
+        conn_labs.Close()
 
         Dim form1 As New Form1
 
@@ -48,13 +65,12 @@ Public Class LAB_TESTS
 
         If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, oradb)
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn_labs)
 
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
 
-
-            Dim dr As OracleDataReader = db_access_general.GET_SOFT_INST(TextBox1.Text, oradb)
+            Dim dr As OracleDataReader = db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs)
 
             Dim i As Integer = 0
 
@@ -75,15 +91,14 @@ Public Class LAB_TESTS
             l_selected_category = ""
 
             dr.Dispose()
-
+            dr.Close()
         End If
-
 
     End Sub
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
 
-        l_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, oradb)
+        l_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn_labs)
 
         '1 - Fill Version combobox
 
@@ -94,7 +109,7 @@ Public Class LAB_TESTS
 
         Try
 
-            Dim dr_def_versions As OracleDataReader = db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, oradb)
+            Dim dr_def_versions As OracleDataReader = db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, conn_labs)
 
             While dr_def_versions.Read()
 
@@ -103,6 +118,7 @@ Public Class LAB_TESTS
             End While
 
             dr_def_versions.Dispose()
+            dr_def_versions.Close()
 
         Catch ex As Exception
 
@@ -129,7 +145,7 @@ Public Class LAB_TESTS
 
         Try
 
-            Dim dr_lab_cat_def As OracleDataReader = db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, oradb)
+            Dim dr_lab_cat_def As OracleDataReader = db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, conn_labs)
 
             ComboBox4.Items.Add("ALL")
 
@@ -143,6 +159,7 @@ Public Class LAB_TESTS
             End While
 
             dr_lab_cat_def.Dispose()
+            dr_lab_cat_def.Close()
 
         Catch ex As Exception
 
@@ -175,7 +192,7 @@ Public Class LAB_TESTS
         ''2 - Carregar a grelha de análises por categoria
         ''e    
         ''3 - Criar estrutura com os elementos das análises carregados
-        Dim dr As OracleDataReader = db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, oradb)
+        Dim dr As OracleDataReader = db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, conn_labs)
 
         ReDim l_loaded_analysis_default(0) ''Limpar estrutura
         Dim l_dimension_array_loaded_analysis As Int64 = 0
@@ -199,6 +216,7 @@ Public Class LAB_TESTS
         End While
 
         dr.Dispose()
+        dr.Close()
 
         Cursor = Cursors.Arrow
 
@@ -289,7 +307,7 @@ Public Class LAB_TESTS
 
         Try
 
-            If Not db_labs.SET_EXAM_CAT(470, l_selected_default_analysis, oradb) Then
+            If Not db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
                 MsgBox("NOT SET")
 
