@@ -29,15 +29,26 @@ Public Class LAB_TESTS
 
         End Try
 
-        Dim dr As OracleDataReader = db_access_general.GET_ALL_INSTITUTIONS(conn_labs)
 
-        Dim i As Integer = 0
 
-        While dr.Read()
+        Dim dr As OracleDataReader
 
-            ComboBox1.Items.Add(dr.Item(0))
 
-        End While
+        If Not db_access_general.GET_ALL_INSTITUTIONS(conn_labs, dr) Then
+
+            MsgBox("ERROR GETTING ALL INSTITUTIONS")
+
+        Else
+
+            Dim i As Integer = 0
+
+            While dr.Read()
+
+                ComboBox1.Items.Add(dr.Item(0))
+
+            End While
+
+        End If
 
         dr.Dispose()
         dr.Close()
@@ -48,6 +59,7 @@ Public Class LAB_TESTS
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
+        conn_labs.FlushCache()
         conn_labs.Dispose()
         conn_labs.Close()
 
@@ -70,28 +82,37 @@ Public Class LAB_TESTS
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
 
-            Dim dr As OracleDataReader = db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs)
+            Dim dr As OracleDataReader
 
-            Dim i As Integer = 0
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
 
-            While dr.Read()
+                MsgBox("ERROR GETTING SOFTWARES")
 
-                ComboBox2.Items.Add(dr.Item(1))
+            Else
 
-            End While
+                Dim i As Integer = 0
 
-            ComboBox3.Items.Clear()
-            ComboBox3.SelectedItem = ""
+                While dr.Read()
 
-            ComboBox4.Items.Clear()
-            ComboBox4.SelectedItem = ""
+                    ComboBox2.Items.Add(dr.Item(1))
 
-            CheckedListBox2.Items.Clear()
+                End While
 
-            l_selected_category = ""
+                ComboBox3.Items.Clear()
+                ComboBox3.SelectedItem = ""
+
+                ComboBox4.Items.Clear()
+                ComboBox4.SelectedItem = ""
+
+                CheckedListBox2.Items.Clear()
+
+                l_selected_category = ""
+
+            End If
 
             dr.Dispose()
             dr.Close()
+
         End If
 
     End Sub
@@ -107,9 +128,13 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
-        Try
+        Dim dr_def_versions As OracleDataReader
 
-            Dim dr_def_versions As OracleDataReader = db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, conn_labs)
+        If Not db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, conn_labs, dr_def_versions) Then
+
+            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+        Else
 
             While dr_def_versions.Read()
 
@@ -120,11 +145,7 @@ Public Class LAB_TESTS
             dr_def_versions.Dispose()
             dr_def_versions.Close()
 
-        Catch ex As Exception
-
-            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
-
-        End Try
+        End If
 
         Cursor = Cursors.Arrow
 
@@ -143,9 +164,14 @@ Public Class LAB_TESTS
         ReDim l_loaded_categories_default(0)
         Dim l_index_loaded_categories As Int16 = 0
 
-        Try
 
-            Dim dr_lab_cat_def As OracleDataReader = db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, conn_labs)
+        Dim dr_lab_cat_def As OracleDataReader
+
+        If Not db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, conn_labs, dr_lab_cat_def) Then
+
+            MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+        Else
 
             ComboBox4.Items.Add("ALL")
 
@@ -158,14 +184,10 @@ Public Class LAB_TESTS
 
             End While
 
-            dr_lab_cat_def.Dispose()
-            dr_lab_cat_def.Close()
+        End If
 
-        Catch ex As Exception
-
-            MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
-
-        End Try
+        dr_lab_cat_def.Dispose()
+        dr_lab_cat_def.Close()
 
         Cursor = Cursors.Arrow
 
@@ -192,31 +214,42 @@ Public Class LAB_TESTS
         ''2 - Carregar a grelha de análises por categoria
         ''e    
         ''3 - Criar estrutura com os elementos das análises carregados
-        Dim dr As OracleDataReader = db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, conn_labs)
 
-        ReDim l_loaded_analysis_default(0) ''Limpar estrutura
-        Dim l_dimension_array_loaded_analysis As Int64 = 0
+        Dim dr As OracleDataReader
 
-        While dr.Read()
+        If Not db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, conn_labs, dr) Then
 
-            CheckedListBox2.Items.Add(dr.Item(1) & " [" & dr.Item(3) & "]")
+            MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
+            dr.Dispose()
+            dr.Close()
 
-            ReDim Preserve l_loaded_analysis_default(l_dimension_array_loaded_analysis)
+        Else
 
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = l_selected_category
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = dr.Item(0)
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = dr.Item(1)
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = dr.Item(2)
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = dr.Item(3)
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis = dr.Item(4)
-            l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_type = dr.Item(5)
+            ReDim l_loaded_analysis_default(0) ''Limpar estrutura
+            Dim l_dimension_array_loaded_analysis As Int64 = 0
 
-            l_dimension_array_loaded_analysis = l_dimension_array_loaded_analysis + 1
+            While dr.Read()
 
-        End While
+                CheckedListBox2.Items.Add(dr.Item(1) & " [" & dr.Item(3) & "]")
 
-        dr.Dispose()
-        dr.Close()
+                ReDim Preserve l_loaded_analysis_default(l_dimension_array_loaded_analysis)
+
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = dr.Item(6)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = dr.Item(0)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = dr.Item(1)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = dr.Item(2)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = dr.Item(3)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis = dr.Item(4)
+                l_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_type = dr.Item(5)
+
+                l_dimension_array_loaded_analysis = l_dimension_array_loaded_analysis + 1
+
+            End While
+
+            dr.Dispose()
+            dr.Close()
+
+        End If
 
         Cursor = Cursors.Arrow
 
