@@ -796,8 +796,8 @@ Public Class LABS_API
             Dim l_total_records As Int16 = 0
 
             Dim sql As String = "Select count(*) from " & i_sql & " r
-                             where r.id_content='" & i_id_content_record & "'
-                             and r.flg_available='Y'"
+                                 where r.id_content='" & i_id_content_record & "'
+                                 and r.flg_available='Y'"
 
             Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
@@ -1127,144 +1127,168 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal id_content_sample_type As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
         Try
 
-            '1 - VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
-            If Not CHECK_RECORD_EXISTENCE(id_content_sample_type, "alert.sample_type", i_conn) Then ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-                ''1.1 - Obter Rank, Gender. Age_min e Age_max de Sample_Type no default
-                Dim dr As OracleDataReader
+                '1 - VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
+                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_sample_type, "alert.sample_type", i_conn) Then
 
-                If Not GET_DEFAULT_ST_PARAMETERS(id_content_sample_type, i_conn, dr) Then
+                    ''1.1 - Obter Rank, Gender. Age_min e Age_max de Sample_Type no default
+                    Dim dr As OracleDataReader
 
-                    MsgBox("ERROR GETTING SAMPLE_TYPE PARAMETERS >> SET_SAMPLE_TYPE", vbCritical)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not GET_DEFAULT_ST_PARAMETERS(i_selected_default_analysis(i).id_content_sample_type, i_conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR GETTING SAMPLE_TYPE PARAMETERS >> SET_SAMPLE_TYPE", vbCritical)
+                        dr.Dispose()
+                        dr.Close()
+
+                        Return False
+                    End If
+
+                    Dim l_gender As String = ""
+                    Dim l_age_min As Int16 = -1
+                    Dim l_age_max As Int16 = -1
+
+                    While dr.Read()
+
+                        Try
+
+                            l_gender = dr.Item(0)
+
+                        Catch ex As Exception
+
+                            l_gender = ""
+
+                        End Try
+
+                        Try
+
+                            l_age_min = dr.Item(1)
+
+                        Catch ex As Exception
+
+                            l_age_min = -1
+
+                        End Try
+
+                        Try
+
+                            l_age_max = dr.Item(2)
+
+                        Catch ex As Exception
+
+                            l_age_max = -1
+
+                        End Try
+
+                    End While
+
                     dr.Dispose()
                     dr.Close()
 
-                    Return False
-                End If
+                    ''1.2 - Inserir SAMPLE_TYPE
 
-                Dim l_gender As String = ""
-                Dim l_age_min As Int16 = -1
-                Dim l_age_max As Int16 = -1
+                    Dim sql_insert_st As String = "begin
+                                                   insert into alert.sample_type (ID_SAMPLE_TYPE, CODE_SAMPLE_TYPE, FLG_AVAILABLE, RANK, GENDER, AGE_MIN, AGE_MAX, ID_CONTENT)
+                                                   values (alert.seq_sample_type.nextval, 'SAMPLE_TYPE.CODE_SAMPLE_TYPE.' || alert.seq_sample_type.nextval, 'Y', 0, "
 
-                While dr.Read()
+                    If l_gender = "" Then
 
-                    Try
+                        sql_insert_st = sql_insert_st & "null, "
 
-                        l_gender = dr.Item(0)
+                    Else
 
-                    Catch ex As Exception
+                        sql_insert_st = sql_insert_st & "'" & l_gender & "', "
 
-                        l_gender = ""
+                    End If
 
-                    End Try
+                    If l_age_min = -1 Then
 
-                    Try
+                        sql_insert_st = sql_insert_st & "null, "
 
-                        l_age_min = dr.Item(1)
+                    Else
 
-                    Catch ex As Exception
+                        sql_insert_st = sql_insert_st & l_age_min & ", "
 
-                        l_age_min = -1
-
-                    End Try
-
-                    Try
-
-                        l_age_max = dr.Item(2)
-
-                    Catch ex As Exception
-
-                        l_age_max = -1
-
-                    End Try
-
-                End While
-
-                dr.Dispose()
-                dr.Close()
-
-                ''1.2 - Inserir SAMPLE_TYPE
-
-                Dim sql_insert_st As String = "begin
-                                               insert into alert.sample_type (ID_SAMPLE_TYPE, CODE_SAMPLE_TYPE, FLG_AVAILABLE, RANK, GENDER, AGE_MIN, AGE_MAX, ID_CONTENT)
-                                               values (alert.seq_sample_type.nextval, 'SAMPLE_TYPE.CODE_SAMPLE_TYPE.' || alert.seq_sample_type.nextval, 'Y', 0, "
+                    End If
 
 
-                If l_gender = "" Then
+                    If l_age_max = -1 Then
 
-                    sql_insert_st = sql_insert_st & "null, "
+                        sql_insert_st = sql_insert_st & "null, "
 
-                Else
+                    Else
 
-                    sql_insert_st = sql_insert_st & "'" & l_gender & "', "
+                        sql_insert_st = sql_insert_st & l_age_max & ", "
 
-                End If
-
-                If l_age_min = -1 Then
-
-                    sql_insert_st = sql_insert_st & "null, "
-
-                Else
-
-                    sql_insert_st = sql_insert_st & l_age_min & ", "
-
-                End If
+                    End If
 
 
-                If l_age_max = -1 Then
-
-                    sql_insert_st = sql_insert_st & "null, "
-
-                Else
-
-                    sql_insert_st = sql_insert_st & l_age_max & ", "
-
-                End If
-
-
-                sql_insert_st = sql_insert_st & "'" & id_content_sample_type & "' );
+                    sql_insert_st = sql_insert_st & "'" & i_selected_default_analysis(i).id_content_sample_type & "' );
                                 end;"
 
-                Dim cmd_insert_st As New OracleCommand(sql_insert_st, i_conn)
-                cmd_insert_st.CommandType = CommandType.Text
+                    Dim cmd_insert_st As New OracleCommand(sql_insert_st, i_conn)
+                    cmd_insert_st.CommandType = CommandType.Text
+                    cmd_insert_st.ExecuteNonQuery()
 
-                cmd_insert_st.ExecuteNonQuery()
+                    cmd_insert_st.Dispose()
 
-                cmd_insert_st.Dispose()
+                    '1.3 - Inserir tradução do sample_type
+                    Dim l_code_st_default As String = GET_CODE_SAMPLE_TYPE_DEFAULT(i_selected_default_analysis(i).id_content_sample_type, i_conn) ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
+                    Dim l_code_st_alert As String = GET_CODE_SAMPLE_TYPE_ALERT(i_selected_default_analysis(i).id_content_sample_type, i_conn) ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
 
-                '1.3 - Inserir tradução do sample_type
-                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn) ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
-                Dim l_code_st_default As String = GET_CODE_SAMPLE_TYPE_DEFAULT(id_content_sample_type, i_conn) ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
-                Dim l_code_st_alert As String = GET_CODE_SAMPLE_TYPE_ALERT(id_content_sample_type, i_conn) ''IMPORTANTE: ALTERAR FUNÇÂO PARA RECEBER CONN
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_st_default, i_conn)), (i_conn)) Then
 
-                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_st_default, i_conn)), (i_conn)) Then
+                        MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_EXISTENCE >> SET_TRANSLATION")
 
-                    MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_EXISTENCE >> SET_TRANSLATION")
+                        Return False
 
-                    Return False
+                    End If
+
+                    '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                    ''Pensar na função de atualziar todas as tabelas relacionadas com o sample type
+
+
+                    '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+                    ''2 - Uma vez que já existe, verificar se tem tradução. Se não tem, inserir.
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_sample_type, "r.code_sample_type) from alert.sample_type", i_conn) Then
+
+                    Dim l_code_st_default As String = GET_CODE_SAMPLE_TYPE_DEFAULT(i_selected_default_analysis(i).id_content_sample_type, i_conn)
+                    Dim l_code_st_alert As String = GET_CODE_SAMPLE_TYPE_ALERT(i_selected_default_analysis(i).id_content_sample_type, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_st_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+
+                        Return False
+
+                    End If
+
+                    '3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_SAMPLE_TYPE_DEFAULT(i_selected_default_analysis(i).id_content_sample_type, i_conn), GET_CODE_SAMPLE_TYPE_ALERT(i_selected_default_analysis(i).id_content_sample_type, i_conn), i_conn) Then
+
+                    Dim l_code_st_default As String = GET_CODE_SAMPLE_TYPE_DEFAULT(i_selected_default_analysis(i).id_content_sample_type, i_conn)
+                    Dim l_code_st_alert As String = GET_CODE_SAMPLE_TYPE_ALERT(i_selected_default_analysis(i).id_content_sample_type, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_st_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPPLE_TYPE TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION" & l_id_language)
+                        Return False
+
+                    End If
 
                 End If
 
-            ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, id_content_sample_type, "r.code_sample_type) from alert.sample_type", i_conn) Then
-
-                Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-                Dim l_code_st_default As String = GET_CODE_SAMPLE_TYPE_DEFAULT(id_content_sample_type, i_conn)
-                Dim l_code_st_alert As String = GET_CODE_SAMPLE_TYPE_ALERT(id_content_sample_type, i_conn)
-
-                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_st_default, i_conn)), (i_conn)) Then
-
-                    MsgBox("ERROR INSERTING SAMPLE_TYPE TRANSLATION - LABS_API >> CHECK_SAMPLE_TYPE_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
-
-                    Return False
-
-                End If
-
-            End If
-
+            Next
 
         Catch ex As Exception
 
@@ -1276,35 +1300,40 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_ANALYSIS(ByVal i_institution As Int64, ByVal id_content_analysis As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_ANALYSIS(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
         Try
-            '1- VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
-            If Not CHECK_RECORD_EXISTENCE(id_content_analysis, "alert.analysis", i_conn) Then
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-                Dim l_cpt_code As String = ""
-                Dim l_gender As String = ""
-                Dim l_age_min As Int16 = -1
-                Dim l_age_max As Int16 = -1
-                Dim l_mdm_coding As Int64 = -1
-                Dim l_ref_form_code As String = ""
-                Dim l_id_content_st As String = ""
-                Dim l_barcode As String = ""
+                '1- VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
+                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_analysis, "alert.analysis", i_conn) Then
 
-                Dim dr As OracleDataReader
+                    Dim l_cpt_code As String = ""
+                    Dim l_gender As String = ""
+                    Dim l_age_min As Int16 = -1
+                    Dim l_age_max As Int16 = -1
+                    Dim l_mdm_coding As Int64 = -1
+                    Dim l_ref_form_code As String = ""
+                    Dim l_id_content_st As String = ""
+                    Dim l_barcode As String = ""
 
+                    Dim dr As OracleDataReader
 
-                If Not GET_DEFAULT_ANALYSIS_PARAMETERS(id_content_analysis, i_conn, dr) Then
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not GET_DEFAULT_ANALYSIS_PARAMETERS(i_selected_default_analysis(i).id_content_analysis, i_conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                    MsgBox("ERROR GETTING ANALYSIS PARAMETERS >> SET_ANALYSIS", vbCritical)
-                    dr.Dispose()
-                    dr.Close()
-                    Return False
+                        MsgBox("ERROR GETTING ANALYSIS PARAMETERS >> SET_ANALYSIS", vbCritical)
+                        dr.Dispose()
+                        dr.Close()
+                        Return False
 
-                End If
+                    End If
 
-                '1.1.1 - Obter os parâmetros da análise
-                While dr.Read()
+                    '1.1.1 - Obter os parâmetros da análise
+                    While dr.Read()
 
                         Try
 
@@ -1402,9 +1431,8 @@ Public Class LABS_API
 
                     '1.1.3 - Inserir análise
                     Dim sql_insert_a As String = "begin
-                                              insert into alert.analysis (ID_ANALYSIS, CODE_ANALYSIS, FLG_AVAILABLE, RANK, ID_SAMPLE_TYPE, GENDER, AGE_MIN, AGE_MAX, MDM_CODING, CPT_CODE, REF_FORM_CODE, ID_CONTENT, BARCODE)
-                                              values (alert.seq_analysis.nextval, 'ANALYSIS.CODE_ANALYSIS.' || alert.seq_analysis.nextval, 'Y', 0, "
-
+                                                  insert into alert.analysis (ID_ANALYSIS, CODE_ANALYSIS, FLG_AVAILABLE, RANK, ID_SAMPLE_TYPE, GENDER, AGE_MIN, AGE_MAX, MDM_CODING, CPT_CODE, REF_FORM_CODE, ID_CONTENT, BARCODE)
+                                                  values (alert.seq_analysis.nextval, 'ANALYSIS.CODE_ANALYSIS.' || alert.seq_analysis.nextval, 'Y', 0, "
 
                     If l_id_st = -1 Then
 
@@ -1478,7 +1506,7 @@ Public Class LABS_API
 
                     End If
 
-                    sql_insert_a = sql_insert_a & "'" & id_content_analysis & "', "
+                    sql_insert_a = sql_insert_a & "'" & i_selected_default_analysis(i).id_content_analysis & "', "
 
                     If l_barcode = "" Then
 
@@ -1498,9 +1526,8 @@ Public Class LABS_API
                     cmd_insert_st.Dispose()
 
                     ''Inserir tradução
-                    Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-                    Dim l_code_analysis_default As String = GET_CODE_ANALYSIS_DEFAULT(id_content_analysis, i_conn)
-                    Dim l_code_analysis_alert As String = GET_CODE_ANALYSIS_ALERT(id_content_analysis, i_conn)
+                    Dim l_code_analysis_default As String = GET_CODE_ANALYSIS_DEFAULT(i_selected_default_analysis(i).id_content_analysis, i_conn)
+                    Dim l_code_analysis_alert As String = GET_CODE_ANALYSIS_ALERT(i_selected_default_analysis(i).id_content_analysis, i_conn)
 
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_default, i_conn)), (i_conn)) Then
 
@@ -1510,21 +1537,36 @@ Public Class LABS_API
 
                     End If
 
-                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, id_content_analysis, "r.code_analysis) from alert.analysis", i_conn) Then
+                    '2 - Registo já existe no ALERT. Verifica se tem tradução, se não tiver, insere!
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_analysis, "r.code_analysis) from alert.analysis", i_conn) Then
 
-                    Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-                Dim l_code_analysis_default As String = GET_CODE_ANALYSIS_DEFAULT(id_content_analysis, i_conn)
-                Dim l_code_analysis_alert As String = GET_CODE_ANALYSIS_ALERT(id_content_analysis, i_conn)
+                    Dim l_code_analysis_default As String = GET_CODE_ANALYSIS_DEFAULT(i_selected_default_analysis(i).id_content_analysis, i_conn)
+                    Dim l_code_analysis_alert As String = GET_CODE_ANALYSIS_ALERT(i_selected_default_analysis(i).id_content_analysis, i_conn)
 
-                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_default, i_conn)), (i_conn)) Then
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_default, i_conn)), (i_conn)) Then
 
-                    MsgBox("ERROR INSERTING ANALYSIS TRANSLATION - LABS_API >> CHECK_ANALYSIS_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+                        MsgBox("ERROR INSERTING ANALYSIS TRANSLATION - LABS_API >> CHECK_ANALYSIS_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
 
-                    Return False
+                        Return False
+
+                    End If
+
+                    '3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_ANALYSIS_DEFAULT(i_selected_default_analysis(i).id_content_analysis, i_conn), GET_CODE_ANALYSIS_ALERT(i_selected_default_analysis(i).id_content_analysis, i_conn), i_conn) Then
+
+                    Dim l_code_analysis_default As String = GET_CODE_ANALYSIS_DEFAULT(i_selected_default_analysis(i).id_content_analysis, i_conn)
+                    Dim l_code_analysis_alert As String = GET_CODE_ANALYSIS_ALERT(i_selected_default_analysis(i).id_content_analysis, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPPLE_TYPE TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION" & l_id_language)
+                        Return False
+
+                    End If
 
                 End If
 
-            End If
+            Next
 
         Catch ex As Exception
 
@@ -1536,31 +1578,35 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_ANALYSIS_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_id_content_analysis_sample_type As String, ByVal i_id_content_analysis As String, ByVal i_id_content_st As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_ANALYSIS_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
         Try
-            '1 - Verificar se AST já existe no alert (Nesta etapa já se confirmou a existência da análise e do sample_type)
-            'Nota: Os parâmetros de entrada incluem a análise e o sample type para evitar novas consultas à BD
-            If Not CHECK_RECORD_EXISTENCE(i_id_content_analysis_sample_type, "alert.analysis_sample_type", i_conn) Then
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-                Dim l_gender As String = ""
-                Dim l_age_min As Int16 = -1
-                Dim l_age_max As Int16 = -1
+                '1 - Verificar se AST já existe no alert (Nesta etapa já se confirmou a existência da análise e do sample_type)
+                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_analysis_sample_type, "alert.analysis_sample_type", i_conn) Then
 
-                Dim dr As OracleDataReader
+                    Dim l_gender As String = ""
+                    Dim l_age_min As Int16 = -1
+                    Dim l_age_max As Int16 = -1
 
+                    Dim dr As OracleDataReader
 
-                If Not GET_DEFAULT_ANALYSIS_ST_PARAMETERS(i_id_content_analysis_sample_type, i_conn, dr) Then
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not GET_DEFAULT_ANALYSIS_ST_PARAMETERS(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                    MsgBox("ERROR GETTING ANALYSIS_SAMPLE_TYPE PARAMETERS >> SET_ANALYSIS_SAMPLE_TYPE")
-                    dr.Dispose()
-                    dr.Close()
-                    Return False
+                        MsgBox("ERROR GETTING ANALYSIS_SAMPLE_TYPE PARAMETERS >> SET_ANALYSIS_SAMPLE_TYPE")
+                        dr.Dispose()
+                        dr.Close()
+                        Return False
 
-                End If
+                    End If
 
-                '1.1.1 - Obter os parâmetros da análise_SAMPLE_TYPE
-                While dr.Read()
+                    '1.1.1 - Obter os parâmetros da análise_SAMPLE_TYPE
+                    While dr.Read()
 
                         Try
 
@@ -1598,15 +1644,15 @@ Public Class LABS_API
                     dr.Close()
 
                     ''1.1.2  - Obter o ID ALERT da análise
-                    Dim l_id_analysis As Int64 = GET_ID_ANALYSIS_ALERT(i_id_content_analysis, i_conn)
+                    Dim l_id_analysis As Int64 = GET_ID_ANALYSIS_ALERT(i_selected_default_analysis(i).id_content_analysis, i_conn)
 
                     ''1.1.3 - Obter o ID ALERT do sample_type
-                    Dim l_id_sample_type As Int64 = GET_ID_SAMPLE_TYPE_ALERT(i_id_content_st, i_conn)
+                    Dim l_id_sample_type As Int64 = GET_ID_SAMPLE_TYPE_ALERT(i_selected_default_analysis(i).id_content_sample_type, i_conn)
 
                     ''1.1.4 - Inserir AST
                     Dim sql_insert_ast As String = "begin
-                                                insert into alert.analysis_sample_type (ID_ANALYSIS, ID_SAMPLE_TYPE,ID_CONTENT, ID_CONTENT_ANALYSIS, ID_CONTENT_SAMPLE_TYPE, GENDER, AGE_MIN, AGE_MAX, FLG_AVAILABLE)
-                                                values (" & l_id_analysis & ", " & l_id_sample_type & ", '" & i_id_content_analysis_sample_type & "', '" & i_id_content_analysis & "', '" & i_id_content_st & "', "
+                                                    insert into alert.analysis_sample_type (ID_ANALYSIS, ID_SAMPLE_TYPE,ID_CONTENT, ID_CONTENT_ANALYSIS, ID_CONTENT_SAMPLE_TYPE, GENDER, AGE_MIN, AGE_MAX, FLG_AVAILABLE)
+                                                    values (" & l_id_analysis & ", " & l_id_sample_type & ", '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', '" & i_selected_default_analysis(i).id_content_analysis & "', '" & i_selected_default_analysis(i).id_content_sample_type & "', "
 
                     If l_gender = "" Then
 
@@ -1652,10 +1698,10 @@ Public Class LABS_API
                     Catch ex As Exception 'Se não der para introduzir, seginfica que já existe mas esta a Not available. Assim, colocar a 'Y'
 
                         Dim sql_update_ast = "update alert.analysis_sample_type ast
-                                      set ast.flg_available='Y'
-                                      where ast.id_content='" & i_id_content_analysis_sample_type & "'
-                                      and ast.id_content_analysis='" & i_id_content_analysis & "'
-                                      and ast.id_content_sample_type='" & i_id_content_st & "'"
+                                              set ast.flg_available='Y'
+                                              where ast.id_content='" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+                                              and ast.id_content_analysis='" & i_selected_default_analysis(i).id_content_analysis & "'
+                                              and ast.id_content_sample_type='" & i_selected_default_analysis(i).id_content_sample_type & "'"
 
                         Dim cmd_update_ast As New OracleCommand(sql_update_ast, i_conn)
                         cmd_update_ast.CommandType = CommandType.Text
@@ -1669,11 +1715,10 @@ Public Class LABS_API
                     ''1.1.5 - Inserir Tradução da AST
                     'Nota: Se só se tiver feito o update, a tradução pode existir, daí a verificação
 
-                    If Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_id_content_analysis_sample_type, "r.code_analysis_sample_type) from alert.analysis_sample_type", i_conn) Then
+                    If Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_analysis_sample_type, "r.code_analysis_sample_type) from alert.analysis_sample_type", i_conn) Then
 
-                        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-                        Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_id_content_analysis_sample_type, i_conn)
-                        Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_id_content_analysis_sample_type, i_conn)
+                        Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
+                        Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
                         If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_conn)), (i_conn)) Then
 
                             MsgBox("ERROR INSERTING ANALYSIS SAMPLE TYPE TRANSLATION - LABS_API >> CHECK_ANALYSIS_SAMPLE_TYPE_EXISTENCE >> SET_TRANSLATION")
@@ -1685,20 +1730,35 @@ Public Class LABS_API
                     End If
 
                     '2 Verificar se existe tradução. Se não existir, inserir.
-                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_id_content_analysis_sample_type, "R.code_analysis_sample_type) from alert.analysis_sample_type", i_conn) Then
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_analysis_sample_type, "R.code_analysis_sample_type) from alert.analysis_sample_type", i_conn) Then
 
-                    Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-                Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_id_content_analysis_sample_type, i_conn)
-                Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_id_content_analysis_sample_type, i_conn)
-                If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_conn)), (i_conn)) Then
+                    Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
+                    Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_conn)), (i_conn)) Then
 
-                    MsgBox("ERROR INSERTING ANALYSIS SAMPLE TYPE TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+                        MsgBox("ERROR INSERTING ANALYSIS SAMPLE TYPE TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
 
-                    Return False
+                        Return False
+
+                    End If
+
+
+                    '3 - Uma vez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default ----------------------------------------------
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_ANALYSIS_ST_DEFAULT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn), GET_CODE_ANALYSIS_ST_ALERT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn), i_conn) Then
+
+                    Dim l_code_analysis_st_default As String = GET_CODE_ANALYSIS_ST_DEFAULT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
+                    Dim l_code_analysis_st_alert As String = GET_CODE_ANALYSIS_ST_ALERT(i_selected_default_analysis(i).id_content_analysis_sample_type, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_st_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_st_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING ANALYSIS_SAPPLE_TYPE TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION" & l_id_language)
+                        Return False
+
+                    End If
 
                 End If
 
-            End If
+            Next
 
         Catch ex As Exception
 
@@ -1721,7 +1781,9 @@ Public Class LABS_API
             Dim dr_parameters As OracleDataReader
 
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(i_software, i_id_content_analysis_sample_type, i_conn, dr_parameters) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING ANALYSIS PARAMETERS ID_CONTENT >> SET_PARAMETER")
                 dr_parameters.Dispose()

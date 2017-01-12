@@ -34,7 +34,9 @@ Public Class LAB_TESTS
         Dim dr As OracleDataReader
 
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_ALL_INSTITUTIONS(conn_labs, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ALL INSTITUTIONS")
 
@@ -84,7 +86,9 @@ Public Class LAB_TESTS
 
             Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING SOFTWARES")
 
@@ -130,7 +134,9 @@ Public Class LAB_TESTS
 
         Dim dr_def_versions As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, conn_labs, dr_def_versions) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
 
@@ -167,7 +173,9 @@ Public Class LAB_TESTS
 
         Dim dr_lab_cat_def As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, conn_labs, dr_lab_cat_def) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
@@ -217,7 +225,9 @@ Public Class LAB_TESTS
 
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, conn_labs, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
             dr.Dispose()
@@ -338,9 +348,11 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
+        MsgBox(l_selected_default_analysis(0).id_content_analysis_sample_type)
+
         Try
 
-            If Not db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            If Not db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
                 MsgBox("NOT SET")
 
