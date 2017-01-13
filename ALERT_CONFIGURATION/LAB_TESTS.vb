@@ -352,7 +352,7 @@ Public Class LAB_TESTS
 
         Try
 
-            If Not db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            If Not db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
                 MsgBox("NOT SET")
 
