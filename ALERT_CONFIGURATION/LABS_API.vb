@@ -650,6 +650,33 @@ Public Class LABS_API
 
     End Function
 
+    Function GET_CODE_SAMPLE_RECIPIENT_ALERT(ByVal i_id_content_sr As String, ByVal i_conn As OracleConnection) As String
+
+        Dim sql As String = "Select sr.code_sample_recipient from alert.sample_recipient sr
+                             where sr.id_content='" & i_id_content_sr & "'
+                             and sr.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
+
+        Return l_code
+
+    End Function
+
     Function GET_CODE_PARAMETER_ALERT(ByVal i_id_content_parameter As String, ByVal i_conn As OracleConnection) As String
 
         Dim sql As String = "Select ap.code_analysis_parameter from alert.analysis_parameter ap
@@ -682,6 +709,33 @@ Public Class LABS_API
         Dim sql As String = "Select ast.code_analysis_sample_type from alert_default.analysis_sample_type ast
                              where ast.id_content='" & i_id_content_ast & "'
                              and ast.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
+
+        Return l_code
+
+    End Function
+
+    Function GET_CODE_SAMPLE_RECIPIENT_DEFAULT(ByVal i_id_content_sr As String, ByVal i_conn As OracleConnection) As String
+
+        Dim sql As String = "Select sr.code_sample_recipient from alert_default.sample_recipient sr
+                             where sr.id_content='" & i_id_content_sr & "'
+                             and sr.flg_available='Y'"
 
         Dim l_code As String = ""
 
@@ -1978,10 +2032,10 @@ Public Class LABS_API
 
     Function SET_PARAM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
-        ' Try
+        Try
 
-        'Ciclo que vai correr as AST todas enviadas à função
-        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+            'Ciclo que vai correr as AST todas enviadas à função
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
                 Dim dr As OracleDataReader
 
@@ -2033,7 +2087,7 @@ Public Class LABS_API
 
                         End Try
 
-                    Dim sql_insert_analysis_param As String = "DECLARE
+                        Dim sql_insert_analysis_param As String = "DECLARE
 
                                                                         l_id_analysis    alert.analysis_sample_type.id_analysis%TYPE;
                                                                         l_id_sample_type alert.analysis_sample_type.id_sample_type%TYPE;
@@ -2076,17 +2130,17 @@ Public Class LABS_API
                                                                                  l_id_analysis_parameter,
                                                                                  " & l_rank & ","
 
-                    If l_color_graph = "" Then
+                        If l_color_graph = "" Then
 
-                        sql_insert_analysis_param = sql_insert_analysis_param & " null ,"
+                            sql_insert_analysis_param = sql_insert_analysis_param & " null ,"
 
-                    Else
+                        Else
 
-                        sql_insert_analysis_param = sql_insert_analysis_param & " '" & l_color_graph & "',"
+                            sql_insert_analysis_param = sql_insert_analysis_param & " '" & l_color_graph & "',"
 
-                    End If
+                        End If
 
-                    sql_insert_analysis_param = sql_insert_analysis_param & "'" & l_flg_fil_type & "',
+                        sql_insert_analysis_param = sql_insert_analysis_param & "'" & l_flg_fil_type & "',
                                                                                  l_id_sample_type);
     
                                                                         EXCEPTION
@@ -2108,15 +2162,15 @@ Public Class LABS_API
                                                                     END;"
 
 
-                    Dim cmd_insert_analysis_param As New OracleCommand(sql_insert_analysis_param, i_conn)
+                        Dim cmd_insert_analysis_param As New OracleCommand(sql_insert_analysis_param, i_conn)
 
-                    cmd_insert_analysis_param.CommandType = CommandType.Text
+                        cmd_insert_analysis_param.CommandType = CommandType.Text
 
-                    cmd_insert_analysis_param.ExecuteNonQuery()
+                        cmd_insert_analysis_param.ExecuteNonQuery()
 
-                    cmd_insert_analysis_param.Dispose()
+                        cmd_insert_analysis_param.Dispose()
 
-                End While
+                    End While
 
                 End If
 
@@ -2125,12 +2179,103 @@ Public Class LABS_API
 
             Next
 
-        ' Catch ex As Exception
+        Catch ex As Exception
 
-        ' MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
-        'Return False
+            MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
+            Return False
 
-        ' End Try
+        End Try
+
+        Return True
+
+    End Function
+
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Function SET_SAMPLE_RECIPIENT(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Try
+            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+                '1 - Verificar se SR já existe no alert. Se não existe, inserir e inserir tradução.
+                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_sample_recipient, "alert.sample_recipient", i_conn) Then
+                    MsgBox("THI")
+                    Dim sql_insert_sr As String = "BEGIN
+
+                                                            insert into ALERT.sample_recipient (ID_SAMPLE_RECIPIENT, CODE_SAMPLE_RECIPIENT, FLG_AVAILABLE, RANK, ID_CONTENT)
+                                                            values (ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL, 'SAMPLE_RECIPIENT.CODE_SAMPLE_RECIPIENT.'||  ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL , 'Y', 0,'" & i_selected_default_analysis(i).id_content_sample_recipient & "');
+
+                                                    EXCEPTION
+                                                      WHEN DUP_VAL_ON_INDEX THEN
+                                                        UPDATE ALERT.sample_recipient SR
+                                                        SET    SR.FLG_AVAILABLE='Y'
+                                                        WHERE  SR.ID_CONTENT='" & i_selected_default_analysis(i).id_content_sample_recipient & "';
+                                                    
+                                                    END;"
+
+                    Dim cmd_insert_sr As New OracleCommand(sql_insert_sr, i_conn)
+                    cmd_insert_sr.CommandType = CommandType.Text
+
+                    cmd_insert_sr.ExecuteNonQuery()
+
+                    cmd_insert_sr.Dispose()
+
+                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_SAMPLE_RECIPIENT_EXISTENCE >> SET_TRANSLATION")
+
+                        Return False
+
+                    End If
+
+                    ''cOMO SE INSERIUM UMA NOVA SR, VERIFICAR SE É NECESSÁRIO FAZER UPDATE À ANALYSIS_INST_RECIPIENT
+                    'UPDATE ALERT.ANALYSIS_INSTIT_RECIPIENT AIR
+                    ' SET AIR.ID_SAMPLE_RECIPIENT=702000010537
+                    ' WHERE AIR.ID_SAMPLE_RECIPIENT = 702000010241;                            
+
+
+                    '2 - Uma vez que já existe no alert, verificar se existe translation
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_analysis_sample_type, "R.code_sample_recipient) from alert.sample_recipient", i_conn) Then
+
+                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_SAMPLE_RECIPIENT_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
+
+                        Return False
+
+                    End If
+
+                    '3 - Uma vez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn), GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn), i_conn) Then
+
+                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION" & l_id_language)
+                        Return False
+
+                    End If
+
+                End If
+
+            Next
+
+        Catch ex As Exception
+
+
+            MsgBox("ERROR INSERTING SAMPLE RECIPIENT")
+            Return False
+
+        End Try
 
         Return True
 
