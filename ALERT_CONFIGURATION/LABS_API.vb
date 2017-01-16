@@ -2294,7 +2294,6 @@ Public Class LABS_API
 
     End Function
 
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Function SET_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
@@ -2493,9 +2492,9 @@ Public Class LABS_API
                         MsgBox("ERROR INSERTING ANALYSIS INST SOFT")
                         Return False
 
-                   End Try
+                    End Try
 
-        End If
+                End If
 
             Next
 
@@ -2505,6 +2504,81 @@ Public Class LABS_API
             Return False
 
         End Try
+
+        Return True
+
+    End Function
+
+    Function SET_ANALYSIS_INST_RECIPIENT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            'Função que vai colocar o tubo na análise
+            'Nota: Esta tabela permite ter muitos registos para um único id_analysis_inst_soft
+            Dim sql_insert_air As String = "DECLARE
+
+                                                    l_id_analysis_alert    alert.analysis_sample_type.id_analysis%TYPE;
+                                                    l_id_sample_type_alert alert.analysis_sample_type.id_sample_type%TYPE;
+
+                                                    l_id_sample_recipient_alert alert.sample_recipient.id_sample_recipient%TYPE;
+
+                                                    l_id_analysis_inst_soft_alert alert.analysis_instit_soft.id_analysis_instit_soft%TYPE;
+
+                                                BEGIN
+
+                                                    SELECT ast.id_analysis, ast.id_sample_type
+                                                    INTO l_id_analysis_alert, l_id_sample_type_alert
+                                                    FROM alert.analysis_sample_type ast
+                                                    WHERE ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+                                                    AND ast.flg_available = 'Y';
+
+                                                    SELECT sr.id_sample_recipient
+                                                    INTO l_id_sample_recipient_alert
+                                                    FROM alert.sample_recipient sr
+                                                    WHERE sr.id_content = '" & i_selected_default_analysis(i).id_content_sample_recipient & "'
+                                                    AND sr.flg_available = 'Y';
+
+                                                    SELECT ais.id_analysis_instit_soft
+                                                    INTO l_id_analysis_inst_soft_alert
+                                                    FROM alert.analysis_instit_soft ais
+                                                    WHERE ais.id_analysis = l_id_analysis_alert
+                                                    AND ais.id_sample_type = l_id_sample_type_alert
+                                                    AND ais.id_institution = " & i_institution & " 
+                                                    AND ais.id_software = " & i_software & " 
+                                                    AND ais.flg_available = 'Y';
+
+                                                    INSERT INTO alert.analysis_instit_recipient
+                                                        (id_analysis_instit_recipient, id_analysis_instit_soft, id_sample_recipient, flg_default)
+                                                    VALUES
+                                                        (alert.seq_analysis_instit_recipient.nextval, l_id_analysis_inst_soft_alert, l_id_sample_recipient_alert, 'Y');
+
+                                                EXCEPTION
+                                                    WHEN dup_val_on_index THEN
+                                                        UPDATE alert.analysis_instit_recipient air
+                                                        SET air.id_sample_recipient = l_id_sample_recipient_alert
+                                                        WHERE air.id_analysis_instit_soft = l_id_analysis_inst_soft_alert;
+    
+                                                END;"
+
+            Try
+
+                Dim cmd_insert_air As New OracleCommand(sql_insert_air, i_conn)
+                cmd_insert_air.CommandType = CommandType.Text
+
+                cmd_insert_air.ExecuteNonQuery()
+
+                cmd_insert_air.Dispose()
+
+            Catch ex As Exception
+
+                MsgBox("ERROR INSERTING ANALYSIS INST RECIPIENT")
+                Return False
+
+            End Try
+
+        Next
 
         Return True
 
