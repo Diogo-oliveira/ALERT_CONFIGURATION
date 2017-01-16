@@ -654,5 +654,35 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
+    Function GET_LAB_ROOMS(ByVal i_institution As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT pk_translation.get_translation(" & GET_ID_LANG(i_institution, i_conn) & ", r.code_room), r.id_room
+                                FROM alert.department d
+                                JOIN alert.room r ON r.id_department = d.id_department
+                                JOIN translation t ON t.code_translation = r.code_room
+                                WHERE d.id_institution = " & i_institution & "
+                                AND r.flg_lab = 'Y'
+                                AND r.flg_available = 'Y'
+                                ORDER BY 1"
+
+        Try
+
+
+            Dim cmd As New OracleCommand(sql, i_conn)
+            cmd.CommandType = CommandType.Text
+
+            i_dr = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
 
 End Class

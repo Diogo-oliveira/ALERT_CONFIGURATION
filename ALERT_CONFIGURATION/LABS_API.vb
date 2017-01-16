@@ -2584,4 +2584,193 @@ Public Class LABS_API
 
     End Function
 
+    ''''''''''''''''''''''''''''''''''''
+    Function SET_ANALYSIS_ROOM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_room As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            'Função que vai colocar o tubo na análise
+            'Nota: Esta tabela permite ter muitos registos para um único id_analysis_inst_soft
+            Dim sql_insert_analysis_room As String = "DECLARE
+
+                                              CURSOR c_new_analysis IS
+                                                SELECT Ast.ID_ANALYSIS, ast.id_sample_type
+                                                  FROM alert.analysis_sample_type ast
+                                                 INNER JOIN alert.analysis_instit_soft ais
+                                                    on ais.id_analysis = ast.id_analysis
+                                                   and ais.id_sample_type = ast.id_sample_type
+                                                   and ais.id_software = " & i_software & "
+                                                   and ais.flg_available = 'Y'
+                                                 WHERE Ast.ID_CONTENT IN ('" & i_selected_default_analysis(i).id_content_analysis_sample_type & "') 
+                                                   AND Ast.FLG_AVAILABLE = 'Y';
+
+                                              l_id_analysis    alert.analysis.id_analysis%type;
+                                              l_id_sample_type alert.analysis.id_sample_type%type;
+
+                                              l_id_analysis_room alert.analysis_room.id_analysis_room%type;
+
+                                              FUNCTION record_exists(i_id_analysis    IN alert.analysis.id_analysis%type,
+                                                                     i_id_sample_type IN alert.sample_type.id_sample_type%type,
+                                                                     i_id_inst        IN alert.analysis_instit_soft.id_institution%type,
+                                                                     i_flg_type       IN alert.analysis_instit_soft.flg_type%type)
+                                                RETURN BOOLEAN IS
+  
+                                                l_exists    boolean := FALSE;
+                                                l_id_a_room alert.analysis_room.id_analysis_room%type := 0;
+  
+                                              BEGIN
+  
+                                                BEGIN
+    
+                                                  Select ar.id_analysis_room
+                                                    into l_id_a_room
+                                                    from alert.analysis_room ar
+                                                   where ar.id_analysis = i_id_analysis
+                                                     and ar.id_sample_type = i_id_sample_type
+                                                     and ar.id_institution = i_id_inst
+                                                     and ar.flg_type = i_flg_type;
+    
+                                                  IF l_id_a_room <> 0 THEN
+      
+                                                    l_exists := TRUE;
+      
+                                                  ELSE
+      
+                                                    l_exists := FALSE;
+      
+                                                  END IF;
+    
+                                                EXCEPTION
+                                                  WHEN no_data_found THEN
+                                                    l_exists := FALSE;
+      
+                                                END;
+  
+                                                RETURN l_exists;
+  
+                                              END record_exists;
+
+                                            BEGIN
+
+                                              OPEN c_new_analysis;
+
+                                              LOOP
+  
+                                                FETCH c_new_analysis
+                                                  INTO l_id_analysis, l_id_sample_type;
+                                                EXIT WHEN c_new_analysis%NOTFOUND;
+  
+                                                BEGIN
+    
+                                                  IF not record_exists(l_id_analysis, l_id_sample_type, " & i_institution & ", 'M') THEN
+      
+                                                    insert into alert.analysis_room
+                                                      (ID_ANALYSIS_ROOM,
+                                                       ID_ANALYSIS,
+                                                       ID_ROOM,
+                                                       RANK,
+                                                       ADW_LAST_UPDATE,
+                                                       FLG_TYPE,
+                                                       FLG_AVAILABLE,
+                                                       DESC_EXEC_DESTINATION,
+                                                       FLG_DEFAULT,
+                                                       ID_INSTITUTION,
+                                                       CREATE_USER,
+                                                       CREATE_TIME,
+                                                       CREATE_INSTITUTION,
+                                                       UPDATE_USER,
+                                                       UPDATE_TIME,
+                                                       UPDATE_INSTITUTION,
+                                                       ID_SAMPLE_TYPE)
+                                                    values
+                                                      (alert.seq_analysis_room.nextval,
+                                                       l_id_analysis,
+                                                       " & i_id_room & ",
+                                                       0,
+                                                       null,
+                                                       'M',
+                                                       'Y',
+                                                       null,
+                                                       'Y',
+                                                        " & i_institution & ",
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       l_id_sample_type);            
+      
+                                            END IF;
+    
+                                                  IF not record_exists(l_id_analysis, l_id_sample_type,  " & i_institution & ", 'T') THEN
+      
+                                                    insert into alert.analysis_room
+                                                      (ID_ANALYSIS_ROOM,
+                                                       ID_ANALYSIS,
+                                                       ID_ROOM,
+                                                       RANK,
+                                                       ADW_LAST_UPDATE,
+                                                       FLG_TYPE,
+                                                       FLG_AVAILABLE,
+                                                       DESC_EXEC_DESTINATION,
+                                                       FLG_DEFAULT,
+                                                       ID_INSTITUTION,
+                                                       CREATE_USER,
+                                                       CREATE_TIME,
+                                                       CREATE_INSTITUTION,
+                                                       UPDATE_USER,
+                                                       UPDATE_TIME,
+                                                       UPDATE_INSTITUTION,
+                                                       ID_SAMPLE_TYPE)
+                                                    values
+                                                      (alert.seq_analysis_room.nextval,
+                                                       l_id_analysis,
+                                                       " & i_id_room & ", 
+                                                       0,
+                                                       null,
+                                                       'T',
+                                                       'Y',
+                                                       null,
+                                                       'Y',
+                                                        " & i_institution & ",
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       l_id_sample_type);
+
+                                                  END IF;
+    
+                                                END;
+  
+                                              END LOOP;
+
+                                              CLOSE c_new_analysis;
+
+                                            END;"
+
+            ' Try
+
+            Dim cmd_insert_analysis_room As New OracleCommand(sql_insert_analysis_room, i_conn)
+            cmd_insert_analysis_room.CommandType = CommandType.Text
+
+            cmd_insert_analysis_room.ExecuteNonQuery()
+
+            cmd_insert_analysis_room.Dispose()
+
+            ' Catch ex As Exception
+
+            '  MsgBox("ERROR INSERTING ANALYSIS ROOM")
+            '  Return False
+
+            ' End Try
+
+        Next
+
+        Return True
+
+    End Function
 End Class

@@ -17,6 +17,14 @@ Public Class LAB_TESTS
     'Ligação à BD
     Dim conn_labs As New OracleConnection(oradb)
 
+    'Array que vai guardar os quartos da instituição
+    Dim l_loaded_rooms() As Int64
+
+    'Variavel que guarda o id_room a ser inserido
+    Dim l_selected_room As Int64 = -1
+
+
+
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
@@ -77,6 +85,8 @@ Public Class LAB_TESTS
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
+        l_selected_room = -1
+
         If TextBox1.Text <> "" Then
 
             ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn_labs)
@@ -85,12 +95,15 @@ Public Class LAB_TESTS
             ComboBox2.Text = ""
 
             Dim dr As OracleDataReader
+            ReDim l_loaded_rooms(0)
+            Dim i_index_room As Int32 = 0
+
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                MsgBox("ERROR GETTING SOFTWARES")
+                MsgBox("ERROR GETTING SOFTWARES", vbCritical)
 
             Else
 
@@ -114,8 +127,29 @@ Public Class LAB_TESTS
 
             End If
 
+            If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+
+                MsgBox("ERROR GETTING LAB ROOMS", vbCritical)
+
+            Else
+
+                ComboBox7.Items.Clear()
+
+                While dr.Read()
+
+
+                    ReDim Preserve l_loaded_rooms(i_index_room)
+                    ComboBox7.Items.Add(dr.Item(0))
+                    l_loaded_rooms(i_index_room) = dr.Item(1)
+                    i_index_room = i_index_room + 1
+
+                End While
+
+            End If
+
             dr.Dispose()
             dr.Close()
+
 
         End If
 
@@ -350,25 +384,39 @@ Public Class LAB_TESTS
 
         If db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-            ' If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-            ' If db_labs.SET_ANALYSIS(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                If db_labs.SET_ANALYSIS(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-            '  If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                    If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-            ' If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                        If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-            ' If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                            If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-            If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                                If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-                If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                                    If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-                    If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                                        If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-                        MsgBox(l_selected_default_analysis(0).id_content_analysis_sample_type)
+                                            If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, l_selected_soft, l_selected_room, l_selected_default_analysis, conn_labs) Then
 
-                        MsgBox("SUCCESS")
+                                                MsgBox(l_selected_default_analysis(0).id_content_analysis_sample_type)
+
+                                                MsgBox("SUCCESS")
+
+                                            End If
+
+                                        End If
+
+                                    End If
+
+                                End If
+
+                            End If
+
+                        End If
 
                     End If
 
@@ -376,24 +424,49 @@ Public Class LAB_TESTS
 
             End If
 
-
-            'End If
-
-            ' End If
-
-            ' End If
-
-            ' End If
-
-            'End If
-
         Else
 
-                MsgBox("ERROR")
+                                MsgBox("ERROR")
 
         End If
 
         Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        l_selected_room = -1
+
+        Dim dr As OracleDataReader
+
+        If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+
+            MsgBox("ERROR GETTING LAB ROOMS", vbCritical)
+
+            dr.Dispose()
+            dr.Close()
+
+        Else
+
+            ComboBox7.Items.Clear()
+
+            While dr.Read()
+
+                ComboBox7.Items.Add(dr.Item(0))
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+    End Sub
+
+    Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
+
+        l_selected_room = l_loaded_rooms(ComboBox7.SelectedIndex)
 
     End Sub
 End Class

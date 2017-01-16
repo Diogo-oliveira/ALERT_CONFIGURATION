@@ -41,6 +41,12 @@ Partial Class LAB_TESTS
         Me.Button2 = New System.Windows.Forms.Button()
         Me.CheckedListBox1 = New System.Windows.Forms.CheckedListBox()
         Me.Button5 = New System.Windows.Forms.Button()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.ComboBox5 = New System.Windows.Forms.ComboBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
         Me.SuspendLayout()
         '
         'Label3
@@ -213,11 +219,77 @@ Partial Class LAB_TESTS
         Me.Button5.Text = "SAVE"
         Me.Button5.UseVisualStyleBackColor = True
         '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(967, 505)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(110, 13)
+        Me.Label9.TabIndex = 53
+        Me.Label9.Text = "CLINICAL SERVICES"
+        '
+        'ComboBox6
+        '
+        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox6.FormattingEnabled = True
+        Me.ComboBox6.ItemHeight = 16
+        Me.ComboBox6.Location = New System.Drawing.Point(969, 521)
+        Me.ComboBox6.Name = "ComboBox6"
+        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.TabIndex = 52
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(160, 505)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(129, 13)
+        Me.Label8.TabIndex = 51
+        Me.Label8.Text = "EXAM CATEGORY (Alert)"
+        '
+        'ComboBox5
+        '
+        Me.ComboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox5.FormattingEnabled = True
+        Me.ComboBox5.ItemHeight = 16
+        Me.ComboBox5.Location = New System.Drawing.Point(163, 521)
+        Me.ComboBox5.Name = "ComboBox5"
+        Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox5.TabIndex = 50
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(819, 116)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(47, 13)
+        Me.Label5.TabIndex = 55
+        Me.Label5.Text = "ROOMS"
+        '
+        'ComboBox7
+        '
+        Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox7.FormattingEnabled = True
+        Me.ComboBox7.ItemHeight = 16
+        Me.ComboBox7.Location = New System.Drawing.Point(821, 132)
+        Me.ComboBox7.Name = "ComboBox7"
+        Me.ComboBox7.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox7.TabIndex = 54
+        '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.ComboBox7)
+        Me.Controls.Add(Me.Label9)
+        Me.Controls.Add(Me.ComboBox6)
+        Me.Controls.Add(Me.Label8)
+        Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.CheckedListBox1)
         Me.Controls.Add(Me.Button4)
@@ -265,4 +337,10 @@ Partial Class LAB_TESTS
     Friend WithEvents Button2 As Button
     Friend WithEvents CheckedListBox1 As CheckedListBox
     Friend WithEvents Button5 As Button
+    Friend WithEvents Label9 As Label
+    Friend WithEvents ComboBox6 As ComboBox
+    Friend WithEvents Label8 As Label
+    Friend WithEvents ComboBox5 As ComboBox
+    Friend WithEvents Label5 As Label
+    Friend WithEvents ComboBox7 As ComboBox
 End Class
