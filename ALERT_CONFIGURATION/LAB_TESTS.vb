@@ -350,36 +350,42 @@ Public Class LAB_TESTS
 
         If db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-            If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            ' If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-                If db_labs.SET_ANALYSIS(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            ' If db_labs.SET_ANALYSIS(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-                    If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            '  If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-                        If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+            ' If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-                            If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+            ' If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-                                If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
-                                    MsgBox(l_selected_default_analysis(0).id_content_sample_recipient)
+            If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
 
-                                    MsgBox("SUCCESS")
+                If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
 
-                                End If
+                    MsgBox(l_selected_default_analysis(0).id_content_analysis_sample_type)
 
-                            End If
-
-                        End If
-
-                    End If
+                    MsgBox("SUCCESS")
 
                 End If
 
             End If
 
+
+            'End If
+
+            ' End If
+
+            ' End If
+
+            ' End If
+
+            'End If
+
         Else
 
-            MsgBox("ERROR")
+                MsgBox("ERROR")
 
         End If
 

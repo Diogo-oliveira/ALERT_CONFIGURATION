@@ -117,7 +117,7 @@ Public Class General
 
     End Function
 
-    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int16, ByVal i_conn As OracleConnection) As String
+    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64, ByVal i_conn As OracleConnection) As String
 
         Dim l_inst As String = ""
 
@@ -292,7 +292,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int16, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
@@ -410,7 +410,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int16, ByVal i_conn As OracleConnection) As Int16
+    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64, ByVal i_conn As OracleConnection) As Int16
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
