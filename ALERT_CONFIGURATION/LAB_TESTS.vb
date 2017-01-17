@@ -27,7 +27,16 @@ Public Class LAB_TESTS
     Dim l_lab_cats_alert() As String
 
     'Array que vai guardar as análises carregadas do ALERT
-    Dim l_labs_alert() As String
+    Dim l_labs_alert() As LABS_API.analysis_alert
+
+    'Array que vai guardar as análises selecionadas do ALERT
+    Dim l_labs_selected_from_alert() As LABS_API.analysis_alert
+
+    Dim l_index_selected_labs_from_alert As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 4 - do alert para o clinical service)
+
+
+    Dim a_labs_for_clinical_service() As LABS_API.analysis_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
+    Dim l_dimension_labs_cs As Integer = 0
 
     ''Array que vai guardar os dep_clin_serv da instituição
     Dim a_dep_clin_serv_inst() As Int64
@@ -394,7 +403,7 @@ Public Class LAB_TESTS
 
             While dr.Read()
 
-                CheckedListBox2.Items.Add(dr.Item(1) & " [" & dr.Item(3) & "]")
+                CheckedListBox2.Items.Add(dr.Item(1) & " - [" & dr.Item(3) & "]")
 
                 ReDim Preserve l_loaded_analysis_default(l_dimension_array_loaded_analysis)
 
@@ -726,11 +735,13 @@ Public Class LAB_TESTS
 
             While dr_labs.Read()
 
-                l_labs_alert(l_index) = dr_labs.Item(0)
+                l_labs_alert(l_index).id_content_analysis_sample_type = dr_labs.Item(0)
+                l_labs_alert(l_index).desc_analysis_sample_type = dr_labs.Item(1)
+                l_labs_alert(l_index).desc_analysis_sample_recipient = dr_labs.Item(2)
                 l_index = l_index + 1
                 ReDim Preserve l_labs_alert(l_index)
 
-                CheckedListBox3.Items.Add(dr_labs.Item(1))
+                CheckedListBox3.Items.Add((dr_labs.Item(1)) & " - [" & dr_labs.Item(2) & "]")
 
             End While
 
@@ -738,6 +749,114 @@ Public Class LAB_TESTS
             dr_labs.Close()
 
         End If
+
+    End Sub
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
+
+        'Ciclo para correr todos os exames selecionados na caixa da esquerda (Por Categoria)
+        For Each indexChecked In CheckedListBox3.CheckedIndices
+
+            'If para verificar se já está incluido na checkbox da direita
+
+            Dim l_record_already_selected As Boolean = False
+
+            Dim j As Integer = 0
+
+            For j = 0 To CheckedListBox4.Items.Count() - 1
+
+                If (l_labs_alert(indexChecked.ToString()).id_content_analysis_sample_type = l_labs_selected_from_alert(j).id_content_analysis_sample_type) Then
+
+                    l_record_already_selected = True
+                    Exit For
+
+                End If
+
+            Next
+
+            If l_record_already_selected = False Then
+
+                ReDim Preserve l_labs_selected_from_alert(l_index_selected_labs_from_alert)
+
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).id_content_analysis_sample_type = l_labs_alert(indexChecked.ToString()).id_content_analysis_sample_type
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_type = l_labs_alert(indexChecked.ToString()).desc_analysis_sample_type
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_recipient = l_labs_alert(indexChecked.ToString()).desc_analysis_sample_recipient
+
+                ReDim Preserve a_labs_for_clinical_service(l_dimension_labs_cs)
+
+                a_labs_for_clinical_service(l_dimension_labs_cs).id_content_analysis_sample_type = l_labs_alert(indexChecked.ToString()).id_content_analysis_sample_type
+                a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_type = l_labs_alert(indexChecked.ToString()).desc_analysis_sample_recipient
+                a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_recipient = l_labs_alert(indexChecked.ToString()).desc_analysis_sample_recipient
+                a_labs_for_clinical_service(l_dimension_labs_cs).flg_new = "Y"
+
+                l_dimension_labs_cs = l_dimension_labs_cs + 1
+
+                CheckedListBox4.Items.Add(l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_type & " - [" & l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_recipient & "]")
+                CheckedListBox4.SetItemChecked((CheckedListBox4.Items.Count() - 1), True)
+
+                l_index_selected_labs_from_alert = l_index_selected_labs_from_alert + 1
+
+            End If
+
+        Next
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, True)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, False)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+
+        Dim result As Integer = 0
+
+        If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
+
+            result = MsgBox("All records from the chosen category will be deleted! Confirm?", MessageBoxButtons.YesNo)
+
+        End If
+
+        If (result = DialogResult.Yes Or CheckedListBox3.CheckedIndices.Count < CheckedListBox3.Items.Count()) Then
+
+            Dim indexChecked As Integer
+
+            Dim total_selected_labs As Integer = 0
+
+            For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                total_selected_labs = total_selected_labs + 1
+
+            Next
+
+        End If
+
+        ''1 - Determinar ID_Content_ast dos registos selecionados
+        ''2 - Criar função para colocar a not available na analysis_inst_soft
+
 
     End Sub
 End Class

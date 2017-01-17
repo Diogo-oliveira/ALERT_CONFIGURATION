@@ -35,6 +35,19 @@ Public Class LABS_API
         Public desc_analysis_sample_recipient As String
     End Structure
 
+    Public Structure analysis_alert
+        Public id_content_analysis_sample_type As String
+        Public desc_analysis_sample_type As String
+        Public desc_analysis_sample_recipient As String
+    End Structure
+
+    Public Structure analysis_alert_flg
+        Public id_content_analysis_sample_type As String
+        Public desc_analysis_sample_type As String
+        Public desc_analysis_sample_recipient As String
+        Public flg_new As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Try
@@ -251,10 +264,11 @@ Public Class LABS_API
 
     Function GET_LABS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        ' Try
+        Try
 
-        Dim sql As String = "SELECT distinct ast.id_content,
-                                        pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ast.code_analysis_sample_type)    
+            Dim sql As String = "SELECT distinct ast.id_content,
+                                        pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ast.code_analysis_sample_type),
+                                        pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", sr.code_sample_recipient)     
                                     FROM alert.analysis_room ar
 
                                     JOIN alert.analysis_sample_type ast ON ast.id_analysis = ar.id_analysis
@@ -277,23 +291,22 @@ Public Class LABS_API
                                     JOIN alert.analysis_parameter parameter ON parameter.id_analysis_parameter = ap.id_analysis_parameter
                                                                         AND parameter.flg_available = 'Y'
                                     JOIN alert.exam_cat ec ON ec.id_exam_cat = ais.id_exam_cat
-                                                       AND ec.flg_available = 'Y'
-
-                                    join translation t on t.code_translation=ast.code_analysis_sample_type
-
+                                                       AND ec.flg_available = 'Y'                                    
+                                    JOIN alert.sample_recipient sr ON sr.id_sample_recipient = air.id_sample_recipient
+                                    AND sr.flg_available = 'Y'
 
                                     WHERE ar.flg_available = 'Y'
                                     AND ar.id_institution = " & i_institution & "
                                     AND ais.id_software = " & i_software
 
-        If i_id_content_exam_cat <> "0" Then
+            If i_id_content_exam_cat <> "0" Then
 
-            sql = sql & " And ec.id_content = '" & i_id_content_exam_cat & "'
+                sql = sql & " And ec.id_content = '" & i_id_content_exam_cat & "'
                           order by 2 asc"
 
-        Else
+            Else
 
-            sql = sql & " order by 2 asc"
+                sql = sql & " order by 2 asc"
 
             End If
 
@@ -305,11 +318,11 @@ Public Class LABS_API
 
             Return True
 
-            ' Catch ex As Exception
+        Catch ex As Exception
 
-        'Return False
+            Return False
 
-        ' End Try
+        End Try
 
     End Function
 
@@ -2894,6 +2907,13 @@ Public Class LABS_API
             ' End Try
 
         Next
+
+        Return True
+
+    End Function
+
+    Function DELETE_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_ast As String) As Boolean
+
 
         Return True
 
