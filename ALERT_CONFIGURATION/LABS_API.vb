@@ -114,8 +114,11 @@ Public Class LABS_API
 
         Try
 
-            Dim sql As String = "Select distinct dec.id_content, alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ",dec.code_exam_cat)
-              
+            Dim sql As String = "Select distinct dec.id_content, 
+                                 nvl2(dec.parent_id,
+                                 (alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", decp.code_exam_cat) || ' - ' ||
+                                 alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", dec.code_exam_cat)),
+                                 (alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", dec.code_exam_cat)))              
                               from alert_default.analysis da
                               join alert_default.analysis_sample_type dast
                                 on dast.id_analysis = da.id_analysis
@@ -150,9 +153,11 @@ Public Class LABS_API
                               join institution i
                                 on i.id_market = dav.id_market
                               join alert_default.exam_cat dec
-                                on dec.id_exam_cat = dais.id_exam_cat --Novo
+                                on dec.id_exam_cat = dais.id_exam_cat
                               join alert_default.translation dtec
-                                on dtec.code_translation = dec.code_exam_cat --Novo
+                                on dtec.code_translation = dec.code_exam_cat
+                         LEFT JOIN alert_default.exam_cat decp ON decp.id_exam_cat = dec.parent_id
+                         LEFT JOIN alert_default.translation dtecp ON dtecp.code_translation = decp.code_exam_cat
 
                              where da.flg_available = 'Y'
                                and dst.flg_available = 'Y'
@@ -185,6 +190,126 @@ Public Class LABS_API
             Return False
 
         End Try
+
+    End Function
+
+    Function GET_LAB_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Try
+
+            Dim sql As String = "SELECT distinct ec.id_content,
+                                        nvl2(ec.parent_id,
+                                             (pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ecp.code_exam_cat) || ' - ' ||
+                                              pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ec.code_exam_cat)),
+                                             (pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ec.code_exam_cat)))     
+                                        FROM alert.analysis_room ar
+
+                                        JOIN alert.analysis_sample_type ast ON ast.id_analysis = ar.id_analysis
+                                                                        AND ast.id_sample_type = ast.id_sample_type
+                                                                        AND ast.flg_available = 'Y'
+                                        JOIN alert.analysis a ON a.id_analysis = ast.id_analysis
+                                                          AND a.flg_available = 'Y'
+                                        JOIN alert.sample_type st ON st.id_sample_type = ast.id_sample_type
+                                                              AND st.flg_available = 'Y'
+                                        JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
+                                                                        AND ast.id_sample_type = ais.id_sample_type
+                                                                        AND ais.id_institution = ar.id_institution
+                                                                        AND ais.flg_available = 'Y'
+                                        JOIN alert.analysis_instit_recipient air ON air.id_analysis_instit_soft = ais.id_analysis_instit_soft
+                                        JOIN alert.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                                 AND ap.id_sample_type = ast.id_sample_type
+                                                                 AND ap.id_institution = ar.id_institution
+                                                                 AND ap.id_software = ais.id_software
+                                                                 AND ap.flg_available = 'Y'
+                                        JOIN alert.analysis_parameter parameter ON parameter.id_analysis_parameter = ap.id_analysis_parameter
+                                                                            AND parameter.flg_available = 'Y'
+                                        JOIN alert.exam_cat ec ON ec.id_exam_cat = ais.id_exam_cat
+                                                           AND ec.flg_available = 'Y'
+                                        JOIN translation tec ON tec.code_translation = ec.code_exam_cat
+                                        LEFT JOIN alert.exam_cat ecp ON ecp.id_exam_cat = ec.parent_id
+                                        LEFT JOIN translation tecp ON tecp.code_translation = ecp.code_exam_cat
+
+                                        WHERE ar.flg_available = 'Y'
+                                        AND ar.id_institution = " & i_institution & "
+                                        AND ais.id_software = " & i_software & "
+                                        order by 2 asc"
+
+            Dim cmd As New OracleCommand(sql, i_conn)
+            cmd.CommandType = CommandType.Text
+
+            i_dr = cmd.ExecuteReader()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function GET_LABS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        ' Try
+
+        Dim sql As String = "SELECT distinct ast.id_content,
+                                        pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ast.code_analysis_sample_type)    
+                                    FROM alert.analysis_room ar
+
+                                    JOIN alert.analysis_sample_type ast ON ast.id_analysis = ar.id_analysis
+                                                                    AND ast.id_sample_type = ast.id_sample_type
+                                                                    AND ast.flg_available = 'Y'
+                                    JOIN alert.analysis a ON a.id_analysis = ast.id_analysis
+                                                      AND a.flg_available = 'Y'
+                                    JOIN alert.sample_type st ON st.id_sample_type = ast.id_sample_type
+                                                          AND st.flg_available = 'Y'
+                                    JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
+                                                                    AND ast.id_sample_type = ais.id_sample_type
+                                                                    AND ais.id_institution = ar.id_institution
+                                                                    AND ais.flg_available = 'Y'
+                                    JOIN alert.analysis_instit_recipient air ON air.id_analysis_instit_soft = ais.id_analysis_instit_soft
+                                    JOIN alert.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                             AND ap.id_sample_type = ast.id_sample_type
+                                                             AND ap.id_institution = ar.id_institution
+                                                             AND ap.id_software = ais.id_software
+                                                             AND ap.flg_available = 'Y'
+                                    JOIN alert.analysis_parameter parameter ON parameter.id_analysis_parameter = ap.id_analysis_parameter
+                                                                        AND parameter.flg_available = 'Y'
+                                    JOIN alert.exam_cat ec ON ec.id_exam_cat = ais.id_exam_cat
+                                                       AND ec.flg_available = 'Y'
+
+                                    join translation t on t.code_translation=ast.code_analysis_sample_type
+
+
+                                    WHERE ar.flg_available = 'Y'
+                                    AND ar.id_institution = " & i_institution & "
+                                    AND ais.id_software = " & i_software
+
+        If i_id_content_exam_cat <> "0" Then
+
+            sql = sql & " And ec.id_content = '" & i_id_content_exam_cat & "'
+                          order by 2 asc"
+
+        Else
+
+            sql = sql & " order by 2 asc"
+
+            End If
+
+
+            Dim cmd As New OracleCommand(sql, i_conn)
+            cmd.CommandType = CommandType.Text
+
+            i_dr = cmd.ExecuteReader()
+
+            Return True
+
+            ' Catch ex As Exception
+
+        'Return False
+
+        ' End Try
 
     End Function
 

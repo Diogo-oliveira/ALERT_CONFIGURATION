@@ -23,7 +23,14 @@ Public Class LAB_TESTS
     'Variavel que guarda o id_room a ser inserido
     Dim l_selected_room As Int64 = -1
 
+    'Array que vai guardar as categorias disponíveis no ALERT
+    Dim l_lab_cats_alert() As String
 
+    'Array que vai guardar as análises carregadas do ALERT
+    Dim l_labs_alert() As String
+
+    ''Array que vai guardar os dep_clin_serv da instituição
+    Dim a_dep_clin_serv_inst() As Int64
 
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -187,6 +194,80 @@ Public Class LAB_TESTS
 
         End If
 
+        ''''''''''''''''''''''
+        'Box de categorias na instituição/software
+
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+
+        Dim dr_exam_cat As OracleDataReader
+
+
+        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, l_selected_soft, conn_labs, dr_exam_cat) Then
+
+            MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION", vbCritical)
+            dr_exam_cat.Dispose()
+            dr_exam_cat.Close()
+
+        Else
+
+            ComboBox5.Items.Add("ALL")
+            ReDim l_lab_cats_alert(0)
+            l_lab_cats_alert(0) = 0
+
+            Dim l_index As Int16 = 1
+
+            While dr_exam_cat.Read()
+
+                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                ReDim Preserve l_lab_cats_alert(l_index)
+                l_lab_cats_alert(l_index) = dr_exam_cat.Item(0)
+                l_index = l_index + 1
+
+            End While
+
+        End If
+
+        dr_exam_cat.Dispose()
+        dr_exam_cat.Close()
+
+        ''''''''''''''''''''''
+        'Preencher os Clinical Services
+
+        Dim dr_clin_serv As OracleDataReader
+
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
+
+        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, l_selected_soft, conn_labs, dr_clin_serv) Then
+
+            MsgBox("ERROR GETTING CLINICAL SERVICES")
+            dr_clin_serv.Dispose()
+            dr_clin_serv.Close()
+
+        Else
+
+            Dim i As Integer = 0
+
+            Dim l_index_dep_clin_serv As Integer = 0
+            ReDim a_dep_clin_serv_inst(l_index_dep_clin_serv)
+
+            While dr_clin_serv.Read()
+
+                ComboBox6.Items.Add(dr_clin_serv.Item(0))
+
+                ReDim Preserve a_dep_clin_serv_inst(l_index_dep_clin_serv)
+                a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
+                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
+
+            End While
+
+        End If
+
+        dr_clin_serv.Dispose()
+        dr_clin_serv.Close()
+
+        ''''''''''''''''''''''
         Cursor = Cursors.Arrow
 
     End Sub
@@ -467,6 +548,43 @@ Public Class LAB_TESTS
     Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
 
         l_selected_room = l_loaded_rooms(ComboBox7.SelectedIndex)
+
+    End Sub
+
+    Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
+
+        CheckedListBox3.Items.Clear()
+
+        Dim dr_labs As OracleDataReader
+
+        Dim l_selected_category As String = ""
+
+        l_selected_category = l_lab_cats_alert(ComboBox5.SelectedIndex)
+
+        Dim l_index As Integer = 0
+
+        ReDim l_labs_alert(l_index)
+
+        If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_category, conn_labs, dr_labs) Then
+
+            MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION", MsgBoxStyle.Critical)
+
+        Else
+
+            While dr_labs.Read()
+
+                l_labs_alert(l_index) = dr_labs.Item(0)
+                l_index = l_index + 1
+                ReDim Preserve l_labs_alert(l_index)
+
+                CheckedListBox3.Items.Add(dr_labs.Item(1))
+
+            End While
+
+            dr_labs.Dispose()
+            dr_labs.Close()
+
+        End If
 
     End Sub
 End Class
