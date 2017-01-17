@@ -44,10 +44,7 @@ Public Class LAB_TESTS
 
         End Try
 
-
-
         Dim dr As OracleDataReader
-
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_ALL_INSTITUTIONS(conn_labs, dr) Then
@@ -56,8 +53,6 @@ Public Class LAB_TESTS
             MsgBox("ERROR GETTING ALL INSTITUTIONS")
 
         Else
-
-            Dim i As Integer = 0
 
             While dr.Read()
 
@@ -92,6 +87,8 @@ Public Class LAB_TESTS
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
+        Cursor = Cursors.WaitCursor
+
         l_selected_room = -1
 
         If TextBox1.Text <> "" Then
@@ -102,6 +99,7 @@ Public Class LAB_TESTS
             ComboBox2.Text = ""
 
             Dim dr As OracleDataReader
+
             ReDim l_loaded_rooms(0)
             Dim i_index_room As Int32 = 0
 
@@ -114,21 +112,29 @@ Public Class LAB_TESTS
 
             Else
 
-                Dim i As Integer = 0
-
                 While dr.Read()
 
                     ComboBox2.Items.Add(dr.Item(1))
 
                 End While
 
+                ComboBox3.Text = ""
                 ComboBox3.Items.Clear()
-                ComboBox3.SelectedItem = ""
 
+                ComboBox4.Text = ""
                 ComboBox4.Items.Clear()
-                ComboBox4.SelectedItem = ""
 
                 CheckedListBox2.Items.Clear()
+
+                CheckedListBox1.Items.Clear()
+
+                ComboBox5.Text = ""
+                ComboBox5.Items.Clear()
+                CheckedListBox3.Items.Clear()
+
+                ComboBox6.Text = ""
+                ComboBox6.Items.Clear()
+                CheckedListBox4.Items.Clear()
 
                 l_selected_category = ""
 
@@ -157,21 +163,35 @@ Public Class LAB_TESTS
             dr.Dispose()
             dr.Close()
 
-
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
 
-        l_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn_labs)
+        Cursor = Cursors.WaitCursor
 
-        '1 - Fill Version combobox
+        CheckedListBox1.Items.Clear()
+        CheckedListBox2.Items.Clear()
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
 
         ComboBox3.Items.Clear()
         ComboBox3.Text = ""
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
+        ComboBox7.Items.Clear()
+        ComboBox7.Text = ""
 
-        Cursor = Cursors.WaitCursor
+        l_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn_labs)
+
+        '1 - Fill Version combobox
 
         Dim dr_def_versions As OracleDataReader
 
@@ -197,11 +217,7 @@ Public Class LAB_TESTS
         ''''''''''''''''''''''
         'Box de categorias na instituição/software
 
-        ComboBox5.Items.Clear()
-        ComboBox5.Text = ""
-
         Dim dr_exam_cat As OracleDataReader
-
 
         If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, l_selected_soft, conn_labs, dr_exam_cat) Then
 
@@ -212,6 +228,7 @@ Public Class LAB_TESTS
         Else
 
             ComboBox5.Items.Add("ALL")
+
             ReDim l_lab_cats_alert(0)
             l_lab_cats_alert(0) = 0
 
@@ -235,9 +252,6 @@ Public Class LAB_TESTS
         'Preencher os Clinical Services
 
         Dim dr_clin_serv As OracleDataReader
-
-        ComboBox6.Items.Clear()
-        ComboBox6.Text = ""
 
         If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, l_selected_soft, conn_labs, dr_clin_serv) Then
 
@@ -267,7 +281,29 @@ Public Class LAB_TESTS
         dr_clin_serv.Dispose()
         dr_clin_serv.Close()
 
-        ''''''''''''''''''''''
+        '''''''''''''''''''''''''''''''''''
+        Dim dr As OracleDataReader
+
+        If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+
+            MsgBox("ERROR GETTING LAB ROOMS", vbCritical)
+
+            dr.Dispose()
+            dr.Close()
+
+        Else
+
+            While dr.Read()
+
+                ComboBox7.Items.Add(dr.Item(0))
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
         Cursor = Cursors.Arrow
 
     End Sub
@@ -279,12 +315,13 @@ Public Class LAB_TESTS
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
 
+        CheckedListBox2.Items.Clear()
+
         'Determinar as categorias disponíveis para a versão escolhida
         'Array l_loaded_categories_default vai gaurdar os ids de todas as categorias
 
         ReDim l_loaded_categories_default(0)
         Dim l_index_loaded_categories As Int16 = 0
-
 
         Dim dr_lab_cat_def As OracleDataReader
 
@@ -311,6 +348,8 @@ Public Class LAB_TESTS
 
         dr_lab_cat_def.Dispose()
         dr_lab_cat_def.Close()
+
+        CheckedListBox1.Items.Clear()
 
         Cursor = Cursors.Arrow
 
@@ -445,12 +484,6 @@ Public Class LAB_TESTS
 
                 CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
 
-                'apagar
-
-                'MsgBox(db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis(l_index_selected_analysis_from_default).id_content_category, oradb))
-
-                'FIM APAGAR
-
                 l_index_selected_analysis_from_default = l_index_selected_analysis_from_default + 1
 
             End If
@@ -463,29 +496,101 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
-        If db_labs.SET_EXAM_CAT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+        If ComboBox7.SelectedIndex >= 0 Then
 
-            If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+            If CheckedListBox1.Items.Count() > 0 Then
 
-                If db_labs.SET_ANALYSIS(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                Dim l_checked_labs() As LABS_API.analysis_default
+                Dim l_index As Integer = 0
 
-                    If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                For Each indexChecked In CheckedListBox1.CheckedIndices
 
-                        If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                    ReDim Preserve l_checked_labs(l_index)
 
-                            If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                    l_checked_labs(l_index).id_content_category = l_selected_default_analysis(indexChecked).id_content_category
+                    l_checked_labs(l_index).id_content_analysis = l_selected_default_analysis(indexChecked).id_content_analysis
+                    l_checked_labs(l_index).id_content_sample_type = l_selected_default_analysis(indexChecked).id_content_sample_type
+                    l_checked_labs(l_index).id_content_analysis_sample_type = l_selected_default_analysis(indexChecked).id_content_analysis_sample_type
+                    l_checked_labs(l_index).id_content_sample_recipient = l_selected_default_analysis(indexChecked).id_content_sample_recipient
+                    l_checked_labs(l_index).desc_analysis_sample_type = l_selected_default_analysis(indexChecked).desc_analysis_sample_type
+                    l_checked_labs(l_index).desc_analysis_sample_recipient = l_selected_default_analysis(indexChecked).desc_analysis_sample_recipient
 
-                                If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_selected_default_analysis, conn_labs) Then
+                    l_index = l_index + 1
 
-                                    If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                Next
 
-                                        If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, l_selected_soft, l_selected_default_analysis, conn_labs) Then
+                If db_labs.SET_EXAM_CAT(TextBox1.Text, l_checked_labs, conn_labs) Then
 
-                                            If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, l_selected_soft, l_selected_room, l_selected_default_analysis, conn_labs) Then
+                    If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_checked_labs, conn_labs) Then
 
-                                                MsgBox(l_selected_default_analysis(0).id_content_analysis_sample_type)
+                        If db_labs.SET_ANALYSIS(TextBox1.Text, l_checked_labs, conn_labs) Then
 
-                                                MsgBox("SUCCESS")
+                            If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_checked_labs, conn_labs) Then
+
+                                If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
+
+                                    If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
+
+                                        If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_checked_labs, conn_labs) Then
+
+                                            If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
+
+                                                If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
+
+                                                    If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, l_selected_soft, l_selected_room, l_checked_labs, conn_labs) Then
+
+                                                        MsgBox("LABORATORIAL EXAM(S) SUCCESSFULLY INSERTED.", vbInformation)
+
+                                                        CheckedListBox1.Items.Clear()
+
+                                                        For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                                                            CheckedListBox2.SetItemChecked(i, False)
+
+                                                        Next
+
+                                                        ComboBox5.Items.Clear()
+                                                        ComboBox5.SelectedItem = ""
+
+                                                        Dim dr_exam_cat As OracleDataReader
+
+                                                        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, l_selected_soft, conn_labs, dr_exam_cat) Then
+
+                                                            MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION", vbCritical)
+                                                            dr_exam_cat.Dispose()
+                                                            dr_exam_cat.Close()
+
+                                                        Else
+
+                                                            ComboBox5.Items.Add("ALL")
+
+                                                            ReDim l_lab_cats_alert(0)
+                                                            l_lab_cats_alert(0) = 0
+
+                                                            Dim l_index_ec As Int16 = 1
+
+                                                            While dr_exam_cat.Read()
+
+                                                                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                                                                ReDim Preserve l_lab_cats_alert(l_index_ec)
+                                                                l_lab_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
+                                                                l_index_ec = l_index_ec + 1
+
+                                                            End While
+
+                                                        End If
+
+                                                        dr_exam_cat.Dispose()
+                                                        dr_exam_cat.Close()
+
+                                                        CheckedListBox3.Items.Clear()
+
+                                                        ReDim l_selected_default_analysis(0)
+                                                        l_index_selected_analysis_from_default = 0
+
+                                                    End If
+
+                                                End If
 
                                             End If
 
@@ -507,15 +612,24 @@ Public Class LAB_TESTS
 
         Else
 
-                                MsgBox("ERROR")
+            MsgBox("No Room selected!", vbCritical)
 
         End If
+
+
 
         Cursor = Cursors.Arrow
 
     End Sub
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn_labs)
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
 
         l_selected_room = -1
 
@@ -541,7 +655,46 @@ Public Class LAB_TESTS
         End If
 
         dr.Dispose()
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
+
+            MsgBox("ERROR GETTING SOFTWARES", vbCritical)
+
+        Else
+
+            While dr.Read()
+
+                ComboBox2.Items.Add(dr.Item(1))
+
+            End While
+
+        End If
+
+        dr.Dispose()
         dr.Close()
+
+        ComboBox3.Text = ""
+        ComboBox3.Items.Clear()
+
+        ComboBox4.Text = ""
+        ComboBox4.Items.Clear()
+
+        CheckedListBox2.Items.Clear()
+
+        CheckedListBox1.Items.Clear()
+
+        ComboBox5.Text = ""
+        ComboBox5.Items.Clear()
+        CheckedListBox3.Items.Clear()
+
+        ComboBox6.Text = ""
+        ComboBox6.Items.Clear()
+        CheckedListBox4.Items.Clear()
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
