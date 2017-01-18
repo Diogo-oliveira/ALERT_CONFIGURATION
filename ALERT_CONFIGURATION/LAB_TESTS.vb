@@ -41,6 +41,8 @@ Public Class LAB_TESTS
     ''Array que vai guardar os dep_clin_serv da instituição
     Dim a_dep_clin_serv_inst() As Int64
 
+    Dim l_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
+
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
@@ -970,11 +972,132 @@ Public Class LAB_TESTS
 
         End If
 
+        ''To DO: Verificar se é necessário limpar grelha de Mais frequentes
+
     End Sub
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
 
+        Dim l_unsaved_records As Boolean = False
+        Dim l_sucess As Boolean = True
 
+        Dim l_first_time As Boolean = False 'Variavel para determinar se é a primeira vez que se está a colocar o Clinical Service
+
+        '1 - DEterminar o dep_clin_serv_selecionado
+        Dim l_id_dep_clin_serv_aux As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+
+        '2 - Determinar se existem registos a serem guardados
+        If (l_dimension_labs_cs > 0 And l_id_dep_clin_serv <> 0) Then
+
+            For j As Int16 = 0 To a_labs_for_clinical_service.Count() - 1
+
+                If a_labs_for_clinical_service(j).flg_new = "Y" Then
+
+                    l_unsaved_records = True
+                    Exit For
+
+                End If
+
+            Next
+
+        End If
+
+        If (l_id_dep_clin_serv = 0) Then
+
+            l_id_dep_clin_serv = l_id_dep_clin_serv_aux
+            l_first_time = True
+
+        End If
+
+        '3 Caso existam, gravar.
+        If l_unsaved_records = True Then
+
+            Dim result As Integer = 0
+
+            result = MsgBox("There are unsaved records. Do you wish to save them?", vbYesNo)
+
+            If (result = DialogResult.Yes) Then
+
+                For j As Int16 = 0 To a_labs_for_clinical_service.Count() - 1
+
+                    If (a_labs_for_clinical_service(j).flg_new = "Y") Then
+
+                        If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(l_selected_soft, l_id_dep_clin_serv, a_labs_for_clinical_service(j).id_content_analysis_sample_type, conn_labs) Then
+
+                            l_sucess = False
+
+                        End If
+
+                    End If
+
+                Next
+
+                If l_sucess = False Then
+
+                    MsgBox("ERROR INSERTING ANALYSIS AS FREQUENT - ComboBox6_SelectedIndexChanged", vbCritical)
+
+                Else
+
+                    MsgBox("Selected record(s) saved.", vbInformation)
+                    CheckedListBox4.Items.Clear()
+
+                End If
+
+            End If
+
+        End If
+
+        If (l_first_time = False) Then
+
+            '4 - Limpar a box e os arrays
+            ReDim Preserve a_labs_for_clinical_service(0)
+            l_dimension_labs_cs = 0
+
+            ReDim l_labs_selected_from_alert(0)
+            l_index_selected_labs_from_alert = 0
+
+            CheckedListBox4.Items.Clear()
+
+        End If
+
+        '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+        Dim dr As OracleDataReader
+
+        If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, l_selected_soft, l_id_dep_clin_serv_aux, dr, conn_labs) Then
+
+            MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
+
+        Else
+
+            l_id_dep_clin_serv = l_id_dep_clin_serv_aux
+
+            Dim i As Integer = 0
+
+            '6 - Ler cursor e popular o campo
+            While dr.Read()
+
+                CheckedListBox4.Items.Add(dr.Item(1) & " - [" & dr.Item(2) & "]")
+
+                ReDim Preserve a_labs_for_clinical_service(l_dimension_labs_cs)
+
+                a_labs_for_clinical_service(l_dimension_labs_cs).id_content_analysis_sample_type = dr.Item(0)
+                a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_type = dr.Item(1)
+                a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_recipient = dr.Item(2)
+                a_labs_for_clinical_service(l_dimension_labs_cs).flg_new = "N"
+
+                l_dimension_labs_cs = l_dimension_labs_cs + 1
+
+                ReDim Preserve l_labs_selected_from_alert(l_index_selected_labs_from_alert)
+
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).id_content_analysis_sample_type = dr.Item(0)
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_type = dr.Item(1)
+                l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_recipient = dr.Item(2)
+
+                l_index_selected_labs_from_alert = l_index_selected_labs_from_alert + 1
+
+            End While
+
+        End If
 
     End Sub
 End Class
