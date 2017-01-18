@@ -2953,7 +2953,7 @@ Public Class LABS_API
                                     SELECT ast.id_analysis, ast.id_sample_type
                                     INTO l_id_analysis, l_id_sample_type
                                     FROM alert.analysis_sample_type ast
-                                    WHERE ast.id_content = '" & i_id_content_ast & "';
+                                    WHERE ast.id_content = '" & i_id_content_ast & "' and ast.flg_available='Y';
 
                                     INSERT INTO alert.analysis_dep_clin_serv
                                         (id_analysis_dep_clin_serv, id_analysis, id_dep_clin_serv, rank, id_software, flg_available, id_sample_type)
@@ -3027,6 +3027,49 @@ Public Class LABS_API
             Return False
 
         End Try
+
+    End Function
+
+    Function DELETE_ANALYSIS_DEP_CLIN_SERV(ByVal i_software As Integer, ByVal i_dep_clin_serv As Int64, ByVal i_id_content_ast As String, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql_delete_adps = "DECLARE
+
+                                    l_id_analysis    alert.analysis_sample_type.id_analysis%TYPE;
+                                    l_id_sample_type alert.analysis_sample_type.id_sample_type%TYPE;
+
+                               BEGIN
+
+                                    SELECT ast.id_analysis, ast.id_sample_type
+                                    INTO l_id_analysis, l_id_sample_type
+                                    FROM alert.analysis_sample_type ast
+                                    WHERE ast.id_content = '" & i_id_content_ast & "' and ast.flg_available='Y';
+
+                                   UPDATE alert.analysis_dep_clin_serv ad
+                                   SET ad.flg_available = 'N'
+                                   WHERE ad.id_analysis = l_id_analysis
+                                   And ad.id_sample_type = l_id_sample_type
+                                   And ad.id_software = " & i_software & "
+                                   AND ad.id_dep_clin_serv = " & i_dep_clin_serv & ";
+                                 
+                               END;"
+
+
+        Try
+
+            Dim cmd_delete_adps As New OracleCommand(sql_delete_adps, i_conn)
+            cmd_delete_adps.CommandType = CommandType.Text
+
+            cmd_delete_adps.ExecuteNonQuery()
+
+            cmd_delete_adps.Dispose()
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+        Return True
 
     End Function
 
