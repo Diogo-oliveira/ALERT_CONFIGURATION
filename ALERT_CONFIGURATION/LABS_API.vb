@@ -2890,21 +2890,21 @@ Public Class LABS_API
 
                                             END;"
 
-            ' Try
+            Try
 
-            Dim cmd_insert_analysis_room As New OracleCommand(sql_insert_analysis_room, i_conn)
-            cmd_insert_analysis_room.CommandType = CommandType.Text
+                Dim cmd_insert_analysis_room As New OracleCommand(sql_insert_analysis_room, i_conn)
+                cmd_insert_analysis_room.CommandType = CommandType.Text
 
-            cmd_insert_analysis_room.ExecuteNonQuery()
+                cmd_insert_analysis_room.ExecuteNonQuery()
 
-            cmd_insert_analysis_room.Dispose()
+                cmd_insert_analysis_room.Dispose()
 
-            ' Catch ex As Exception
+            Catch ex As Exception
 
-            '  MsgBox("ERROR INSERTING ANALYSIS ROOM")
-            '  Return False
+                MsgBox("ERROR INSERTING ANALYSIS ROOM")
+                Return False
 
-            ' End Try
+            End Try
 
         Next
 
@@ -2912,8 +2912,30 @@ Public Class LABS_API
 
     End Function
 
-    Function DELETE_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_ast As String) As Boolean
+    Function DELETE_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_ast As String, ByVal i_conn As OracleConnection) As Boolean
 
+
+        Dim sql_delete_ais = "update alert.analysis_instit_soft ais
+                              set ais.flg_available='N'
+                              where ais.id_analysis = (Select asta.id_analysis from alert.analysis_sample_type asta where asta.id_content='" & i_id_content_ast & "')
+                              and ais.id_sample_type = (Select astst.id_sample_type from alert.analysis_sample_type astst where astst.id_content='" & i_id_content_ast & "')
+                              and ais.id_software = " & i_software & "
+                              and ais.id_institution = " & i_institution
+
+        'Try
+
+        Dim cmd_delete_ais As New OracleCommand(sql_delete_ais, i_conn)
+            cmd_delete_ais.CommandType = CommandType.Text
+
+            cmd_delete_ais.ExecuteNonQuery()
+
+            cmd_delete_ais.Dispose()
+
+        ' Catch ex As Exception
+
+        'Return False
+
+        'End Try
 
         Return True
 

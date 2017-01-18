@@ -22,6 +22,7 @@ Partial Class LAB_TESTS
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LAB_TESTS))
         Me.Label3 = New System.Windows.Forms.Label()
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -58,6 +59,8 @@ Partial Class LAB_TESTS
         Me.Button8 = New System.Windows.Forms.Button()
         Me.Button6 = New System.Windows.Forms.Button()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label3
@@ -122,7 +125,7 @@ Partial Class LAB_TESTS
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(12, 806)
+        Me.Button7.Location = New System.Drawing.Point(12, 785)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(100, 23)
         Me.Button7.TabIndex = 38
@@ -150,7 +153,7 @@ Partial Class LAB_TESTS
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(9, 116)
+        Me.Label6.Location = New System.Drawing.Point(9, 103)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(164, 13)
         Me.Label6.TabIndex = 42
@@ -162,7 +165,7 @@ Partial Class LAB_TESTS
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(12, 132)
+        Me.ComboBox4.Location = New System.Drawing.Point(12, 119)
         Me.ComboBox4.Name = "ComboBox4"
         Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox4.TabIndex = 41
@@ -170,7 +173,7 @@ Partial Class LAB_TESTS
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(544, 143)
+        Me.Label7.Location = New System.Drawing.Point(544, 130)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(208, 13)
         Me.Label7.TabIndex = 44
@@ -180,14 +183,14 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(12, 162)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(12, 149)
         Me.CheckedListBox2.Name = "CheckedListBox2"
         Me.CheckedListBox2.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox2.TabIndex = 43
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(651, 442)
+        Me.Button4.Location = New System.Drawing.Point(651, 429)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(101, 23)
         Me.Button4.TabIndex = 47
@@ -196,7 +199,7 @@ Partial Class LAB_TESTS
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(543, 442)
+        Me.Button3.Location = New System.Drawing.Point(543, 429)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 46
@@ -205,7 +208,7 @@ Partial Class LAB_TESTS
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(765, 274)
+        Me.Button2.Location = New System.Drawing.Point(771, 258)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 45
@@ -216,14 +219,14 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(821, 162)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(830, 149)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox1.TabIndex = 48
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(1459, 442)
+        Me.Button5.Location = New System.Drawing.Point(1468, 429)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(102, 23)
         Me.Button5.TabIndex = 49
@@ -233,7 +236,7 @@ Partial Class LAB_TESTS
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(818, 478)
+        Me.Label9.Location = New System.Drawing.Point(828, 457)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(110, 13)
         Me.Label9.TabIndex = 53
@@ -245,7 +248,7 @@ Partial Class LAB_TESTS
         Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox6.FormattingEnabled = True
         Me.ComboBox6.ItemHeight = 16
-        Me.ComboBox6.Location = New System.Drawing.Point(821, 494)
+        Me.ComboBox6.Location = New System.Drawing.Point(831, 473)
         Me.ComboBox6.Name = "ComboBox6"
         Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox6.TabIndex = 52
@@ -253,7 +256,7 @@ Partial Class LAB_TESTS
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(9, 478)
+        Me.Label8.Location = New System.Drawing.Point(9, 444)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(129, 13)
         Me.Label8.TabIndex = 51
@@ -265,7 +268,7 @@ Partial Class LAB_TESTS
         Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox5.FormattingEnabled = True
         Me.ComboBox5.ItemHeight = 16
-        Me.ComboBox5.Location = New System.Drawing.Point(12, 494)
+        Me.ComboBox5.Location = New System.Drawing.Point(12, 473)
         Me.ComboBox5.Name = "ComboBox5"
         Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox5.TabIndex = 50
@@ -273,7 +276,7 @@ Partial Class LAB_TESTS
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(819, 116)
+        Me.Label5.Location = New System.Drawing.Point(828, 103)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(47, 13)
         Me.Label5.TabIndex = 55
@@ -285,14 +288,14 @@ Partial Class LAB_TESTS
         Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox7.FormattingEnabled = True
         Me.ComboBox7.ItemHeight = 16
-        Me.ComboBox7.Location = New System.Drawing.Point(821, 132)
+        Me.ComboBox7.Location = New System.Drawing.Point(831, 119)
         Me.ComboBox7.Name = "ComboBox7"
         Me.ComboBox7.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox7.TabIndex = 54
         '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(650, 804)
+        Me.Button11.Location = New System.Drawing.Point(650, 783)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(102, 23)
         Me.Button11.TabIndex = 60
@@ -301,7 +304,7 @@ Partial Class LAB_TESTS
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(542, 804)
+        Me.Button9.Location = New System.Drawing.Point(542, 783)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 59
@@ -310,7 +313,7 @@ Partial Class LAB_TESTS
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(434, 804)
+        Me.Button10.Location = New System.Drawing.Point(434, 783)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 58
@@ -320,7 +323,7 @@ Partial Class LAB_TESTS
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(544, 505)
+        Me.Label10.Location = New System.Drawing.Point(544, 484)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(208, 13)
         Me.Label10.TabIndex = 57
@@ -330,14 +333,14 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox3.CheckOnClick = True
         Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(12, 524)
+        Me.CheckedListBox3.Location = New System.Drawing.Point(12, 503)
         Me.CheckedListBox3.Name = "CheckedListBox3"
         Me.CheckedListBox3.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox3.TabIndex = 56
         '
         'Button13
         '
-        Me.Button13.Location = New System.Drawing.Point(1245, 804)
+        Me.Button13.Location = New System.Drawing.Point(1255, 783)
         Me.Button13.Name = "Button13"
         Me.Button13.Size = New System.Drawing.Size(102, 23)
         Me.Button13.TabIndex = 66
@@ -346,7 +349,7 @@ Partial Class LAB_TESTS
         '
         'Button14
         '
-        Me.Button14.Location = New System.Drawing.Point(1137, 804)
+        Me.Button14.Location = New System.Drawing.Point(1147, 783)
         Me.Button14.Name = "Button14"
         Me.Button14.Size = New System.Drawing.Size(102, 23)
         Me.Button14.TabIndex = 65
@@ -355,7 +358,7 @@ Partial Class LAB_TESTS
         '
         'Button12
         '
-        Me.Button12.Location = New System.Drawing.Point(1353, 804)
+        Me.Button12.Location = New System.Drawing.Point(1363, 783)
         Me.Button12.Name = "Button12"
         Me.Button12.Size = New System.Drawing.Size(100, 23)
         Me.Button12.TabIndex = 64
@@ -364,7 +367,7 @@ Partial Class LAB_TESTS
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(1460, 804)
+        Me.Button8.Location = New System.Drawing.Point(1470, 783)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(100, 23)
         Me.Button8.TabIndex = 63
@@ -373,7 +376,7 @@ Partial Class LAB_TESTS
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(768, 650)
+        Me.Button6.Location = New System.Drawing.Point(771, 629)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(41, 39)
         Me.Button6.TabIndex = 62
@@ -384,16 +387,26 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox4.CheckOnClick = True
         Me.CheckedListBox4.FormattingEnabled = True
-        Me.CheckedListBox4.Location = New System.Drawing.Point(821, 524)
+        Me.CheckedListBox4.Location = New System.Drawing.Point(831, 503)
         Me.CheckedListBox4.Name = "CheckedListBox4"
         Me.CheckedListBox4.Size = New System.Drawing.Size(741, 274)
         Me.CheckedListBox4.TabIndex = 61
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
+        Me.PictureBox1.Location = New System.Drawing.Point(1363, 10)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
+        Me.PictureBox1.TabIndex = 67
+        Me.PictureBox1.TabStop = False
         '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
         Me.Controls.Add(Me.Button12)
@@ -434,6 +447,7 @@ Partial Class LAB_TESTS
         Me.MinimumSize = New System.Drawing.Size(1598, 858)
         Me.Name = "LAB_TESTS"
         Me.Text = "LAB_TESTS"
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -475,4 +489,5 @@ Partial Class LAB_TESTS
     Friend WithEvents Button8 As Button
     Friend WithEvents Button6 As Button
     Friend WithEvents CheckedListBox4 As CheckedListBox
+    Friend WithEvents PictureBox1 As PictureBox
 End Class

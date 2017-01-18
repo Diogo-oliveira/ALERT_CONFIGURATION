@@ -833,6 +833,7 @@ Public Class LAB_TESTS
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
 
         Dim result As Integer = 0
+        Dim l_sucess As Boolean = True
 
         If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
 
@@ -852,10 +853,127 @@ Public Class LAB_TESTS
 
             Next
 
+            ''1 - Determinar ID_Content_ast dos registos selecionados - Feito
+            ''2 - Criar função para colocar a not available na analysis_inst_soft - Feito
+
+            For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                If Not db_labs.DELETE_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_labs_alert(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+
+                    l_sucess = False
+
+                End If
+            Next
+
+            ''3 - Refresh à grelha
+            ''3.1 - Se estão a ser apagados todos os registos de uma categoria:
+            If CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count() Then
+
+                CheckedListBox3.Items.Clear()
+                ComboBox5.Items.Clear()
+                ComboBox5.Text = ""
+
+                Dim dr_exam_cat As OracleDataReader
+
+                If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, l_selected_soft, conn_labs, dr_exam_cat) Then
+
+                    MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION", vbCritical)
+                    dr_exam_cat.Dispose()
+                    dr_exam_cat.Close()
+
+                Else
+
+                    ComboBox5.Items.Add("ALL")
+
+                    ReDim l_lab_cats_alert(0)
+                    l_lab_cats_alert(0) = 0
+
+                    Dim l_index As Int16 = 1
+
+                    While dr_exam_cat.Read()
+
+                        ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                        ReDim Preserve l_lab_cats_alert(l_index)
+                        l_lab_cats_alert(l_index) = dr_exam_cat.Item(0)
+                        l_index = l_index + 1
+
+                    End While
+
+                End If
+
+                dr_exam_cat.Dispose()
+                dr_exam_cat.Close()
+
+                'Limpar arrays
+                ReDim a_labs_for_clinical_service(0)
+                ReDim l_labs_selected_from_alert(0)
+
+                l_dimension_labs_cs = 0
+                l_index_selected_labs_from_alert = 0
+
+            Else '3.2 - Eliminar apenas os registos selecionados
+
+                CheckedListBox3.Items.Clear()
+
+                Dim dr_labs As OracleDataReader
+
+                Dim l_selected_category As String = ""
+
+                l_selected_category = l_lab_cats_alert(ComboBox5.SelectedIndex)
+
+                Dim l_index As Integer = 0
+
+                ReDim l_labs_alert(l_index)
+
+                If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, l_selected_soft, l_selected_category, conn_labs, dr_labs) Then
+
+                    MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION", MsgBoxStyle.Critical)
+
+                Else
+
+                    While dr_labs.Read()
+
+                        l_labs_alert(l_index).id_content_analysis_sample_type = dr_labs.Item(0)
+                        l_labs_alert(l_index).desc_analysis_sample_type = dr_labs.Item(1)
+                        l_labs_alert(l_index).desc_analysis_sample_recipient = dr_labs.Item(2)
+                        l_index = l_index + 1
+                        ReDim Preserve l_labs_alert(l_index)
+
+                        CheckedListBox3.Items.Add((dr_labs.Item(1)) & " - [" & dr_labs.Item(2) & "]")
+
+                    End While
+
+                    dr_labs.Dispose()
+                    dr_labs.Close()
+
+                    'Limpar arrays
+                    ReDim a_labs_for_clinical_service(0)
+                    ReDim l_labs_selected_from_alert(0)
+
+                    l_dimension_labs_cs = 0
+                    l_index_selected_labs_from_alert = 0
+
+                End If
+
+            End If
+
+            ''4 - Mensagem de sucesso no final de todos os registos. (modificar mensagem de erro para surgir apenas uma vez.
+            If l_sucess = False Then
+
+                MsgBox("ERROR DELETING ANALYSIS_INST_SOFT", vbCritical)
+
+            Else
+
+                MsgBox("RECORDS SUCCESSFULLY DELETED.", vbInformation)
+
+            End If
+
         End If
 
-        ''1 - Determinar ID_Content_ast dos registos selecionados
-        ''2 - Criar função para colocar a not available na analysis_inst_soft
+    End Sub
+
+    Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
+
 
 
     End Sub
