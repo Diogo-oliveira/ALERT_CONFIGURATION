@@ -616,18 +616,19 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Else
 
+            Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+
+            Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
+            cmd_insert_trans.CommandType = CommandType.Text
+
             Try
-
-                Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
-
-                Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
-                cmd_insert_trans.CommandType = CommandType.Text
 
                 cmd_insert_trans.ExecuteNonQuery()
                 cmd_insert_trans.Dispose()
 
             Catch ex As Exception
 
+                cmd_insert_trans.Dispose()
                 Return False
 
             End Try

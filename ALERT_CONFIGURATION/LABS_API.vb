@@ -440,9 +440,10 @@ Public Class LABS_API
 
         End While
 
+        cmd.Dispose()
         dr.Dispose()
         dr.Close()
-        cmd.Dispose()
+
         Return l_code
 
     End Function
@@ -469,6 +470,7 @@ Public Class LABS_API
         dr.Dispose()
         dr.Close()
         cmd.Dispose()
+
         Return l_code
 
     End Function
@@ -493,6 +495,7 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
 
         Return l_code
@@ -519,6 +522,7 @@ Public Class LABS_API
         End While
 
         dr.Dispose()
+        dr.Close()
         cmd.Dispose()
 
         Return l_code
@@ -608,18 +612,18 @@ Public Class LABS_API
                              where dst.id_content='" & i_id_content_sample_type & "'
                              and dst.flg_available='Y'"
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
+
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
-            cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
-            cmd.Dispose()
 
             Return True
 
         Catch ex As Exception
+
+            cmd.Dispose()
 
             Return False
 
@@ -1064,12 +1068,12 @@ Public Class LABS_API
                              where r.id_content='" & id_content_record & "'
                              And r.flg_available='Y'"
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
         Try
-
-            Dim cmd As New OracleCommand(sql, i_conn)
-            cmd.CommandType = CommandType.Text
-
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
 
             While dr.Read()
 
@@ -1083,6 +1087,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
             Return False
 
         End Try
@@ -1095,9 +1103,9 @@ Public Class LABS_API
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
-        Try
-            'Ciclo que vai correr as categorias todas enviadas à função
-            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+        'Try
+        'Ciclo que vai correr as categorias todas enviadas à função
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
                 '' 1 - Verificar se existe Categoria pai
                 Dim l_cat_parent As Int64 = 0
@@ -1108,27 +1116,33 @@ Public Class LABS_API
                 Dim sql As String = "Select ec.parent_id from alert_default.Exam_Cat ec
                                      where ec.id_content='" & i_selected_default_analysis(i).id_content_category & "'"
 
-                Try
-                    Dim cmd As New OracleCommand(sql, i_conn)
-                    cmd.CommandType = CommandType.Text
+            Dim cmd As New OracleCommand(sql, i_conn)
 
-                    Dim dr As OracleDataReader = cmd.ExecuteReader()
+            cmd.CommandType = CommandType.Text
 
-                    While dr.Read()
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-                        l_cat_parent = dr.Item(0)
+            Try
 
-                    End While
+                While dr.Read()
 
-                    dr.Dispose()
-                    dr.Close()
-                    cmd.Dispose()
+                    l_cat_parent = dr.Item(0)
 
-                Catch ex As Exception
+                End While
 
-                    l_cat_parent = 0
+                dr.Dispose()
+                dr.Close()
+                cmd.Dispose()
 
-                End Try
+            Catch ex As Exception
+
+                l_cat_parent = 0
+
+                dr.Dispose()
+                dr.Close()
+                cmd.Dispose()
+
+            End Try
 
                 If l_cat_parent > 0 Then 'Significa que existe Categoria Pai no default
 
@@ -1140,22 +1154,22 @@ Public Class LABS_API
                        on ecp.id_exam_cat = ec.parent_id
                        where ec.id_content = '" & i_selected_default_analysis(i).id_content_category & "'"
 
-                    Dim l_id_content_cat_parent As String = ""
-                    Dim cmd As New OracleCommand(sql, i_conn)
-                    cmd.CommandType = CommandType.Text
-                    Dim dr As OracleDataReader = cmd.ExecuteReader()
+                Dim l_id_content_cat_parent As String = ""
+                Dim cmd_2 As New OracleCommand(sql, i_conn)
+                cmd_2.CommandType = CommandType.Text
+                Dim dr_2 As OracleDataReader = cmd_2.ExecuteReader()
 
-                    While dr.Read()
+                While dr_2.Read()
 
-                        l_id_content_cat_parent = dr.Item(0)
+                    l_id_content_cat_parent = dr_2.Item(0)
 
-                    End While
+                End While
 
-                    dr.Dispose()
-                    dr.Close()
-                    cmd.Dispose()
+                dr_2.Dispose()
+                dr_2.Close()
+                cmd_2.Dispose()
 
-                    If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_conn) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
+                If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_conn) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
 
                         'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
                         'Estrutura auxiliar para ser chamada na recursividade (apenas terá o  id_content da categoria pai)
@@ -1339,13 +1353,13 @@ Public Class LABS_API
                 End If
             Next
 
-        Catch ex As Exception
+            'Catch ex As Exception
 
-            Return False
+            '   Return False
 
-        End Try
+            'End Try
 
-        Return True
+            Return True
 
     End Function
 
@@ -1441,7 +1455,6 @@ Public Class LABS_API
 
                     End If
 
-
                     If l_age_max = -1 Then
 
                         sql_insert_st = sql_insert_st & "null, "
@@ -1476,8 +1489,6 @@ Public Class LABS_API
 
                     '''''''''''''''''''''''''''''''''''''''''''''''''''''''
                     ''Pensar na função de atualziar todas as tabelas relacionadas com o sample type
-
-
                     '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 

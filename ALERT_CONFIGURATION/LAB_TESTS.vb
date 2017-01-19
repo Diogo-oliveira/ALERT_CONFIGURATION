@@ -3,7 +3,7 @@ Public Class LAB_TESTS
 
     Dim db_access_general As New General
     Dim db_labs As New LABS_API
-    Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
+    Dim oradb As String = "Data Source=QC4V26506;User Id=alert_config;Password=qcteam"
     Dim l_selected_soft As Int16 = -1
 
     Dim l_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
@@ -618,7 +618,8 @@ Public Class LAB_TESTS
                         End If
 
                     End If
-
+                Else
+                    MsgBox("ERROR INSERTING EXAM CATEGORY", vbCritical)
                 End If
 
             End If
@@ -742,8 +743,30 @@ Public Class LAB_TESTS
             While dr_labs.Read()
 
                 l_labs_alert(l_index).id_content_analysis_sample_type = dr_labs.Item(0)
-                l_labs_alert(l_index).desc_analysis_sample_type = dr_labs.Item(1)
-                l_labs_alert(l_index).desc_analysis_sample_recipient = dr_labs.Item(2)
+
+                ''Existem análises e sample types sem tradução
+                ''Isto garante que a aplicação não gera um erro (Isto é provocado por configs incorrectas)
+                Try
+
+                    l_labs_alert(l_index).desc_analysis_sample_type = dr_labs.Item(1)
+
+                Catch ex As Exception
+
+                    l_labs_alert(l_index).desc_analysis_sample_type = ""
+
+                End Try
+
+                Try
+
+                    l_labs_alert(l_index).desc_analysis_sample_recipient = dr_labs.Item(2)
+
+                Catch ex As Exception
+
+                    l_labs_alert(l_index).desc_analysis_sample_recipient = ""
+
+                End Try
+
+
                 l_index = l_index + 1
                 ReDim Preserve l_labs_alert(l_index)
 
