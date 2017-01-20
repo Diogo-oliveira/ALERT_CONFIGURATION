@@ -2181,12 +2181,12 @@ Public Class LABS_API
 
     Function SET_PARAM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
+        Dim dr As OracleDataReader
+
         Try
 
             'Ciclo que vai correr as AST todas enviadas à função
             For i As Integer = 0 To i_selected_default_analysis.Count() - 1
-
-                Dim dr As OracleDataReader
 
                 If Not GET_DEFAULT_PARAMETERS(i_selected_default_analysis(i).id_content_analysis_sample_type, i_software, i_conn, dr) Then
 
@@ -2323,17 +2323,20 @@ Public Class LABS_API
 
                 End If
 
-                dr.Dispose()
-                dr.Close()
-
             Next
 
         Catch ex As Exception
+
+            dr.Dispose()
+            dr.Close()
 
             MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
             Return False
 
         End Try
+
+        dr.Dispose()
+        dr.Close()
 
         Return True
 

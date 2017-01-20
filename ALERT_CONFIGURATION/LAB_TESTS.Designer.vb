@@ -60,6 +60,7 @@ Partial Class LAB_TESTS
         Me.Button6 = New System.Windows.Forms.Button()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.Label11 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -401,11 +402,21 @@ Partial Class LAB_TESTS
         Me.PictureBox1.TabIndex = 67
         Me.PictureBox1.TabStop = False
         '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(1116, 33)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(45, 13)
+        Me.Label11.TabIndex = 68
+        Me.Label11.Text = "Label11"
+        '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
@@ -490,4 +501,5 @@ Partial Class LAB_TESTS
     Friend WithEvents Button6 As Button
     Friend WithEvents CheckedListBox4 As CheckedListBox
     Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents Label11 As Label
 End Class

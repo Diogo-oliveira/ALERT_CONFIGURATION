@@ -3,7 +3,7 @@ Public Class LAB_TESTS
 
     Dim db_access_general As New General
     Dim db_labs As New LABS_API
-    Dim oradb As String = "Data Source=QC4V26506;User Id=alert_config;Password=qcteam"
+    Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
     Dim l_selected_soft As Int16 = -1
 
     Dim l_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
@@ -102,6 +102,7 @@ Public Class LAB_TESTS
 
         Cursor = Cursors.WaitCursor
 
+        'Limpar a seleção de quarto
         l_selected_room = -1
 
         If TextBox1.Text <> "" Then
@@ -199,8 +200,6 @@ Public Class LAB_TESTS
         ComboBox5.Text = ""
         ComboBox6.Items.Clear()
         ComboBox6.Text = ""
-        ComboBox7.Items.Clear()
-        ComboBox7.Text = ""
 
         l_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn_labs)
 
@@ -222,21 +221,21 @@ Public Class LAB_TESTS
 
             End While
 
-            dr_def_versions.Dispose()
-            dr_def_versions.Close()
-
         End If
+
+        dr_def_versions.Dispose()
+        dr_def_versions.Close()
 
         ''''''''''''''''''''''
         'Box de categorias na instituição/software
 
         Dim dr_exam_cat As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, l_selected_soft, conn_labs, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION", vbCritical)
-            dr_exam_cat.Dispose()
-            dr_exam_cat.Close()
 
         Else
 
@@ -261,16 +260,15 @@ Public Class LAB_TESTS
         dr_exam_cat.Dispose()
         dr_exam_cat.Close()
 
-        ''''''''''''''''''''''
         'Preencher os Clinical Services
 
         Dim dr_clin_serv As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, l_selected_soft, conn_labs, dr_clin_serv) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING CLINICAL SERVICES")
-            dr_clin_serv.Dispose()
-            dr_clin_serv.Close()
 
         Else
 
@@ -293,29 +291,6 @@ Public Class LAB_TESTS
 
         dr_clin_serv.Dispose()
         dr_clin_serv.Close()
-
-        '''''''''''''''''''''''''''''''''''
-        Dim dr As OracleDataReader
-
-        If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
-
-            MsgBox("ERROR GETTING LAB ROOMS", vbCritical)
-
-            dr.Dispose()
-            dr.Close()
-
-        Else
-
-            While dr.Read()
-
-                ComboBox7.Items.Add(dr.Item(0))
-
-            End While
-
-        End If
-
-        dr.Dispose()
-        dr.Close()
 
         Cursor = Cursors.Arrow
 
@@ -532,24 +507,26 @@ Public Class LAB_TESTS
 
                 Next
 
+                ' MsgBox("SET_EXAM_CAT")
+                Label11.Text = "TESTE"
                 If db_labs.SET_EXAM_CAT(TextBox1.Text, l_checked_labs, conn_labs) Then
-
+                    ' MsgBox("SET_SAMPLE_TYPE")
                     If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_checked_labs, conn_labs) Then
-
+                        '   MsgBox("SET_ANALYSIS")
                         If db_labs.SET_ANALYSIS(TextBox1.Text, l_checked_labs, conn_labs) Then
-
+                            '  MsgBox("SET_ANALYSIS_SAMPLE_TYPE")
                             If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_checked_labs, conn_labs) Then
-
+                                ' MsgBox("SET_PARAMETER")
                                 If db_labs.SET_PARAMETER(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
-
+                                    ' MsgBox("SET_PARAM")
                                     If db_labs.SET_PARAM(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
-
+                                        ' MsgBox("SET_SAMPLE_RECIPIENT")
                                         If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_checked_labs, conn_labs) Then
-
+                                            ' MsgBox("SET_ANALYSIS_INST_SOFT")
                                             If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
-
+                                                'MsgBox("SET_ANALYSIS_INST_RECIPIENT")
                                                 If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, l_selected_soft, l_checked_labs, conn_labs) Then
-
+                                                    ' MsgBox("SET_ANALYSIS_ROOM")
                                                     If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, l_selected_soft, l_selected_room, l_checked_labs, conn_labs) Then
 
                                                         MsgBox("LABORATORIAL EXAM(S) SUCCESSFULLY INSERTED.", vbInformation)
@@ -647,14 +624,14 @@ Public Class LAB_TESTS
 
         l_selected_room = -1
 
+        ReDim l_loaded_rooms(0)
+        Dim i_index_room As Int32 = 0
+
         Dim dr As OracleDataReader
 
         If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
 
             MsgBox("ERROR GETTING LAB ROOMS", vbCritical)
-
-            dr.Dispose()
-            dr.Close()
 
         Else
 
@@ -662,7 +639,10 @@ Public Class LAB_TESTS
 
             While dr.Read()
 
+                ReDim Preserve l_loaded_rooms(i_index_room)
                 ComboBox7.Items.Add(dr.Item(0))
+                l_loaded_rooms(i_index_room) = dr.Item(1)
+                i_index_room = i_index_room + 1
 
             End While
 
@@ -1280,48 +1260,48 @@ Public Class LAB_TESTS
             Next
 
             ReDim Preserve a_labs_for_clinical_service(0)
-                l_dimension_labs_cs = 0
+            l_dimension_labs_cs = 0
 
-                ReDim l_labs_selected_from_alert(0)
-                l_index_selected_labs_from_alert = 0
+            ReDim l_labs_selected_from_alert(0)
+            l_index_selected_labs_from_alert = 0
 
-                CheckedListBox4.Items.Clear()
+            CheckedListBox4.Items.Clear()
 
-                Dim dr_new As OracleDataReader
+            Dim dr_new As OracleDataReader
 
-                If db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, l_selected_soft, l_id_dep_clin_serv, dr_new, conn_labs) Then
+            If db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, l_selected_soft, l_id_dep_clin_serv, dr_new, conn_labs) Then
 
-                    Dim i_new As Integer = 0
+                Dim i_new As Integer = 0
 
-                    While dr_new.Read()
+                While dr_new.Read()
 
-                        CheckedListBox4.Items.Add(dr_new.Item(1) & " - [" & dr_new.Item(2) & "]")
+                    CheckedListBox4.Items.Add(dr_new.Item(1) & " - [" & dr_new.Item(2) & "]")
 
-                        'Bloco para repopular os arrays
-                        ReDim Preserve a_labs_for_clinical_service(l_dimension_labs_cs)
-                        a_labs_for_clinical_service(l_dimension_labs_cs).id_content_analysis_sample_type = dr_new.Item(0)
-                        a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_type = dr_new.Item(1)
-                        a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_recipient = dr_new.Item(2)
-                        a_labs_for_clinical_service(l_dimension_labs_cs).flg_new = "N"
+                    'Bloco para repopular os arrays
+                    ReDim Preserve a_labs_for_clinical_service(l_dimension_labs_cs)
+                    a_labs_for_clinical_service(l_dimension_labs_cs).id_content_analysis_sample_type = dr_new.Item(0)
+                    a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_type = dr_new.Item(1)
+                    a_labs_for_clinical_service(l_dimension_labs_cs).desc_analysis_sample_recipient = dr_new.Item(2)
+                    a_labs_for_clinical_service(l_dimension_labs_cs).flg_new = "N"
 
-                        l_dimension_labs_cs = l_dimension_labs_cs + 1
+                    l_dimension_labs_cs = l_dimension_labs_cs + 1
 
-                        ReDim Preserve l_labs_selected_from_alert(l_index_selected_labs_from_alert)
+                    ReDim Preserve l_labs_selected_from_alert(l_index_selected_labs_from_alert)
 
-                        l_labs_selected_from_alert(l_index_selected_labs_from_alert).id_content_analysis_sample_type = dr_new.Item(0)
-                        l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_type = dr_new.Item(1)
-                        l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_recipient = dr_new.Item(2)
+                    l_labs_selected_from_alert(l_index_selected_labs_from_alert).id_content_analysis_sample_type = dr_new.Item(0)
+                    l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_type = dr_new.Item(1)
+                    l_labs_selected_from_alert(l_index_selected_labs_from_alert).desc_analysis_sample_recipient = dr_new.Item(2)
 
-                        l_index_selected_labs_from_alert = l_index_selected_labs_from_alert + 1
-                        'Fim bloco
+                    l_index_selected_labs_from_alert = l_index_selected_labs_from_alert + 1
+                    'Fim bloco
 
-                    End While
+                End While
 
-                Else
+            Else
 
-                    MsgBox("ERROR!")
+                MsgBox("ERROR!")
 
-                End If
+            End If
 
 
             If l_sucess = True Then
@@ -1334,9 +1314,9 @@ Public Class LAB_TESTS
 
             End If
 
-            Else
+        Else
 
-                MsgBox("No selected laboratorial exams!", vbCritical)
+            MsgBox("No selected laboratorial exams!", vbCritical)
 
         End If
 
