@@ -2981,7 +2981,7 @@ Public Class LABS_API
                                         WHERE ad.id_analysis = l_id_analysis
                                         AND ad.id_sample_type = l_id_sample_type
                                         AND ad.id_software = " & i_software & "
-                                        AND ad.id_dep_clin_serv = " & i_dep_clin_serv & ";
+                                        And ad.id_dep_clin_serv = " & i_dep_clin_serv & ";
     
                                 END;"
 
@@ -3062,10 +3062,19 @@ Public Class LABS_API
                                    SET ad.flg_available = 'N'
                                    WHERE ad.id_analysis = l_id_analysis
                                    And ad.id_sample_type = l_id_sample_type
-                                   And ad.id_software = " & i_software & "
-                                   AND ad.id_dep_clin_serv = " & i_dep_clin_serv & ";
+                                   And ad.id_software = " & i_software
+
+        If i_dep_clin_serv = 0 Then
+
+            sql_delete_adps = sql_delete_adps & "; END;"
+
+        Else
+
+            sql_delete_adps = sql_delete_adps & "AND ad.id_dep_clin_serv = " & i_dep_clin_serv & ";
                                  
                                END;"
+
+        End If
 
 
         Try

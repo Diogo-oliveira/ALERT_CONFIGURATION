@@ -60,7 +60,8 @@ Partial Class LAB_TESTS
         Me.Button6 = New System.Windows.Forms.Button()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Button16 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -402,21 +403,31 @@ Partial Class LAB_TESTS
         Me.PictureBox1.TabIndex = 67
         Me.PictureBox1.TabStop = False
         '
-        'Label11
+        'Button15
         '
-        Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(1116, 33)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(45, 13)
-        Me.Label11.TabIndex = 68
-        Me.Label11.Text = "Label11"
+        Me.Button15.Location = New System.Drawing.Point(1361, 429)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(101, 23)
+        Me.Button15.TabIndex = 70
+        Me.Button15.Text = "CLEAR"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Button16
+        '
+        Me.Button16.Location = New System.Drawing.Point(1253, 429)
+        Me.Button16.Name = "Button16"
+        Me.Button16.Size = New System.Drawing.Size(102, 23)
+        Me.Button16.TabIndex = 69
+        Me.Button16.Text = "SELECT ALL"
+        Me.Button16.UseVisualStyleBackColor = True
         '
         'LAB_TESTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
-        Me.Controls.Add(Me.Label11)
+        Me.Controls.Add(Me.Button15)
+        Me.Controls.Add(Me.Button16)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
@@ -501,5 +512,6 @@ Partial Class LAB_TESTS
     Friend WithEvents Button6 As Button
     Friend WithEvents CheckedListBox4 As CheckedListBox
     Friend WithEvents PictureBox1 As PictureBox
-    Friend WithEvents Label11 As Label
+    Friend WithEvents Button15 As Button
+    Friend WithEvents Button16 As Button
 End Class
