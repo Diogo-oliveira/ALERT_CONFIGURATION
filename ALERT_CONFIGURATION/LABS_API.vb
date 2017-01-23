@@ -50,8 +50,7 @@ Public Class LABS_API
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Try
-            Dim sql As String = "Select distinct dastv.version
+        Dim sql As String = "Select distinct dastv.version
                               from alert_default.analysis da
                               join alert_default.analysis_sample_type dast
                                 on dast.id_analysis = da.id_analysis
@@ -109,14 +108,15 @@ Public Class LABS_API
             Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
 
+        Try
+
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -125,9 +125,7 @@ Public Class LABS_API
 
     Function GET_LAB_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Try
-
-            Dim sql As String = "Select distinct dec.id_content, 
+        Dim sql As String = "Select distinct dec.id_content, 
                                  nvl2(dec.parent_id,
                                  (alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", decp.code_exam_cat) || ' - ' ||
                                  alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", dec.code_exam_cat)),
@@ -191,15 +189,17 @@ Public Class LABS_API
                              order by 2 asc"
 
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
+            cmd.Dispose()
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -208,9 +208,7 @@ Public Class LABS_API
 
     Function GET_LAB_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Try
-
-            Dim sql As String = "SELECT distinct ec.id_content,
+        Dim sql As String = "SELECT distinct ec.id_content,
                                         nvl2(ec.parent_id,
                                              (pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ecp.code_exam_cat) || ' - ' ||
                                               pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ec.code_exam_cat)),
@@ -248,14 +246,17 @@ Public Class LABS_API
                                         order by 2 asc"
 
             Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
+            cmd.Dispose()
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -264,9 +265,7 @@ Public Class LABS_API
 
     Function GET_LABS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Try
-
-            Dim sql As String = "SELECT distinct ast.id_content,
+        Dim sql As String = "SELECT distinct ast.id_content,
                                         pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ast.code_analysis_sample_type),
                                         pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", sr.code_sample_recipient)     
                                     FROM alert.analysis_room ar
@@ -312,14 +311,17 @@ Public Class LABS_API
 
 
             Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
+            cmd.Dispose()
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -401,20 +403,18 @@ Public Class LABS_API
                          order by 2 asc, 4 asc"
         End If
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+
         Try
 
-
-            Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -618,13 +618,12 @@ Public Class LABS_API
         Try
 
             i_dr = cmd.ExecuteReader()
-
+            cmd.Dispose()
             Return True
 
         Catch ex As Exception
 
             cmd.Dispose()
-
             Return False
 
         End Try
@@ -639,19 +638,18 @@ Public Class LABS_API
                                 WHERE a.id_content = '" & i_id_content_analysis & "'
                                 AND a.flg_available = 'Y'"
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -934,18 +932,18 @@ Public Class LABS_API
                                 and ast.flg_available='Y'"
 
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
             i_Dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -954,9 +952,7 @@ Public Class LABS_API
 
     Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_id_content_ast As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Try
-
-            Dim sql As String = "SELECT DISTINCT aparam.id_content
+        Dim sql As String = "SELECT DISTINCT aparam.id_content
                                     FROM alert_default.analysis_sample_type ast
                                     JOIN alert_default.analysis_param ap ON ap.id_analysis = ast.id_analysis
                                                                      AND ap.id_sample_type = ast.id_sample_type
@@ -969,16 +965,17 @@ Public Class LABS_API
                                     ORDER BY 1 ASC"
 
             Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
             cmd.CommandType = CommandType.Text
-
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -997,18 +994,18 @@ Public Class LABS_API
                                 AND dap.flg_available = 'Y'
                                 AND dp.flg_available = 'Y'"
 
+        Dim cmd As New OracleCommand(sql, i_conn)
+
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
             i_Dr = cmd.ExecuteReader()
-
             cmd.Dispose()
-
             Return True
 
         Catch ex As Exception
 
+            cmd.Dispose()
             Return False
 
         End Try
@@ -1017,18 +1014,17 @@ Public Class LABS_API
 
     Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String, ByVal i_conn As OracleConnection) As Boolean
 
-        Try
-
-            Dim l_total_records As Int16 = 0
+        Dim l_total_records As Int16 = 0
 
             Dim sql As String = "Select count(*) from " & i_sql & " r
                                  where r.id_content='" & i_id_content_record & "'
                                  and r.flg_available='Y'"
 
             Dim cmd As New OracleCommand(sql, i_conn)
-            cmd.CommandType = CommandType.Text
+        cmd.CommandType = CommandType.Text
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Try
 
             While dr.Read()
 
@@ -1054,6 +1050,9 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
             Return False
 
         End Try
@@ -1099,13 +1098,91 @@ Public Class LABS_API
 
     End Function
 
+    Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_Dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "Select distinct ec.id_content from alert.exam_cat ec
+                                where ec.flg_available = 'Y'
+                                and ec.id_content in ("
+
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i < i_selected_default_analysis.Count() - 1 Then
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_category & "',"
+
+            Else
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_category & "')"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
+            cmd.CommandType = CommandType.Text
+            i_Dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
     Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
-        'Try
-        'Ciclo que vai correr as categorias todas enviadas à função
-        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+        '1 - Remover as categorias repetidas do array de entrada
+        Dim l_a_distinct_ec() As String
+        Dim dr_distinct_ec As OracleDataReader
+
+        Try
+
+            If Not GET_DISTINCT_CATEGORIES(i_selected_default_analysis, i_conn, dr_distinct_ec) Then
+
+                dr_distinct_ec.Dispose()
+                dr_distinct_ec.Close()
+                Return False
+
+            Else
+
+                Dim l_index As Int64 = 0
+
+                While dr_distinct_ec.Read()
+
+                    ReDim Preserve l_a_distinct_ec(l_index)
+                    l_a_distinct_ec(l_index) = dr_distinct_ec.Item(0)
+                    l_index = l_index + 1
+
+                End While
+
+                dr_distinct_ec.Dispose()
+                dr_distinct_ec.Close()
+
+            End If
+
+        Catch ex As Exception
+
+            dr_distinct_ec.Dispose()
+            dr_distinct_ec.Close()
+            Return False
+
+        End Try
+
+        '2 - Processar as categorias de exames que já foram filtradas pelo bloco anterior
+        Try
+
+            'Ciclo que vai correr as categorias todas enviadas à função
+            For i As Integer = 0 To l_a_distinct_ec.Count() - 1
 
                 '' 1 - Verificar se existe Categoria pai
                 Dim l_cat_parent As Int64 = 0
@@ -1114,35 +1191,35 @@ Public Class LABS_API
                 Dim l_flg_interface As Char = ""
 
                 Dim sql As String = "Select ec.parent_id from alert_default.Exam_Cat ec
-                                     where ec.id_content='" & i_selected_default_analysis(i).id_content_category & "'"
+                                     where ec.id_content='" & l_a_distinct_ec(i) & "'"
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+                Dim cmd As New OracleCommand(sql, i_conn)
 
-            cmd.CommandType = CommandType.Text
+                cmd.CommandType = CommandType.Text
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+                Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-            Try
+                Try
 
-                While dr.Read()
+                    While dr.Read()
 
-                    l_cat_parent = dr.Item(0)
+                        l_cat_parent = dr.Item(0)
 
-                End While
+                    End While
 
-                dr.Dispose()
-                dr.Close()
-                cmd.Dispose()
+                    dr.Dispose()
+                    dr.Close()
+                    cmd.Dispose()
 
-            Catch ex As Exception
+                Catch ex As Exception
 
-                l_cat_parent = 0
+                    l_cat_parent = 0
 
-                dr.Dispose()
-                dr.Close()
-                cmd.Dispose()
+                    dr.Dispose()
+                    dr.Close()
+                    cmd.Dispose()
 
-            End Try
+                End Try
 
                 If l_cat_parent > 0 Then 'Significa que existe Categoria Pai no default
 
@@ -1152,24 +1229,24 @@ Public Class LABS_API
                        from alert_default.exam_cat ec
                        join alert_default.exam_cat ecp
                        on ecp.id_exam_cat = ec.parent_id
-                       where ec.id_content = '" & i_selected_default_analysis(i).id_content_category & "'"
+                       where ec.id_content = '" & l_a_distinct_ec(i) & "'"
 
-                Dim l_id_content_cat_parent As String = ""
-                Dim cmd_2 As New OracleCommand(sql, i_conn)
-                cmd_2.CommandType = CommandType.Text
-                Dim dr_2 As OracleDataReader = cmd_2.ExecuteReader()
+                    Dim l_id_content_cat_parent As String = ""
+                    Dim cmd_2 As New OracleCommand(sql, i_conn)
+                    cmd_2.CommandType = CommandType.Text
+                    Dim dr_2 As OracleDataReader = cmd_2.ExecuteReader()
 
-                While dr_2.Read()
+                    While dr_2.Read()
 
-                    l_id_content_cat_parent = dr_2.Item(0)
+                        l_id_content_cat_parent = dr_2.Item(0)
 
-                End While
+                    End While
 
-                dr_2.Dispose()
-                dr_2.Close()
-                cmd_2.Dispose()
+                    dr_2.Dispose()
+                    dr_2.Close()
+                    cmd_2.Dispose()
 
-                If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_conn) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
+                    If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_conn) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
 
                         'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
                         'Estrutura auxiliar para ser chamada na recursividade (apenas terá o  id_content da categoria pai)
@@ -1211,7 +1288,7 @@ Public Class LABS_API
 
                         End If
 
-                        '1.3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
+                        '1.3 - Uma vez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
                     ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_conn), GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_conn), i_conn) Then
 
                         Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_conn)
@@ -1240,13 +1317,13 @@ Public Class LABS_API
                 End If
 
                 '2 - Verificar se categoria já existe no ALERT
-                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_category, "alert.exam_cat", i_conn) Then
+                If Not CHECK_RECORD_EXISTENCE(l_a_distinct_ec(i), "alert.exam_cat", i_conn) Then
 
                     '2.1 - Não existe, Inserir.
                     '2.1.1 - Determinar RANK da categoria E flg_interface
                     Try
 
-                        l_rank = GET_CAT_RANK(i_selected_default_analysis(i).id_content_category, i_conn)
+                        l_rank = GET_CAT_RANK(l_a_distinct_ec(i), i_conn)
 
                     Catch ex As Exception
 
@@ -1257,7 +1334,7 @@ Public Class LABS_API
                     '2.1.2 - Determinar flg_interface da categoria
                     Try
 
-                        l_flg_interface = GET_CAT_FLG_INTERFACE(i_selected_default_analysis(i).id_content_category, i_conn)
+                        l_flg_interface = GET_CAT_FLG_INTERFACE(l_a_distinct_ec(i), i_conn)
 
                     Catch ex As Exception
 
@@ -1272,13 +1349,13 @@ Public Class LABS_API
 
                         sql_insert_cat = "begin
                                       insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
-                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & i_selected_default_analysis(i).id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", null);
+                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & l_a_distinct_ec(i) & "', '" & l_flg_interface & "', " & l_rank & ", null);
                                       end;"
                     Else
 
                         sql_insert_cat = "begin
                                       insert into alert.exam_cat (ID_EXAM_CAT, CODE_EXAM_CAT, FLG_AVAILABLE, FLG_LAB, ID_CONTENT, FLG_INTERFACE, RANK, PARENT_ID)
-                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & i_selected_default_analysis(i).id_content_category & "', '" & l_flg_interface & "', " & l_rank & ", " & l_id_alert_cat_parent & ");
+                                      values (alert.seq_exam_cat.nextval, 'EXAM_CAT.CODE_EXAM_CAT.' || alert.seq_exam_cat.nextval, 'Y', 'Y', '" & l_a_distinct_ec(i) & "', '" & l_flg_interface & "', " & l_rank & ", " & l_id_alert_cat_parent & ");
                                       end;"
 
                     End If
@@ -1298,8 +1375,8 @@ Public Class LABS_API
 
                     cmd_insert_cat.Dispose()
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
 
                     '2.1.4 Inserir translation
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
@@ -1311,11 +1388,11 @@ Public Class LABS_API
 
                     '2.1.5 - Fazer update a todas as análises que utilizavam o id da categoria antiga com o id da nova categoria (alert.analysis_instit_soft)
 
-                    Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_conn)
+                    Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(l_a_distinct_ec(i), i_conn)
 
                     Dim sql_update_analysis_cat As String = "update alert.analysis_instit_soft ais 
                                                          set ais.id_exam_cat=" & l_id_alert_category & "
-                                                         where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & i_selected_default_analysis(i).id_content_category & "')"
+                                                         where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & l_a_distinct_ec(i) & "')"
 
                     Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, i_conn)
                     cmd_update_analysis_cat.CommandType = CommandType.Text
@@ -1325,10 +1402,10 @@ Public Class LABS_API
                     cmd_update_analysis_cat.Dispose()
 
                     '2.2 - Uma vez que existe no ALERT, verificar se exsite tradução para a lingua da instituição
-                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_category, "r.code_exam_cat) from alert.exam_cat", i_conn) Then
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_a_distinct_ec(i), "r.code_exam_cat) from alert.exam_cat", i_conn) Then
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
 
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
 
@@ -1338,10 +1415,10 @@ Public Class LABS_API
                     End If
 
                     '2.3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
-                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_conn), GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_conn), i_conn) Then
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn), GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn), i_conn) Then
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(i_selected_default_analysis(i).id_content_category, i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(i_selected_default_analysis(i).id_content_category, i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
 
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
 
@@ -1353,13 +1430,13 @@ Public Class LABS_API
                 End If
             Next
 
-            'Catch ex As Exception
+        Catch ex As Exception
 
-            '   Return False
+            Return False
 
-            'End Try
+        End Try
 
-            Return True
+        Return True
 
     End Function
 
@@ -2714,21 +2791,22 @@ Public Class LABS_API
     
                                                 END;"
 
-            'Try
+            Try
 
-            Dim cmd_insert_air As New OracleCommand(sql_insert_air, i_conn)
+                Dim cmd_insert_air As New OracleCommand(sql_insert_air, i_conn)
                 cmd_insert_air.CommandType = CommandType.Text
 
                 cmd_insert_air.ExecuteNonQuery()
 
                 cmd_insert_air.Dispose()
 
-            'Catch ex As Exception
+            Catch ex As Exception
 
-            'MsgBox("ERROR INSERTING ANALYSIS INST RECIPIENT")
-            'Return False
+                MsgBox("ERROR INSERTING ANALYSIS INST RECIPIENT")
+                MsgBox(sql_insert_air)
+                Return False
 
-            'End Try
+            End Try
 
         Next
 
