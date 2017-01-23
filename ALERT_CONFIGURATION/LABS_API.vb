@@ -2714,21 +2714,21 @@ Public Class LABS_API
     
                                                 END;"
 
-            Try
+            'Try
 
-                Dim cmd_insert_air As New OracleCommand(sql_insert_air, i_conn)
+            Dim cmd_insert_air As New OracleCommand(sql_insert_air, i_conn)
                 cmd_insert_air.CommandType = CommandType.Text
 
                 cmd_insert_air.ExecuteNonQuery()
 
                 cmd_insert_air.Dispose()
 
-            Catch ex As Exception
+            'Catch ex As Exception
 
-                MsgBox("ERROR INSERTING ANALYSIS INST RECIPIENT")
-                Return False
+            'MsgBox("ERROR INSERTING ANALYSIS INST RECIPIENT")
+            'Return False
 
-            End Try
+            'End Try
 
         Next
 
