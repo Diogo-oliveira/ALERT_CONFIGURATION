@@ -521,17 +521,17 @@ Public Class LAB_TESTS
 
                                 If db_labs.SET_PARAMETER(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
 
-                                    If db_labs.SET_PARAM(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                        ' MsgBox("SET_SAMPLE_RECIPIENT")
-                                        'If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_a_checked_labs, conn_labs) Then
-                                        ' MsgBox("SET_ANALYSIS_INST_SOFT")
-                                        'If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                        'MsgBox("SET_ANALYSIS_INST_RECIPIENT")
-                                        'If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                        ' MsgBox("SET_ANALYSIS_ROOM")
-                                        'If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, g_selected_soft, g_selected_room, l_a_checked_labs, conn_labs) Then
+                                    ' If db_labs.SET_PARAM(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
 
-                                        MsgBox("Record(s) successfully inserted.", vbInformation)
+                                    'If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, l_a_checked_labs, conn_labs) Then
+
+                                    'If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
+
+                                    'If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
+
+                                    'If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, g_selected_soft, g_selected_room, l_a_checked_labs, conn_labs) Then
+
+                                    MsgBox("Record(s) successfully inserted.", vbInformation)
 
                                         'Limpar a box de análises a gravar no alert
                                         CheckedListBox1.Items.Clear()
@@ -590,30 +590,30 @@ Public Class LAB_TESTS
 
                                 End If
 
+                            ' End If
+
+                            'End If
+
+                            'End If
+
+                            'End If
+
+                            'End If
+
                         End If
 
-                    End If
-
+                        End If
+                Else
+                    MsgBox("ERROR INSERTING EXAM CATEGORY!", vbCritical)
                 End If
 
             End If
 
-        End If
+        Else
+
+            MsgBox("NO ROOM SELECTED!", vbCritical)
 
         End If
-
-        'End If
-        'Else
-        ' MsgBox("ERROR INSERTING EXAM CATEGORY!", vbCritical)
-        'End If
-
-        'End If
-
-        ' Else
-
-        '  MsgBox("NO ROOM SELECTED!", vbCritical)
-
-        ' End If
 
         Cursor = Cursors.Arrow
 
