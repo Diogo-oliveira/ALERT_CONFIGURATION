@@ -2854,7 +2854,7 @@ Public Class LABS_API
     End Function
 
     'fUNÇÃO QUE VERIFICA OS SAMPLE_RECIPIENTS QUE EXISTEM NO ALERT, E QUE NÃO TÊM A MESMA TRADUÇÃO DO DEFAULT
-    Function GET_SAMPLE_RECIPIENT_NO_TRANSLATION(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SAMPLE_RECIPIENT_NO_TRANSLATION(ByVal i_id_software As Int16, ByVal i_id_language As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT (dsr.id_content)
                                 FROM alert_default.sample_recipient dsr
@@ -2871,9 +2871,9 @@ Public Class LABS_API
                                 AND dais.flg_available = 'Y'
                                 AND dais.id_software = " & i_id_software & "
                                 AND dast.flg_available = 'Y'
-                                AND (pk_translation.get_translation(6, sr.code_sample_recipient) <>
-                                      alert_default.pk_translation_default.get_translation_default(6, dsr.code_sample_recipient) OR
-                                      pk_translation.get_translation(6, sr.code_sample_recipient) IS NULL)
+                                AND (pk_translation.get_translation(" & i_id_language & ", sr.code_sample_recipient) <>
+                                      alert_default.pk_translation_default.get_translation_default(" & i_id_language & ", dsr.code_sample_recipient) OR
+                                      pk_translation.get_translation(" & i_id_language & ", sr.code_sample_recipient) IS NULL)
                                 AND dast.id_content in ("
 
         'O FULL JOIN garante que só vão ser devolvidos os id_contents dos SRs que existem no ALERT e não têm tradução.
@@ -2987,7 +2987,7 @@ Public Class LABS_API
             End If
 
             'Verificar para os registos que existem no alert se têm uma tradução diferente do default 
-            If Not GET_SAMPLE_RECIPIENT_NO_TRANSLATION(i_software, i_selected_default_analysis, i_conn, l_dr_translation) Then
+            If Not GET_SAMPLE_RECIPIENT_NO_TRANSLATION(i_software, l_id_language, i_selected_default_analysis, i_conn, l_dr_translation) Then
 
 
                 MsgBox("ERROR GETTING SAMPLE_RECIPIENTS WITHOUT TRANSLATION!", vbCritical)
@@ -3038,70 +3038,107 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+    Function GET_ANALYSIS_INST_SOFT(ByVal i_id_institution As Int64, ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_sql_insert_ais As String = "SELECT distinct dast.id_content
+                                                FROM alert_default.analysis_instit_soft dais
+
+                                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                                         AND dast.id_sample_type = dais.id_sample_type
+                                                JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
+                                                                                AND ast.flg_available = 'Y'
+                                                LEFT JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
+                                                                                     AND ais.id_sample_type = ast.id_sample_type
+                                                                                     AND ais.id_software = dais.id_software
+                                                                                     AND ais.id_institution = " & i_id_institution & "
+                                                                                     AND ais.flg_available = 'Y'
+                                                WHERE dais.id_software = " & i_id_software & "
+                                                AND ais.id_analysis_instit_soft IS NULL
+                                                AND dast.id_content in ("
+
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                l_sql_insert_ais = l_sql_insert_ais & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                l_sql_insert_ais = l_sql_insert_ais & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')  ORDER BY 1 ASC"
+
+            End If
+
+        Next
+
+
+        Dim cmd As New OracleCommand(l_sql_insert_ais, i_conn)
 
         Try
 
-            Dim sql_verify_ais As String = ""
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
 
-            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+        Catch ex As Exception
 
-                Dim l_count_ais As Integer = 0
+            cmd.Dispose()
+            Return False
 
-                '1 - Verificar se SR já existe no alert. Se não existe, inserir e inserir tradução.
-                'Nota: A verificação do registo terá que ser diferente dos casos anteriore, pois não tem ID_CONTENT, e é orientada ao software e insituição
+        End Try
 
-                sql_verify_ais = "SELECT COUNT(*)
-                                    FROM alert.analysis_instit_soft ais
-                                    WHERE ais.id_analysis = (SELECT ast_a.id_analysis
-                                                             FROM alert.analysis_sample_type ast_a
-                                                             WHERE ast_a.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
-                                                             AND ast_a.flg_available = 'Y')
-                                    AND ais.id_sample_type = (SELECT ast_st.id_sample_type
-                                                             FROM alert.analysis_sample_type ast_st
-                                                             WHERE ast_st.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
-                                                             AND ast_st.flg_available = 'Y')
-                                    AND ais.id_institution =" & i_institution & "
-                                    AND ais.id_software =" & i_software & "
-                                    AND ais.flg_available = 'Y'"
+    End Function
 
 
-                Dim cmd As New OracleCommand(sql_verify_ais, i_conn)
-                cmd.CommandType = CommandType.Text
+    Function SET_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
-                Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_dr As OracleDataReader
 
-                Try
+        Try
 
-                    While dr.Read()
+            Dim l_a_ast() As String
 
-                        l_count_ais = dr.Item(0)
+            If Not GET_ANALYSIS_INST_SOFT(i_institution, i_software, i_selected_default_analysis, i_conn, l_dr) Then
 
-                    End While
+                l_dr.Dispose()
+                l_dr.Close()
+                Return False
 
-                    dr.Dispose()
-                    dr.Close()
-                    cmd.Dispose()
+            Else
+                Dim l_index_ais As Int32 = 0
 
-                Catch ex As Exception
+                While l_dr.Read()
 
-                    l_count_ais = 0
+                    ReDim Preserve l_a_ast(l_index_ais)
 
-                    dr.Dispose()
-                    dr.Close()
-                    cmd.Dispose()
+                    l_a_ast(l_index_ais) = l_dr.Item(0)
 
-                End Try
+                    l_index_ais = l_index_ais + 1
 
-                'Significa que não existe registo na analysis_inst_soft
-                If l_count_ais = 0 Then
+                End While
 
-                    'Função que vai insrir o registo
-                    Dim sql_insert_ais As String = "DECLARE
+            End If
 
-                                                        l_id_analysis_alert    alert.analysis_sample_type.id_analysis%TYPE;
+            Dim sql_insert_ais As String = "DECLARE
+                                                        l_a_id_content_ast    table_varchar := table_varchar("
+
+            For i As Integer = 0 To l_a_ast.Count() - 1
+
+                If (i < l_a_ast.Count() - 1) Then
+
+                    sql_insert_ais = sql_insert_ais & "'" & l_a_ast(i) & "', "
+
+                Else
+
+                    sql_insert_ais = sql_insert_ais & "'" & l_a_ast(i) & "') ;"
+
+                End If
+
+            Next
+
+            sql_insert_ais = sql_insert_ais & "         l_id_analysis_alert    alert.analysis_sample_type.id_analysis%TYPE;
                                                         l_id_sample_type_alert alert.analysis_sample_type.id_sample_type%TYPE;
 
                                                         l_id_analysis_default    alert.analysis_sample_type.id_analysis%TYPE;
@@ -3128,33 +3165,45 @@ Public Class LABS_API
 
                                                     BEGIN
 
-                                                        SELECT ast.id_analysis, ast.id_sample_type
-                                                        INTO l_id_analysis_alert, l_id_sample_type_alert
-                                                        FROM alert.analysis_sample_type ast
-                                                        WHERE ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
-                                                        AND ast.flg_available = 'Y';
+                                                        FOR i IN 1 .. l_a_id_content_ast.COUNT()
+                                                        LOOP
+                                                        
+                                                           BEGIN
+                                                                SELECT ast.id_analysis, ast.id_sample_type
+                                                                INTO l_id_analysis_alert, l_id_sample_type_alert
+                                                                FROM alert.analysis_sample_type ast
+                                                                WHERE ast.id_content = l_a_id_content_ast(i)
+                                                                AND ast.flg_available = 'Y';
 
-                                                        SELECT ast.id_analysis, ast.id_sample_type
-                                                        INTO l_id_analysis_default, l_id_sample_type_default
-                                                        FROM alert_default.analysis_sample_type ast
-                                                        WHERE ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
-                                                        AND ast.flg_available = 'Y';
+                                                                SELECT ast.id_analysis, ast.id_sample_type
+                                                                INTO l_id_analysis_default, l_id_sample_type_default
+                                                                FROM alert_default.analysis_sample_type ast
+                                                                WHERE ast.id_content = l_a_id_content_ast(i)
+                                                                AND ast.flg_available = 'Y';
     
-                                                        SELECT EC.ID_EXAM_CAT
-                                                        INTO l_id_exam_cat_alert
-                                                        FROM ALERT.EXAM_CAT EC
-                                                        WHERE EC.ID_CONTENT='" & i_selected_default_analysis(i).id_content_category & "'
-                                                        AND EC.FLG_AVAILABLE='Y';
+                                                                SELECT EC.ID_EXAM_CAT
+                                                                INTO l_id_exam_cat_alert
+                                                                FROM ALERT.EXAM_CAT EC
+                                                                WHERE EC.ID_CONTENT=(SELECT dec.id_content
+                                                                                        FROM alert_default.analysis_instit_soft dais
+                                                                                        JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                                                                                 AND dast.id_sample_type = dais.id_sample_type
+                                                                                                                                 AND dast.flg_available = 'Y'
+                                                                                        JOIN alert_default.exam_cat DEC ON dec.id_exam_cat = dais.id_exam_cat
+                                                                                                                    AND dec.flg_available = 'Y'
+                                                                                        WHERE dast.id_content = l_a_id_content_ast(i)
+                                                                                        and dais.id_software=" & i_software & ")
+                                                                AND EC.FLG_AVAILABLE='Y';
     
-                                                        SELECT ais.flg_type, ais.flg_mov_pat, ais.flg_first_result, ais.flg_mov_recipient, ais.flg_harvest,ais.qty_harvest, ais.rank, ais.flg_execute,
-                                                        ais.flg_justify, ais.flg_interface, ais.flg_chargeable, ais.flg_fill_type, ais.color_text, ais.color_graph, ais.cost, ais.price
-                                                        INTO l_flg_type, l_flg_mov_pat,l_flg_first_result,l_flg_mov_recipient,l_flg_harvest,l_qty_harvest, l_rank, l_flg_execute,
-                                                        l_flg_justify,l_flg_interface,l_flg_chargeable,l_flg_fill_type,l_color_text, l_color_graph, l_cost, l_price
-                                                        FROM alert_default.analysis_instit_soft ais
-                                                        WHERE ais.id_analysis = l_id_analysis_default
-                                                        AND ais.id_sample_type = l_id_sample_type_default
-                                                        AND ais.flg_available = 'Y'
-                                                        AND ais.id_software = " & i_software & ";
+                                                                SELECT ais.flg_type, ais.flg_mov_pat, ais.flg_first_result, ais.flg_mov_recipient, ais.flg_harvest,ais.qty_harvest, ais.rank, ais.flg_execute,
+                                                                ais.flg_justify, ais.flg_interface, ais.flg_chargeable, ais.flg_fill_type, ais.color_text, ais.color_graph, ais.cost, ais.price
+                                                                INTO l_flg_type, l_flg_mov_pat,l_flg_first_result,l_flg_mov_recipient,l_flg_harvest,l_qty_harvest, l_rank, l_flg_execute,
+                                                                l_flg_justify,l_flg_interface,l_flg_chargeable,l_flg_fill_type,l_color_text, l_color_graph, l_cost, l_price
+                                                                FROM alert_default.analysis_instit_soft ais
+                                                                WHERE ais.id_analysis = l_id_analysis_default
+                                                                AND ais.id_sample_type = l_id_sample_type_default
+                                                                AND ais.flg_available = 'Y'
+                                                                AND ais.id_software = " & i_software & ";
 
                                                         INSERT INTO alert.analysis_instit_soft
                                                             (id_analysis_instit_soft,
@@ -3207,7 +3256,7 @@ Public Class LABS_API
                                                              l_qty_harvest,
                                                              l_id_sample_type_alert);
 
-                                                    EXCEPTION
+                                                EXCEPTION
                                                       WHEN DUP_VAL_ON_INDEX THEN
                                                         UPDATE ALERT.ANALYSIS_INSTIT_SOFT AIS
                                                         SET AIS.FLG_TYPE = l_flg_type, AIS.FLG_MOV_PAT=l_flg_mov_pat,
@@ -3218,33 +3267,229 @@ Public Class LABS_API
                                                         AIS.FLG_JUSTIFY=l_flg_justify, AIS.FLG_INTERFACE=l_flg_interface, AIS.FLG_CHARGEABLE=l_flg_chargeable,
                                                         AIS.FLG_AVAILABLE='Y', AIS.QTY_HARVEST=l_qty_harvest
                                                         WHERE AIS.ID_ANALYSIS=l_id_analysis_alert AND AIS.ID_SAMPLE_TYPE=l_id_sample_type_alert AND AIS.ID_INSTITUTION=" & i_institution & "
-                                                        AND AIS.ID_SOFTWARE= " & i_software & ";   
+                                                        AND AIS.ID_SOFTWARE= " & i_software & ";
+                                                        CONTINUE;   
 
-                                                    END;"
+                                                END;    
 
-                    Try
+                                             END LOOP;                                                    
 
-                        Dim cmd_insert_ais As New OracleCommand(sql_insert_ais, i_conn)
-                        cmd_insert_ais.CommandType = CommandType.Text
+                                             END;"
 
-                        cmd_insert_ais.ExecuteNonQuery()
+            Try
 
-                        cmd_insert_ais.Dispose()
+                    Dim cmd_insert_ais As New OracleCommand(sql_insert_ais, i_conn)
+                    cmd_insert_ais.CommandType = CommandType.Text
 
-                    Catch ex As Exception
+                    cmd_insert_ais.ExecuteNonQuery()
 
-                        MsgBox("ERROR INSERTING ANALYSIS INST SOFT")
-                        Return False
+                    cmd_insert_ais.Dispose()
 
-                    End Try
+                Catch ex As Exception
 
-                End If
+                Return False
 
-            Next
+            End Try
+
+
+
+            '''''''''''''''''''''''''''''''''''''
+
+
+            'Dim l_count_ais As Integer = 0
+
+            '    '1 - Verificar se SR já existe no alert. Se não existe, inserir e inserir tradução.
+            '    'Nota: A verificação do registo terá que ser diferente dos casos anteriore, pois não tem ID_CONTENT, e é orientada ao software e instituição
+
+            '    sql_verify_ais = "Select COUNT(*)
+            '                        FROM alert.analysis_instit_soft ais
+            '                        WHERE ais.id_analysis = (SELECT ast_a.id_analysis
+            '                                                 FROM alert.analysis_sample_type ast_a
+            '                                                 WHERE ast_a.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+            '                                                 AND ast_a.flg_available = 'Y')
+            '                        AND ais.id_sample_type = (SELECT ast_st.id_sample_type
+            '                                                 FROM alert.analysis_sample_type ast_st
+            '                                                 WHERE ast_st.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+            '                                                 AND ast_st.flg_available = 'Y')
+            '                        AND ais.id_institution =" & i_institution & "
+            '                        AND ais.id_software =" & i_software & "
+            '                        AND ais.flg_available = 'Y'"
+
+
+            '    Dim cmd As New OracleCommand(sql_verify_ais, i_conn)
+            '    cmd.CommandType = CommandType.Text
+
+            '    Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            '    Try
+
+            '        While dr.Read()
+
+            '            l_count_ais = dr.Item(0)
+
+            '        End While
+
+            '        dr.Dispose()
+            '        dr.Close()
+            '        cmd.Dispose()
+
+            '    Catch ex As Exception
+
+            '        l_count_ais = 0
+
+            '        dr.Dispose()
+            '        dr.Close()
+            '        cmd.Dispose()
+
+            '    End Try
+
+            ''Significa que não existe registo na analysis_inst_soft
+            'If l_count_ais = 0 Then
+
+            '    'Função que vai insrir o registo
+            '    Dim sql_insert_ais As String = "DECLARE
+
+            '                                            l_id_analysis_alert    alert.analysis_sample_type.id_analysis%TYPE;
+            '                                            l_id_sample_type_alert alert.analysis_sample_type.id_sample_type%TYPE;
+
+            '                                            l_id_analysis_default    alert.analysis_sample_type.id_analysis%TYPE;
+            '                                            l_id_sample_type_default alert.analysis_sample_type.id_sample_type%TYPE;
+
+            '                                            l_flg_type          alert_default.analysis_instit_soft.flg_type%TYPE;
+            '                                            l_flg_mov_pat       alert_default.analysis_instit_soft.flg_mov_pat%TYPE;
+            '                                            l_flg_first_result  alert_default.analysis_instit_soft.flg_first_result%TYPE;
+            '                                            l_flg_mov_recipient alert_default.analysis_instit_soft.flg_mov_recipient%TYPE;
+            '                                            l_flg_harvest       alert_default.analysis_instit_soft.flg_harvest%TYPE;
+            '                                            l_qty_harvest       alert_default.analysis_instit_soft.qty_harvest%TYPE;
+            '                                            l_rank              alert_default.analysis_instit_soft.rank%TYPE;
+            '                                            l_flg_execute       alert_default.analysis_instit_soft.flg_execute%TYPE;
+            '                                            l_flg_justify       alert_default.analysis_instit_soft.flg_justify%TYPE;
+            '                                            l_flg_interface     alert_default.analysis_instit_soft.flg_interface%TYPE;
+            '                                            l_flg_chargeable    alert_default.analysis_instit_soft.flg_chargeable%TYPE;
+            '                                            l_flg_fill_type     alert_default.analysis_instit_soft.flg_fill_type%TYPE;
+            '                                            l_color_text        alert_default.analysis_instit_soft.color_text%TYPE;
+            '                                            l_color_graph       alert_default.analysis_instit_soft.color_graph%TYPE;
+            '                                            l_cost              alert_default.analysis_instit_soft.cost%type;
+            '                                            l_price             alert_default.analysis_instit_soft.price%type;
+
+            '                                            l_id_exam_cat_alert alert.exam_cat.id_exam_cat%TYPE;
+
+            '                                        BEGIN
+
+            '                                            SELECT ast.id_analysis, ast.id_sample_type
+            '                                            INTO l_id_analysis_alert, l_id_sample_type_alert
+            '                                            FROM alert.analysis_sample_type ast
+            '                                            WHERE ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+            '                                            AND ast.flg_available = 'Y';
+
+            '                                            SELECT ast.id_analysis, ast.id_sample_type
+            '                                            INTO l_id_analysis_default, l_id_sample_type_default
+            '                                            FROM alert_default.analysis_sample_type ast
+            '                                            WHERE ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "'
+            '                                            AND ast.flg_available = 'Y';
+
+            '                                            SELECT EC.ID_EXAM_CAT
+            '                                            INTO l_id_exam_cat_alert
+            '                                            FROM ALERT.EXAM_CAT EC
+            '                                            WHERE EC.ID_CONTENT='" & i_selected_default_analysis(i).id_content_category & "'
+            '                                            AND EC.FLG_AVAILABLE='Y';
+
+            '                                            SELECT ais.flg_type, ais.flg_mov_pat, ais.flg_first_result, ais.flg_mov_recipient, ais.flg_harvest,ais.qty_harvest, ais.rank, ais.flg_execute,
+            '                                            ais.flg_justify, ais.flg_interface, ais.flg_chargeable, ais.flg_fill_type, ais.color_text, ais.color_graph, ais.cost, ais.price
+            '                                            INTO l_flg_type, l_flg_mov_pat,l_flg_first_result,l_flg_mov_recipient,l_flg_harvest,l_qty_harvest, l_rank, l_flg_execute,
+            '                                            l_flg_justify,l_flg_interface,l_flg_chargeable,l_flg_fill_type,l_color_text, l_color_graph, l_cost, l_price
+            '                                            FROM alert_default.analysis_instit_soft ais
+            '                                            WHERE ais.id_analysis = l_id_analysis_default
+            '                                            AND ais.id_sample_type = l_id_sample_type_default
+            '                                            AND ais.flg_available = 'Y'
+            '                                            AND ais.id_software = " & i_software & ";
+
+            '                                            INSERT INTO alert.analysis_instit_soft
+            '                                                (id_analysis_instit_soft,
+            '                                                 id_analysis,
+            '                                                 flg_type,
+            '                                                 id_institution,
+            '                                                 id_software,
+            '                                                 flg_mov_pat,
+            '                                                 flg_first_result,
+            '                                                 flg_mov_recipient,
+            '                                                 flg_harvest,
+            '                                                 id_exam_cat,
+            '                                                 rank,
+            '                                                 cost,
+            '                                                 price,
+            '                                                 color_graph,
+            '                                                 color_text,
+            '                                                 flg_fill_type,
+            '                                                 id_analysis_group,
+            '                                                 flg_execute,
+            '                                                 flg_justify,
+            '                                                 flg_interface,
+            '                                                 flg_chargeable,
+            '                                                 flg_available,                       
+            '                                                 qty_harvest,
+            '                                                 id_sample_type)
+            '                                            VALUES
+            '                                                (alert.seq_analysis_instit_soft.nextval,
+            '                                                 l_id_analysis_alert,
+            '                                                 l_flg_type,
+            '                                                 " & i_institution & ",
+            '                                                 " & i_software & ",
+            '                                                 l_flg_mov_pat,
+            '                                                 l_flg_first_result,
+            '                                                 l_flg_mov_recipient,
+            '                                                 l_flg_harvest,
+            '                                                 l_id_exam_cat_alert,
+            '                                                 l_rank,
+            '                                                 l_cost, --COST
+            '                                                 l_price, --PRICE
+            '                                                 l_color_graph,
+            '                                                 l_color_text,
+            '                                                 l_flg_fill_type,
+            '                                                 NULL,  --ID_ANALYSIS_GROUP
+            '                                                 l_flg_execute,
+            '                                                 l_flg_justify,
+            '                                                 l_flg_interface,
+            '                                                 l_flg_chargeable,
+            '                                                 'Y',        
+            '                                                 l_qty_harvest,
+            '                                                 l_id_sample_type_alert);
+
+            '                                        EXCEPTION
+            '                                          WHEN DUP_VAL_ON_INDEX THEN
+            '                                            UPDATE ALERT.ANALYSIS_INSTIT_SOFT AIS
+            '                                            SET AIS.FLG_TYPE = l_flg_type, AIS.FLG_MOV_PAT=l_flg_mov_pat,
+            '                                            AIS.FLG_FIRST_RESULT= l_flg_first_result, AIS.FLG_MOV_RECIPIENT=l_flg_mov_recipient,
+            '                                            AIS.FLG_HARVEST=l_flg_harvest, AIS.ID_EXAM_CAT=l_id_exam_cat_alert, AIS.RANK=l_rank,
+            '                                            AIS.COST=l_cost, AIS.PRICE=l_price, AIS.COLOR_GRAPH=l_color_graph, AIS.COLOR_TEXT=l_color_text,
+            '                                            AIS.FLG_FILL_TYPE=l_flg_fill_type, AIS.ID_ANALYSIS_GROUP=NULL, AIS.FLG_EXECUTE=l_flg_execute,
+            '                                            AIS.FLG_JUSTIFY=l_flg_justify, AIS.FLG_INTERFACE=l_flg_interface, AIS.FLG_CHARGEABLE=l_flg_chargeable,
+            '                                            AIS.FLG_AVAILABLE='Y', AIS.QTY_HARVEST=l_qty_harvest
+            '                                            WHERE AIS.ID_ANALYSIS=l_id_analysis_alert AND AIS.ID_SAMPLE_TYPE=l_id_sample_type_alert AND AIS.ID_INSTITUTION=" & i_institution & "
+            '                                            AND AIS.ID_SOFTWARE= " & i_software & ";   
+
+            '                                        END;"
+
+            'Try
+
+            '        Dim cmd_insert_ais As New OracleCommand(sql_insert_ais, i_conn)
+            '        cmd_insert_ais.CommandType = CommandType.Text
+
+            '        cmd_insert_ais.ExecuteNonQuery()
+
+            '        cmd_insert_ais.Dispose()
+
+            '    Catch ex As Exception
+
+
+            '        Return False
+
+            '    End Try
+
+            'End If
 
         Catch ex As Exception
 
-            MsgBox("ERROR INSERTING SAMPLE RECIPIENT")
             Return False
 
         End Try
