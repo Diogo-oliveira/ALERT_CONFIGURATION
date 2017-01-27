@@ -2802,25 +2802,142 @@ Public Class LABS_API
 
     End Function
 
-    Function SET_SAMPLE_RECIPIENT(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+    Function GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "SELECT DISTINCT dsr.id_content
+                                FROM alert_default.sample_recipient dsr
+                                JOIN alert_default.analysis_instit_recipient dair ON dair.id_sample_recipient = dsr.id_sample_recipient
+                                JOIN alert_default.analysis_instit_soft dais ON dais.id_analysis_instit_soft = dair.id_analysis_instit_soft
+                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                         AND dast.id_sample_type = dais.id_sample_type
+
+                                LEFT JOIN alert.sample_recipient sr ON sr.id_content = dsr.id_content
+                                                                AND sr.flg_available = 'Y'
+                                WHERE dsr.flg_available = 'Y'
+                                AND dais.flg_available = 'Y'
+                                AND dais.id_software = " & i_id_software & "
+                                AND dast.flg_available = 'Y'
+                                AND sr.id_content IS NULL
+                                AND dast.id_content in ("
+
+        'Nota: O Left Join da query garante que só vai fazer fetch do default dos registos que não existem no ALERT
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')  ORDER BY 1 ASC"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
 
         Try
-            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-                '1 - Verificar se SR já existe no alert. Se não existe, inserir e inserir tradução.
-                If Not CHECK_RECORD_EXISTENCE(i_selected_default_analysis(i).id_content_sample_recipient, "alert.sample_recipient", i_conn) Then
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
+    'fUNÇÃO QUE VERIFICA OS SAMPLE_RECIPIENTS QUE EXISTEM NO ALERT, E QUE NÃO TÊM A MESMA TRADUÇÃO DO DEFAULT
+    Function GET_SAMPLE_RECIPIENT_NO_TRANSLATION(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT DISTINCT (dsr.id_content)
+                                FROM alert_default.sample_recipient dsr
+                                JOIN alert_default.analysis_instit_recipient dair ON dair.id_sample_recipient = dsr.id_sample_recipient
+                                JOIN alert_default.analysis_instit_soft dais ON dais.id_analysis_instit_soft = dair.id_analysis_instit_soft
+                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                         AND dast.id_sample_type = dais.id_sample_type
+
+                                JOIN alert.sample_recipient sr ON sr.id_content = dsr.id_content
+                                                           AND sr.flg_available = 'Y'
+                                JOIN alert_default.translation dt ON dt.code_translation = dsr.code_sample_recipient
+                                JOIN translation t ON t.code_translation = sr.code_sample_recipient
+                                WHERE dsr.flg_available = 'Y'
+                                AND dais.flg_available = 'Y'
+                                AND dais.id_software = " & i_id_software & "
+                                AND dast.flg_available = 'Y'
+                                AND (pk_translation.get_translation(6, sr.code_sample_recipient) <>
+                                      alert_default.pk_translation_default.get_translation_default(6, dsr.code_sample_recipient) OR
+                                      pk_translation.get_translation(6, sr.code_sample_recipient) IS NULL)
+                                AND dast.id_content in ("
+
+        'O FULL JOIN garante que só vão ser devolvidos os id_contents dos SRs que existem no ALERT e não têm tradução.
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')  ORDER BY 1 ASC"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
+    Function SET_SAMPLE_RECIPIENT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_dr As OracleDataReader
+        Dim l_dr_translation As OracleDataReader
+        Try
+            ''Esta função vai obter os sample_recipients do default que não existem no ALERT
+            If Not GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT(i_software, i_selected_default_analysis, i_conn, l_dr) Then
+
+                l_dr.Dispose()
+                l_dr.Close()
+                l_dr_translation.Dispose()
+                l_dr_translation.Close()
+                Return False
+
+            Else
+
+                While l_dr.Read()
+
                     Dim sql_insert_sr As String = "BEGIN
 
                                                             insert into ALERT.sample_recipient (ID_SAMPLE_RECIPIENT, CODE_SAMPLE_RECIPIENT, FLG_AVAILABLE, RANK, ID_CONTENT)
-                                                            values (ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL, 'SAMPLE_RECIPIENT.CODE_SAMPLE_RECIPIENT.'||  ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL , 'Y', 0,'" & i_selected_default_analysis(i).id_content_sample_recipient & "');
+                                                            values (ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL, 'SAMPLE_RECIPIENT.CODE_SAMPLE_RECIPIENT.'||  ALERT.SEQ_SAMPLE_RECIPIENT.NEXTVAL , 'Y', 0,'" & l_dr.Item(0) & "');
 
                                                     EXCEPTION
                                                       WHEN DUP_VAL_ON_INDEX THEN
                                                         UPDATE ALERT.sample_recipient SR
                                                         SET    SR.FLG_AVAILABLE='Y'
-                                                        WHERE  SR.ID_CONTENT='" & i_selected_default_analysis(i).id_content_sample_recipient & "';
+                                                        WHERE  SR.ID_CONTENT='" & l_dr.Item(0) & "';
                                                     
                                                     END;"
 
@@ -2831,13 +2948,16 @@ Public Class LABS_API
 
                     cmd_insert_sr.Dispose()
 
-                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
-                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(l_dr.Item(0), i_conn)
+                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(l_dr.Item(0), i_conn)
 
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
 
                         MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_SAMPLE_RECIPIENT_EXISTENCE >> SET_TRANSLATION")
-
+                        l_dr.Dispose()
+                        l_dr.Close()
+                        l_dr_translation.Dispose()
+                        l_dr_translation.Close()
                         Return False
 
                     End If
@@ -2847,11 +2967,11 @@ Public Class LABS_API
                                                     SET air.id_sample_recipient =
                                                         (SELECT srn.id_sample_recipient
                                                          FROM alert.sample_recipient srn
-                                                         WHERE srn.id_content = '" & i_selected_default_analysis(i).id_content_sample_recipient & "'
+                                                         WHERE srn.id_content = '" & l_dr.Item(0) & "'
                                                          AND srn.flg_available = 'Y')
                                                     WHERE air.id_sample_recipient IN  (SELECT srn.id_sample_recipient
                                                          FROM alert.sample_recipient srn
-                                                         WHERE srn.id_content = '" & i_selected_default_analysis(i).id_content_sample_recipient & "'
+                                                         WHERE srn.id_content = '" & l_dr.Item(0) & "'
                                                          AND srn.flg_available = 'N')"
 
                     Dim cmd_update_ais As New OracleCommand(sql_update_ais, i_conn)
@@ -2862,46 +2982,58 @@ Public Class LABS_API
 
                     cmd_update_ais.Dispose()
 
+                End While
 
-                    '2 - Uma vez que já existe no alert, verificar se existe translation
-                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, i_selected_default_analysis(i).id_content_analysis_sample_type, "R.code_sample_recipient) from alert.sample_recipient", i_conn) Then
+            End If
 
-                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
-                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
+            'Verificar para os registos que existem no alert se têm uma tradução diferente do default 
+            If Not GET_SAMPLE_RECIPIENT_NO_TRANSLATION(i_software, i_selected_default_analysis, i_conn, l_dr_translation) Then
+
+
+                MsgBox("ERROR GETTING SAMPLE_RECIPIENTS WITHOUT TRANSLATION!", vbCritical)
+                l_dr.Dispose()
+                l_dr.Close()
+                l_dr_translation.Dispose()
+                l_dr_translation.Close()
+                Return False
+
+            Else
+                While l_dr_translation.Read()
+
+                    MsgBox(l_dr_translation.Item(0))
+
+                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(l_dr_translation.Item(0), i_conn)
+                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(l_dr_translation.Item(0), i_conn)
 
                     If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
 
                         MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_SAMPLE_RECIPIENT_TRANSLATION_EXISTENCE >> SET_TRANSLATION")
-
+                        l_dr.Dispose()
+                        l_dr.Close()
+                        l_dr_translation.Dispose()
+                        l_dr_translation.Close()
                         Return False
 
                     End If
 
-                    '3 - Uma vez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
-                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn), GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn), i_conn) Then
+                End While
 
-                    Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
-                    Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(i_selected_default_analysis(i).id_content_sample_recipient, i_conn)
-
-                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_sr_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_sr_default, i_conn)), (i_conn)) Then
-
-                        MsgBox("ERROR INSERTING SAMPLE RECIPIENT TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION" & l_id_language)
-                        Return False
-
-                    End If
-
-                End If
-
-            Next
+            End If
 
         Catch ex As Exception
 
-
-            MsgBox("ERROR INSERTING SAMPLE RECIPIENT")
+            l_dr.Dispose()
+            l_dr.Close()
+            l_dr_translation.Dispose()
+            l_dr_translation.Close()
             Return False
 
         End Try
 
+        l_dr.Dispose()
+        l_dr.Close()
+        l_dr_translation.Dispose()
+        l_dr_translation.Close()
         Return True
 
     End Function
