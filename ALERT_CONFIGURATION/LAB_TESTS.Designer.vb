@@ -258,11 +258,11 @@ Partial Class LAB_TESTS
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(9, 444)
+        Me.Label8.Location = New System.Drawing.Point(9, 457)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(129, 13)
+        Me.Label8.Size = New System.Drawing.Size(151, 13)
         Me.Label8.TabIndex = 51
-        Me.Label8.Text = "EXAM CATEGORY (Alert)"
+        Me.Label8.Text = "ANALYSIS CATEGORY (Alert)"
         '
         'ComboBox5
         '

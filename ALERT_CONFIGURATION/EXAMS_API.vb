@@ -141,7 +141,7 @@ Public Class EXAMS_API
 
     End Function
 
-    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int16, ByVal i_oradb As String) As String
+    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64, ByVal i_oradb As String) As String
 
         Dim l_inst As String = ""
 
@@ -320,7 +320,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int16, ByVal i_oradb As String) As OracleDataReader
+    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -345,7 +345,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_oradb As String) As OracleDataReader
+    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16, ByVal i_oradb As String) As OracleDataReader
 
         Dim oradb As String = i_oradb
 
@@ -433,7 +433,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int16, ByVal i_oradb As String) As Int16
+    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64, ByVal i_oradb As String) As Int16
 
         Dim oradb As String = i_oradb
 

@@ -48,6 +48,15 @@ Public Class LABS_API
         Public flg_new As String
     End Structure
 
+
+    Public Structure analysis_params
+        Public ID_CONTENT_PARAMETER As String
+        Public COLOR_GRAPH As String
+        Public FLG_FILL_TYPE As String
+        Public RANK As Integer
+        Public ID_CONTENT_AST As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "Select distinct dastv.version
@@ -950,7 +959,7 @@ Public Class LABS_API
 
     End Function
 
-    Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_id_content_ast As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT aparam.id_content
                                     FROM alert_default.analysis_sample_type ast
@@ -959,12 +968,28 @@ Public Class LABS_API
                                                                      AND ap.id_software = " & i_id_software & "
                                     JOIN alert_default.analysis_parameter aparam ON aparam.id_analysis_parameter = ap.id_analysis_parameter
                                                                              AND aparam.flg_available = 'Y'
+                                    left join alert.analysis_parameter aap on aap.id_content=aparam.id_content and aap.flg_available='Y'
                                     WHERE ast.flg_available = 'Y'
                                     AND ap.flg_available = 'Y'
-                                    AND ast.id_content = '" & i_id_content_ast & "'
-                                    ORDER BY 1 ASC"
+                                    and aap.id_content is null
+                                    AND ast.id_content in ("
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+        'Nota: O Left Join da query garante que só vai fazer fetch do default dos registos que não existem no ALERT
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')  ORDER BY 1 ASC"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
 
         Try
 
@@ -982,17 +1007,93 @@ Public Class LABS_API
 
     End Function
 
-    Function GET_DEFAULT_PARAMETERS(ByVal i_id_content_analysis_st As String, ByVal i_software As Int16, ByVal i_conn As OracleConnection, ByRef i_Dr As OracleDataReader) As Boolean
+    Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION(ByVal i_id_language As Int16, ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "SELECT dp.id_content, dap.color_graph, dap.flg_fill_type, dap.rank
-                                FROM alert_default.analysis_param dap
+        Dim sql As String = "SELECT DISTINCT aparam.id_content
+                                    FROM alert_default.analysis_sample_type ast
+                                    JOIN alert_default.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                                     AND ap.id_sample_type = ast.id_sample_type
+                                                                     AND ap.id_software = " & i_id_software & "
+                                    JOIN alert_default.analysis_parameter aparam ON aparam.id_analysis_parameter = ap.id_analysis_parameter
+                                                                             AND aparam.flg_available = 'Y'
+                                    join alert.analysis_parameter aap on aap.id_content=aparam.id_content and aap.flg_available='Y'
+                                    WHERE ast.flg_available = 'Y'
+                                    AND ap.flg_available = 'Y'
+                                    and pk_translation.get_translation(" & i_id_language & ",aap.code_analysis_parameter) is null
+                                    AND ast.id_content in ("
+
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')  ORDER BY 1 ASC"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+
+        Try
+
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
+    Function GET_DEFAULT_PARAMETERS(ByVal i_id_content_analysis_st() As String, ByVal i_software As Int16, ByVal i_institution As Int64, ByVal i_conn As OracleConnection, ByRef i_Dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "Select dp.id_content, dap.color_graph, dap.flg_fill_type, dap.rank, dast.id_content
+                                From alert_default.analysis_param dap
                                 JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dap.id_analysis
                                                                          AND dap.id_sample_type = dast.id_sample_type
                                 JOIN alert_default.analysis_parameter dp ON dp.id_analysis_parameter = dap.id_analysis_parameter
-                                WHERE dast.id_content = '" & i_id_content_analysis_st & "'
-                                AND dap.id_software = " & i_software & "
+                                LEFT JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
+                                LEFT JOIN alert.analysis_parameter aparameter ON aparameter.id_content = dp.id_content
+                                LEFT JOIN alert.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                              AND ap.id_sample_type = ast.id_sample_type
+                                                              AND ap.id_analysis_parameter = aparameter.id_analysis_parameter
+                                                              AND ap.flg_available = 'Y'
+                                                              AND ap.id_institution = " & i_institution & "
+                                                              AND ap.id_software = " & i_software & "                                
+
+                                WHERE dast.id_content in ('"
+
+
+        For i As Integer = 0 To i_id_content_analysis_st.Count() - 1
+
+            If i < i_id_content_analysis_st.Count() - 1 Then
+
+                sql = sql & i_id_content_analysis_st(i) & "', '"
+
+            Else
+
+                sql = sql & i_id_content_analysis_st(i) & "')
+                     AND dap.id_software = " & i_software & "
                                 AND dap.flg_available = 'Y'
-                                AND dp.flg_available = 'Y'"
+                                AND dp.flg_available = 'Y'
+                                AND ast.flg_available = 'Y'
+                                AND aparameter.flg_available = 'Y'
+                                AND ap.id_analysis_param IS NULL
+                     order by 4 asc"
+
+            End If
+            'PENSAR NA ORDER DE PESQUSIA (devolvendo o ast, já não é preciso preocupar-se com a ordem. dr vai ter mais um parametro)
+        Next
 
         Dim cmd As New OracleCommand(sql, i_conn)
 
@@ -2244,75 +2345,66 @@ Public Class LABS_API
     Function SET_PARAMETER(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim dr_distinct_parameters As OracleDataReader
+        Dim l_array_parameters() As String ''Array que vai guardar o id_content dos parameters
+        Dim l_index As Int64 = 0
+        Dim dr_distinct_parameters_translation As OracleDataReader
 
         Try
+            '1 - Obter os Paramteros distintos das AST (Para optimizar tempo e recursos)
+            If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(i_software, i_selected_default_analysis, i_conn, dr_distinct_parameters) Then
 
-            For ii As Integer = 0 To i_selected_default_analysis.Count() - 1
+                dr_distinct_parameters.Dispose()
+                dr_distinct_parameters.Close()
+                Return False
 
-                'Array que vai guardar os id_contents dos parâmetros do analysis_sample_type
-                Dim l_array_parameters() As String
-                Dim l_index As Int16 = 0
+            End If
 
-                '1.1 - Obter os id_contents dos parâmetros da ast
-                Dim dr_parameters As OracleDataReader
+            While dr_distinct_parameters.Read()
 
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(i_software, i_selected_default_analysis(ii).id_content_analysis_sample_type, i_conn, dr_parameters) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                ReDim Preserve l_array_parameters(l_index)
+                l_array_parameters(l_index) = dr_distinct_parameters.Item(0)
+                l_index = l_index + 1
 
-                    MsgBox("ERROR GETTING ANALYSIS PARAMETERS ID_CONTENT >> SET_PARAMETER")
-                    dr_parameters.Dispose()
-                    dr_parameters.Close()
-                    Return False
+            End While
 
-                End If
+            dr_distinct_parameters.Dispose()
+            dr_distinct_parameters.Close()
 
-                ReDim l_array_parameters(0)
+            'Se index foir igual a 0, significa que não existem novos parameters a serem inseridos
+            'Nota Importante: Nesse caso, não são feitos quaisquer updates aos parameters
+            'Deixa de ser necessário verificar se existem, porque a função anterior já fez isso - lef join
+            If (l_index > 0) Then
 
-                While dr_parameters.Read()
-
-                    ReDim Preserve l_array_parameters(l_index)
-                    l_array_parameters(l_index) = dr_parameters.Item(0)
-                    l_index = l_index + 1
-
-                End While
-
-                dr_parameters.Dispose()
-                dr_parameters.Close()
-
-                '1.2 - Verificar se parâmetros existem no ALERT.
+                '2 - Inserir os registo que não existem no alert
                 For i As Integer = 0 To l_array_parameters.Count() - 1
 
-
-                    '1.2.1 - Inserir registo
-                    'cHECKAR SE EXISTEM NO ALERT -  Se não existir, insere, e insere tradução
-                    If Not CHECK_RECORD_EXISTENCE(l_array_parameters(i), "alert.analysis_parameter", i_conn) Then
-
-                        Dim sql_parameter As String = "begin
+                    '2.1 - Inserir registo na alert.analysis_parameter
+                    Dim sql_parameter As String = "begin
                                                         insert into alert.analysis_parameter (ID_ANALYSIS_PARAMETER, CODE_ANALYSIS_PARAMETER, RANK, FLG_AVAILABLE, ID_CONTENT)
                                                         values (alert.seq_analysis_parameter.nextval, 'ANALYSIS_PARAMETER.CODE_ANALYSIS_PARAMETER.' || seq_analysis_parameter.nextval, 0, 'Y', '" & l_array_parameters(i) & "');
-                                                        end;"
+                                                    end;"
 
-                        Dim cmd_insert_parameter As New OracleCommand(sql_parameter, i_conn)
-                        cmd_insert_parameter.CommandType = CommandType.Text
+                    Dim cmd_insert_parameter As New OracleCommand(sql_parameter, i_conn)
+                    cmd_insert_parameter.CommandType = CommandType.Text
 
-                        cmd_insert_parameter.ExecuteNonQuery()
-                        cmd_insert_parameter.Dispose()
+                    cmd_insert_parameter.ExecuteNonQuery()
+                    cmd_insert_parameter.Dispose()
 
-                        '1.2.2 inserir tradução
-                        Dim l_code_analysis_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_conn)
-                        Dim l_code_analysis_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_conn)
+                    '2.2 Inserir tradução
+                    Dim l_code_analysis_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_conn)
+                    Dim l_code_analysis_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_conn)
 
-                        If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_parameter_default, i_conn)), (i_conn)) Then
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_parameter_default, i_conn)), (i_conn)) Then
 
-                            MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION  (Record Verification)")
-                            Return False
+                        MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION  (Record Verification)")
+                        Return False
 
-                        End If
+                    End If
 
-                        '1.2.3 - Como houve uma inserção de um novo parametro, atualizar a analysis_param
-                        'Ou seja, parametero que estava inativo e passa a haver  um registo novo activo com o mesmo id_content
-                        Dim sql_analysis_param As String = "UPDATE alert.analysis_param ap
+                    '2.3 - Como houve uma inserção de um novo parametro, atualizar a analysis_param
+                    'Ou seja, parametero que estava inativo e passa a haver  um registo novo activo com o mesmo id_content
+                    Dim sql_analysis_param As String = "UPDATE alert.analysis_param ap
                                                             SET ap.id_analysis_parameter =
                                                                 (SELECT pn.id_analysis_parameter
                                                                  FROM alert.analysis_parameter pn
@@ -2323,62 +2415,85 @@ Public Class LABS_API
                                                                                                WHERE po.id_content = '" & l_array_parameters(i) & "'
                                                                                                AND po.flg_available = 'N')"
 
-                        Dim cmd_analysis_param As New OracleCommand(sql_analysis_param, i_conn)
-                        cmd_analysis_param.CommandType = CommandType.Text
+                    Dim cmd_analysis_param As New OracleCommand(sql_analysis_param, i_conn)
+                    cmd_analysis_param.CommandType = CommandType.Text
 
-                        cmd_analysis_param.ExecuteNonQuery()
-                        cmd_analysis_param.Dispose()
+                    cmd_analysis_param.ExecuteNonQuery()
+                    cmd_analysis_param.Dispose()
 
+                Next
+            End If
 
-                        '1.3 - Verificar se existe tradução. Se não exsitir, insere.
-                    ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_array_parameters(i), "r.code_analysis_parameter) from alert.analysis_parameter", i_conn) Then
+            '3 - Verificar se existem parametros que não têm tradução para a língua da instituição
+            If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION(i_software, l_id_language, i_selected_default_analysis, i_conn, dr_distinct_parameters_translation) Then
 
-                        Dim l_code_analysis_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_conn)
-                        Dim l_code_analysis_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_conn)
+                dr_distinct_parameters_translation.Dispose()
+                dr_distinct_parameters_translation.Close()
+                Return False
 
-                        If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_analysis_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_analysis_parameter_default, i_conn)), (i_conn)) Then
+            End If
 
-                            MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_ANALYSIS_ST_TRANSLATION_EXISTENCE >> SET_TRANSLATION (Translation Verification)")
-                            MsgBox(i_selected_default_analysis(ii).id_content_analysis_sample_type)
-                            Return False
+            l_index = 0
+            ReDim l_array_parameters(l_index)
 
-                        End If
+            While dr_distinct_parameters_translation.Read()
 
-                    ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_conn), GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_conn), i_conn) Then
+                ReDim Preserve l_array_parameters(l_index)
+                l_array_parameters(l_index) = dr_distinct_parameters_translation.Item(0)
+                l_index = l_index + 1
 
-                        Dim l_code_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(i), i_conn)
-                        Dim l_code_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(i), i_conn)
+            End While
 
-                        If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_parameter_default, i_conn)), (i_conn)) Then
+            dr_distinct_parameters_translation.Dispose()
+            dr_distinct_parameters_translation.Close()
 
-                            MsgBox("ERROR INSERTING PARAMETERTRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION (update Verification" & l_id_language)
-                            Return False
+            If (l_index > 0) Then
 
-                        End If
+                For ii As Integer = 0 To dr_distinct_parameters_translation.FieldCount() - 1
+
+                    Dim l_code_parameter_default As String = GET_CODE_PARAMETER_DEFAULT(l_array_parameters(ii), i_conn)
+                    Dim l_code_parameter_alert As String = GET_CODE_PARAMETER_ALERT(l_array_parameters(ii), i_conn)
+
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_parameter_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_parameter_default, i_conn)), (i_conn)) Then
+
+                        MsgBox("ERROR INSERTING PARAMETER TRANSLATION - LABS_API >> CHECK_TRANSLATIONS >> SET_TRANSLATION")
+                        Return False
 
                     End If
 
                 Next
 
-                '1.3 - Ver se é necessário fazer update aos registos do ALERT (Registos que no default estão a N e no alert estão a Y)
-                If Not UPDATE_PARAMETER_AVAILABILITY(i_software, i_selected_default_analysis(ii).id_content_analysis_sample_type, i_conn) Then
+            End If
 
-                    MsgBox("ERROR UPDATING PARAMETERS!", vbCritical)
 
-                End If
+            'Ignrorar este Ponto. Para este tipo de atualizações, o utilizador terá que remover a análise do alert, e depois configurar novamente.
+            '1.3 - Ver se é necessário fazer update aos registos do ALERT (Registos que no default estão a N e no alert estão a Y)
+            ' If Not UPDATE_PARAMETER_AVAILABILITY(i_software, i_selected_default_analysis(ii).id_content_analysis_sample_type, i_conn) Then
 
-            Next
+            'MsgBox("ERROR UPDATING PARAMETERS!", vbCritical)
+
+            '  End If
 
         Catch ex As Exception
 
+            dr_distinct_parameters.Dispose()
+            dr_distinct_parameters.Close()
+            dr_distinct_parameters_translation.Dispose()
+            dr_distinct_parameters_translation.Close()
             Return False
 
         End Try
 
+        dr_distinct_parameters.Dispose()
+        dr_distinct_parameters.Close()
+        dr_distinct_parameters_translation.Dispose()
+        dr_distinct_parameters_translation.Close()
         Return True
+
 
     End Function
 
+    'Esta função deixa de ser necessária
     Function UPDATE_PARAMETER_AVAILABILITY(ByVal i_id_software As Integer, ByVal i_id_ast_content As String, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql_parameter As String = "begin
@@ -2417,116 +2532,228 @@ Public Class LABS_API
     Function SET_PARAM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim dr As OracleDataReader
+        Dim l_a_ast() As String
+
 
         Try
+            'Obter lista tota de analysis_sample_type
+            For ii As Integer = 0 To i_selected_default_analysis.Count() - 1
 
-            'Ciclo que vai correr as AST todas enviadas à função
-            For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+                ReDim Preserve l_a_ast(ii)
+                l_a_ast(ii) = i_selected_default_analysis(ii).id_content_analysis_sample_type
 
-                If Not GET_DEFAULT_PARAMETERS(i_selected_default_analysis(i).id_content_analysis_sample_type, i_software, i_conn, dr) Then
+            Next
 
-                    MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
-                    dr.Dispose()
-                    dr.Close()
-                    Return False
 
-                Else
+            'Obter os params de cada AST
+            If Not GET_DEFAULT_PARAMETERS(l_a_ast, i_software, i_institution, i_conn, dr) Then
 
-                    Dim l_id_content_parameter As String = ""
-                    Dim l_color_graph As String = ""
-                    Dim l_flg_fil_type As String = ""
-                    Dim l_rank As Int16 = -1
+                MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
+                dr.Dispose()
+                dr.Close()
+                Return False
 
-                    While dr.Read()
+            Else
 
-                        l_id_content_parameter = dr.Item(0)
+                'Obter tamanho do datareader
+                Dim l_dr_size As Int64 = 0
+                Dim l_s_params() As analysis_params
 
-                        Try
+                While dr.Read()
 
-                            l_color_graph = dr.Item(1)
+                    ReDim Preserve l_s_params(l_dr_size)
+                    l_s_params(l_dr_size).ID_CONTENT_PARAMETER = dr.Item(0)
+                    Try
+                        l_s_params(l_dr_size).COLOR_GRAPH = "'" & dr.Item(1) & "'"
+                    Catch ex As Exception
+                        l_s_params(l_dr_size).COLOR_GRAPH = "null"
+                    End Try
 
-                        Catch ex As Exception
+                    Try
+                        l_s_params(l_dr_size).FLG_FILL_TYPE = "'" & dr.Item(2) & "'"
+                    Catch ex As Exception
+                        l_s_params(l_dr_size).FLG_FILL_TYPE = "null"
+                    End Try
 
-                            l_color_graph = ""
+                    Try
+                        l_s_params(l_dr_size).RANK = "'" & dr.Item(3) & "'"
+                    Catch ex As Exception
+                        l_s_params(l_dr_size).RANK = -1
+                    End Try
 
-                        End Try
+                    l_s_params(l_dr_size).ID_CONTENT_AST = dr.Item(4)
 
-                        Try
+                    l_dr_size = l_dr_size + 1
 
-                            l_flg_fil_type = dr.Item(2)
+                End While
 
-                        Catch ex As Exception
+                If l_dr_size > 0 Then
 
-                            l_flg_fil_type = ""
+                    'Colocar os AST no sql
+                    Dim sql_param_insert As String = "DECLARE
 
-                        End Try
+                                                        l_a_ast          table_varchar := table_varchar('"
 
-                        Try
+                    For i_index_ast As Int32 = 0 To l_dr_size - 1
 
-                            l_rank = dr.Item(3)
+                        If i_index_ast < l_dr_size - 1 Then
 
-                        Catch ex As Exception
-
-                            l_rank = 0
-
-                        End Try
-
-                        Dim sql_insert_analysis_param As String = "DECLARE
-
-                                                                        l_id_analysis    alert.analysis_sample_type.id_analysis%TYPE;
-                                                                        l_id_sample_type alert.analysis_sample_type.id_sample_type%TYPE;
-
-                                                                        l_id_analysis_parameter alert.analysis_param.id_analysis_parameter%TYPE;
-
-                                                                    BEGIN
-
-                                                                        SELECT ast.id_analysis, ast.id_sample_type
-                                                                        INTO l_id_analysis, l_id_sample_type
-                                                                        FROM alert.analysis_sample_type ast
-                                                                        WHERE ast.flg_available = 'Y'
-                                                                        AND ast.id_content = '" & i_selected_default_analysis(i).id_content_analysis_sample_type & "';
-
-                                                                        SELECT p.id_analysis_parameter
-                                                                        INTO l_id_analysis_parameter
-                                                                        FROM alert.analysis_parameter p
-                                                                        WHERE p.id_content = '" & l_id_content_parameter & "'
-                                                                        AND p.flg_available = 'Y';
-
-                                                                        BEGIN
-    
-                                                                            INSERT INTO alert.analysis_param
-                                                                                (id_analysis_param,
-                                                                                 id_analysis,
-                                                                                 flg_available,
-                                                                                 id_institution,
-                                                                                 id_software,
-                                                                                 id_analysis_parameter,
-                                                                                 rank,
-                                                                                 color_graph,
-                                                                                 flg_fill_type,
-                                                                                 id_sample_type)
-                                                                            VALUES
-                                                                                (alert.seq_analysis_param.nextval,
-                                                                                 l_id_analysis,
-                                                                                 'Y',
-                                                                                 " & i_institution & ",
-                                                                                 " & i_software & ",
-                                                                                 l_id_analysis_parameter,
-                                                                                 " & l_rank & ","
-
-                        If l_color_graph = "" Then
-
-                            sql_insert_analysis_param = sql_insert_analysis_param & " null ,"
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_ast).ID_CONTENT_AST & "', '"
 
                         Else
 
-                            sql_insert_analysis_param = sql_insert_analysis_param & " '" & l_color_graph & "',"
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_ast).ID_CONTENT_AST & "');"
 
                         End If
 
-                        sql_insert_analysis_param = sql_insert_analysis_param & "'" & l_flg_fil_type & "',
-                                                                                 l_id_sample_type);
+                    Next
+
+                    sql_param_insert = sql_param_insert & "    l_id_analysis    alert.analysis_sample_type.id_analysis%TYPE;
+                                                           l_id_sample_type alert.analysis_sample_type.id_sample_type%TYPE;
+                                                           l_id_analysis_parameter alert.analysis_param.id_analysis_parameter%TYPE;
+                                                           l_a_parameter    table_varchar := table_varchar('"
+
+                    'Colocar os ID_CONTENT_PARAMETER no sql
+                    For i_index_parameter As Int32 = 0 To l_dr_size - 1
+
+                        If i_index_parameter < l_dr_size - 1 Then
+
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_parameter).ID_CONTENT_PARAMETER & "', '"
+
+                        Else
+
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_parameter).ID_CONTENT_PARAMETER & "');"
+
+                        End If
+
+                    Next
+
+                    'Colocar o COLOR_GRAPH
+                    sql_param_insert = sql_param_insert & "    l_a_color_graph    table_varchar := table_varchar("
+
+                    For i_index_color As Int32 = 0 To l_dr_size - 1
+
+                        If i_index_color < l_dr_size - 1 Then
+
+                            If l_s_params(i_index_color).COLOR_GRAPH = "''" Then
+
+                                sql_param_insert = sql_param_insert & "null" & ", "
+
+                            Else
+
+                                sql_param_insert = sql_param_insert & l_s_params(i_index_color).COLOR_GRAPH & ", "
+
+                            End If
+
+                        Else
+
+                            If l_s_params(i_index_color).COLOR_GRAPH = "''" Then
+
+                                sql_param_insert = sql_param_insert & "null" & "); "
+
+                            Else
+
+                                sql_param_insert = sql_param_insert & l_s_params(i_index_color).COLOR_GRAPH & "); "
+
+                            End If
+
+                        End If
+
+                    Next
+
+                    'Colocar o FLG_FILL_TYPE
+                    sql_param_insert = sql_param_insert & "    l_a_fill_type    table_varchar := table_varchar("
+
+                    For i_index_fill_type As Int32 = 0 To l_dr_size - 1
+
+                        If i_index_fill_type < l_dr_size - 1 Then
+
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_fill_type).FLG_FILL_TYPE & ", "
+
+                        Else
+
+                            sql_param_insert = sql_param_insert & l_s_params(i_index_fill_type).FLG_FILL_TYPE & "); "
+
+                        End If
+
+                    Next
+
+                    'Colocar o RANK
+                    sql_param_insert = sql_param_insert & "    l_a_rank    table_number := table_number("
+
+                    For i_index_rank As Int32 = 0 To l_dr_size - 1
+
+                        If i_index_rank < l_dr_size - 1 Then
+
+                            If l_s_params(i_index_rank).RANK > -1 Then
+
+                                sql_param_insert = sql_param_insert & l_s_params(i_index_rank).RANK & ", "
+
+                            Else
+
+                                sql_param_insert = sql_param_insert & "null" & ", "
+
+                            End If
+
+                        Else
+
+                            If l_s_params(i_index_rank).RANK > -1 Then
+
+                                sql_param_insert = sql_param_insert & l_s_params(i_index_rank).RANK & "); "
+                            Else
+
+                                sql_param_insert = sql_param_insert & "null" & "); "
+
+                            End If
+
+                        End If
+
+                    Next
+
+                    'Restante QUERY
+
+                    sql_param_insert = sql_param_insert & " BEGIN
+
+                                                            FOR I IN 1 .. l_a_ast.count()
+                                                            LOOP
+
+                                                                       SELECT ast.id_analysis, ast.id_sample_type
+                                                                       INTO l_id_analysis, l_id_sample_type
+                                                                       FROM alert.analysis_sample_type ast
+                                                                       WHERE ast.flg_available = 'Y'
+                                                                       AND ast.id_content = l_a_ast(i);
+
+                                                                       SELECT p.id_analysis_parameter
+                                                                       INTO l_id_analysis_parameter
+                                                                       FROM alert.analysis_parameter p
+                                                                       WHERE p.id_content = l_a_parameter(i)
+                                                                       AND p.flg_available = 'Y';
+
+                                                                         BEGIN
     
+                                                                              INSERT INTO alert.analysis_param
+                                                                              (id_analysis_param,
+                                                                              id_analysis,
+                                                                              flg_available,
+                                                                              id_institution,
+                                                                              id_software,
+                                                                              id_analysis_parameter,
+                                                                              rank,
+                                                                              color_graph,
+                                                                              flg_fill_type,
+                                                                              id_sample_type)
+                                                                              VALUES
+                                                                              (alert.seq_analysis_param.nextval,
+                                                                              l_id_analysis,
+                                                                              'Y',
+                                                                              " & i_institution & ",
+                                                                              " & i_software & ",
+                                                                              l_id_analysis_parameter,
+                                                                              l_a_rank(i),
+                                                                              l_a_color_graph(i),
+                                                                              l_a_fill_type(i),
+                                                                              l_id_sample_type);
+         
                                                                         EXCEPTION
                                                                             WHEN dup_val_on_index THEN
         
@@ -2535,37 +2762,35 @@ Public Class LABS_API
                                                                                 WHERE ap.id_analysis_parameter = (SELECT p.id_analysis_parameter
                                                                                                                   FROM alert.analysis_parameter p
                                                                                                                   WHERE p.flg_available = 'Y'
-                                                                                                                  AND p.id_content = '" & l_id_content_parameter & "')
+                                                                                                                  AND p.id_content = l_a_parameter(i))
                                                                                 AND ap.id_institution = " & i_institution & "
                                                                                 AND ap.id_software =    " & i_software & "
                                                                                 AND ap.id_analysis =    l_id_analysis
                                                                                 AND ap.id_sample_type = l_id_sample_type;
+                                                                                
+                                                                                CONTINUE;
         
                                                                         END;
+                                                                END LOOP;
     
-                                                                    END;"
+                                                                END;"
 
+                    Dim cmd_insert_analysis_param As New OracleCommand(sql_param_insert, i_conn)
 
-                        Dim cmd_insert_analysis_param As New OracleCommand(sql_insert_analysis_param, i_conn)
+                    cmd_insert_analysis_param.CommandType = CommandType.Text
 
-                        cmd_insert_analysis_param.CommandType = CommandType.Text
+                    cmd_insert_analysis_param.ExecuteNonQuery()
 
-                        cmd_insert_analysis_param.ExecuteNonQuery()
-
-                        cmd_insert_analysis_param.Dispose()
-
-                    End While
-
+                    cmd_insert_analysis_param.Dispose()
                 End If
-                dr.Dispose()
-            Next
+
+            End If
 
         Catch ex As Exception
 
             dr.Dispose()
             dr.Close()
 
-            MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
             Return False
 
         End Try

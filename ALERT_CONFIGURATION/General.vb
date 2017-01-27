@@ -628,8 +628,34 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             Catch ex As Exception
 
+                'Se a inserção falhar, certamente é por causa da existência do caractér '
+
+                Dim l_desc_aux As String = ""
+
+                For i As Integer = 0 To i_desc.Count() - 1
+
+                    If i_desc(i) = "'" Then
+
+                        l_desc_aux = l_desc_aux & "''"
+
+                    Else
+
+                        l_desc_aux = l_desc_aux & i_desc(i)
+
+                    End If
+
+                Next
+
+                Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & l_desc_aux & "' ); end;"
+
                 cmd_insert_trans.Dispose()
-                Return False
+
+                Dim cmd_insert_trans_new As New OracleCommand(Sql, i_conn)
+                cmd_insert_trans_new.CommandType = CommandType.Text
+                cmd_insert_trans_new.ExecuteNonQuery()
+                cmd_insert_trans_new.Dispose()
+
+                Return True
 
             End Try
 

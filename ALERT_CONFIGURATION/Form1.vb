@@ -55,4 +55,14 @@
         FORM_LAB_TESTS.ShowDialog()
 
     End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        Dim FORM_PROCEDURES As New Procedures
+
+        Me.Hide()
+
+        FORM_PROCEDURES.ShowDialog()
+
+    End Sub
 End Class
