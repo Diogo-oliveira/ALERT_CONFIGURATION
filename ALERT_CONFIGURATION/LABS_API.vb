@@ -2534,7 +2534,6 @@ Public Class LABS_API
         Dim dr As OracleDataReader
         Dim l_a_ast() As String
 
-
         Try
             'Obter lista tota de analysis_sample_type
             For ii As Integer = 0 To i_selected_default_analysis.Count() - 1
@@ -3000,8 +2999,6 @@ Public Class LABS_API
             Else
                 While l_dr_translation.Read()
 
-                    MsgBox(l_dr_translation.Item(0))
-
                     Dim l_code_analysis_sr_default As String = GET_CODE_SAMPLE_RECIPIENT_DEFAULT(l_dr_translation.Item(0), i_conn)
                     Dim l_code_analysis_sr_alert As String = GET_CODE_SAMPLE_RECIPIENT_ALERT(l_dr_translation.Item(0), i_conn)
 
@@ -3092,7 +3089,7 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        'Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
         Dim l_dr As OracleDataReader
 
         Try
@@ -3374,7 +3371,7 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_INST_RECIPIENT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        'Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
         Dim l_dr As OracleDataReader
 
@@ -3540,9 +3537,7 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_ROOM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_room As Int64, ByVal i_selected_default_analysis() As analysis_default, ByVal i_conn As OracleConnection) As Boolean
 
-        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
-
-            Dim sql_insert_analysis_room As String = "DECLARE
+        Dim sql_insert_analysis_room As String = "DECLARE
 
                                               CURSOR c_new_analysis IS
                                                 SELECT Ast.ID_ANALYSIS, ast.id_sample_type
@@ -3552,8 +3547,27 @@ Public Class LABS_API
                                                    and ais.id_sample_type = ast.id_sample_type
                                                    and ais.id_software = " & i_software & "
                                                    and ais.flg_available = 'Y'
-                                                 WHERE Ast.ID_CONTENT IN ('" & i_selected_default_analysis(i).id_content_analysis_sample_type & "') 
-                                                   AND Ast.FLG_AVAILABLE = 'Y';
+                                                 WHERE Ast.ID_CONTENT IN ("
+
+
+        For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If (i < i_selected_default_analysis.Count() - 1) Then
+
+                sql_insert_analysis_room = sql_insert_analysis_room & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
+
+            Else
+
+                sql_insert_analysis_room = sql_insert_analysis_room & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "')"
+
+            End If
+
+        Next
+
+
+        sql_insert_analysis_room = sql_insert_analysis_room &
+            " 
+                                               AND Ast.FLG_AVAILABLE = 'Y';
 
                                               l_id_analysis    alert.analysis.id_analysis%type;
                                               l_id_sample_type alert.analysis.id_sample_type%type;
@@ -3703,23 +3717,23 @@ Public Class LABS_API
 
                                             END;"
 
-            Try
 
-                Dim cmd_insert_analysis_room As New OracleCommand(sql_insert_analysis_room, i_conn)
-                cmd_insert_analysis_room.CommandType = CommandType.Text
+        Dim cmd_insert_analysis_room As New OracleCommand(sql_insert_analysis_room, i_conn)
 
-                cmd_insert_analysis_room.ExecuteNonQuery()
+        Try
 
-                cmd_insert_analysis_room.Dispose()
+            cmd_insert_analysis_room.CommandType = CommandType.Text
 
-            Catch ex As Exception
+            cmd_insert_analysis_room.ExecuteNonQuery()
 
-                MsgBox("ERROR INSERTING ANALYSIS ROOM")
-                Return False
+            cmd_insert_analysis_room.Dispose()
 
-            End Try
+        Catch ex As Exception
 
-        Next
+            cmd_insert_analysis_room.Dispose()
+            Return False
+
+        End Try
 
         Return True
 
@@ -3857,11 +3871,11 @@ Public Class LABS_API
                                     FROM alert.analysis_sample_type ast
                                     WHERE ast.id_content = '" & i_id_content_ast & "' and ast.flg_available='Y';
 
-                                   UPDATE alert.analysis_dep_clin_serv ad
-                                   SET ad.flg_available = 'N'
-                                   WHERE ad.id_analysis = l_id_analysis
-                                   And ad.id_sample_type = l_id_sample_type
-                                   And ad.id_software = " & i_software
+                                    UPDATE alert.analysis_dep_clin_serv ad
+                                    SET ad.flg_available = 'N'
+                                    WHERE ad.id_analysis = l_id_analysis
+                                    And ad.id_sample_type = l_id_sample_type
+                                    And ad.id_software = " & i_software
 
         If i_dep_clin_serv = 0 Then
 
