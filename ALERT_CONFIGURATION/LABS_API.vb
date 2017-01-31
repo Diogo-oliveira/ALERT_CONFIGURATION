@@ -114,8 +114,8 @@ Public Class LABS_API
                                and alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ",dast.code_analysis_sample_type) is not null
                              order by 1 asc"
 
-            Dim cmd As New OracleCommand(sql, i_conn)
-            cmd.CommandType = CommandType.Text
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
 
         Try
 
@@ -254,7 +254,7 @@ Public Class LABS_API
                                         AND ais.id_software = " & i_software & "
                                         order by 2 asc"
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, i_conn)
 
         Try
 
@@ -307,19 +307,19 @@ Public Class LABS_API
                                     AND ar.id_institution = " & i_institution & "
                                     AND ais.id_software = " & i_software
 
-            If i_id_content_exam_cat <> "0" Then
+        If i_id_content_exam_cat <> "0" Then
 
-                sql = sql & " And ec.id_content = '" & i_id_content_exam_cat & "'
+            sql = sql & " And ec.id_content = '" & i_id_content_exam_cat & "'
                           order by 2 asc"
 
-            Else
+        Else
 
-                sql = sql & " order by 2 asc"
+            sql = sql & " order by 2 asc"
 
-            End If
+        End If
 
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, i_conn)
 
         Try
 
@@ -1117,7 +1117,7 @@ Public Class LABS_API
 
         Dim l_total_records As Int16 = 0
 
-            Dim sql As String = "Select count(*) from " & i_sql & " r
+        Dim sql As String = "Select count(*) from " & i_sql & " r
                                  where r.id_content='" & i_id_content_record & "'
                                  and r.flg_available='Y'"
 
@@ -1248,7 +1248,9 @@ Public Class LABS_API
 
         Try
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_DISTINCT_CATEGORIES(i_selected_default_analysis, i_conn, dr_distinct_ec) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_ec.Dispose()
                 dr_distinct_ec.Close()
@@ -1283,7 +1285,9 @@ Public Class LABS_API
         Try
 
             'Ciclo que vai correr as categorias todas enviadas à função
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_distinct_ec.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 '' 1 - Verificar se existe Categoria pai
                 Dim l_cat_parent As Int64 = 0
@@ -1592,7 +1596,9 @@ Public Class LABS_API
         ''1 - Remover os sample_types repetidos
         Try
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_DISTINCT_SAMPLE_TYPES(i_selected_default_analysis, i_conn, dr_distinct_st) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_st.Dispose()
                 dr_distinct_st.Close()
@@ -1626,7 +1632,9 @@ Public Class LABS_API
         ''2 - Processar os sample types já filtrados
         Try
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_distinct_st.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 '2.1 - VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
                 If Not CHECK_RECORD_EXISTENCE(l_a_distinct_st(i), "alert.sample_type", i_conn) Then
@@ -1838,7 +1846,9 @@ Public Class LABS_API
         ''1 - Remover as análises repetidas
         Try
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_DISTINCT_ANALYSIS(i_selected_default_analysis, i_conn, dr_distinct_analysis) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_analysis.Dispose()
                 dr_distinct_analysis.Close()
@@ -1872,7 +1882,9 @@ Public Class LABS_API
         ''2 - Processar as análises já filtrados
 
         Try
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_distinct_analysis.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 '1- VErificar se sample_type já existe no alert. Se não existir, inserir, e inserir tradução.
                 If Not CHECK_RECORD_EXISTENCE(l_a_distinct_analysis(i), "alert.analysis", i_conn) Then
@@ -2352,7 +2364,9 @@ Public Class LABS_API
 
         Try
             '1 - Obter os Paramteros distintos das AST (Para optimizar tempo e recursos)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(i_software, i_selected_default_analysis, i_conn, dr_distinct_parameters) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_parameters.Dispose()
                 dr_distinct_parameters.Close()
@@ -2377,7 +2391,9 @@ Public Class LABS_API
             If (l_index > 0) Then
 
                 '2 - Inserir os registo que não existem no alert
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                 For i As Integer = 0 To l_array_parameters.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                     '2.1 - Inserir registo na alert.analysis_parameter
                     Dim sql_parameter As String = "begin
@@ -2425,7 +2441,9 @@ Public Class LABS_API
             End If
 
             '3 - Verificar se existem parametros que não têm tradução para a língua da instituição
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION(i_software, l_id_language, i_selected_default_analysis, i_conn, dr_distinct_parameters_translation) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_parameters_translation.Dispose()
                 dr_distinct_parameters_translation.Close()
@@ -2545,7 +2563,11 @@ Public Class LABS_API
 
 
             'Obter os params de cada AST
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             If Not GET_DEFAULT_PARAMETERS(l_a_ast, i_software, i_institution, i_conn, dr) Then
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR INSERTING ANALYSIS_PARAM", vbCritical)
                 dr.Dispose()
@@ -2597,7 +2619,9 @@ Public Class LABS_API
 
                         If i_index_ast < l_dr_size - 1 Then
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                             sql_param_insert = sql_param_insert & l_s_params(i_index_ast).ID_CONTENT_AST & "', '"
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                         Else
 
@@ -2915,11 +2939,15 @@ Public Class LABS_API
         Dim l_dr_translation As OracleDataReader
         Try
             ''Esta função vai obter os sample_recipients do default que não existem no ALERT
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT(i_software, i_selected_default_analysis, i_conn, l_dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 l_dr.Dispose()
                 l_dr.Close()
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                 l_dr_translation.Dispose()
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
                 l_dr_translation.Close()
                 Return False
 
@@ -3096,7 +3124,9 @@ Public Class LABS_API
             'Array de strings que vai guardar os id_contents das AST. (AST que ainda não existem na ANALYSIS_INST_SOFT do ALERT)
             Dim l_a_ast() As String
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_ANALYSIS_INST_SOFT(i_institution, i_software, i_selected_default_analysis, i_conn, l_dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 l_dr.Dispose()
                 l_dr.Close()
@@ -3130,7 +3160,9 @@ Public Class LABS_API
             Dim sql_insert_ais As String = "DECLARE
                                                         l_a_id_content_ast    table_varchar := table_varchar("
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_ast.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 If (i < l_a_ast.Count() - 1) Then
 
@@ -3381,7 +3413,9 @@ Public Class LABS_API
             'Array de strings que vai guardar os id_contents dos SAMPLE_RECIPIENTS. (Dos ASTs que ainda não existem na ANALYSIS_INST_RECIPIENT do ALERT)
             Dim l_a_sr() As String
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not GET_ANALYSIS_INST_RECIPIENT(i_institution, i_software, i_selected_default_analysis, i_conn, l_dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 l_dr.Dispose()
                 l_dr.Close()
@@ -3427,7 +3461,9 @@ Public Class LABS_API
 
                                                         l_a_ast table_varchar := table_varchar("
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_ast.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 If (i < l_a_ast.Count() - 1) Then
 
@@ -3445,7 +3481,9 @@ Public Class LABS_API
                                                       l_a_sr table_varchar := table_varchar("
 
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_sr.Count() - 1
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                 If (i < l_a_sr.Count() - 1) Then
 

@@ -149,6 +149,7 @@
     <Compile Include="INSERT_OTHER_EXAM.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="INTERVENTIONS_API.vb" />
     <Compile Include="LABS_API.vb" />
     <Compile Include="LAB_TESTS.Designer.vb">
       <DependentUpon>LAB_TESTS.vb</DependentUpon>
@@ -211,6 +212,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

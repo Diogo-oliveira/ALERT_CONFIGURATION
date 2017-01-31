@@ -552,7 +552,9 @@ Public Class LAB_TESTS
 
                 Next
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                 If db_labs.SET_EXAM_CAT(TextBox1.Text, l_a_checked_labs, conn_labs) Then
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
                     If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs, conn_labs) Then
                         If db_labs.SET_ANALYSIS(TextBox1.Text, l_a_checked_labs, conn_labs) Then
                             If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs, conn_labs) Then
@@ -681,7 +683,9 @@ Public Class LAB_TESTS
 
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB ROOMS!", vbCritical)
 
@@ -996,7 +1000,9 @@ Public Class LAB_TESTS
 
                     ReDim g_a_labs_alert(g_dimension_labs_alert)
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                     If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, conn_labs, dr_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
                         dr_labs.Dispose()
@@ -1049,7 +1055,9 @@ Public Class LAB_TESTS
             '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
             Dim dr_delete As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_delete, conn_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
 
@@ -1169,7 +1177,9 @@ Public Class LAB_TESTS
         '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_id_dep_clin_serv_aux, dr, conn_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
 
@@ -1254,7 +1264,9 @@ Public Class LAB_TESTS
 
             For Each indexChecked In CheckedListBox4.CheckedIndices
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                 If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr, conn_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
 
@@ -1304,7 +1316,9 @@ Public Class LAB_TESTS
 
             Dim dr_new As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_new, conn_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 Dim i_new As Integer = 0
 
@@ -1412,7 +1426,9 @@ Public Class LAB_TESTS
 
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr, conn_labs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV", vbCritical)
 

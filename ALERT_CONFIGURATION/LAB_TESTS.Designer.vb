@@ -127,7 +127,7 @@ Partial Class LAB_TESTS
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(12, 785)
+        Me.Button7.Location = New System.Drawing.Point(12, 795)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(100, 23)
         Me.Button7.TabIndex = 38
@@ -238,7 +238,7 @@ Partial Class LAB_TESTS
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(828, 457)
+        Me.Label9.Location = New System.Drawing.Point(828, 467)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(110, 13)
         Me.Label9.TabIndex = 53
@@ -250,7 +250,7 @@ Partial Class LAB_TESTS
         Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox6.FormattingEnabled = True
         Me.ComboBox6.ItemHeight = 16
-        Me.ComboBox6.Location = New System.Drawing.Point(831, 473)
+        Me.ComboBox6.Location = New System.Drawing.Point(831, 483)
         Me.ComboBox6.Name = "ComboBox6"
         Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox6.TabIndex = 52
@@ -270,7 +270,7 @@ Partial Class LAB_TESTS
         Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox5.FormattingEnabled = True
         Me.ComboBox5.ItemHeight = 16
-        Me.ComboBox5.Location = New System.Drawing.Point(12, 473)
+        Me.ComboBox5.Location = New System.Drawing.Point(12, 483)
         Me.ComboBox5.Name = "ComboBox5"
         Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox5.TabIndex = 50
@@ -297,7 +297,7 @@ Partial Class LAB_TESTS
         '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(650, 783)
+        Me.Button11.Location = New System.Drawing.Point(650, 793)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(102, 23)
         Me.Button11.TabIndex = 60
@@ -306,7 +306,7 @@ Partial Class LAB_TESTS
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(542, 783)
+        Me.Button9.Location = New System.Drawing.Point(542, 793)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 59
@@ -315,7 +315,7 @@ Partial Class LAB_TESTS
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(434, 783)
+        Me.Button10.Location = New System.Drawing.Point(434, 793)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 58
@@ -325,7 +325,7 @@ Partial Class LAB_TESTS
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(544, 484)
+        Me.Label10.Location = New System.Drawing.Point(544, 494)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(208, 13)
         Me.Label10.TabIndex = 57
@@ -335,14 +335,14 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox3.CheckOnClick = True
         Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(12, 503)
+        Me.CheckedListBox3.Location = New System.Drawing.Point(12, 513)
         Me.CheckedListBox3.Name = "CheckedListBox3"
         Me.CheckedListBox3.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox3.TabIndex = 56
         '
         'Button13
         '
-        Me.Button13.Location = New System.Drawing.Point(1255, 783)
+        Me.Button13.Location = New System.Drawing.Point(1255, 793)
         Me.Button13.Name = "Button13"
         Me.Button13.Size = New System.Drawing.Size(102, 23)
         Me.Button13.TabIndex = 66
@@ -351,7 +351,7 @@ Partial Class LAB_TESTS
         '
         'Button14
         '
-        Me.Button14.Location = New System.Drawing.Point(1147, 783)
+        Me.Button14.Location = New System.Drawing.Point(1147, 793)
         Me.Button14.Name = "Button14"
         Me.Button14.Size = New System.Drawing.Size(102, 23)
         Me.Button14.TabIndex = 65
@@ -360,7 +360,7 @@ Partial Class LAB_TESTS
         '
         'Button12
         '
-        Me.Button12.Location = New System.Drawing.Point(1363, 783)
+        Me.Button12.Location = New System.Drawing.Point(1363, 793)
         Me.Button12.Name = "Button12"
         Me.Button12.Size = New System.Drawing.Size(100, 23)
         Me.Button12.TabIndex = 64
@@ -369,7 +369,7 @@ Partial Class LAB_TESTS
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(1470, 783)
+        Me.Button8.Location = New System.Drawing.Point(1470, 793)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(100, 23)
         Me.Button8.TabIndex = 63
@@ -378,7 +378,7 @@ Partial Class LAB_TESTS
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(771, 629)
+        Me.Button6.Location = New System.Drawing.Point(771, 639)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(41, 39)
         Me.Button6.TabIndex = 62
@@ -389,7 +389,7 @@ Partial Class LAB_TESTS
         '
         Me.CheckedListBox4.CheckOnClick = True
         Me.CheckedListBox4.FormattingEnabled = True
-        Me.CheckedListBox4.Location = New System.Drawing.Point(831, 503)
+        Me.CheckedListBox4.Location = New System.Drawing.Point(831, 513)
         Me.CheckedListBox4.Name = "CheckedListBox4"
         Me.CheckedListBox4.Size = New System.Drawing.Size(741, 274)
         Me.CheckedListBox4.TabIndex = 61
