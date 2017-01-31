@@ -16,6 +16,8 @@ Public Class Procedures
     Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim g_selected_category As String = ""
 
+    Dim g_a_loaded_interventions_default() As INTERVENTIONS_API.interventions_default 'Array que vai guardar os id_contents das análises carregadas do default
+
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
@@ -41,7 +43,7 @@ Public Class Procedures
         g_id_dep_clin_serv = 0
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_analysis_default(0)
+        ReDim g_a_loaded_interventions_default(0)
         'ReDim g_a_selected_default_analysis(0)
         'g_index_selected_analysis_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
@@ -158,7 +160,7 @@ Public Class Procedures
         g_id_dep_clin_serv = 0
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_analysis_default(0)
+        ReDim g_a_loaded_interventions_default(0)
         'ReDim g_a_selected_default_analysis(0)
         'g_index_selected_analysis_from_default = 0
         ReDim g_a_interv_cats_alert(0)
@@ -231,7 +233,7 @@ Public Class Procedures
         g_id_dep_clin_serv = 0
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_analysis_default(0)
+        ReDim g_a_loaded_interventions_default(0)
         'ReDim g_a_selected_default_analysis(0)
         'g_index_selected_analysis_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
@@ -357,7 +359,7 @@ Public Class Procedures
         'Limpar arrays
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_analysis_default(0)
+        ReDim g_a_loaded_interventions_default(0)
         'ReDim g_a_selected_default_analysis(0)
         'g_index_selected_analysis_from_default = 0
 
@@ -375,7 +377,7 @@ Public Class Procedures
         Dim dr_lab_cat_def As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, conn_labs, dr_lab_cat_def) Then
+        If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, conn, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -399,6 +401,53 @@ Public Class Procedures
         dr_lab_cat_def.Close()
 
         CheckedListBox1.Items.Clear()
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
+
+        '1 - Determinar o id_content da categoria selecionada
+        If ComboBox4.SelectedIndex = 0 Then
+            g_selected_category = 0
+        Else
+            g_selected_category = g_a_loaded_categories_default(ComboBox4.SelectedIndex - 1)
+        End If
+
+        Cursor = Cursors.WaitCursor
+        CheckedListBox2.Items.Clear()
+        ''2 - Carregar a grelha de análises por categoria
+        ''e    
+        ''3 - Criar estrutura com os elementos das análises carregados
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
+
+        Else
+            ReDim g_a_loaded_interventions_default(0) ''Limpar estrutura
+            Dim l_dimension_array_loaded_interventions As Int64 = 0
+
+            While dr.Read()
+
+                CheckedListBox2.Items.Add(dr.Item(2))
+
+                ReDim Preserve g_a_loaded_interventions_default(l_dimension_array_loaded_interventions)
+
+                g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_category = dr.Item(0)
+                g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_intervention = dr.Item(1)
+                g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).desc_intervention = dr.Item(2)
+
+                l_dimension_array_loaded_interventions = l_dimension_array_loaded_interventions + 1
+
+            End While
+        End If
+        dr.Dispose()
+        dr.Close()
 
         Cursor = Cursors.Arrow
 
