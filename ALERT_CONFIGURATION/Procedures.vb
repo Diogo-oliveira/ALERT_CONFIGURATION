@@ -17,6 +17,9 @@ Public Class Procedures
     Dim g_selected_category As String = ""
 
     Dim g_a_loaded_interventions_default() As INTERVENTIONS_API.interventions_default 'Array que vai guardar os id_contents das análises carregadas do default
+    Dim g_a_selected_default_interventions() As INTERVENTIONS_API.interventions_default
+
+    Dim g_index_selected_intervention_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
@@ -44,8 +47,8 @@ Public Class Procedures
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
         ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_analysis(0)
-        'g_index_selected_analysis_from_default = 0
+        ReDim g_a_selected_default_interventions(0)
+        g_index_selected_intervention_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         'g_dimension_labs_alert = 0
@@ -161,8 +164,8 @@ Public Class Procedures
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
         ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_analysis(0)
-        'g_index_selected_analysis_from_default = 0
+        ReDim g_a_selected_default_interventions(0)
+        g_index_selected_intervention_from_default = 0
         ReDim g_a_interv_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         'g_dimension_labs_alert = 0
@@ -234,8 +237,8 @@ Public Class Procedures
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
         ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_analysis(0)
-        'g_index_selected_analysis_from_default = 0
+        ReDim g_a_selected_default_interventions(0)
+        g_index_selected_intervention_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         'g_dimension_labs_alert = 0
@@ -360,8 +363,8 @@ Public Class Procedures
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
         ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_analysis(0)
-        'g_index_selected_analysis_from_default = 0
+        ReDim g_a_selected_default_interventions(0)
+        g_index_selected_intervention_from_default = 0
 
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
@@ -450,6 +453,88 @@ Public Class Procedures
         dr.Close()
 
         Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                CheckedListBox2.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                CheckedListBox2.SetItemChecked(i, False)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        Cursor = Cursors.WaitCursor
+        For Each indexChecked In CheckedListBox2.CheckedIndices
+            'If para verificar se já está incluido na checkbox da direita
+
+            Dim l_record_already_selected As Boolean = False
+
+            Dim j As Integer = 0
+
+            For j = 0 To CheckedListBox1.Items.Count() - 1
+
+                If (g_a_loaded_interventions_default(indexChecked.ToString()).id_content_intervention = g_a_selected_default_interventions(j).id_content_intervention And g_a_loaded_interventions_default(indexChecked.ToString()).id_content_category = g_a_selected_default_interventions(j).id_content_category) Then
+
+                    l_record_already_selected = True
+                    Exit For
+
+                End If
+
+            Next
+
+            If l_record_already_selected = False Then
+
+                ReDim Preserve g_a_selected_default_interventions(g_index_selected_intervention_from_default)
+
+                g_a_selected_default_interventions(g_index_selected_intervention_from_default).id_content_category = g_a_loaded_interventions_default(indexChecked.ToString()).id_content_category
+                g_a_selected_default_interventions(g_index_selected_intervention_from_default).id_content_intervention = g_a_loaded_interventions_default(indexChecked.ToString()).id_content_intervention
+                g_a_selected_default_interventions(g_index_selected_intervention_from_default).desc_intervention = g_a_loaded_interventions_default(indexChecked.ToString()).desc_intervention
+
+                CheckedListBox1.Items.Add((g_a_selected_default_interventions(g_index_selected_intervention_from_default).desc_intervention))
+
+                CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+
+                g_index_selected_intervention_from_default = g_index_selected_intervention_from_default + 1
+
+            End If
+
+        Next
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, False)
+            Next
+        End If
 
     End Sub
 End Class

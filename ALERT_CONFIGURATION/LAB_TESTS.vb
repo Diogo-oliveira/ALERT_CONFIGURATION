@@ -1486,4 +1486,5 @@ Public Class LAB_TESTS
         End If
 
     End Sub
+
 End Class
