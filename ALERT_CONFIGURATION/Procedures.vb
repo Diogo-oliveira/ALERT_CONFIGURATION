@@ -21,6 +21,10 @@ Public Class Procedures
 
     Dim g_index_selected_intervention_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
+    'Array que vai guardar as análises carregadas do ALERT
+    Dim g_a_intervs_alert() As INTERVENTIONS_API.interventions_default
+    Dim g_dimension_intervs_alert As Int64 = 0
+
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
@@ -51,7 +55,7 @@ Public Class Procedures
         g_index_selected_intervention_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
-        'g_dimension_labs_alert = 0
+        g_dimension_intervs_alert = 0
         'ReDim g_a_labs_for_clinical_service(0)
         'g_dimension_labs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
@@ -168,7 +172,7 @@ Public Class Procedures
         g_index_selected_intervention_from_default = 0
         ReDim g_a_interv_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
-        'g_dimension_labs_alert = 0
+        g_dimension_intervs_alert = 0
         'ReDim g_a_labs_for_clinical_service(0)
         'g_dimension_labs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
@@ -241,7 +245,7 @@ Public Class Procedures
         g_index_selected_intervention_from_default = 0
         'ReDim g_a_lab_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
-        'g_dimension_labs_alert = 0
+        g_dimension_intervs_alert = 0
         'ReDim g_a_labs_for_clinical_service(0)
         'g_dimension_labs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
@@ -622,9 +626,8 @@ Public Class Procedures
                             'Isto porque podem ter sido adicionadas análises à categoria selecionada
                             CheckedListBox3.Items.Clear()
 
-                            '-------------------------------------- 'Falta tratar disto!!
-                            'ReDim g_a_labs_alert(0)
-                            'g_dimension_labs_alert = 0
+                            ReDim g_a_intervs_alert(0)
+                            g_dimension_intervs_alert = 0
                         Else
 
                             MsgBox("ERROR INSERTING INTERV_DEP_CLIN_SERV!", vbCritical)
@@ -650,6 +653,71 @@ Public Class Procedures
         End If
 
         Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        CheckedListBox3.Items.Clear()
+
+        Dim dr_intervs As OracleDataReader
+
+        Dim g_selected_category_alert As String = ""
+
+        g_selected_category_alert = g_a_interv_cats_alert(ComboBox5.SelectedIndex)
+
+        g_dimension_intervs_alert = 0
+        ReDim g_a_intervs_alert(g_dimension_intervs_alert)
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, conn, dr_intervs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+        Else
+
+            While dr_intervs.Read()
+
+                g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+                g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(1)
+                g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
+
+                g_dimension_intervs_alert = g_dimension_intervs_alert + 1
+                ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
+
+                CheckedListBox3.Items.Add((dr_intervs.Item(2)))
+
+            End While
+
+        End If
+
+        dr_intervs.Dispose()
+        dr_intervs.Close()
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+                CheckedListBox3.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+                CheckedListBox3.SetItemChecked(i, False)
+            Next
+        End If
 
     End Sub
 End Class

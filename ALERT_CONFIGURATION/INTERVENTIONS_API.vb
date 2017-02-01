@@ -66,6 +66,49 @@ Public Class INTERVENTIONS_API
         End Try
     End Function
 
+    Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "SELECT DISTINCT ic.id_content, i.id_content, t.desc_lang_" & l_id_language & "
+                                FROM alert.intervention i
+                                JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                JOIN translation t ON t.code_translation = i.code_intervention
+                                WHERE i.flg_status = 'A'
+                                AND iic.id_software IN (0, " & i_software & ")
+                                AND iic.id_institution IN (0, " & i_institution & ")
+                                AND iic.flg_add_remove = 'A'
+                                AND ic.flg_available = 'Y'
+                                AND pk_translation.get_translation(" & l_id_language & ", i.CODE_INTERVENTION) IS NOT NULL
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.flg_type = 'P'"
+
+        If i_id_content_interv_cat <> "0" Then
+
+            sql = sql & "  AND IC.ID_CONTENT= '" & i_id_content_interv_cat & "'
+                           ORDER BY 3 ASC"
+
+        Else
+
+            sql = sql & " ORDER BY 3 ASC"
+
+        End If
+
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
     Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ic.code_interv_category)
@@ -78,6 +121,7 @@ Public Class INTERVENTIONS_API
                                 AND diic.id_software IN (0, " & i_software & ")
                                 AND ic.flg_available = 'Y'
                                 AND pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ic.code_interv_category) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", di.code_intervention) IS NOT NULL
                                 AND dim.version = '" & i_version & "'
                                 ORDER BY 2 ASC"
         Dim cmd As New OracleCommand(sql, i_conn)
@@ -103,7 +147,7 @@ Public Class INTERVENTIONS_API
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
                                 AND ic.flg_available = 'Y'
-                                --AND alert_default.pk_translation_default.get_translation_default(6, di.code_intervention) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(6, di.code_intervention) IS NOT NULL
                                 AND dim.version = '" & i_version & "'"
         If i_id_cat = "0" Then
             sql = sql & " order by 3 asc"
@@ -352,7 +396,8 @@ Public Class INTERVENTIONS_API
                                 INTO l_id_interv_category
                                 FROM alert.interv_category ic
                                 WHERE ic.id_content = l_a_category(i)
-                                AND ic.flg_available = 'Y';
+                                AND ic.flg_available = 'Y'
+                                AND IC.CODE_INTERV_CATEGORY LIKE 'INTERV%'; --EXISTEM ESPECIALDIADES NESTA TABELA!!!
         
                                 INSERT INTO alert.interv_int_cat
                                     (id_interv_category, id_intervention, rank, id_software, id_institution, flg_add_remove)
