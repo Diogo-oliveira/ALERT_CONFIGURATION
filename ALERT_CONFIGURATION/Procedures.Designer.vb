@@ -37,8 +37,6 @@ Partial Class Procedures
         Me.Button10 = New System.Windows.Forms.Button()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.ComboBox6 = New System.Windows.Forms.ComboBox()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -190,26 +188,6 @@ Partial Class Procedures
         Me.CheckedListBox3.Name = "CheckedListBox3"
         Me.CheckedListBox3.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox3.TabIndex = 96
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(830, 114)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(47, 13)
-        Me.Label5.TabIndex = 95
-        Me.Label5.Text = "ROOMS"
-        '
-        'ComboBox7
-        '
-        Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.ItemHeight = 16
-        Me.ComboBox7.Location = New System.Drawing.Point(833, 130)
-        Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(449, 24)
-        Me.ComboBox7.TabIndex = 94
         '
         'Label9
         '
@@ -440,8 +418,6 @@ Partial Class Procedures
         Me.Controls.Add(Me.Button10)
         Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.CheckedListBox3)
-        Me.Controls.Add(Me.Label5)
-        Me.Controls.Add(Me.ComboBox7)
         Me.Controls.Add(Me.Label9)
         Me.Controls.Add(Me.ComboBox6)
         Me.Controls.Add(Me.Label8)
@@ -489,8 +465,6 @@ Partial Class Procedures
     Friend WithEvents Button10 As Button
     Friend WithEvents Label10 As Label
     Friend WithEvents CheckedListBox3 As CheckedListBox
-    Friend WithEvents Label5 As Label
-    Friend WithEvents ComboBox7 As ComboBox
     Friend WithEvents Label9 As Label
     Friend WithEvents ComboBox6 As ComboBox
     Friend WithEvents Label8 As Label

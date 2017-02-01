@@ -537,4 +537,119 @@ Public Class Procedures
         End If
 
     End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        Cursor = Cursors.WaitCursor
+
+        'Se foram escolhidas análises do default para serem gravadas
+        If CheckedListBox1.Items.Count() > 0 Then
+
+            Dim l_a_checked_intervs() As INTERVENTIONS_API.interventions_default
+            Dim l_index As Integer = 0
+
+            For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                ReDim Preserve l_a_checked_intervs(l_index)
+
+                l_a_checked_intervs(l_index).id_content_intervention = g_a_selected_default_interventions(indexChecked).id_content_intervention
+                l_a_checked_intervs(l_index).id_content_category = g_a_selected_default_interventions(indexChecked).id_content_category
+                l_a_checked_intervs(l_index).desc_intervention = g_a_selected_default_interventions(indexChecked).desc_intervention
+
+                l_index = l_index + 1
+
+            Next
+
+            If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, conn) Then
+                If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs, conn) Then
+                    If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
+                        If db_intervention.SET_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
+
+                            MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                            '1 - Processo Limpeza
+                            '1.1 - Limpar a box de análises a gravar no alert
+                            CheckedListBox1.Items.Clear()
+
+                            '1.2 - Remover o check das análises do default
+                            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                                CheckedListBox2.SetItemChecked(i, False)
+
+                            Next
+
+                            '1.3 - Limpar g_a_selected_default_analysis (Array de analises do default selecionadas pelo utilizador)
+                            ReDim g_a_selected_default_interventions(0)
+                            g_index_selected_intervention_from_default = 0
+
+                            '1.4 - Limpar a caixa de categorias de análises do ALERT
+                            ComboBox5.Items.Clear()
+                            ComboBox5.SelectedItem = ""
+
+                            'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
+                            Dim dr_exam_cat As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                            If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, conn, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                                MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
+
+                            Else
+
+                                ComboBox5.Items.Add("ALL")
+
+                                ReDim g_a_interv_cats_alert(0)
+                                g_a_interv_cats_alert(0) = 0
+
+                                Dim l_index_ec As Int16 = 1
+
+                                While dr_exam_cat.Read()
+
+                                    ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                                    ReDim Preserve g_a_interv_cats_alert(l_index_ec)
+                                    g_a_interv_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
+                                    l_index_ec = l_index_ec + 1
+
+                                End While
+
+                            End If
+
+                            dr_exam_cat.Dispose()
+                            dr_exam_cat.Close()
+
+                            '1.5 - Limpar as análises do ALERT apresentadas na BOX 3
+                            'Isto porque podem ter sido adicionadas análises à categoria selecionada
+                            CheckedListBox3.Items.Clear()
+
+                            '-------------------------------------- 'Falta tratar disto!!
+                            'ReDim g_a_labs_alert(0)
+                            'g_dimension_labs_alert = 0
+                        Else
+
+                            MsgBox("ERROR INSERTING INTERV_DEP_CLIN_SERV!", vbCritical)
+
+                        End If
+
+                    Else
+
+                        MsgBox("ERROR INSERTING INTERV_INT_CATS!", vbCritical)
+
+                    End If
+
+                Else
+
+                        MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
+
+                End If
+
+            Else
+                    MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
+            End If
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
 End Class

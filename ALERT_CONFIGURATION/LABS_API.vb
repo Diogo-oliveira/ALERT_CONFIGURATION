@@ -1915,89 +1915,56 @@ Public Class LABS_API
                     While dr.Read()
 
                         Try
-
                             l_cpt_code = dr.Item(0)
-
                         Catch ex As Exception
-
                             l_cpt_code = ""
-
                         End Try
 
                         Try
-
                             l_gender = dr.Item(1)
-
                         Catch ex As Exception
-
                             l_gender = ""
-
                         End Try
 
                         Try
-
                             l_age_min = dr.Item(2)
-
                         Catch ex As Exception
-
                             l_age_min = -1
-
                         End Try
 
                         Try
-
                             l_age_max = dr.Item(3)
-
                         Catch ex As Exception
-
                             l_age_max = -1
-
                         End Try
 
                         Try
-
                             l_mdm_coding = dr.Item(4)
-
                         Catch ex As Exception
-
                             l_mdm_coding = -1
-
                         End Try
 
                         Try
-
                             l_ref_form_code = dr.Item(5)
-
                         Catch ex As Exception
-
                             l_ref_form_code = ""
-
                         End Try
 
                         Try
-
                             l_id_content_st = dr.Item(6)
-
                         Catch ex As Exception
-
                             l_id_content_st = ""
-
                         End Try
 
                         Try
-
                             l_barcode = dr.Item(7)
-
                         Catch ex As Exception
-
                             l_barcode = ""
-
                         End Try
 
                     End While
 
                     ' 1.1.2 - Obter o id_alert do sample_type
-
                     Dim l_id_st As Int64 = -1
                     If l_id_content_st <> "" Then
 
