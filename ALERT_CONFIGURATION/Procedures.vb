@@ -720,4 +720,226 @@ Public Class Procedures
         End If
 
     End Sub
+
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+
+        Cursor = Cursors.WaitCursor
+
+        Dim result As Integer = 0
+        Dim l_sucess As Boolean = True
+
+        'Perguntar se utilizador pretende mesmo apagar todas as análises de uma categoria
+        If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
+
+            result = MsgBox("All records from the chosen category will be deleted! Confirm?", MessageBoxButtons.YesNo)
+
+        End If
+
+        If (result = DialogResult.Yes Or CheckedListBox3.CheckedIndices.Count < CheckedListBox3.Items.Count()) Then
+
+            Dim indexChecked As Integer
+
+            ''VErificar se posso apagar este bloco
+            Dim total_selected_interventions As Integer = 0
+
+            For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                total_selected_interventions = total_selected_interventions + 1
+
+            Next
+            ''Fim de VErificar se posso apagar este bloco
+
+            ''1 - Determinar ID_Content_ast dos registos selecionados
+            ''2 - Criar função para colocar a not available na analysis_inst_soft
+
+            For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                '2.1 - Apagar da INTERV_INT_CAT
+                'É necessário verificar se existe registo para o software ALL. DEterminar, e perguntar se quer apagar.
+                'É necessário verificar a isntituição.
+                Dim l_software As Integer
+
+                If Not db_intervention.GET_INTERV_INT_CAT_ALL(TextBox1.Text, g_a_intervs_alert(indexChecked).id_content_intervention, conn) Then
+
+                    MsgBox("Record " & g_a_intervs_alert(indexChecked).desc_intervention & " exist for software ALL. If you delete this record, it will also be deleted for all softwares. Confirm?", MessageBoxButtons.YesNo)
+
+                    If (result = DialogResult.Yes) Then
+
+                        l_software = 0
+
+                    Else
+
+                        l_software = g_selected_soft
+
+                    End If
+
+                End If
+
+                If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, l_software, g_a_intervs_alert(indexChecked).id_content_intervention, conn) Then
+
+                    l_sucess = False
+
+                End If
+
+                ''TRATAR DISTO (APAGAR DA alert.interv_dep_clin_serv;)
+                ''2.2 - Apagar da analysis_dep_clin_serv (Para evitar que, no futuro, quando alguém ativar outra vez a análise, ela não apareça como mais frequente.
+                'If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, 0, g_a_labs_alert(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+
+                '    l_sucess = False
+
+                'End If
+            Next
+
+            ''3 - Refresh à grelha
+            ''3.1 - Se estão a ser apagados todos os registos de uma categoria:
+            If CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count() Then
+
+                CheckedListBox3.Items.Clear()
+                ComboBox5.Items.Clear()
+                ComboBox5.Text = ""
+
+                Dim dr_exam_cat As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, conn, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                    MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
+                    dr_exam_cat.Dispose()
+                    dr_exam_cat.Close()
+
+                Else
+
+                    ComboBox5.Items.Add("ALL")
+
+                    'Limpar array de análises disponíveis no ALERT para a categoria selecionada antes de se ter feito o delete
+                    ReDim g_a_interv_cats_alert(0)
+                    g_a_interv_cats_alert(0) = 0
+
+                    Dim l_index As Int16 = 1
+
+                    While dr_exam_cat.Read()
+
+                        ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                        ReDim Preserve g_a_interv_cats_alert(l_index)
+                        g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
+                        l_index = l_index + 1
+
+                    End While
+
+                End If
+
+                dr_exam_cat.Dispose()
+                dr_exam_cat.Close()
+
+                'Limpar arrays - TRATAR DISTO!!!!
+                'ReDim g_a_labs_for_clinical_service(0)
+                ReDim g_a_intervs_alert(0)
+
+                ''g_dimension_labs_cs = 0
+                ''g_dimension_labs_alert = 0
+
+            Else '3.2 - Eliminar apenas os registos selecionados
+
+                CheckedListBox3.Items.Clear()
+
+                Dim dr_intervs As OracleDataReader
+
+                Dim l_selected_category As String = ""
+
+                l_selected_category = g_a_interv_cats_alert(ComboBox5.SelectedIndex)
+
+                g_dimension_intervs_alert = 0
+
+                ReDim g_a_intervs_alert(g_dimension_intervs_alert)
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, conn, dr_intervs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                    MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+                    dr_intervs.Dispose()
+                    dr_intervs.Close()
+
+                Else
+
+                    While dr_intervs.Read()
+
+                        g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+                        g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(1)
+                        g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
+                        g_dimension_intervs_alert = g_dimension_intervs_alert + 1
+                        ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
+
+                        CheckedListBox3.Items.Add(dr_intervs.Item(2))
+
+                    End While
+
+                    dr_intervs.Dispose()
+                    dr_intervs.Close()
+
+                    'Limpar arrays - TRATAR DISTO!!!!
+                    ''ReDim g_a_labs_for_clinical_service(0)
+
+                    'g_dimension_labs_cs = 0
+
+                End If
+
+            End If
+
+            ''4 - Mensagem de sucesso no final de todos os registos. (modificar mensagem de erro para surgir apenas uma vez.
+            If l_sucess = False Then
+
+                MsgBox("ERROR DELETING ANALYSIS_INST_SOFT", vbCritical)
+
+            Else
+
+                MsgBox("RECORDS SUCCESSFULLY DELETED.", vbInformation)
+
+            End If
+
+        End If
+
+        ''APAGAR da grelah de favoritos (já foi apagado anteriormente)
+        ''4 - Limpar a box 
+
+        CheckedListBox4.Items.Clear()
+
+        '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv  'TRATAR DISTO!!!!!!!!!!!
+        'Dim dr_delete As OracleDataReader
+
+
+        'If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_delete, conn_labs) Then
+
+
+        '    MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
+
+        'Else
+
+        '    Dim i As Integer = 0
+
+        '    '6 - Ler cursor e popular o campo
+        '    While dr_delete.Read()
+
+        '        CheckedListBox4.Items.Add(dr_delete.Item(1) & " - [" & dr_delete.Item(2) & "]")
+
+        '        ReDim Preserve g_a_labs_for_clinical_service(g_dimension_labs_cs)
+
+        '        g_a_labs_for_clinical_service(g_dimension_labs_cs).id_content_analysis_sample_type = dr_delete.Item(0)
+        '        g_a_labs_for_clinical_service(g_dimension_labs_cs).desc_analysis_sample_type = dr_delete.Item(1)
+        '        g_a_labs_for_clinical_service(g_dimension_labs_cs).desc_analysis_sample_recipient = dr_delete.Item(2)
+        '        g_a_labs_for_clinical_service(g_dimension_labs_cs).flg_new = "N"
+
+        '        g_dimension_labs_cs = g_dimension_labs_cs + 1
+
+        '    End While
+
+        'End If
+
+        'dr_delete.Dispose()
+        'dr_delete.Close()
+
+        Cursor = Cursors.Arrow
+
+    End Sub
 End Class

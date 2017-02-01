@@ -168,6 +168,39 @@ Public Class INTERVENTIONS_API
 
     End Function
 
+    Function GET_INTERV_INT_CAT_ALL(ByVal i_institution As Int64, ByVal i_id_content_intervention As String, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                l_id_interv_int_cat alert.interv_int_cat.id_intervention%type;
+
+                            BEGIN
+
+                                SELECT c.id_intervention
+                                INTO l_id_interv_int_cat
+                                FROM alert.interv_int_cat c
+                                JOIN alert.intervention i ON i.id_intervention = c.id_intervention
+                                WHERE i.id_content = '" & i_id_content_intervention & "'
+                                AND c.id_software = 0
+                                AND c.id_institution IN (0, " & i_institution & ");
+
+                            END;"
+
+        Dim cmd_get_interv As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_get_interv.CommandType = CommandType.Text
+            cmd_get_interv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_get_interv.Dispose()
+            Return False
+        End Try
+
+        cmd_get_interv.Dispose()
+        Return True
+
+    End Function
+
     Function SET_INTERVENTIONS(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
@@ -537,6 +570,31 @@ Public Class INTERVENTIONS_API
         End Try
 
         cmd_insert_interv_int_cat.Dispose()
+        Return True
+
+    End Function
+
+    Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_itervention As String, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DELETE FROM alert.interv_int_cat iic
+                                WHERE iic.id_intervention IN (SELECT i.id_intervention
+                                                              FROM alert.intervention i
+                                                              WHERE i.id_content = '" & i_id_content_itervention & "'
+                                                              AND i.flg_status = 'A')
+                                and iic.id_software=" & i_software & "
+                                and iic.id_institution in (0," & i_institution & ")"
+
+        Dim cmd_delete_interv_int_cat As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_delete_interv_int_cat.CommandType = CommandType.Text
+            cmd_delete_interv_int_cat.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_interv_int_cat.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_interv_int_cat.Dispose()
         Return True
 
     End Function
