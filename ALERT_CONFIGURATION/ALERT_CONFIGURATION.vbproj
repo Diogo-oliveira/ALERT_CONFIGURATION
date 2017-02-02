@@ -184,6 +184,12 @@
     <Compile Include="SYS_CONFIGS.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="YES_to_ALL.Designer.vb">
+      <DependentUpon>YES_to_ALL.vb</DependentUpon>
+    </Compile>
+    <Compile Include="YES_to_ALL.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
@@ -210,6 +216,9 @@
     <EmbeddedResource Include="SYS_CONFIGS.resx">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="YES_to_ALL.resx">
+      <DependentUpon>YES_to_ALL.vb</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
@@ -228,6 +237,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PROCEDURES.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

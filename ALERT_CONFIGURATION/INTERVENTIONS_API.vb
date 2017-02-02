@@ -52,7 +52,13 @@ Public Class INTERVENTIONS_API
                                 AND ic.flg_available = 'Y'
                                 AND pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category) IS NOT NULL
                                 AND idcs.id_institution IN (0, " & i_institution & ")
-                                AND idcs.flg_type = 'P'
+                                AND idcs.flg_type in ('P','A')
+                                and idcs.id_software in (0," & i_software & ")
+                                AND (iic.id_intervention ||'|'|| iic.id_interv_category) NOT IN (SELECT DISTINCT (iic_s.id_intervention || iic_s.id_interv_category)
+                                                                                                   FROM alert.interv_int_cat iic_s
+                                                                                                   WHERE iic_s.id_software IN (" & i_software & ")
+                                                                                                   AND iic_s.id_institution IN (0, " & i_institution & ")
+                                                                                                   AND iic_s.flg_add_remove = 'R')
                                 ORDER BY 2 ASC"
         Dim cmd As New OracleCommand(sql, i_conn)
         Try
@@ -168,7 +174,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_INT_CAT_ALL(ByVal i_institution As Int64, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function EXISTS_INTERV_INT_CAT_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -176,14 +182,14 @@ Public Class INTERVENTIONS_API
 
                             BEGIN
 
-                                SELECT c.id_intervention
+                                SELECT distinct c.id_intervention
                                 INTO l_id_interv_int_cat
                                 FROM alert.interv_int_cat c
                                 JOIN alert.intervention i ON i.id_intervention = c.id_intervention
                                 JOIN ALERT.INTERV_CATEGORY IC ON IC.ID_INTERV_CATEGORY=C.ID_INTERV_CATEGORY
                                 WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
                                 AND IC.ID_CONTENT='" & i_intervention.id_content_category & "'                                
-                                AND c.id_software = 0
+                                AND c.id_software = " & i_software & "
                                 AND c.id_institution IN (0, " & i_institution & ");
 
                             END;"
