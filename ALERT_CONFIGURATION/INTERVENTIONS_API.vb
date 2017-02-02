@@ -168,7 +168,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_INT_CAT_ALL(ByVal i_institution As Int64, ByVal i_id_content_intervention As String, ByVal i_conn As OracleConnection) As Boolean
+    Function GET_INTERV_INT_CAT_ALL(ByVal i_institution As Int64, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -180,7 +180,9 @@ Public Class INTERVENTIONS_API
                                 INTO l_id_interv_int_cat
                                 FROM alert.interv_int_cat c
                                 JOIN alert.intervention i ON i.id_intervention = c.id_intervention
-                                WHERE i.id_content = '" & i_id_content_intervention & "'
+                                JOIN ALERT.INTERV_CATEGORY IC ON IC.ID_INTERV_CATEGORY=C.ID_INTERV_CATEGORY
+                                WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
+                                AND IC.ID_CONTENT='" & i_intervention.id_content_category & "'                                
                                 AND c.id_software = 0
                                 AND c.id_institution IN (0, " & i_institution & ");
 
@@ -491,69 +493,137 @@ Public Class INTERVENTIONS_API
                         l_flg_chargeable alert.interv_dep_clin_serv.flg_chargeable%TYPE;
                         l_flg_bandaid    alert.interv_dep_clin_serv.flg_bandaid%TYPE;
 
+                        l_a_flg_chargeable table_varchar := table_varchar();
+                        l_a_flg_bandaid    table_varchar := table_varchar();
+                        l_a_dep_clin_serv  table_number := table_number();
+
                     BEGIN
 
                         FOR i IN 1 .. l_a_interventions.count()
-                        LOOP
-    
-                            BEGIN
-        
-                                SELECT i.id_intervention
-                                INTO l_id_intervention
-                                FROM alert.intervention i
-                                WHERE i.id_content = l_a_interventions(i)
-                                AND i.flg_status = 'A';
-        
-                                SELECT DISTINCT dcs.flg_type 
-                                BULK COLLECT INTO l_a_flg_type
-                                FROM alert_default.interv_clin_serv dcs
-                                JOIN alert_default.intervention di ON di.id_intervention = dcs.id_intervention
-                                WHERE di.id_content = l_a_interventions(i);
-                   
-                                FOR j IN 1 .. l_a_flg_type.count()
-                                LOOP
+                        LOOP          
+                                BEGIN
             
-                                    SELECT dcs.flg_chargeable, dcs.flg_bandaid
-                                    INTO l_flg_chargeable, l_flg_bandaid
+                                    SELECT i.id_intervention
+                                    INTO l_id_intervention
+                                    FROM alert.intervention i
+                                    WHERE i.id_content = l_a_interventions(i)
+                                    AND i.flg_status = 'A';
+            
+                                    SELECT DISTINCT dcs.flg_type BULK COLLECT
+                                    INTO l_a_flg_type
                                     FROM alert_default.interv_clin_serv dcs
                                     JOIN alert_default.intervention di ON di.id_intervention = dcs.id_intervention
-                                    WHERE di.id_content = l_a_interventions(i)
-                                    AND di.flg_status = 'A'
-                                    AND dcs.flg_type = l_a_flg_type(j)
-                                    and dcs.id_software in (" & i_software & ");               
+                                    WHERE di.id_content = l_a_interventions(i);
             
-                                    INSERT INTO alert.interv_dep_clin_serv
-                                        (id_interv_dep_clin_serv,
-                                         id_intervention,
-                                         id_dep_clin_serv,
-                                         flg_type,
-                                         rank,
-                                         id_institution,
-                                         id_software,
-                                         flg_bandaid,
-                                         flg_chargeable,
-                                         flg_execute,
-                                         flg_timeout)
-                                    VALUES
-                                        (alert.seq_interv_dep_clin_serv.nextval,
-                                         l_id_intervention,
-                                         NULL,
-                                         l_a_flg_type(j),
-                                         0,
-                                         " & i_institution & ",
-                                         " & i_software & ", 
-                                         l_flg_bandaid,
-                                         l_flg_chargeable,
-                                         'Y',
-                                         'N');
+                                    FOR j IN 1 .. l_a_flg_type.count()
+                                    LOOP                  
+                
+                                       IF (l_a_flg_type(j) <> 'A' AND l_a_flg_type(j) <> 'M')
+                                       THEN
+                
+                                         BEGIN
+                                            SELECT dcs.flg_chargeable, dcs.flg_bandaid
+                                            INTO l_flg_chargeable, l_flg_bandaid
+                                            FROM alert_default.interv_clin_serv dcs
+                                            JOIN alert_default.intervention di ON di.id_intervention = dcs.id_intervention
+                                            WHERE di.id_content = l_a_interventions(i)
+                                            AND di.flg_status = 'A'
+                                            AND dcs.flg_type = l_a_flg_type(j)
+                                            AND dcs.id_software IN (" & i_software & ");
+                    
+                                            INSERT INTO alert.interv_dep_clin_serv
+                                                (id_interv_dep_clin_serv,
+                                                 id_intervention,
+                                                 id_dep_clin_serv,
+                                                 flg_type,
+                                                 rank,
+                                                 id_institution,
+                                                 id_software,
+                                                 flg_bandaid,
+                                                 flg_chargeable,
+                                                 flg_execute,
+                                                 flg_timeout)
+                                            VALUES
+                                                (alert.seq_interv_dep_clin_serv.nextval,
+                                                 l_id_intervention,
+                                                 NULL,
+                                                 l_a_flg_type(j),
+                                                 0,
+                                                 " & i_institution & ",
+                                                 " & i_software & ",
+                                                 l_flg_bandaid,
+                                                 l_flg_chargeable,
+                                                 'Y',
+                                                 'N');
+                                           EXCEPTION
+                                             WHEN OTHERS THEN
+                                               CONTINUE;
+                                           END;
+                         
+                                        ELSE                
+                                             
+                                              SELECT dcs.flg_chargeable, dcs.flg_bandaid, dps.id_dep_clin_serv BULK COLLECT
+                                              INTO l_a_flg_chargeable, l_a_flg_bandaid, l_a_dep_clin_serv
+                                              FROM alert_default.interv_clin_serv dcs
+                                              JOIN alert_default.intervention di ON di.id_intervention = dcs.id_intervention
+                                              JOIN alert_default.clinical_service dc ON dc.id_clinical_service = dcs.id_clinical_service
+                                              JOIN alert.clinical_service cs ON cs.id_content = dc.id_content
+                                                                         AND cs.flg_available = 'Y'
+                                              JOIN alert.dep_clin_serv dps ON dps.id_clinical_service = cs.id_clinical_service
+                                                                       AND dps.flg_available = 'Y'
+                                              JOIN department d ON d.id_department = dps.id_department
+                                              WHERE di.id_content = l_a_interventions(i)
+                                              AND di.flg_status = 'A'
+                                              AND dcs.flg_type IN (l_a_flg_type(j))
+                                              AND dcs.id_software IN (" & i_software & ")
+                                              AND d.id_institution = " & i_institution & "
+                                              AND d.id_software = " & i_software & ";
+                      
+                                              FOR k IN 1 .. l_a_dep_clin_serv.count()
+                                              LOOP
+                          
+                                                BEGIN
+                                                  INSERT INTO alert.interv_dep_clin_serv
+                                                      (id_interv_dep_clin_serv,
+                                                       id_intervention,
+                                                       id_dep_clin_serv,
+                                                       flg_type,
+                                                       rank,
+                                                       id_institution,
+                                                       id_software,
+                                                       flg_bandaid,
+                                                       flg_chargeable,
+                                                       flg_execute,
+                                                       flg_timeout
+                                                       )
+                                                  VALUES
+                                                      (alert.seq_interv_dep_clin_serv.nextval,
+                                                       l_id_intervention,
+                                                       l_a_dep_clin_serv(k),
+                                                       l_a_flg_type(j),
+                                                       0,
+                                                       " & i_institution & ",
+                                                       " & i_software & ",
+                                                       l_a_flg_bandaid(k),
+                                                       l_a_flg_chargeable(k),
+                                                       'Y',
+                                                       'N');
+                                                 EXCEPTION
+                                                  WHEN OTHERS THEN
+                                                   CONTINUE;
+                                                 END;
+                                   
+                                               END LOOP;
+                    
+                                        END IF;
+                
+                                    END LOOP;
             
-                                END LOOP;
-        
-                            EXCEPTION
-                                WHEN OTHERS THEN
-                                    continue;
-            
-                            END;
+                                EXCEPTION
+                                    WHEN OTHERS THEN
+                                        continue;
+                
+                                END;
     
                         END LOOP;
 
@@ -574,13 +644,18 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_itervention As String, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String = "DELETE FROM alert.interv_int_cat iic
                                 WHERE iic.id_intervention IN (SELECT i.id_intervention
                                                               FROM alert.intervention i
-                                                              WHERE i.id_content = '" & i_id_content_itervention & "'
+                                                              WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
                                                               AND i.flg_status = 'A')
+                                and iic.id_interv_category in (SELECT ic.id_interv_category
+                                                              FROM alert.interv_category ic
+                                                              WHERE ic.id_content = '" & i_intervention.id_content_category & "'
+                                                              AND ic.flg_available = 'Y')
+                                 
                                 and iic.id_software=" & i_software & "
                                 and iic.id_institution in (0," & i_institution & ")"
 
@@ -595,6 +670,47 @@ Public Class INTERVENTIONS_API
         End Try
 
         cmd_delete_interv_int_cat.Dispose()
+        Return True
+
+    End Function
+
+    Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String
+
+        If i_most_freq = False Then
+
+            sql = "DELETE FROM alert.interv_dep_clin_serv dps
+                                WHERE dps.id_intervention IN (SELECT i.id_intervention
+                                                              FROM alert.intervention i
+                                                              WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
+                                                              AND i.flg_status = 'A')
+                                AND dps.id_institution IN (0, " & i_institution & ")
+                                AND dps.id_software = " & i_software & ""
+        Else
+
+            sql = "DELETE FROM alert.interv_dep_clin_serv dps
+                                WHERE dps.id_intervention IN (SELECT i.id_intervention
+                                                              FROM alert.intervention i
+                                                              WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
+                                                              AND i.flg_status = 'A')
+                                AND dps.id_institution IN (0, " & i_institution & ")
+                                AND dps.id_software = " & i_software & "
+                                AND dps.flg_type = 'M'"
+
+        End If
+
+        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_delete_dep_clin_serv.CommandType = CommandType.Text
+            cmd_delete_dep_clin_serv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_dep_clin_serv.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_dep_clin_serv.Dispose()
         Return True
 
     End Function

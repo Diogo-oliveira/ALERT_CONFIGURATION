@@ -666,6 +666,7 @@ Public Class Procedures
 
         Dim g_selected_category_alert As String = ""
 
+        'VEr este ponto. Estourou aqui.
         g_selected_category_alert = g_a_interv_cats_alert(ComboBox5.SelectedIndex)
 
         g_dimension_intervs_alert = 0
@@ -749,45 +750,57 @@ Public Class Procedures
             Next
             ''Fim de VErificar se posso apagar este bloco
 
-            ''1 - Determinar ID_Content_ast dos registos selecionados
-            ''2 - Criar função para colocar a not available na analysis_inst_soft
-
+            'Ciclo para correr todos os registos do ALERT marcados com o check
             For Each indexChecked In CheckedListBox3.CheckedIndices
 
-                '2.1 - Apagar da INTERV_INT_CAT
+                '1 - Apagar da INTERV_INT_CAT
                 'É necessário verificar se existe registo para o software ALL. DEterminar, e perguntar se quer apagar.
-                'É necessário verificar a isntituição.
-                Dim l_software As Integer
+                'Nota: Se se apagar apenas o registo para o softwar selecionado ehouver um registo para o ALL, o registo irá continuar a aparecer
+                'Nota: Vai-se apagar o registo para a instituição selecionada e para a instituição 0.
 
-                If Not db_intervention.GET_INTERV_INT_CAT_ALL(TextBox1.Text, g_a_intervs_alert(indexChecked).id_content_intervention, conn) Then
+                'Função que determina se há registos no soft ALL (Retorna True caso exista)
+                If db_intervention.GET_INTERV_INT_CAT_ALL(TextBox1.Text, g_a_intervs_alert(indexChecked), conn) Then
 
-                    MsgBox("Record " & g_a_intervs_alert(indexChecked).desc_intervention & " exist for software ALL. If you delete this record, it will also be deleted for all softwares. Confirm?", MessageBoxButtons.YesNo)
+                    result = MsgBox("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. If you delete this record, it will also be deleted for all softwares. Confirm?", MessageBoxButtons.YesNo)
 
                     If (result = DialogResult.Yes) Then
 
-                        l_software = 0
+                        If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), conn) Then
 
-                    Else
+                            l_sucess = False
 
-                        l_software = g_selected_soft
+                        End If
 
                     End If
 
                 End If
 
-                If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, l_software, g_a_intervs_alert(indexChecked).id_content_intervention, conn) Then
+                If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
 
                     l_sucess = False
 
                 End If
 
-                ''TRATAR DISTO (APAGAR DA alert.interv_dep_clin_serv;)
-                ''2.2 - Apagar da analysis_dep_clin_serv (Para evitar que, no futuro, quando alguém ativar outra vez a análise, ela não apareça como mais frequente.
-                'If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, 0, g_a_labs_alert(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+                '2 - Apagar da ALERT.INTERV_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
 
-                '    l_sucess = False
+                'Apagar os registos para o software 0 caso o result seja 'Y'
+                If (result = DialogResult.Yes) Then
 
-                'End If
+                    If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, conn) Then
+
+                        l_sucess = False
+
+                    End If
+
+                End If
+
+                'Apagar os registos para o software selecionado
+                If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
+
+                    l_sucess = False
+
+                End If
+
             Next
 
             ''3 - Refresh à grelha
