@@ -282,7 +282,7 @@ Public Class Procedures
         Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, conn, dr_def_versions) Then
+        If Not db_intervention.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_def_versions) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -395,7 +395,7 @@ Public Class Procedures
         Dim dr_lab_cat_def As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, conn, dr_lab_cat_def) Then
+        If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -441,7 +441,7 @@ Public Class Procedures
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, conn, dr) Then
+        If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, g_procedure_type, conn, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
@@ -605,7 +605,7 @@ Public Class Procedures
                             Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                            If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, 0, conn, dr_exam_cat) Then
+                            If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                                 MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -684,7 +684,7 @@ Public Class Procedures
         ReDim g_a_intervs_alert(g_dimension_intervs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, conn, dr_intervs) Then
+        If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, g_procedure_type, conn, dr_intervs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -781,6 +781,8 @@ Public Class Procedures
                     'Nota: Vai-se apagar o registo para a instituição selecionada e para a instituição 0.
 
                     'Função que determina se há registos no soft ALL (Retorna True caso exista)
+                    'To DO: Vai ser necessário criar função que faça update à interv_int_cat, removendo a do soft específico
+                    'Analisar combinações
                     If db_intervention.EXISTS_INTERV_INT_CAT_SOFT(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), conn) Then
 
                         If (result_dialog <> DialogResult.OK And result_dialog <> DialogResult.Abort) Then
@@ -808,6 +810,8 @@ Public Class Procedures
 
                     End If
 
+
+                    'TO DO: Analisar quando a resposta anterior é não
                     If db_intervention.EXISTS_INTERV_INT_CAT_SOFT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
 
                         If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
@@ -855,7 +859,7 @@ Public Class Procedures
                     Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, 0, conn, dr_exam_cat) Then
+                    If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -908,7 +912,7 @@ Public Class Procedures
                     ReDim g_a_intervs_alert(g_dimension_intervs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, conn, dr_intervs) Then
+                    If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, g_procedure_type, conn, dr_intervs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -1001,23 +1005,15 @@ Public Class Procedures
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.Click
 
         If CheckBox2.Checked = False Then
-
             CheckBox1.Checked = True
-
         End If
 
         If (CheckBox1.Checked = True And CheckBox2.Checked = True) Then
-
             g_procedure_type = 0
-
         ElseIf (CheckBox1.Checked = True And CheckBox2.Checked = False) Then
-
             g_procedure_type = 1
-
         Else
-
             g_procedure_type = 2
-
         End If
 
     End Sub
@@ -1025,23 +1021,15 @@ Public Class Procedures
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.Click
 
         If CheckBox1.Checked = False Then
-
             CheckBox2.Checked = True
-
         End If
 
         If (CheckBox1.Checked = True And CheckBox2.Checked = True) Then
-
             g_procedure_type = 0
-
         ElseIf (CheckBox1.Checked = True And CheckBox2.Checked = False) Then
-
             g_procedure_type = 1
-
         Else
-
             g_procedure_type = 2
-
         End If
 
     End Sub

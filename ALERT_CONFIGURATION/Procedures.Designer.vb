@@ -318,7 +318,7 @@ Partial Class Procedures
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(977, 21)
+        Me.Label4.Location = New System.Drawing.Point(874, 21)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 80
@@ -328,7 +328,7 @@ Partial Class Procedures
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(980, 36)
+        Me.ComboBox3.Location = New System.Drawing.Point(877, 36)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 79
@@ -345,7 +345,7 @@ Partial Class Procedures
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(722, 21)
+        Me.Label3.Location = New System.Drawing.Point(619, 21)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 77
@@ -355,7 +355,7 @@ Partial Class Procedures
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(723, 36)
+        Me.ComboBox2.Location = New System.Drawing.Point(620, 36)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 76

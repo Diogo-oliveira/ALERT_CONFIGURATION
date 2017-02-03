@@ -9,7 +9,7 @@ Public Class INTERVENTIONS_API
         Public desc_intervention As String
     End Structure
 
-    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT dim.version
                                 FROM alert_default.intervention di
@@ -17,12 +17,30 @@ Public Class INTERVENTIONS_API
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
                                 JOIN alert.interv_category aic ON aic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
                                 JOIN translation t ON t.code_translation = aic.code_interv_category
                                 JOIN institution i ON i.id_market = dim.id_market
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
-                                AND i.id_institution =" & i_institution & "
-                                ORDER BY 1 ASC"
+                                AND i.id_institution = " & i_institution & "
+                                AND dcs.id_software IN (0, " & i_software & ")"
+
+        If i_flg_type = 0 Then
+
+            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And dcs.flg_type IN ('A') "
+
+        Else
+
+            sql = sql & "And dcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "  ORDER BY 1 ASC"
+
         Dim cmd As New OracleCommand(sql, i_conn)
         cmd.CommandType = CommandType.Text
         Try
@@ -37,6 +55,9 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function GET_INTERV_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
+        'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
         Dim sql As String = "with tbl_interv_cats (id_content_interv_cat,id_content_interv, cod_interv_cat)
@@ -56,7 +77,7 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'B') "
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
@@ -64,7 +85,7 @@ Public Class INTERVENTIONS_API
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('B') "
+            sql = sql & "And idcs.flg_type IN ('A') "
 
         End If
 
@@ -87,7 +108,7 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'B') "
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
@@ -95,7 +116,7 @@ Public Class INTERVENTIONS_API
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('B') "
+            sql = sql & "And idcs.flg_type IN ('A') "
 
         End If
 
@@ -118,7 +139,7 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'B') "
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
@@ -126,7 +147,7 @@ Public Class INTERVENTIONS_API
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('B') "
+            sql = sql & "And idcs.flg_type IN ('A') "
 
         End If
 
@@ -149,7 +170,7 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'B') "
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
@@ -157,7 +178,7 @@ Public Class INTERVENTIONS_API
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('B') "
+            sql = sql & "And idcs.flg_type IN ('A') "
 
         End If
 
@@ -167,38 +188,143 @@ Public Class INTERVENTIONS_API
                           ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, i_conn)
-        'Try
-        cmd.CommandType = CommandType.Text
-        i_dr = cmd.ExecuteReader()
-        cmd.Dispose()
-        Return True
-        ' Catch ex As Exception
-        'cmd.Dispose()
-        'Return False
-        ' End Try
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
     End Function
 
-    Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-        Dim sql As String = "SELECT DISTINCT ic.id_content, i.id_content, t.desc_lang_" & l_id_language & "
-                                FROM alert.intervention i
-                                JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
-                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
-                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                JOIN translation t ON t.code_translation = i.code_intervention
-                                WHERE i.flg_status = 'A'
-                                AND iic.id_software IN (0, " & i_software & ")
-                                AND iic.id_institution IN (0, " & i_institution & ")
-                                AND iic.flg_add_remove = 'A'
-                                AND ic.flg_available = 'Y'
-                                AND pk_translation.get_translation(" & l_id_language & ", i.CODE_INTERVENTION) IS NOT NULL
-                                AND idcs.id_institution IN (0, " & i_institution & ")
-                                AND idcs.flg_type = 'P'"
+        Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
+                            id_content_intervention,
+                            code_intervention) AS
+                             (SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                              FROM alert.intervention i
+                              JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                              JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                              JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                              WHERE i.flg_status = 'A'
+                              AND iic.id_software IN (0, " & i_software & ")
+                              AND iic.id_institution IN (0, " & i_institution & ")
+                              AND iic.flg_add_remove = 'A'
+                              AND ic.flg_available = 'Y'
+                              AND idcs.id_institution IN (0, " & i_institution & ")
+                              and idcs.id_software in (0," & i_software & ")"
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "MINUS
+  
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (" & i_software & ")
+                      AND iic.id_institution IN (" & i_institution & ")
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND idcs.id_institution IN (0, " & i_institution & ")
+                      and idcs.id_software in (0," & i_software & ")"
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "MINUS
+  
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (" & i_software & ")
+                      AND iic.id_institution IN (0)
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND idcs.id_institution IN (0, " & i_institution & ")
+                      and idcs.id_software in (0," & i_software & ")"
+
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "MINUS
+
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (0)
+                      AND iic.id_institution IN (" & i_institution & ")
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND idcs.id_institution IN (0, " & i_institution & ")
+                      and idcs.id_software in (0," & i_software & ")"
+
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & ")
+
+                    SELECT DISTINCT id_content_interv_cat, id_content_intervention, pk_translation.get_translation(" & l_id_language & ", code_intervention)
+                    FROM tbl_interventions"
 
         If i_id_content_interv_cat <> "0" Then
 
-            sql = sql & "  AND IC.ID_CONTENT= '" & i_id_content_interv_cat & "'
+            sql = sql & " WHERE ID_CONTENT_INTERV_CAT= '" & i_id_content_interv_cat & "'
                            ORDER BY 3 ASC"
 
         Else
@@ -207,7 +333,6 @@ Public Class INTERVENTIONS_API
 
         End If
 
-
         Dim cmd As New OracleCommand(sql, i_conn)
         Try
             cmd.CommandType = CommandType.Text
@@ -221,21 +346,39 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ic.code_interv_category)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
                                 JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
-                                JOIN ALERT_DEFAULT.INTERV_CLIN_SERV DCS ON DCS.ID_INTERVENTION=DI.ID_INTERVENTION AND DCS.FLG_TYPE='P' AND DCS.ID_SOFTWARE IN (0," & i_software & ")                                
+                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
                                 AND ic.flg_available = 'Y'
-                                AND pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", ic.code_interv_category) IS NOT NULL
-                                AND alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", di.code_intervention) IS NOT NULL
+                                AND pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention) IS NOT NULL
                                 AND dim.version = '" & i_version & "'
-                                ORDER BY 2 ASC"
+                                AND dcs.id_software IN (0, " & i_software & ") "
+
+        If i_flg_type = 0 Then
+
+            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And dcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And dcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "           ORDER BY 2 ASC"
+
         Dim cmd As New OracleCommand(sql, i_conn)
         Try
             cmd.CommandType = CommandType.Text
@@ -248,19 +391,34 @@ Public Class INTERVENTIONS_API
         End Try
     End Function
 
-    Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "SELECT DISTINCT ic.id_content, di.id_content, alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & ", di.code_intervention)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "SELECT DISTINCT ic.id_content, di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
                                 JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
-                                JOIN ALERT_DEFAULT.INTERV_CLIN_SERV DCS ON DCS.ID_INTERVENTION=DI.ID_INTERVENTION AND DCS.FLG_TYPE='P' AND DCS.ID_SOFTWARE IN (0,11)                                
+                                JOIN ALERT_DEFAULT.INTERV_CLIN_SERV DCS ON DCS.ID_INTERVENTION=DI.ID_INTERVENTION AND DCS.ID_SOFTWARE IN (0,11)                                
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
                                 AND ic.flg_available = 'Y'
-                                AND alert_default.pk_translation_default.get_translation_default(6, di.code_intervention) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention) IS NOT NULL
                                 AND dim.version = '" & i_version & "'"
+        If i_flg_type = 0 Then
+
+            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And dcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And dcs.flg_type IN ('A') "
+
+        End If
+
         If i_id_cat = "0" Then
             sql = sql & " order by 3 asc"
         Else
@@ -281,7 +439,7 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function EXISTS_INTERV_INT_CAT_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
-
+        'CONTINUAR AQUI------------------------------------------------------------------
         Dim sql As String = "DECLARE
 
                                 l_id_interv_int_cat alert.interv_int_cat.id_intervention%type;
