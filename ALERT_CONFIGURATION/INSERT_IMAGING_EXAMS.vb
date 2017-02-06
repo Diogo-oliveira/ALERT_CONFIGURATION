@@ -880,9 +880,6 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
 
-        '''''''''''''''''''''''''''''''''''
-        ''NOVO
-
         If CheckedListBox3.CheckedIndices.Count() > 0 Then
 
             Dim result As Integer = 0

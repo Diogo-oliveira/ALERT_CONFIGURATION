@@ -13,13 +13,25 @@
 
     End Sub
 
-
     Private Sub YES_to_ALL_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Label1.Text = g_desc_interv
-        '"Record '" & g_desc_interv & "' exists for software 'ALL'. If you delete this record, it will also be deleted for all softwares. Confirm?"
 
     End Sub
 
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Cursor = Cursors.WaitCursor
+    End Sub
 
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Cursor = Cursors.WaitCursor
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        Cursor = Cursors.WaitCursor
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        Cursor = Cursors.WaitCursor
+    End Sub
 End Class

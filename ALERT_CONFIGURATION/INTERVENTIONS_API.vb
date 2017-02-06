@@ -9,6 +9,13 @@ Public Class INTERVENTIONS_API
         Public desc_intervention As String
     End Structure
 
+    Public Structure interventions_alert_flg
+        Public id_content_category As String
+        Public id_content_intervention As String
+        Public desc_intervention As String
+        Public flg_new As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT dim.version
@@ -185,6 +192,153 @@ Public Class INTERVENTIONS_API
         sql = sql & ")       
                           select distinct id_content_interv_cat, t.desc_lang_" & l_id_language & " from tbl_interv_cats
                           join translation t on t.code_translation=tbl_interv_cats.cod_interv_cat
+                          ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_FREQ_INTERVS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
+        'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "with tbl_interv (id_content_interv_cat,id_content_interv, code_intervention)
+                                as
+                                (SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                JOIN translation t ON t.code_translation = ic.code_interv_category
+                                WHERE i.flg_status = 'A'
+                                AND iic.id_software IN (0, " & i_software & ")
+                                AND iic.id_institution IN (0, " & i_institution & ")
+                                AND iic.flg_add_remove = 'A'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ")
+                                and idcs.id_dep_clin_serv= " & i_id_dep_clin_serv & ""
+
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('M', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('M') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "
+                                MINUS
+                                
+                                --Remover para Soft e instituição definidos
+                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                JOIN translation t ON t.code_translation = ic.code_interv_category
+                                WHERE iic.id_software IN (" & i_software & ")
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (" & i_institution & ")
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") "
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "
+                                MINUS
+                                
+                                --Remover para Instituição a 0 e soft definido
+                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                JOIN translation t ON t.code_translation = ic.code_interv_category
+                                WHERE iic.id_software = " & i_software & "
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (0)
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") "
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & "
+                                MINUS
+                                
+                                --REMOVER Para Soft 0 e Inst definida
+                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                JOIN translation t ON t.code_translation = ic.code_interv_category
+                                WHERE iic.id_software = 0
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (" & i_institution & ")
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") "
+        If i_flg_type = 0 Then
+
+            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+
+        ElseIf i_flg_type = 1 Then
+
+            sql = sql & "And idcs.flg_type IN ('P') "
+
+        Else
+
+            sql = sql & "And idcs.flg_type IN ('A') "
+
+        End If
+
+        sql = sql & ")       
+                          select distinct id_content_interv_cat,id_content_interv, t.desc_lang_" & l_id_language & " from tbl_interv
+                          join translation t on t.code_translation=tbl_interv.code_intervention
                           ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, i_conn)
@@ -744,7 +898,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_DEFAULT_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1174,16 +1328,94 @@ Public Class INTERVENTIONS_API
 
         Dim cmd_insert_interv_int_cat As New OracleCommand(sql, i_conn)
 
-        ' Try
-        cmd_insert_interv_int_cat.CommandType = CommandType.Text
+        Try
+            cmd_insert_interv_int_cat.CommandType = CommandType.Text
             cmd_insert_interv_int_cat.ExecuteNonQuery()
-        'Catch ex As Exception
-        'cmd_insert_interv_int_cat.Dispose()
-        'Return False
-        'End Try
+        Catch ex As Exception
+            cmd_insert_interv_int_cat.Dispose()
+            Return False
+        End Try
 
         cmd_insert_interv_int_cat.Dispose()
         Return True
+
+    End Function
+
+    Function SET_INTERV_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions As interventions_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                l_a_interventions table_varchar := table_varchar(" & "'" & i_a_interventions.id_content_intervention & "'); "
+
+        sql = sql & " l_id_intervention alert.intervention.id_intervention%TYPE;
+                      l_id_insert_type  INTEGER :=" & i_flg_type & ";
+                      l_id_dep_clin_serv  alert.dep_clin_serv.id_dep_clin_serv%type := " & i_dep_clin_serv & ";
+
+                    BEGIN
+
+                        FOR i IN 1 .. l_a_interventions.count()
+                        LOOP
+    
+                            SELECT i.id_intervention
+                            INTO l_id_intervention
+                            FROM alert.intervention i
+                            WHERE i.id_content = l_a_interventions(i)
+                            and i.flg_status='A';;
+    
+                      BEGIN
+                            IF l_id_insert_type = 1
+                            THEN
+        
+                                INSERT INTO alert.interv_dep_clin_serv
+                                    (id_interv_dep_clin_serv, id_intervention, id_dep_clin_serv, flg_type, rank, id_institution, id_software, flg_execute, flg_timeout)
+                                VALUES
+                                    (alert.seq_interv_dep_clin_serv.nextval, l_id_intervention, l_id_dep_clin_serv, 'M', 0, " & i_institution & ", " & i_software & ", 'Y', 'N');
+        
+                            ELSIF l_id_insert_type = 2
+                            THEN
+        
+                                INSERT INTO alert.interv_dep_clin_serv
+                                    (id_interv_dep_clin_serv, id_intervention, id_dep_clin_serv, flg_type, rank, id_institution, id_software, flg_execute, flg_timeout)
+                                VALUES
+                                    (alert.seq_interv_dep_clin_serv.nextval, l_id_intervention, l_id_dep_clin_serv, 'A', 0, " & i_institution & ", " & i_software & ", 'Y', 'N');
+        
+                            ELSE
+        
+                                INSERT INTO alert.interv_dep_clin_serv
+                                    (id_interv_dep_clin_serv, id_intervention, id_dep_clin_serv, flg_type, rank, id_institution, id_software, flg_execute, flg_timeout)
+                                VALUES
+                                    (alert.seq_interv_dep_clin_serv.nextval, l_id_intervention, l_id_dep_clin_serv, 'M', 0, " & i_institution & ", " & i_software & ", 'Y', 'N');
+        
+                                INSERT INTO alert.interv_dep_clin_serv
+                                    (id_interv_dep_clin_serv, id_intervention, id_dep_clin_serv, flg_type, rank, id_institution, id_software, flg_execute, flg_timeout)
+                                VALUES
+                                    (alert.seq_interv_dep_clin_serv.nextval, l_id_intervention, l_id_dep_clin_serv, 'A', 0, " & i_institution & ", " & i_software & ", 'Y', 'N');
+        
+                            END IF;
+
+                    EXCEPTION
+                      WHEN DUP_VAL_ON_INDEX THEN
+                        CONTINUE;
+            
+                        END;
+    
+                        END LOOP;
+
+                    END;"
+
+        Dim cmd_delete_interv_dep_clin_serv As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_delete_interv_dep_clin_serv.CommandType = CommandType.Text
+            cmd_delete_interv_dep_clin_serv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_interv_dep_clin_serv.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_interv_dep_clin_serv.Dispose()
+        Return True
+
 
     End Function
 

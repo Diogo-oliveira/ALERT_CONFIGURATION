@@ -31,6 +31,9 @@ Public Class Procedures
     '2= Past
     Dim g_procedure_type As Integer = 0
 
+    Dim g_a_intervs_for_clinical_service() As INTERVENTIONS_API.interventions_alert_flg 'Array que vai guardar os procedimentos do ALERT e os procediments que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
+    Dim g_dimension_intervs_cs As Integer = 0
+
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
@@ -59,15 +62,12 @@ Public Class Procedures
         ReDim g_a_loaded_interventions_default(0)
         ReDim g_a_selected_default_interventions(0)
         g_index_selected_intervention_from_default = 0
-        'ReDim g_a_lab_cats_alert(0)
+        ReDim g_a_interv_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         g_dimension_intervs_alert = 0
-        'ReDim g_a_labs_for_clinical_service(0)
-        'g_dimension_labs_cs = 0
+        ReDim g_a_intervs_for_clinical_service(0)
+        g_dimension_intervs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
-
-        'Limpar a seleção de quarto
-        'g_selected_room = -1
 
         If TextBox1.Text <> "" Then
 
@@ -77,10 +77,6 @@ Public Class Procedures
             ComboBox2.Text = ""
 
             Dim dr As OracleDataReader
-
-            'ReDim g_a_loaded_rooms(0)
-            'Dim i_index_room As Int32 = 0
-
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
@@ -184,8 +180,8 @@ Public Class Procedures
         ReDim g_a_interv_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         g_dimension_intervs_alert = 0
-        'ReDim g_a_labs_for_clinical_service(0)
-        'g_dimension_labs_cs = 0
+        ReDim g_a_intervs_for_clinical_service(0)
+        g_dimension_intervs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
 
         TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
@@ -254,11 +250,11 @@ Public Class Procedures
         ReDim g_a_loaded_interventions_default(0)
         ReDim g_a_selected_default_interventions(0)
         g_index_selected_intervention_from_default = 0
-        'ReDim g_a_lab_cats_alert(0)
+        ReDim g_a_interv_cats_alert(0)
         ReDim g_a_interv_cats_alert(0)
         g_dimension_intervs_alert = 0
-        'ReDim g_a_labs_for_clinical_service(0)
-        'g_dimension_labs_cs = 0
+        ReDim g_a_intervs_for_clinical_service(0)
+        g_dimension_intervs_cs = 0
         'ReDim g_a_selected_labs_delete_cs(0)
 
         CheckedListBox1.Items.Clear()
@@ -576,7 +572,7 @@ Public Class Procedures
             If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, conn) Then
                 If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs, conn) Then
                     If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
-                        If db_intervention.SET_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type, conn) Then
+                        If db_intervention.SET_DEFAULT_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type, conn) Then
 
                             MsgBox("Record(s) successfully inserted.", vbInformation)
 
@@ -1042,5 +1038,166 @@ Public Class Procedures
             g_procedure_type = 2
         End If
 
+    End Sub
+
+    Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
+
+        Dim l_unsaved_records As Boolean = False
+        Dim l_sucess As Boolean = True
+
+        Dim l_first_time As Boolean = False 'Variavel para determinar se é a primeira vez que se está a colocar o Clinical Service
+
+        '1 - Determinar o dep_clin_serv_selecionado
+        Dim l_id_dep_clin_serv_aux As Int64 = g_a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+
+        '2 - Determinar se existem registos a serem guardados
+        If (g_dimension_intervs_cs > 0 And g_id_dep_clin_serv > 0) Then
+
+            For j As Int16 = 0 To g_a_intervs_for_clinical_service.Count() - 1
+
+                If g_a_intervs_for_clinical_service(j).flg_new = "Y" Then
+
+                    l_unsaved_records = True
+                    Exit For
+
+                End If
+
+            Next
+
+        End If
+
+        If (g_id_dep_clin_serv = 0) Then
+
+            g_id_dep_clin_serv = l_id_dep_clin_serv_aux
+            l_first_time = True
+
+        End If
+
+        '3 Caso existam, gravar.
+        If l_unsaved_records = True Then
+
+            Dim result As Integer = 0
+
+            result = MsgBox("There are unsaved records. Do you wish to save them?", vbYesNo)
+
+            If (result = DialogResult.Yes) Then
+
+                For j As Int16 = 0 To g_a_intervs_for_clinical_service.Count() - 1
+
+                    If (g_a_intervs_for_clinical_service(j).flg_new = "Y") Then
+
+                        'CRIAR FUNÇÂO PARA INCLUIR NO DEP_CLIN_SERV
+                        If Not db_intervention.SET_INTERV_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_intervs_for_clinical_service(j), g_procedure_type, g_id_dep_clin_serv, conn) Then
+
+                            l_sucess = False
+
+                        End If
+
+                    End If
+
+                Next
+
+                If l_sucess = False Then
+
+                    MsgBox("ERROR INSERTING INTERVENTION(S) AS FREQUENT - ComboBox6_SelectedIndexChanged", vbCritical)
+
+                Else
+
+                    MsgBox("Selected record(s) saved.", vbInformation)
+                    CheckedListBox4.Items.Clear()
+
+                End If
+
+            End If
+
+        End If
+
+        If (l_first_time = False) Then
+
+            '4 - Limpar a box e os arrays
+            ReDim Preserve g_a_intervs_for_clinical_service(0)
+            g_dimension_intervs_cs = 0
+
+            CheckedListBox4.Items.Clear()
+
+        End If
+
+        '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, l_id_dep_clin_serv_aux, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING INTERV_DEP_CLIN_SERV.", vbCritical)
+
+        Else
+
+            g_id_dep_clin_serv = l_id_dep_clin_serv_aux
+
+            Dim i As Integer = 0
+
+            '6 - Ler cursor e popular o campo
+            While dr.Read()
+
+                CheckedListBox4.Items.Add(dr.Item(2))
+
+                ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
+
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_category = dr.Item(0)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr.Item(1)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr.Item(2)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
+
+                g_dimension_intervs_cs = g_dimension_intervs_cs + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+    End Sub
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
+
+        'Ciclo para correr todos os procedimentos selecionados na caixa da esquerda
+        For Each indexChecked In CheckedListBox3.CheckedIndices
+
+            'If para verificar se já está incluido na checkbox da direita
+
+            Dim l_record_already_selected As Boolean = False
+
+            Dim j As Integer = 0
+
+            For j = 0 To CheckedListBox4.Items.Count() - 1
+
+                If (g_a_intervs_alert(indexChecked.ToString()).id_content_category = g_a_intervs_for_clinical_service(j).id_content_category And g_a_intervs_alert(indexChecked.ToString()).id_content_intervention = g_a_intervs_for_clinical_service(j).id_content_intervention) Then
+
+                    l_record_already_selected = True
+                    Exit For
+
+                End If
+
+            Next
+
+            If l_record_already_selected = False Then
+
+                ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
+
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_category = g_a_intervs_alert(indexChecked.ToString()).id_content_category
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = g_a_intervs_alert(indexChecked.ToString()).id_content_intervention
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = g_a_intervs_alert(indexChecked.ToString()).desc_intervention
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "Y"
+
+                CheckedListBox4.Items.Add(g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention)
+                CheckedListBox4.SetItemChecked((CheckedListBox4.Items.Count() - 1), True)
+
+                g_dimension_intervs_cs = g_dimension_intervs_cs + 1
+
+            End If
+
+        Next
     End Sub
 End Class
