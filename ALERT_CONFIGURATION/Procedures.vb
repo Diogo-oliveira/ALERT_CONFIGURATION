@@ -300,9 +300,7 @@ Public Class Procedures
         dr_def_versions.Dispose()
         dr_def_versions.Close()
 
-        ''''''''''''''''''''''
         'Box de categorias na instituição/software
-
         Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -398,7 +396,7 @@ Public Class Procedures
         If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+            MsgBox("ERROR LOADING DEFAULT INTERVENTION CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
         Else
 
@@ -444,7 +442,7 @@ Public Class Procedures
         If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, g_procedure_type, conn, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
+            MsgBox("ERROR GETTING INTERVENTIONS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
 
         Else
             ReDim g_a_loaded_interventions_default(0) ''Limpar estrutura
@@ -557,7 +555,7 @@ Public Class Procedures
 
         Cursor = Cursors.WaitCursor
 
-        'Se foram escolhidas análises do default para serem gravadas
+        'Se foram escolhidas interventions do default para serem gravadas
         If CheckedListBox1.Items.Count() > 0 Then
 
             Dim l_a_checked_intervs() As INTERVENTIONS_API.interventions_default
@@ -578,7 +576,7 @@ Public Class Procedures
             If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, conn) Then
                 If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs, conn) Then
                     If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
-                        If db_intervention.SET_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
+                        If db_intervention.SET_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type, conn) Then
 
                             MsgBox("Record(s) successfully inserted.", vbInformation)
 
@@ -677,7 +675,7 @@ Public Class Procedures
 
         Dim g_selected_category_alert As String = ""
 
-        'VEr este ponto. Estourou aqui.
+        'Ver este ponto. Estourou aqui.
         g_selected_category_alert = g_a_interv_cats_alert(ComboBox5.SelectedIndex)
 
         g_dimension_intervs_alert = 0
@@ -687,7 +685,7 @@ Public Class Procedures
         If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, g_procedure_type, conn, dr_intervs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+            MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
 
         Else
 
@@ -785,43 +783,55 @@ Public Class Procedures
                     'Analisar combinações
                     If db_intervention.EXISTS_INTERV_INT_CAT_SOFT(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), conn) Then
 
+                        'Mensagem a avisar que existe registo para o Softwarwe ALL com a flag a 'Add'.
+                        'Determinar se é para apagar do ALL
+                        'Yes - Yes
+                        'No - No
+                        'Yest to All - OK
+                        'No to All - Abort
                         If (result_dialog <> DialogResult.OK And result_dialog <> DialogResult.Abort) Then
 
-                            dialog = New YES_to_ALL(g_a_intervs_alert(indexChecked).desc_intervention)
+                            '"Record '" & g_desc_interv & "' exists for software 'ALL'. If you delete this record, it will also be deleted for all softwares. Confirm?"
+                            dialog = New YES_to_ALL("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. Do you also wish to inactivate this record for software 'ALL'?")
                             result_dialog = dialog.ShowDialog(Me)
                             dialog.Dispose()
                             dialog.Close()
 
                         End If
 
+                        'Se resultado for Yes ou Yes to All: (apagar para o software específico e para o ALL)
                         If (result_dialog = DialogResult.Yes Or result_dialog = DialogResult.OK) Then
 
+                            'All
                             If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), conn) Then
-
                                 l_sucess = False
-
                             Else
-
                                 record_deleted = True
+                            End If
 
+                            'SOFTWARE Específico
+                            If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
+                                l_sucess = False
+                            Else
+                                record_deleted = True
+                            End If
+
+                        Else
+                            'Remover para o Soft específico (set as R), e deixar para o soft All.
+                            If Not db_intervention.SET_INTERV_INT_CAT_REMOVE(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
+                                l_sucess = False
+                            Else
+                                record_deleted = True
                             End If
 
                         End If
 
-                    End If
-
-
-                    'TO DO: Analisar quando a resposta anterior é não
-                    If db_intervention.EXISTS_INTERV_INT_CAT_SOFT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
+                    Else
 
                         If Not db_intervention.DELETE_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), conn) Then
-
                             l_sucess = False
-
                         Else
-
                             record_deleted = True
-
                         End If
 
                     End If
@@ -829,23 +839,23 @@ Public Class Procedures
                     '2 - Apagar da ALERT.INTERV_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
 
                     '2.1 - Apagar os registos para o software 0 caso o result seja 'Y'
-                    If (result = DialogResult.Yes) Then
+                    If (result = DialogResult.Yes Or result = DialogResult.OK) Then
 
                         If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, conn) Then
-
                             l_sucess = False
+                        End If
 
+                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
+                            l_sucess = False
+                        End If
+
+                    Else 'Apagar apenas para o software selecionado
+
+                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
+                            l_sucess = False
                         End If
 
                     End If
-
-                    '2.2 - Apagar os registos para o software selecionado
-                    If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
-
-                        l_sucess = False
-
-                    End If
-
                 Next
 
                 ''3 - Refresh à grelha
@@ -915,7 +925,7 @@ Public Class Procedures
                     If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, g_procedure_type, conn, dr_intervs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                        MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+                        MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
                         dr_intervs.Dispose()
                         dr_intervs.Close()
 
@@ -948,7 +958,7 @@ Public Class Procedures
                 ''4 - Mensagem de sucesso no final de todos os registos. (modificar mensagem de erro para surgir apenas uma vez.
                 If l_sucess = False Then
 
-                    MsgBox("ERROR DELETING ANALYSIS_INST_SOFT", vbCritical)
+                    MsgBox("ERROR DELETING INTERVENTIONS!", vbCritical)
 
                 ElseIf record_deleted = True Then
 
