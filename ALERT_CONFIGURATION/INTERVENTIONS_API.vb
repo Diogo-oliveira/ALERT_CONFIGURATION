@@ -34,15 +34,15 @@ Public Class INTERVENTIONS_API
 
         If i_flg_type = 0 Then
 
-            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+            sql = sql & "And dcs.flg_type IN ('P', 'M', 'B','A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And dcs.flg_type IN ('A') "
+            sql = sql & "And dcs.flg_type IN ('P', 'M') "
 
         Else
 
-            sql = sql & "And dcs.flg_type IN ('A') "
+            sql = sql & "And dcs.flg_type IN ('B','A') "
 
         End If
 
@@ -84,15 +84,15 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P', 'M', 'A', 'B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P', 'M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('A', 'B') "
 
         End If
 
@@ -115,15 +115,15 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
@@ -146,15 +146,15 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B','A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
@@ -177,21 +177,22 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B', 'A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
         sql = sql & ")       
                           select distinct id_content_interv_cat, t.desc_lang_" & l_id_language & " from tbl_interv_cats
                           join translation t on t.code_translation=tbl_interv_cats.cod_interv_cat
+                          WHERE  t.desc_lang_" & l_id_language & " IS NOT NULL
                           ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, i_conn)
@@ -212,9 +213,9 @@ Public Class INTERVENTIONS_API
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
-        Dim sql As String = "with tbl_interv (id_content_interv_cat,id_content_interv, code_intervention)
+        Dim sql As String = "with tbl_interv (id_content_interv, code_intervention)
                                 as
-                                (SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                (SELECT DISTINCT i.id_content, i.code_intervention
                                 FROM alert.interv_int_cat iic
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
@@ -247,7 +248,7 @@ Public Class INTERVENTIONS_API
                                 MINUS
                                 
                                 --Remover para Soft e instituição definidos
-                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                SELECT DISTINCT i.id_content, i.code_intervention
                                 FROM alert.interv_int_cat iic
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
@@ -262,15 +263,15 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B','A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
@@ -278,7 +279,7 @@ Public Class INTERVENTIONS_API
                                 MINUS
                                 
                                 --Remover para Instituição a 0 e soft definido
-                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                SELECT DISTINCT i.id_content, i.code_intervention
                                 FROM alert.interv_int_cat iic
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
@@ -293,15 +294,15 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B','A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
@@ -309,7 +310,7 @@ Public Class INTERVENTIONS_API
                                 MINUS
                                 
                                 --REMOVER Para Soft 0 e Inst definida
-                                SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                                SELECT DISTINCT i.id_content, i.code_intervention
                                 FROM alert.interv_int_cat iic
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
@@ -324,20 +325,20 @@ Public Class INTERVENTIONS_API
                                 AND idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','B','A') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('B','A') "
 
         End If
 
         sql = sql & ")       
-                          select distinct id_content_interv_cat,id_content_interv, t.desc_lang_" & l_id_language & " from tbl_interv
+                          select distinct id_content_interv, t.desc_lang_" & l_id_language & " from tbl_interv
                           join translation t on t.code_translation=tbl_interv.code_intervention
                           ORDER BY 2 ASC"
 
@@ -373,15 +374,15 @@ Public Class INTERVENTIONS_API
                               and idcs.id_software in (0," & i_software & ")"
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('A','B') "
 
         End If
 
@@ -401,15 +402,15 @@ Public Class INTERVENTIONS_API
                       and idcs.id_software in (0," & i_software & ")"
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('A','B') "
 
         End If
 
@@ -430,15 +431,15 @@ Public Class INTERVENTIONS_API
 
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('A','B') "
 
         End If
 
@@ -459,26 +460,27 @@ Public Class INTERVENTIONS_API
 
         If i_flg_type = 0 Then
 
-            sql = sql & "And idcs.flg_type IN ('P', 'A') "
+            sql = sql & "And idcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And idcs.flg_type IN ('P') "
+            sql = sql & "And idcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And idcs.flg_type IN ('A') "
+            sql = sql & "And idcs.flg_type IN ('A','B') "
 
         End If
 
         sql = sql & ")
 
-                    SELECT DISTINCT id_content_interv_cat, id_content_intervention, pk_translation.get_translation(" & l_id_language & ", code_intervention)
-                    FROM tbl_interventions"
+                    SELECT DISTINCT id_content_interv_cat, id_content_intervention, pk_translation.get_translation(" & l_id_language & ", code_intervention)                    
+                    FROM tbl_interventions
+                    WHERE pk_translation.get_translation(" & l_id_language & ", code_intervention) IS NOT NULL"
 
         If i_id_content_interv_cat <> "0" Then
 
-            sql = sql & " WHERE ID_CONTENT_INTERV_CAT= '" & i_id_content_interv_cat & "'
+            sql = sql & " AND ID_CONTENT_INTERV_CAT= '" & i_id_content_interv_cat & "'
                            ORDER BY 3 ASC"
 
         Else
@@ -519,15 +521,15 @@ Public Class INTERVENTIONS_API
 
         If i_flg_type = 0 Then
 
-            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+            sql = sql & "And dcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And dcs.flg_type IN ('P') "
+            sql = sql & "And dcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And dcs.flg_type IN ('A') "
+            sql = sql & "And dcs.flg_type IN ('A','B') "
 
         End If
 
@@ -561,15 +563,15 @@ Public Class INTERVENTIONS_API
                                 AND dim.version = '" & i_version & "'"
         If i_flg_type = 0 Then
 
-            sql = sql & "And dcs.flg_type IN ('P', 'A') "
+            sql = sql & "And dcs.flg_type IN ('P','M','A','B') "
 
         ElseIf i_flg_type = 1 Then
 
-            sql = sql & "And dcs.flg_type IN ('P') "
+            sql = sql & "And dcs.flg_type IN ('P','M') "
 
         Else
 
-            sql = sql & "And dcs.flg_type IN ('A') "
+            sql = sql & "And dcs.flg_type IN ('A','B') "
 
         End If
 
@@ -1085,7 +1087,7 @@ Public Class INTERVENTIONS_API
                                               FOR j IN 1 .. l_a_flg_type.count()
                                               LOOP
                       
-                                                  IF (l_a_flg_type(j) <> 'A' AND l_a_flg_type(j) <> 'M' AND l_a_flg_type(j) <> 'B')
+                                                  IF (l_a_flg_type(j) = 'P')
                                                   THEN
                           
                                                       BEGIN
@@ -1127,7 +1129,7 @@ Public Class INTERVENTIONS_API
                                                               continue;
                                                       END;
                           
-                                                  ELSIF (l_a_flg_type(j) <> 'A') THEN
+                                                  ELSIF (l_a_flg_type(j) = 'M') THEN
                           
                                                       SELECT dcs.flg_chargeable, dcs.flg_bandaid, dps.id_dep_clin_serv BULK COLLECT
                                                       INTO l_a_flg_chargeable, l_a_flg_bandaid, l_a_dep_clin_serv
@@ -1214,7 +1216,7 @@ Public Class INTERVENTIONS_API
                                                   FOR j IN 1 .. l_a_flg_type.count()
                                                   LOOP
                           
-                                                      IF (l_a_flg_type(j) <> 'A' AND l_a_flg_type(j) <> 'M'  AND l_a_flg_type(j) <> 'P')
+                                                      IF (l_a_flg_type(j) = 'B')
                                                       THEN
                               
                                                           BEGIN
@@ -1360,7 +1362,7 @@ Public Class INTERVENTIONS_API
                             INTO l_id_intervention
                             FROM alert.intervention i
                             WHERE i.id_content = l_a_interventions(i)
-                            and i.flg_status='A';;
+                            and i.flg_status='A';
     
                       BEGIN
                             IF l_id_insert_type = 1
@@ -1449,7 +1451,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String
 
@@ -1462,6 +1464,7 @@ Public Class INTERVENTIONS_API
                                                               AND i.flg_status = 'A')
                                 AND dps.id_institution IN (0, " & i_institution & ")
                                 AND dps.id_software = " & i_software & ""
+
         Else
 
             sql = "DELETE FROM alert.interv_dep_clin_serv dps
@@ -1470,10 +1473,24 @@ Public Class INTERVENTIONS_API
                                                               WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
                                                               AND i.flg_status = 'A')
                                 AND dps.id_institution IN (0, " & i_institution & ")
-                                AND dps.id_software = " & i_software & "
-                                AND dps.flg_type = 'M'"
+                                AND dps.id_software = " & i_software & " "
+
+            If i_flg_type = 0 Then
+
+                sql = sql & "And dps.flg_type IN ('M', 'A') "
+
+            ElseIf i_flg_type = 1 Then
+
+                sql = sql & "And dps.flg_type IN ('M') "
+
+            Else
+
+                sql = sql & "And dps.flg_type IN ('A') "
+
+            End If
 
         End If
+
 
         Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
 

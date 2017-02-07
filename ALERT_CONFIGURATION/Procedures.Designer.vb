@@ -87,7 +87,7 @@ Partial Class Procedures
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1365, 21)
+        Me.PictureBox1.Location = New System.Drawing.Point(1365, 8)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
         Me.PictureBox1.TabIndex = 107
@@ -318,7 +318,7 @@ Partial Class Procedures
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(874, 21)
+        Me.Label4.Location = New System.Drawing.Point(874, 8)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 80
@@ -328,7 +328,7 @@ Partial Class Procedures
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(877, 36)
+        Me.ComboBox3.Location = New System.Drawing.Point(877, 23)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 79
@@ -345,7 +345,7 @@ Partial Class Procedures
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(619, 21)
+        Me.Label3.Location = New System.Drawing.Point(619, 8)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 77
@@ -355,7 +355,7 @@ Partial Class Procedures
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(620, 36)
+        Me.ComboBox2.Location = New System.Drawing.Point(620, 23)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 76
@@ -363,7 +363,7 @@ Partial Class Procedures
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(175, 21)
+        Me.Label2.Location = New System.Drawing.Point(175, 8)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 75
@@ -372,7 +372,7 @@ Partial Class Procedures
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(11, 21)
+        Me.Label1.Location = New System.Drawing.Point(11, 8)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(90, 13)
         Me.Label1.TabIndex = 74
@@ -380,7 +380,7 @@ Partial Class Procedures
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(14, 68)
+        Me.Button1.Location = New System.Drawing.Point(14, 55)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(142, 34)
         Me.Button1.TabIndex = 73
@@ -389,7 +389,7 @@ Partial Class Procedures
         '
         'TextBox1
         '
-        Me.TextBox1.Location = New System.Drawing.Point(14, 37)
+        Me.TextBox1.Location = New System.Drawing.Point(14, 24)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(142, 20)
         Me.TextBox1.TabIndex = 72
@@ -397,7 +397,7 @@ Partial Class Procedures
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(178, 37)
+        Me.ComboBox1.Location = New System.Drawing.Point(178, 24)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox1.TabIndex = 71
@@ -405,7 +405,7 @@ Partial Class Procedures
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(433, 21)
+        Me.Label5.Location = New System.Drawing.Point(433, 8)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(123, 13)
         Me.Label5.TabIndex = 113
@@ -415,7 +415,7 @@ Partial Class Procedures
         '
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckBox1.Location = New System.Drawing.Point(436, 41)
+        Me.CheckBox1.Location = New System.Drawing.Point(436, 28)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(155, 19)
         Me.CheckBox1.TabIndex = 114
@@ -426,7 +426,7 @@ Partial Class Procedures
         '
         Me.CheckBox2.AutoSize = True
         Me.CheckBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckBox2.Location = New System.Drawing.Point(436, 66)
+        Me.CheckBox2.Location = New System.Drawing.Point(436, 53)
         Me.CheckBox2.Name = "CheckBox2"
         Me.CheckBox2.Size = New System.Drawing.Size(115, 19)
         Me.CheckBox2.TabIndex = 115

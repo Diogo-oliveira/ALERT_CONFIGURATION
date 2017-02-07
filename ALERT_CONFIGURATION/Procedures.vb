@@ -34,6 +34,8 @@ Public Class Procedures
     Dim g_a_intervs_for_clinical_service() As INTERVENTIONS_API.interventions_alert_flg 'Array que vai guardar os procedimentos do ALERT e os procediments que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
     Dim g_dimension_intervs_cs As Integer = 0
 
+    Dim g_a_selected_intervs_delete_cs() As String ' Array para remover procedimentos do alert
+
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
@@ -52,8 +54,6 @@ Public Class Procedures
         Cursor = Cursors.WaitCursor
 
         'Limpar arrays
-        ' g_selected_room = -1
-        'ReDim g_a_loaded_rooms(0)
         g_selected_soft = -1
         ReDim g_a_dep_clin_serv_inst(0)
         g_id_dep_clin_serv = 0
@@ -67,7 +67,7 @@ Public Class Procedures
         g_dimension_intervs_alert = 0
         ReDim g_a_intervs_for_clinical_service(0)
         g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_labs_delete_cs(0)
+        ReDim g_a_selected_intervs_delete_cs(0)
 
         If TextBox1.Text <> "" Then
 
@@ -167,8 +167,6 @@ Public Class Procedures
         Cursor = Cursors.WaitCursor
 
         'Limpar arrays
-        'g_selected_room = -1
-        'ReDim g_a_loaded_rooms(0)
         g_selected_soft = -1
         ReDim g_a_dep_clin_serv_inst(0)
         g_id_dep_clin_serv = 0
@@ -182,7 +180,7 @@ Public Class Procedures
         g_dimension_intervs_alert = 0
         ReDim g_a_intervs_for_clinical_service(0)
         g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_labs_delete_cs(0)
+        ReDim g_a_selected_intervs_delete_cs(0)
 
         TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
 
@@ -255,7 +253,7 @@ Public Class Procedures
         g_dimension_intervs_alert = 0
         ReDim g_a_intervs_for_clinical_service(0)
         g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_labs_delete_cs(0)
+        ReDim g_a_selected_intervs_delete_cs(0)
 
         CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
@@ -689,7 +687,12 @@ Public Class Procedures
 
                 g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
                 g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(1)
-                g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
+                Try
+                    g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
+                Catch ex As Exception
+                    g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = ""
+                End Try
+
 
                 g_dimension_intervs_alert = g_dimension_intervs_alert + 1
                 ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
@@ -837,17 +840,17 @@ Public Class Procedures
                     '2.1 - Apagar os registos para o software 0 caso o result seja 'Y'
                     If (result = DialogResult.Yes Or result = DialogResult.OK) Then
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, conn) Then
+                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
                             l_sucess = False
                         End If
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
+                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
                             l_sucess = False
                         End If
 
                     Else 'Apagar apenas para o software selecionado
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, conn) Then
+                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
                             l_sucess = False
                         End If
 
@@ -897,11 +900,11 @@ Public Class Procedures
                     dr_exam_cat.Close()
 
                     'Limpar arrays - TRATAR DISTO!!!!
-                    'ReDim g_a_labs_for_clinical_service(0)
+                    ReDim g_a_intervs_for_clinical_service(0)
                     ReDim g_a_intervs_alert(0)
 
-                    ''g_dimension_labs_cs = 0
-                    ''g_dimension_labs_alert = 0
+                    g_dimension_intervs_cs = 0
+                    g_dimension_intervs_alert = 0
 
                 Else '3.2 - Eliminar apenas os registos selecionados
 
@@ -942,10 +945,10 @@ Public Class Procedures
                         dr_intervs.Dispose()
                         dr_intervs.Close()
 
-                        'Limpar arrays - TRATAR DISTO!!!!
-                        ''ReDim g_a_labs_for_clinical_service(0)
+                        'Limpar arrays
+                        ReDim g_a_intervs_for_clinical_service(0)
 
-                        'g_dimension_labs_cs = 0
+                        g_dimension_intervs_cs = 0
 
                     End If
 
@@ -969,43 +972,41 @@ Public Class Procedures
 
             CheckedListBox4.Items.Clear()
 
-            '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv  'TRATAR DISTO!!!!!!!!!!!
-            'Dim dr_delete As OracleDataReader
+            '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+            Dim dr_delete As OracleDataReader
+
+            If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, conn, dr_delete) Then
+
+                MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
+
+            Else
+
+                Dim i As Integer = 0
+
+                '6 - Ler cursor e popular o campo
+                While dr_delete.Read()
+
+                    CheckedListBox4.Items.Add(dr_delete.Item(1))
+
+                    ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
 
 
-            'If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_delete, conn_labs) Then
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr_delete.Item(0)
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr_delete.Item(1)
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
 
+                    g_dimension_intervs_cs = g_dimension_intervs_cs + 1
 
-            '    MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
+                End While
 
-            'Else
+            End If
 
-            '    Dim i As Integer = 0
-
-            '    '6 - Ler cursor e popular o campo
-            '    While dr_delete.Read()
-
-            '        CheckedListBox4.Items.Add(dr_delete.Item(1) & " - [" & dr_delete.Item(2) & "]")
-
-            '        ReDim Preserve g_a_labs_for_clinical_service(g_dimension_labs_cs)
-
-            '        g_a_labs_for_clinical_service(g_dimension_labs_cs).id_content_analysis_sample_type = dr_delete.Item(0)
-            '        g_a_labs_for_clinical_service(g_dimension_labs_cs).desc_analysis_sample_type = dr_delete.Item(1)
-            '        g_a_labs_for_clinical_service(g_dimension_labs_cs).desc_analysis_sample_recipient = dr_delete.Item(2)
-            '        g_a_labs_for_clinical_service(g_dimension_labs_cs).flg_new = "N"
-
-            '        g_dimension_labs_cs = g_dimension_labs_cs + 1
-
-            '    End While
-
-            'End If
-
-            'dr_delete.Dispose()
-            'dr_delete.Close()
+            dr_delete.Dispose()
+            dr_delete.Close()
 
             Cursor = Cursors.Arrow
 
-        End If
+            End If
     End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.Click
@@ -1140,13 +1141,12 @@ Public Class Procedures
             '6 - Ler cursor e popular o campo
             While dr.Read()
 
-                CheckedListBox4.Items.Add(dr.Item(2))
+                CheckedListBox4.Items.Add(dr.Item(1))
 
                 ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
 
-                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_category = dr.Item(0)
-                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr.Item(1)
-                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr.Item(2)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr.Item(0)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr.Item(1)
                 g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
 
                 g_dimension_intervs_cs = g_dimension_intervs_cs + 1
@@ -1200,4 +1200,245 @@ Public Class Procedures
 
         Next
     End Sub
+
+    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+
+        If CheckedListBox4.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox4.Items.Count - 1
+                CheckedListBox4.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+
+        If CheckedListBox4.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox4.Items.Count - 1
+                CheckedListBox4.SetItemChecked(i, False)
+            Next
+        End If
+    End Sub
+
+    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+
+        Cursor = Cursors.WaitCursor
+
+        Dim l_intervention_delete_dcs As INTERVENTIONS_API.interventions_default
+
+        If CheckedListBox4.CheckedIndices.Count() > 0 Then
+
+            Dim i As Integer = 0
+
+            Dim indexChecked As Integer
+
+            Dim total_selected_intervs As Integer = 0
+
+            For Each indexChecked In CheckedListBox4.CheckedIndices
+
+                total_selected_intervs = total_selected_intervs + 1
+
+            Next
+
+            ReDim g_a_selected_intervs_delete_cs(total_selected_intervs - 1)
+
+            Dim dr As OracleDataReader
+
+            For Each indexChecked In CheckedListBox4.CheckedIndices
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                    MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
+
+                Else
+
+                    Dim i_index As Integer = 0
+
+                    While dr.Read()
+
+                        If i_index = indexChecked.ToString() Then
+
+                            g_a_selected_intervs_delete_cs(i) = dr.Item(0)
+
+                        End If
+
+                        i_index = i_index + 1
+
+                    End While
+
+                    i = i + 1
+
+                End If
+
+                dr.Dispose()
+
+            Next
+
+            dr.Dispose()
+            dr.Close()
+
+            Dim l_sucess As Boolean = True
+
+            For ii As Integer = 0 To g_a_selected_intervs_delete_cs.Count() - 1
+
+                l_intervention_delete_dcs.id_content_intervention = g_a_selected_intervs_delete_cs(ii)
+
+                If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_intervention_delete_dcs, True, g_procedure_type, conn) Then
+
+                    l_sucess = False
+
+                End If
+
+            Next
+
+            ReDim Preserve g_a_intervs_for_clinical_service(0)
+            g_dimension_intervs_cs = 0
+
+            CheckedListBox4.Items.Clear()
+
+            Dim dr_new As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, conn, dr_new) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                Dim i_new As Integer = 0
+
+                While dr_new.Read()
+
+                    CheckedListBox4.Items.Add(dr_new.Item(1))
+
+                    'Bloco para repopular os arrays
+                    ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr_new.Item(0)
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr_new.Item(1)
+                    g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
+
+                    g_dimension_intervs_cs = g_dimension_intervs_cs + 1
+
+                End While
+
+            Else
+
+                MsgBox("ERROR!")
+
+            End If
+
+            dr_new.Dispose()
+            dr_new.Close()
+
+            If l_sucess = True Then
+
+                MsgBox("Record(s) Deleted", vbInformation)
+
+            Else
+
+                MsgBox("ERROR DELETING INTERVENTIONS!", vbCritical)
+
+            End If
+
+        Else
+
+            MsgBox("No selected interventions!", vbCritical)
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+
+        Cursor = Cursors.WaitCursor
+
+        If ComboBox6.SelectedItem = "" Then
+
+            MsgBox("No clincial Service selected", vbCritical)
+
+        Else
+
+            Dim g_id_dep_clin_serv As Int64 = g_a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+
+            Dim l_sucess As Boolean = True
+
+            If CheckedListBox4.Items.Count() > 0 Then
+
+                For Each indexChecked In CheckedListBox4.CheckedIndices
+
+                    If (g_a_intervs_for_clinical_service(indexChecked).flg_new = "Y") Then
+
+                        If Not db_intervention.SET_INTERV_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_intervs_for_clinical_service(indexChecked), g_id_dep_clin_serv, g_procedure_type, conn) Then
+
+                            l_sucess = False
+
+                        End If
+
+                    End If
+
+                Next
+
+                If (l_sucess = True) Then
+
+                    MsgBox("Selected record(s) saved.", vbInformation)
+
+                    CheckedListBox4.Items.Clear()
+                Else
+
+                    MsgBox("ERROR SAVING INTERVENTIONS AS FAVORITE. Button8_Click", vbCritical)
+
+                End If
+
+                ReDim g_a_intervs_for_clinical_service(0)
+                g_dimension_intervs_cs = 0
+
+                For ii As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                    CheckedListBox3.SetItemChecked(ii, False)
+
+                Next
+
+            Else
+
+                MsgBox("No records selected!", vbInformation)
+
+            End If
+
+        End If
+
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV", vbCritical)
+
+        Else
+
+            Dim i As Integer = 0
+
+            While dr.Read()
+
+                CheckedListBox4.Items.Add(dr.Item(1))
+
+                ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr.Item(0)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr.Item(1)
+                g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
+
+                g_dimension_intervs_cs = g_dimension_intervs_cs + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
 End Class
