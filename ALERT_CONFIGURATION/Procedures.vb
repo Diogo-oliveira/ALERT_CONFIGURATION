@@ -838,20 +838,27 @@ Public Class Procedures
                     '2 - Apagar da ALERT.INTERV_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
 
                     '2.1 - Apagar os registos para o software 0 caso o result seja 'Y'
-                    If (result = DialogResult.Yes Or result = DialogResult.OK) Then
+                    'Só podemos apagar da tabela INTERV_DEP_CLIN_SERV se garantirmos que o procedimento não existe numa outra categoria
+                    'A INTERV_DEP_CLIN_SERV não tem associação à categoria
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
-                            l_sucess = False
-                        End If
+                    If Not db_intervention.EXIST_IN_OTHER_CAT(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked).id_content_intervention, conn) Then
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
-                            l_sucess = False
-                        End If
+                        If (result = DialogResult.Yes Or result = DialogResult.OK) Then
 
-                    Else 'Apagar apenas para o software selecionado
+                            If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, 0, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
+                                l_sucess = False
+                            End If
 
-                        If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
-                            l_sucess = False
+                            If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
+                                l_sucess = False
+                            End If
+
+                        Else 'Apagar apenas para o software selecionado
+
+                            If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_a_intervs_alert(indexChecked), False, g_procedure_type, conn) Then
+                                l_sucess = False
+                            End If
+
                         End If
 
                     End If

@@ -74,7 +74,6 @@ Public Class INTERVENTIONS_API
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
                                 JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                JOIN translation t ON t.code_translation = ic.code_interv_category
                                 WHERE i.flg_status = 'A'
                                 AND iic.id_software IN (0, " & i_software & ")
                                 AND iic.id_institution IN (0, " & i_institution & ")
@@ -105,7 +104,6 @@ Public Class INTERVENTIONS_API
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
                                 JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                JOIN translation t ON t.code_translation = ic.code_interv_category
                                 WHERE iic.id_software IN (" & i_software & ")
                                 AND i.flg_status = 'A'
                                 AND iic.id_institution IN (" & i_institution & ")
@@ -136,7 +134,6 @@ Public Class INTERVENTIONS_API
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
                                 JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                JOIN translation t ON t.code_translation = ic.code_interv_category
                                 WHERE iic.id_software = " & i_software & "
                                 AND i.flg_status = 'A'
                                 AND iic.id_institution IN (0)
@@ -167,7 +164,6 @@ Public Class INTERVENTIONS_API
                                 JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
                                 JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
                                 JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                JOIN translation t ON t.code_translation = ic.code_interv_category
                                 WHERE iic.id_software = 0
                                 AND i.flg_status = 'A'
                                 AND iic.id_institution IN (" & i_institution & ")
@@ -190,9 +186,9 @@ Public Class INTERVENTIONS_API
         End If
 
         sql = sql & ")       
-                          select distinct id_content_interv_cat, t.desc_lang_" & l_id_language & " from tbl_interv_cats
-                          join translation t on t.code_translation=tbl_interv_cats.cod_interv_cat
-                          WHERE  t.desc_lang_" & l_id_language & " IS NOT NULL
+                          select distinct id_content_interv_cat, pk_translation.get_translation(" & l_id_language & ",cod_interv_cat) from tbl_interv_cats
+                          WHERE  pk_translation.get_translation(" & l_id_language & ",cod_interv_cat) IS NOT NULL
+                          and cod_interv_cat not like 'SPECIALITY%'
                           ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, i_conn)
@@ -602,16 +598,35 @@ Public Class INTERVENTIONS_API
 
                             BEGIN
 
-                                SELECT distinct c.id_intervention
+                                SELECT *
                                 INTO l_id_interv_int_cat
-                                FROM alert.interv_int_cat c
-                                JOIN alert.intervention i ON i.id_intervention = c.id_intervention
-                                JOIN ALERT.INTERV_CATEGORY IC ON IC.ID_INTERV_CATEGORY=C.ID_INTERV_CATEGORY
-                                WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
-                                AND IC.ID_CONTENT='" & i_intervention.id_content_category & "'                                
-                                AND c.id_software = " & i_software & "
-                                AND c.id_institution IN (0, " & i_institution & ")
-                                and c.flg_add_remove='A';
+                                FROM (
+                                        SELECT distinct c.id_intervention                                       
+                                        FROM alert.interv_int_cat c
+                                        JOIN alert.intervention i ON i.id_intervention = c.id_intervention
+                                        JOIN ALERT.INTERV_CATEGORY IC ON IC.ID_INTERV_CATEGORY=C.ID_INTERV_CATEGORY
+                                        WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
+                                        AND IC.ID_CONTENT='" & i_intervention.id_content_category & "'                                
+                                        AND c.id_software = 0
+                                        AND c.id_institution IN (0, " & i_institution & ")
+                                        AND i.flg_status = 'A'
+                                        AND ic.flg_available = 'Y'
+                                        and c.flg_add_remove='A'
+
+                                        UNION
+                            
+                                        SELECT distinct c.id_intervention                                       
+                                        FROM alert.interv_int_cat c
+                                        JOIN alert.intervention i ON i.id_intervention = c.id_intervention
+                                        JOIN ALERT.INTERV_CATEGORY IC ON IC.ID_INTERV_CATEGORY=C.ID_INTERV_CATEGORY
+                                        WHERE i.id_content = '" & i_intervention.id_content_intervention & "'
+                                        AND IC.ID_CONTENT='" & i_intervention.id_content_category & "'                                
+                                        AND c.id_software = " & i_software & "
+                                        AND c.id_institution IN (0, " & i_institution & ")
+                                        AND i.flg_status = 'A'
+                                        AND ic.flg_available = 'Y'
+                                        and c.flg_add_remove='A'
+                                    );
 
                             END;"
 
@@ -627,6 +642,103 @@ Public Class INTERVENTIONS_API
 
         cmd_get_interv.Dispose()
         Return True
+
+    End Function
+
+    Function EXIST_IN_OTHER_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_intervention As String, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
+                            id_content_intervention,
+                            code_intervention) AS
+                             (SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                              FROM alert.intervention i
+                              JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                              JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                              WHERE i.flg_status = 'A'
+                              AND iic.id_software IN (0, " & i_software & ")
+                              AND iic.id_institution IN (0, " & i_institution & ")
+                              AND iic.flg_add_remove = 'A'
+                              AND ic.flg_available = 'Y'
+                              AND i.id_content='" & i_id_content_intervention & "'"
+
+        sql = sql & "MINUS
+  
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (" & i_software & ")
+                      AND iic.id_institution IN (" & i_institution & ")
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND i.id_content='" & i_id_content_intervention & "'"
+
+        sql = sql & "MINUS
+  
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (" & i_software & ")
+                      AND iic.id_institution IN (0)
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND i.id_content='" & i_id_content_intervention & "'"
+
+        sql = sql & "MINUS
+
+                      SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
+                      FROM alert.intervention i
+                      JOIN alert.interv_int_cat iic ON iic.id_intervention = i.id_intervention
+                      JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                      JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                      WHERE i.flg_status = 'A'
+                      AND iic.id_software IN (0)
+                      AND iic.id_institution IN (" & i_institution & ")
+                      AND iic.flg_add_remove = 'R'
+                      AND ic.flg_available = 'Y'
+                      AND idcs.id_institution IN (0, " & i_institution & ")
+                      and idcs.id_software in (0," & i_software & ")"
+
+        sql = sql & ")
+
+                    SELECT count(*)               
+                    FROM tbl_interventions
+                    WHERE pk_translation.get_translation(" & l_id_language & ", code_intervention) IS NOT NULL"
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim dr As OracleDataReader
+        Dim l_total_records As Integer = 0
+
+        Try
+            cmd.CommandType = CommandType.Text
+            dr = cmd.ExecuteReader()
+
+            While dr.Read()
+                l_total_records = dr.Item(0)
+            End While
+
+            cmd.Dispose()
+            dr.Dispose()
+            dr.Close()
+
+            If l_total_records > 0 Then
+                Return True
+            Else
+                Return False
+            End If
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            dr.Dispose()
+            dr.Close()
+            Return False
+
+        End Try
 
     End Function
 
