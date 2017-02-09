@@ -734,7 +734,9 @@ Public Class INTERVENTIONS_API
         Catch ex As Exception
 
             cmd.Dispose()
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             dr.Dispose()
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
             dr.Close()
             Return False
 
@@ -883,7 +885,7 @@ Public Class INTERVENTIONS_API
                                     WHERE i.id_content = l_a_interventions(i)
                                     AND i.flg_status = 'A';
             
-                                    pk_translation.insert_into_translation(6, l_interv_code, l_interv_desc);
+                                    pk_translation.insert_into_translation(" & l_id_language & ", l_interv_code, l_interv_desc);
             
                                 END IF;
         
@@ -1529,7 +1531,6 @@ Public Class INTERVENTIONS_API
 
         cmd_delete_interv_dep_clin_serv.Dispose()
         Return True
-
 
     End Function
 

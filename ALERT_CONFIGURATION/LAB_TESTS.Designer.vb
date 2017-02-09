@@ -68,7 +68,7 @@ Partial Class LAB_TESTS
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(431, 10)
+        Me.Label3.Location = New System.Drawing.Point(431, 5)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 20
@@ -78,7 +78,7 @@ Partial Class LAB_TESTS
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(432, 25)
+        Me.ComboBox2.Location = New System.Drawing.Point(432, 20)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 19
@@ -86,7 +86,7 @@ Partial Class LAB_TESTS
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(173, 10)
+        Me.Label2.Location = New System.Drawing.Point(173, 5)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 18
@@ -95,7 +95,7 @@ Partial Class LAB_TESTS
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(9, 10)
+        Me.Label1.Location = New System.Drawing.Point(9, 5)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(90, 13)
         Me.Label1.TabIndex = 17
@@ -103,7 +103,7 @@ Partial Class LAB_TESTS
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(12, 57)
+        Me.Button1.Location = New System.Drawing.Point(12, 52)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(142, 34)
         Me.Button1.TabIndex = 16
@@ -112,7 +112,7 @@ Partial Class LAB_TESTS
         '
         'TextBox1
         '
-        Me.TextBox1.Location = New System.Drawing.Point(12, 26)
+        Me.TextBox1.Location = New System.Drawing.Point(12, 21)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(142, 20)
         Me.TextBox1.TabIndex = 15
@@ -120,7 +120,7 @@ Partial Class LAB_TESTS
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(176, 26)
+        Me.ComboBox1.Location = New System.Drawing.Point(176, 21)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox1.TabIndex = 14
@@ -137,7 +137,7 @@ Partial Class LAB_TESTS
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(686, 10)
+        Me.Label4.Location = New System.Drawing.Point(686, 5)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 40
@@ -147,7 +147,7 @@ Partial Class LAB_TESTS
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(689, 25)
+        Me.ComboBox3.Location = New System.Drawing.Point(689, 20)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 39
@@ -397,7 +397,7 @@ Partial Class LAB_TESTS
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1363, 10)
+        Me.PictureBox1.Location = New System.Drawing.Point(1361, 5)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
         Me.PictureBox1.TabIndex = 67

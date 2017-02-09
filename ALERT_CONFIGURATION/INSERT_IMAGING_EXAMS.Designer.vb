@@ -59,13 +59,18 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Label10 = New System.Windows.Forms.Label()
         Me.Button13 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
+        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Button16 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(442, 16)
+        Me.Label3.Location = New System.Drawing.Point(619, 8)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 13
@@ -75,7 +80,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(443, 31)
+        Me.ComboBox2.Location = New System.Drawing.Point(620, 23)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 12
@@ -83,7 +88,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(184, 16)
+        Me.Label2.Location = New System.Drawing.Point(175, 8)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 11
@@ -92,7 +97,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(20, 16)
+        Me.Label1.Location = New System.Drawing.Point(11, 8)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(90, 13)
         Me.Label1.TabIndex = 10
@@ -100,7 +105,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(23, 63)
+        Me.Button1.Location = New System.Drawing.Point(14, 55)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(142, 34)
         Me.Button1.TabIndex = 9
@@ -109,7 +114,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         'TextBox1
         '
-        Me.TextBox1.Location = New System.Drawing.Point(23, 32)
+        Me.TextBox1.Location = New System.Drawing.Point(14, 24)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(142, 20)
         Me.TextBox1.TabIndex = 8
@@ -117,7 +122,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(187, 32)
+        Me.ComboBox1.Location = New System.Drawing.Point(178, 24)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox1.TabIndex = 7
@@ -143,7 +148,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(22, 116)
+        Me.Label6.Location = New System.Drawing.Point(11, 114)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(142, 13)
         Me.Label6.TabIndex = 20
@@ -155,7 +160,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(25, 132)
+        Me.ComboBox4.Location = New System.Drawing.Point(14, 130)
         Me.ComboBox4.Name = "ComboBox4"
         Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
         Me.ComboBox4.TabIndex = 19
@@ -182,7 +187,7 @@ Partial Class INSERT_IMAGING_EXAMS
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(697, 31)
+        Me.ComboBox3.Location = New System.Drawing.Point(877, 23)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 25
@@ -208,7 +213,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(694, 16)
+        Me.Label4.Location = New System.Drawing.Point(874, 8)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 28
@@ -217,7 +222,7 @@ Partial Class INSERT_IMAGING_EXAMS
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1363, 28)
+        Me.PictureBox1.Location = New System.Drawing.Point(1363, 12)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
         Me.PictureBox1.TabIndex = 29
@@ -389,11 +394,65 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button14.Text = "SELECT ALL"
         Me.Button14.UseVisualStyleBackColor = True
         '
+        'CheckBox2
+        '
+        Me.CheckBox2.AutoSize = True
+        Me.CheckBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckBox2.Location = New System.Drawing.Point(436, 53)
+        Me.CheckBox2.Name = "CheckBox2"
+        Me.CheckBox2.Size = New System.Drawing.Size(115, 19)
+        Me.CheckBox2.TabIndex = 118
+        Me.CheckBox2.Text = "Past Treatments"
+        Me.CheckBox2.UseVisualStyleBackColor = True
+        '
+        'CheckBox1
+        '
+        Me.CheckBox1.AutoSize = True
+        Me.CheckBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckBox1.Location = New System.Drawing.Point(436, 28)
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.Size = New System.Drawing.Size(155, 19)
+        Me.CheckBox1.TabIndex = 117
+        Me.CheckBox1.Text = "Requesting Procedures"
+        Me.CheckBox1.UseVisualStyleBackColor = True
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(433, 8)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(123, 13)
+        Me.Label11.TabIndex = 116
+        Me.Label11.Text = "TYPE OF PROCEDURE"
+        '
+        'Button15
+        '
+        Me.Button15.Location = New System.Drawing.Point(1363, 444)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(101, 23)
+        Me.Button15.TabIndex = 120
+        Me.Button15.Text = "CLEAR"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Button16
+        '
+        Me.Button16.Location = New System.Drawing.Point(1255, 444)
+        Me.Button16.Name = "Button16"
+        Me.Button16.Size = New System.Drawing.Size(102, 23)
+        Me.Button16.TabIndex = 119
+        Me.Button16.Text = "SELECT ALL"
+        Me.Button16.UseVisualStyleBackColor = True
+        '
         'INSERT_IMAGING_EXAMS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Button15)
+        Me.Controls.Add(Me.Button16)
+        Me.Controls.Add(Me.CheckBox2)
+        Me.Controls.Add(Me.CheckBox1)
+        Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
         Me.Controls.Add(Me.Label10)
@@ -476,4 +535,9 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Label10 As Label
     Friend WithEvents Button13 As Button
     Friend WithEvents Button14 As Button
+    Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents CheckBox1 As CheckBox
+    Friend WithEvents Label11 As Label
+    Friend WithEvents Button15 As Button
+    Friend WithEvents Button16 As Button
 End Class

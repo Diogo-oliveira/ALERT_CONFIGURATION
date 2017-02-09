@@ -1,66 +1,202 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class INSERT_IMAGING_EXAMS
 
+    Dim db_access_general As New General
+
     Dim db_access As New EXAMS_API
     Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
-    Dim l_selected_soft As Int16 = -1
-    Dim l_selected_category As String = ""
+    Dim conn As New OracleConnection(oradb)
+
+    Dim g_selected_soft As Int16 = -1
+    ''Array que vai guardar os dep_clin_serv da instituição
+    Dim g_a_dep_clin_serv_inst() As Int64
+    Dim g_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
+
+    'Array que vai guardar as categorias disponíveis no ALERT
+    Dim g_a_exam_cats_alert() As String
+
+    'variavel que vai determinar se os procedimentos carregados são procedimentos normais e/ou Antecedentes
+    '0 = All
+    '1 = Normal
+    '2= Past
+    Dim g_record_type As Integer = 0
+
+    Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
+    Dim g_selected_category As String = ""
+
+    Dim g_a_loaded_exams_default() As EXAMS_API.exams_default 'Array que vai guardar os id_contents dos exames carregadas do default
+    Dim g_a_selected_default_exams() As EXAMS_API.exams_default
+    Dim g_index_selected_exam_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
+
+    'Array que vai guardar as análises carregadas do ALERT
+    Dim g_a_exams_alert() As EXAMS_API.exams_default
+    Dim g_dimension_exams_alert As Int64 = 0
+
+    Dim g_a_exams_for_clinical_service() As EXAMS_API.exams_alert_flg 'Array que vai guardar os procedimentos do ALERT e os procediments que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
+    Dim g_dimension_exams_cs As Integer = 0
+
+    Dim g_a_selected_exams_delete_cs() As String ' Array para remover procedimentos do alert
 
     ''Estrutura dos exames carregados do default
-    Dim loaded_exams() As EXAMS_API.exams_default
+    'Dim l_loaded_exams() As EXAMS_API.exams_default
 
     'Estrutura que vai guardar os exames de default selecionados
-    Dim l_selected_default_exams() As EXAMS_API.exams_default
+    ' Dim l_selected_default_exams() As EXAMS_API.exams_default
 
 
-    Dim l_index_selected_exams_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
+    'Dim l_index_selected_exams_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
-    Dim l_total_cats As Int64 = 0
+    '    Dim l_total_cats As Int64 = 0
 
-    Dim a_loaded_exams_by_cat_alert() As EXAMS_API.exams_alert ''Array que vai carregar todos os ids e descritivos de uma categoria do alert
-    Dim a_selected_exams_alert() As EXAMS_API.exams_alert      ''Array que vai guardar os exames selecionados do alert
-    Dim l_index_selected_exams_from_alert As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 4 - do alert para o clinical service)
+    'Dim a_loaded_exams_by_cat_alert() As EXAMS_API.exams_alert ''Array que vai carregar todos os ids e descritivos de uma categoria do alert
+    'Dim a_selected_exams_alert() As EXAMS_API.exams_alert      ''Array que vai guardar os exames selecionados do alert
+    'Dim l_index_selected_exams_from_alert As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 4 - do alert para o clinical service)
+    '
+    '   Dim a_dep_clin_serv_inst() As Int64 ''Array que vai guardar os dep_clin_serv da instituição
 
-    Dim a_dep_clin_serv_inst() As Int64 ''Array que vai guardar os dep_clin_serv da instituição
+    'Dim l_selected_exam() As Int64 ' Array para remover exames do alert
 
-    Dim l_selected_exam() As Int64 ' Array para remover exames do alert
+    'Dim a_exams_for_clinical_service() As EXAMS_API.exams_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
+    'Dim l_dimension_exams_cs As Integer = 0
 
-    Dim a_exams_for_clinical_service() As EXAMS_API.exams_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
-    Dim l_dimension_exams_cs As Integer = 0
-
-    Dim l_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
+    '    Dim l_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Dim dr As OracleDataReader = db_access.GET_ALL_INSTITUTIONS(oradb)
+        Try
+            'Estabelecer ligação à BD
+            conn.Open()
 
-        Dim i As Integer = 0
+        Catch ex As Exception
 
-        While dr.Read()
+            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
 
-            ComboBox1.Items.Add(dr.Item(0))
+        End Try
 
-        End While
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access_general.GET_ALL_INSTITUTIONS(conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING ALL INSTITUTIONS!")
+
+        Else
+
+            While dr.Read()
+
+                ComboBox1.Items.Add(dr.Item(0))
+
+            End While
+
+        End If
 
         dr.Dispose()
+        dr.Close()
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+
+        CheckBox1.Checked = True
+        CheckBox2.Checked = True
+        g_record_type = 0
 
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
+        Cursor = Cursors.Arrow
+
         If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access.GET_INSTITUTION(TextBox1.Text, oradb)
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn)
 
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
 
+            Dim dr As OracleDataReader
 
-            Dim dr As OracleDataReader = db_access.GET_SOFT_INST(TextBox1.Text, oradb)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            Dim i As Integer = 0
+                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+            Else
+
+                While dr.Read()
+
+                    ComboBox2.Items.Add(dr.Item(1))
+
+                End While
+
+                ComboBox3.Text = ""
+                ComboBox3.Items.Clear()
+
+                ComboBox4.Text = ""
+                ComboBox4.Items.Clear()
+
+                CheckedListBox2.Items.Clear()
+
+                CheckedListBox1.Items.Clear()
+
+                ComboBox5.Text = ""
+                ComboBox5.Items.Clear()
+                CheckedListBox3.Items.Clear()
+
+                ComboBox6.Text = ""
+                ComboBox6.Items.Clear()
+                CheckedListBox4.Items.Clear()
+
+                g_selected_category = ""
+
+            End If
+
+            dr.Dispose()
+            dr.Close()
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        g_selected_soft = -1
+        ReDim g_a_dep_clin_serv_inst(0)
+        g_id_dep_clin_serv = 0
+        ReDim g_a_loaded_categories_default(0)
+        g_selected_category = -1
+        'ReDim g_a_loaded_interventions_default(0)
+        'ReDim g_a_selected_default_interventions(0)
+        'g_index_selected_intervention_from_default = 0
+        'ReDim g_a_interv_cats_alert(0)
+        'ReDim g_a_interv_cats_alert(0)
+        'g_dimension_intervs_alert = 0
+        'ReDim g_a_intervs_for_clinical_service(0)
+        'g_dimension_intervs_cs = 0
+        'ReDim g_a_selected_intervs_delete_cs(0)
+
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+        Dim dr As OracleDataReader
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+        Else
 
             While dr.Read()
 
@@ -68,49 +204,10 @@ Public Class INSERT_IMAGING_EXAMS
 
             End While
 
-            'l_selected_all_most_frequent = False
-
-            ComboBox3.Text = ""
-            ComboBox3.Items.Clear()
-
-            ComboBox4.Text = ""
-            ComboBox4.Items.Clear()
-
-            CheckedListBox2.Items.Clear()
-
-            CheckedListBox1.Items.Clear()
-
-            ComboBox5.Text = ""
-            ComboBox5.Items.Clear()
-            CheckedListBox3.Items.Clear()
-
-            ComboBox6.Text = ""
-            ComboBox6.Items.Clear()
-            CheckedListBox4.Items.Clear()
-
         End If
 
-    End Sub
-
-    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
-
-        TextBox1.Text = db_access.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, oradb)
-
-        ComboBox2.Items.Clear()
-        ComboBox2.Text = ""
-
-
-        Dim dr As OracleDataReader = db_access.GET_SOFT_INST(TextBox1.Text, oradb)
-
-        Dim i As Integer = 0
-
-        While dr.Read()
-
-            ComboBox2.Items.Add(dr.Item(1))
-
-        End While
-
-        'l_selected_all_most_frequent = False
+        dr.Dispose()
+        dr.Close()
 
         ComboBox3.Text = ""
         ComboBox3.Items.Clear()
@@ -130,26 +227,55 @@ Public Class INSERT_IMAGING_EXAMS
         ComboBox6.Items.Clear()
         CheckedListBox4.Items.Clear()
 
+        Cursor = Cursors.Arrow
+
     End Sub
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
 
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        g_selected_soft = -1
+        ReDim g_a_dep_clin_serv_inst(0)
+        g_id_dep_clin_serv = 0
+        ReDim g_a_loaded_categories_default(0)
+        g_selected_category = -1
+        'ReDim g_a_loaded_interventions_default(0)
+        'ReDim g_a_selected_default_interventions(0)
+        'g_index_selected_intervention_from_default = 0
+        'ReDim g_a_interv_cats_alert(0)
+        'ReDim g_a_interv_cats_alert(0)
+        'g_dimension_intervs_alert = 0
+        'ReDim g_a_intervs_for_clinical_service(0)
+        'g_dimension_intervs_cs = 0
+        'ReDim g_a_selected_intervs_delete_cs(0)
+
         CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
-
-        l_selected_soft = db_access.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, oradb)
-
-        ComboBox4.Items.Clear()
-        ComboBox4.Text = ""
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
 
         ComboBox3.Items.Clear()
         ComboBox3.Text = ""
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
 
-        Cursor = Cursors.WaitCursor
+        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
 
-        Try
+        '1 - Fill Version combobox
 
-            Dim dr_def_versions As OracleDataReader = db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, l_selected_soft, "I", oradb)
+        Dim dr_def_versions As OracleDataReader
+
+        If Not db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_def_versions) Then
+
+            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+        Else
 
             While dr_def_versions.Read()
 
@@ -157,59 +283,70 @@ Public Class INSERT_IMAGING_EXAMS
 
             End While
 
-        Catch ex As Exception
+        End If
 
-            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+        dr_def_versions.Dispose()
+        dr_def_versions.Close()
 
-        End Try
+        'Box de categorias na instituição/software
+        Dim dr_exam_cat As OracleDataReader
 
-        ComboBox5.Items.Clear()
-        ComboBox5.Text = ""
+        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat) Then
 
-        Try
-
-            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
 
             ComboBox5.Items.Add("ALL")
 
+            ReDim g_a_exam_cats_alert(0)
+            g_a_exam_cats_alert(0) = 0
+
+            Dim l_index As Int16 = 1
+
             While dr_exam_cat.Read()
 
-                ComboBox5.Items.Add(dr_exam_cat.Item(0))
-                l_total_cats = l_total_cats + 1
+                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                ReDim Preserve g_a_exam_cats_alert(l_index)
+                g_a_exam_cats_alert(l_index) = dr_exam_cat.Item(0)
+                l_index = l_index + 1
 
             End While
 
-        Catch ex As Exception
+        End If
 
-            MsgBox("Error Loading Exams Categories!", MsgBoxStyle.Critical)
+        dr_exam_cat.Dispose()
+        dr_exam_cat.Close()
 
-        End Try
+        'Preencher os Clinical Services
 
-        ''''''''''''''''''''
+        Dim dr_clin_serv As OracleDataReader
 
-        Dim dr As OracleDataReader = db_access.GET_CLIN_SERV(TextBox1.Text, l_selected_soft, oradb)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-        Dim i As Integer = 0
+            MsgBox("ERROR GETTING CLINICAL SERVICES!")
 
-        ComboBox6.Items.Clear()
-        ComboBox6.Text = ""
+        Else
 
-        Dim l_index_dep_clin_serv As Integer = 0
-        ReDim a_dep_clin_serv_inst(l_index_dep_clin_serv)
+            Dim i As Integer = 0
 
-        While dr.Read()
+            Dim l_index_dep_clin_serv As Integer = 0
+            ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
 
-            ComboBox6.Items.Add(dr.Item(0))
+            While dr_clin_serv.Read()
 
-            ReDim Preserve a_dep_clin_serv_inst(l_index_dep_clin_serv)
-            a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr.Item(1)
-            l_index_dep_clin_serv = l_index_dep_clin_serv + 1
-        End While
+                ComboBox6.Items.Add(dr_clin_serv.Item(0))
 
-        ''''''''''''''''''''''''''''
+                ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+                g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
+                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
 
-        CheckedListBox3.Items.Clear()
-        CheckedListBox4.Items.Clear()
+            End While
+
+        End If
+
+        dr_clin_serv.Dispose()
+        dr_clin_serv.Close()
 
         Cursor = Cursors.Arrow
 
@@ -217,144 +354,149 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
 
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        ReDim g_a_loaded_categories_default(0)
+        g_selected_category = -1
+        ReDim g_a_loaded_exams_default(0)
+        ReDim g_a_selected_default_exams(0)
+        g_index_selected_exam_from_default = 0
+
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
 
         CheckedListBox2.Items.Clear()
 
-        Try
+        ReDim g_a_loaded_categories_default(0)
+        Dim l_index_loaded_categories As Int16 = 0
 
-            Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "I", oradb)
+        Dim dr_exam_cat_def As OracleDataReader
 
-            ComboBox4.Items.Add("ALL")
-
-            While dr_exam_def.Read()
-
-                ComboBox4.Items.Add(dr_exam_def.Item(1))
-
-            End While
-
-        Catch ex As Exception
+        If Not db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat_def) Then
 
             MsgBox("ERROR LOADING DEFAULT EXAMS CATEGORY -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
-        End Try
+        Else
+
+            ComboBox4.Items.Add("ALL")
+
+            While dr_exam_cat_def.Read()
+
+                ComboBox4.Items.Add(dr_exam_cat_def.Item(1))
+                g_a_loaded_categories_default(l_index_loaded_categories) = dr_exam_cat_def.Item(0)
+                l_index_loaded_categories = l_index_loaded_categories + 1
+                ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
+
+            End While
+
+        End If
+
+        dr_exam_cat_def.Dispose()
+        dr_exam_cat_def.Close()
 
         CheckedListBox1.Items.Clear()
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
     Private Sub ComboBox4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
-        ''To DO
-        ''1 - Determinar o id da categroia selecionada l_selected_category
 
+        ''1 - Determinar o id da categroia selecionada
         If ComboBox4.SelectedIndex = 0 Then
+            g_selected_category = 0
+        Else
+            g_selected_category = g_a_loaded_categories_default(ComboBox4.SelectedIndex - 1)
+        End If
 
-            l_selected_category = 0
+        Cursor = Cursors.WaitCursor
+        CheckedListBox2.Items.Clear()
+
+        ''2 - Carregar a grelha de análises por categoria
+        ''e    
+        ''3 - Criar estrutura com os elementos das análises carregados
+
+        Dim dr As OracleDataReader
+
+        If Not db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, "I", g_record_type, conn, dr) Then
+
+            MsgBox("ERROR GETTING EXAMS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
 
         Else
 
-            Try
+            ReDim g_a_loaded_exams_default(0) ''Limpar estrutura
+            Dim l_dimension_array_loaded_exams As Int64 = 0
 
-                Dim dr_exam_def As OracleDataReader = db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, l_selected_soft, "I", oradb)
-                Dim l_index_aux As Int64 = 1
+            While dr.Read()
 
+                CheckedListBox2.Items.Add(dr.Item(3))
 
-                While dr_exam_def.Read()
+                ReDim Preserve g_a_loaded_exams_default(l_dimension_array_loaded_exams)
 
-                    If l_index_aux = ComboBox4.SelectedIndex Then
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_category = dr.Item(1)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_exam = dr.Item(3)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_first_result = dr.Item(4)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_execute = dr.Item(5)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_timeout = dr.Item(6)
+                g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(7)
 
-                        l_selected_category = dr_exam_def.Item(0)
-                        Exit While
+                Try
 
-                    End If
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
 
-                    l_index_aux = l_index_aux + 1
+                Catch ex As Exception
 
-                End While
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_first_execute = ""
 
-            Catch ex As Exception
+                End Try
 
-                MsgBox("ERROR DETERMINING ID_CONTENT OF CATEGORY -  ComboBox4_SelectedIndexChanged", MsgBoxStyle.Critical)
+                ''Determinar as idades e gender dos exames
+                ''se não houver idades minimas/maximas, devolve -1
+                ''se não houver gender, devolve vazio
 
-            End Try
+                Try
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).age_min = dr.Item(9)
+
+                Catch ex As Exception
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).age_min = -1
+
+                End Try
+
+                Try
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).age_max = dr.Item(10)
+
+                Catch ex As Exception
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).age_max = -1
+
+                End Try
+
+                Try
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).gender = dr.Item(11)
+
+                Catch ex As Exception
+
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).gender = ""
+
+                End Try
+
+                l_dimension_array_loaded_exams = l_dimension_array_loaded_exams + 1
+
+            End While
 
         End If
 
-        CheckedListBox2.Items.Clear()
+        dr.Dispose()
+        dr.Close()
 
-        ''2 - Carregar a grelha de exames (fazer função - vai ser parecida à última que foi feita)
-        ''3 Criar estrutura com os elementos dos exames carregados
-        Dim dr As OracleDataReader = db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, l_selected_soft, ComboBox3.SelectedItem.ToString, l_selected_category, "I", oradb)
-
-        ReDim loaded_exams(0) ''Limpar estrutura
-        Dim l_dimension_array_loaded_exams As Int64 = 0
-
-        While dr.Read()
-
-            CheckedListBox2.Items.Add(dr.Item(3))
-
-            ReDim Preserve loaded_exams(l_dimension_array_loaded_exams)
-
-            loaded_exams(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
-            loaded_exams(l_dimension_array_loaded_exams).desc_category = dr.Item(1)
-            loaded_exams(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
-            loaded_exams(l_dimension_array_loaded_exams).desc_exam = dr.Item(3)
-            loaded_exams(l_dimension_array_loaded_exams).flg_first_result = dr.Item(4)
-            loaded_exams(l_dimension_array_loaded_exams).flg_execute = dr.Item(5)
-            loaded_exams(l_dimension_array_loaded_exams).flg_timeout = dr.Item(6)
-            loaded_exams(l_dimension_array_loaded_exams).flg_result_notes = dr.Item(7)
-
-            Try
-
-                loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = dr.Item(8)
-
-            Catch ex As Exception
-
-                loaded_exams(l_dimension_array_loaded_exams).flg_first_execute = ""
-
-            End Try
-
-            ''Determinar as idades e gender dos exames
-            ''se não houver idades minimas/maximas, devolve -1
-            ''se não houver gender, devolve vazio
-
-            Try
-
-                loaded_exams(l_dimension_array_loaded_exams).age_min = dr.Item(9)
-
-            Catch ex As Exception
-
-                loaded_exams(l_dimension_array_loaded_exams).age_min = -1
-
-            End Try
-
-            Try
-
-                loaded_exams(l_dimension_array_loaded_exams).age_max = dr.Item(10)
-
-            Catch ex As Exception
-
-                loaded_exams(l_dimension_array_loaded_exams).age_max = -1
-
-            End Try
-
-            Try
-
-                loaded_exams(l_dimension_array_loaded_exams).gender = dr.Item(11)
-
-            Catch ex As Exception
-
-                loaded_exams(l_dimension_array_loaded_exams).gender = ""
-
-            End Try
-
-            l_dimension_array_loaded_exams = l_dimension_array_loaded_exams + 1
-
-
-        End While
-
-        ''4 criar função que vai inserir os registos no alert. Função será chamada no botão >>
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -378,17 +520,17 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
+        Cursor = Cursors.WaitCursor
         For Each indexChecked In CheckedListBox2.CheckedIndices
 
             'If para verificar se já está incluido na checkbox da direita
-
             Dim l_record_already_selected As Boolean = False
 
             Dim j As Integer = 0
 
             For j = 0 To CheckedListBox1.Items.Count() - 1
 
-                If (loaded_exams(indexChecked.ToString()).id_content_exam = l_selected_default_exams(j).id_content_exam) Then
+                If (g_a_loaded_exams_default(indexChecked.ToString()).id_content_exam = g_a_selected_default_exams(j).id_content_exam) Then
 
                     l_record_already_selected = True
                     Exit For
@@ -399,29 +541,30 @@ Public Class INSERT_IMAGING_EXAMS
 
             If l_record_already_selected = False Then
 
-                ReDim Preserve l_selected_default_exams(l_index_selected_exams_from_default)
+                ReDim Preserve g_a_selected_default_exams(g_index_selected_exam_from_default)
 
-                l_selected_default_exams(l_index_selected_exams_from_default).age_max = loaded_exams(indexChecked.ToString()).age_max
-                l_selected_default_exams(l_index_selected_exams_from_default).age_min = loaded_exams(indexChecked.ToString()).age_min
-                l_selected_default_exams(l_index_selected_exams_from_default).desc_category = loaded_exams(indexChecked.ToString()).desc_category
-                l_selected_default_exams(l_index_selected_exams_from_default).flg_execute = loaded_exams(indexChecked.ToString()).flg_execute
-                l_selected_default_exams(l_index_selected_exams_from_default).flg_first_execute = loaded_exams(indexChecked.ToString()).flg_first_execute
-                l_selected_default_exams(l_index_selected_exams_from_default).flg_first_result = loaded_exams(indexChecked.ToString()).flg_first_result
-                l_selected_default_exams(l_index_selected_exams_from_default).flg_result_notes = loaded_exams(indexChecked.ToString()).flg_result_notes
-                l_selected_default_exams(l_index_selected_exams_from_default).flg_timeout = loaded_exams(indexChecked.ToString()).flg_timeout
-                l_selected_default_exams(l_index_selected_exams_from_default).gender = loaded_exams(indexChecked.ToString()).gender
-                l_selected_default_exams(l_index_selected_exams_from_default).id_content_category = loaded_exams(indexChecked.ToString()).id_content_category
-                l_selected_default_exams(l_index_selected_exams_from_default).id_content_exam = loaded_exams(indexChecked.ToString()).id_content_exam
-                l_selected_default_exams(l_index_selected_exams_from_default).desc_exam = loaded_exams(indexChecked.ToString()).desc_exam
+                g_a_selected_default_exams(g_index_selected_exam_from_default).age_max = g_a_loaded_exams_default(indexChecked.ToString()).age_max
+                g_a_selected_default_exams(g_index_selected_exam_from_default).age_min = g_a_loaded_exams_default(indexChecked.ToString()).age_min
+                g_a_selected_default_exams(g_index_selected_exam_from_default).desc_category = g_a_loaded_exams_default(indexChecked.ToString()).desc_category
+                g_a_selected_default_exams(g_index_selected_exam_from_default).flg_execute = g_a_loaded_exams_default(indexChecked.ToString()).flg_execute
+                g_a_selected_default_exams(g_index_selected_exam_from_default).flg_first_execute = g_a_loaded_exams_default(indexChecked.ToString()).flg_first_execute
+                g_a_selected_default_exams(g_index_selected_exam_from_default).flg_first_result = g_a_loaded_exams_default(indexChecked.ToString()).flg_first_result
+                g_a_selected_default_exams(g_index_selected_exam_from_default).flg_result_notes = g_a_loaded_exams_default(indexChecked.ToString()).flg_result_notes
+                g_a_selected_default_exams(g_index_selected_exam_from_default).flg_timeout = g_a_loaded_exams_default(indexChecked.ToString()).flg_timeout
+                g_a_selected_default_exams(g_index_selected_exam_from_default).gender = g_a_loaded_exams_default(indexChecked.ToString()).gender
+                g_a_selected_default_exams(g_index_selected_exam_from_default).id_content_category = g_a_loaded_exams_default(indexChecked.ToString()).id_content_category
+                g_a_selected_default_exams(g_index_selected_exam_from_default).id_content_exam = g_a_loaded_exams_default(indexChecked.ToString()).id_content_exam
+                g_a_selected_default_exams(g_index_selected_exam_from_default).desc_exam = g_a_loaded_exams_default(indexChecked.ToString()).desc_exam
 
-                CheckedListBox1.Items.Add(l_selected_default_exams(l_index_selected_exams_from_default).desc_exam)
+                CheckedListBox1.Items.Add(g_a_selected_default_exams(g_index_selected_exam_from_default).desc_exam)
                 CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
 
-                l_index_selected_exams_from_default = l_index_selected_exams_from_default + 1
+                g_index_selected_exam_from_default = g_index_selected_exam_from_default + 1
 
             End If
-
         Next
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -445,133 +588,168 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        Dim l_error As Boolean = False
+        Cursor = Cursors.WaitCursor
 
+        'Se foram escolhidas interventions do default para serem gravadas
         If CheckedListBox1.Items.Count() > 0 Then
+
+            Dim l_a_checked_exams() As EXAMS_API.exams_default
+            Dim l_index As Integer = 0
 
             For Each indexChecked In CheckedListBox1.CheckedIndices
 
-                'Estrutura auxiliar para ir gravando os dados dos exames marcados com o check
-                Dim l_checked_default_exams_temp(0) As EXAMS_API.exams_default
+                ReDim Preserve l_a_checked_exams(l_index)
 
-                l_checked_default_exams_temp(0).age_max = l_selected_default_exams(indexChecked).age_max
-                l_checked_default_exams_temp(0).age_min = l_selected_default_exams(indexChecked).age_min
-                l_checked_default_exams_temp(0).desc_category = l_selected_default_exams(indexChecked).desc_category
-                l_checked_default_exams_temp(0).desc_exam = l_selected_default_exams(indexChecked).desc_exam
-                l_checked_default_exams_temp(0).flg_execute = l_selected_default_exams(indexChecked).flg_execute
-                l_checked_default_exams_temp(0).flg_first_execute = l_selected_default_exams(indexChecked).flg_first_execute
-                l_checked_default_exams_temp(0).flg_first_result = l_selected_default_exams(indexChecked).flg_first_result
-                l_checked_default_exams_temp(0).flg_result_notes = l_selected_default_exams(indexChecked).flg_result_notes
-                l_checked_default_exams_temp(0).flg_timeout = l_selected_default_exams(indexChecked).flg_timeout
-                l_checked_default_exams_temp(0).gender = l_selected_default_exams(indexChecked).gender
-                l_checked_default_exams_temp(0).id_content_category = l_selected_default_exams(indexChecked).id_content_category
-                l_checked_default_exams_temp(0).id_content_exam = l_selected_default_exams(indexChecked).id_content_exam
+                l_a_checked_exams(l_index).age_max = g_a_selected_default_exams(indexChecked).age_max
+                l_a_checked_exams(l_index).age_min = g_a_selected_default_exams(indexChecked).age_min
+                l_a_checked_exams(l_index).desc_category = g_a_selected_default_exams(indexChecked).desc_category
+                l_a_checked_exams(l_index).desc_exam = g_a_selected_default_exams(indexChecked).desc_exam
+                l_a_checked_exams(l_index).flg_execute = g_a_selected_default_exams(indexChecked).flg_execute
+                l_a_checked_exams(l_index).flg_first_execute = g_a_selected_default_exams(indexChecked).flg_first_execute
+                l_a_checked_exams(l_index).flg_first_result = g_a_selected_default_exams(indexChecked).flg_first_result
+                l_a_checked_exams(l_index).flg_result_notes = g_a_selected_default_exams(indexChecked).flg_result_notes
+                l_a_checked_exams(l_index).flg_timeout = g_a_selected_default_exams(indexChecked).flg_timeout
+                l_a_checked_exams(l_index).gender = g_a_selected_default_exams(indexChecked).gender
+                l_a_checked_exams(l_index).id_content_category = g_a_selected_default_exams(indexChecked).id_content_category
+                l_a_checked_exams(l_index).id_content_exam = g_a_selected_default_exams(indexChecked).id_content_exam
 
+                l_index = l_index + 1
 
-                ''Função para inserir no ALERT os exames selecionados
-                If Not db_access.SET_EXAM_ALERT(TextBox1.Text, l_selected_soft, l_checked_default_exams_temp, "I", oradb) Then
+            Next
 
-                    MsgBox("ERROR INSERTING EXAM(S)!", vbCritical)
-                    l_error = True
+            If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams, conn) Then
+
+                If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", conn) Then
+
+                    If db_access.SET_DEFAULT_EXAM_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", g_record_type, conn) Then
+
+                        MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                        '1 - Processo Limpeza
+                        '1.1 - Limpar a box de exames a gravar no alert
+                        CheckedListBox1.Items.Clear()
+
+                        '1.2 - Remover o check dos exames do default
+                        For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                            CheckedListBox2.SetItemChecked(i, False)
+
+                        Next
+
+                        '1.3 - Limpar g_a_selected_default_exams (Array de exames do default selecionados pelo utilizador)
+                        ReDim g_a_selected_default_exams(0)
+                        g_index_selected_exam_from_default = 0
+
+                        '1.4 - Limpar a caixa de categorias de análises do ALERT
+                        ComboBox5.Items.Clear()
+                        ComboBox5.SelectedItem = ""
+
+                        'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
+                        Dim dr_exam_cat As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR LOADING EXAM CATEGORIES FROM INSTITUTION!", vbCritical)
+
+                        Else
+
+                            ComboBox5.Items.Add("ALL")
+
+                            ReDim g_a_exam_cats_alert(0)
+                            g_a_exam_cats_alert(0) = 0
+
+                            Dim l_index_ec As Int16 = 1
+
+                            While dr_exam_cat.Read()
+
+                                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                                ReDim Preserve g_a_exam_cats_alert(l_index_ec)
+                                g_a_exam_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
+                                l_index_ec = l_index_ec + 1
+
+                            End While
+
+                        End If
+
+                        dr_exam_cat.Dispose()
+                        dr_exam_cat.Close()
+
+                        '1.5 - Limpar as análises do ALERT apresentadas na BOX 3
+                        'Isto porque podem ter sido adicionadas análises à categoria selecionada
+                        CheckedListBox3.Items.Clear()
+
+                        ReDim g_a_exams_alert(0)
+                        g_dimension_exams_alert = 0
+
+                    Else
+
+                        MsgBox("ERROR SETTING EXAM_DEP_CLIN_SERV!", vbCritical)
+
+                    End If
+
+                Else
+
+                    MsgBox("ERROR SETTING EXAM!", vbCritical)
 
                 End If
 
-            Next
+            Else
 
-            If l_error = False Then
-
-                MsgBox("Record(s) inserted!", vbInformation)
-
+                MsgBox("ERROR SETTING EXAM CATEGORY!", vbCritical)
 
             End If
 
-            CheckedListBox1.Items.Clear()
-
-            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
-
-                CheckedListBox2.SetItemChecked(i, False)
-
-            Next
-
-            ComboBox5.Items.Clear()
-            ComboBox5.SelectedItem = ""
-
-            Try
-
-                Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
-
-                ComboBox5.Items.Add("ALL")
-
-                While dr_exam_cat.Read()
-
-                    ComboBox5.Items.Add(dr_exam_cat.Item(0))
-                    l_total_cats = l_total_cats + 1
-
-                End While
-
-            Catch ex As Exception
-
-                MsgBox("Error Loading Exams Categories!", MsgBoxStyle.Critical)
-
-            End Try
-
-            CheckedListBox3.Items.Clear()
-
-            ReDim l_selected_default_exams(0)
-            l_index_selected_exams_from_default = 0
-
-        Else
-
-            MsgBox("No records selected!", vbInformation)
-
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
     Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
 
-        Try
+        Cursor = Cursors.WaitCursor
 
-            CheckedListBox3.Items.Clear()
+        CheckedListBox3.Items.Clear()
 
-            Dim l_exam_cat(l_total_cats)
+        Dim dr_exams As OracleDataReader
 
-            l_exam_cat(0) = 0 ''Referente ao all
+        Dim l_selected_category_alert As String = ""
 
-            Dim dr_exam_cat As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+        l_selected_category_alert = g_a_exam_cats_alert(ComboBox5.SelectedIndex)
 
-            Dim i_cats As Integer = 1
+        g_dimension_exams_alert = 0
+        ReDim g_a_exams_alert(g_dimension_exams_alert)
 
-            While dr_exam_cat.Read()
 
-                l_exam_cat(i_cats) = dr_exam_cat.Item(1)
-                i_cats = i_cats + 1
-            End While
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, g_selected_category, "I", g_record_type, conn, dr_exams) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            Dim dr As OracleDataReader = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_exam_cat(ComboBox5.SelectedIndex), "I", oradb)
+            MsgBox("ERROR GETTING EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
 
-            Dim i As Integer = 0
+        Else
 
-            ReDim a_loaded_exams_by_cat_alert(0)
+            While dr_exams.Read()
 
-            Dim l_index_aux_loaded_exams = 0
+                g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(0)
+                g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(1)
+                g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(2)
 
-            While dr.Read()
+                g_dimension_exams_alert = g_dimension_exams_alert + 1
+                ReDim Preserve g_a_exams_alert(g_dimension_exams_alert)
 
-                CheckedListBox3.Items.Add(dr.Item(0))
-                ReDim Preserve a_loaded_exams_by_cat_alert(l_index_aux_loaded_exams)
-                a_loaded_exams_by_cat_alert(l_index_aux_loaded_exams).id_exam = dr.Item(2)
-                a_loaded_exams_by_cat_alert(l_index_aux_loaded_exams).desc_exam = dr.Item(0)
-
-                l_index_aux_loaded_exams = l_index_aux_loaded_exams + 1
+                CheckedListBox3.Items.Add(dr_exams.Item(0))
 
             End While
 
-        Catch ex As Exception
+        End If
 
-            MsgBox("Error selecting exams - GET_EXAMS", MsgBoxStyle.Critical)
+        dr_exams.Dispose()
+        dr_exams.Close()
 
-        End Try
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -587,7 +765,7 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
-        'Ciclo para correr todos os exames selecionados na caixa da esquerda (Por Categoria)
+        'Ciclo para correr todos os procedimentos selecionados na caixa da esquerda
         For Each indexChecked In CheckedListBox3.CheckedIndices
 
             'If para verificar se já está incluido na checkbox da direita
@@ -598,7 +776,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             For j = 0 To CheckedListBox4.Items.Count() - 1
 
-                If (a_loaded_exams_by_cat_alert(indexChecked.ToString()).id_exam = a_selected_exams_alert(j).id_exam) Then
+                If (g_a_exams_alert(indexChecked.ToString()).id_content_category = g_a_exams_for_clinical_service(j).id_content_exam_cat And g_a_exams_alert(indexChecked.ToString()).id_content_exam = g_a_exams_for_clinical_service(j).id_content_exam) Then
 
                     l_record_already_selected = True
                     Exit For
@@ -609,23 +787,17 @@ Public Class INSERT_IMAGING_EXAMS
 
             If l_record_already_selected = False Then
 
-                ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
+                ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
 
-                a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = a_loaded_exams_by_cat_alert(indexChecked.ToString()).id_exam
-                a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = a_loaded_exams_by_cat_alert(indexChecked.ToString()).desc_exam
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = g_a_exams_alert(indexChecked.ToString()).id_content_category
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = g_a_exams_alert(indexChecked.ToString()).id_content_exam
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = g_a_exams_alert(indexChecked.ToString()).desc_exam
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "Y"
 
-                ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
-
-                a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = a_loaded_exams_by_cat_alert(indexChecked.ToString()).id_exam
-                a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = a_loaded_exams_by_cat_alert(indexChecked.ToString()).desc_exam
-                a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "Y"
-
-                l_dimension_exams_cs = l_dimension_exams_cs + 1
-
-                CheckedListBox4.Items.Add(a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam)
+                CheckedListBox4.Items.Add(g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam)
                 CheckedListBox4.SetItemChecked((CheckedListBox4.Items.Count() - 1), True)
 
-                l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
+                g_dimension_exams_cs = g_dimension_exams_cs + 1
 
             End If
 
@@ -635,22 +807,23 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
 
-        '  CheckedListBox1.Items.Clear() - FAzER IF COM ISTO (EXISTEM DADOS NAO GRAVADOS! CONTINUAR?)
-
         Dim l_unsaved_records As Boolean = False
         Dim l_sucess As Boolean = True
 
         Dim l_first_time As Boolean = False 'Variavel para determinar se é a primeira vez que se está a colocar o Clinical Service
 
-        '1 - DEterminar o dep_clin_serv_selecionado
-        Dim l_id_dep_clin_serv_aux As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+        '1 - Determinar o dep_clin_serv_selecionado
+
+        Dim l_id_dep_clin_serv_aux As Int64
+
+        l_id_dep_clin_serv_aux = g_a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
 
         '2 - Determinar se existem registos a serem guardados
-        If (l_dimension_exams_cs > 0 And l_id_dep_clin_serv <> 0) Then
+        If (g_dimension_exams_cs > 0 And g_id_dep_clin_serv > 0) Then
 
-            For j As Int16 = 0 To a_exams_for_clinical_service.Count() - 1
+            For j As Int16 = 0 To g_a_exams_for_clinical_service.Count() - 1
 
-                If a_exams_for_clinical_service(j).flg_new = "Y" Then
+                If g_a_exams_for_clinical_service(j).flg_new = "Y" Then
 
                     l_unsaved_records = True
                     Exit For
@@ -661,9 +834,9 @@ Public Class INSERT_IMAGING_EXAMS
 
         End If
 
-        If (l_id_dep_clin_serv = 0) Then
+        If (g_id_dep_clin_serv = 0) Then
 
-            l_id_dep_clin_serv = l_id_dep_clin_serv_aux
+            g_id_dep_clin_serv = l_id_dep_clin_serv_aux
             l_first_time = True
 
         End If
@@ -677,13 +850,12 @@ Public Class INSERT_IMAGING_EXAMS
 
             If (result = DialogResult.Yes) Then
 
-                For j As Int16 = 0 To a_exams_for_clinical_service.Count() - 1
+                For j As Int16 = 0 To g_a_exams_for_clinical_service.Count() - 1
 
-                    If (a_exams_for_clinical_service(j).flg_new = "Y") Then
+                    If (g_a_exams_for_clinical_service(j).flg_new = "Y") Then
 
-                        If Not db_access.SET_EXAM_DEP_CLIN_SERV(a_exams_for_clinical_service(j).id_exam, l_id_dep_clin_serv, "M", TextBox1.Text,
-                                            l_selected_soft, "DT", "Y", "N",
-                                            "N", "DT", oradb) Then
+                        'CRIAR FUNÇÂO PARA INCLUIR NO DEP_CLIN_SERV
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(j), g_record_type, g_id_dep_clin_serv, conn) Then
 
                             l_sucess = False
 
@@ -695,7 +867,7 @@ Public Class INSERT_IMAGING_EXAMS
 
                 If l_sucess = False Then
 
-                    MsgBox("ERROR INSERTING EXAM AS FREQUENT - ComboBox6_SelectedIndexChanged", vbCritical)
+                    MsgBox("ERROR INSERTING EXAM(S) AS FREQUENT - ComboBox6_SelectedIndexChanged", vbCritical)
 
                 Else
 
@@ -711,47 +883,54 @@ Public Class INSERT_IMAGING_EXAMS
         If (l_first_time = False) Then
 
             '4 - Limpar a box e os arrays
-            ReDim Preserve a_exams_for_clinical_service(0)
-            l_dimension_exams_cs = 0
-
-            ReDim a_selected_exams_alert(0)
-            l_index_selected_exams_from_alert = 0
+            ReDim Preserve g_a_exams_for_clinical_service(0)
+            g_dimension_exams_cs = 0
 
             CheckedListBox4.Items.Clear()
 
         End If
 
         '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
-        Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv_aux, TextBox1.Text, "I", oradb)
+        Dim dr As OracleDataReader
 
-        l_id_dep_clin_serv = l_id_dep_clin_serv_aux
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, l_id_dep_clin_serv_aux, "I", conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-        '6 - Ler cursor e popular o campo
-        Dim i As Integer = 0
+            MsgBox("ERROR GETTING EXAM_DEP_CLIN_SERV.", vbCritical)
 
-        While dr.Read()
+        Else
 
-            CheckedListBox4.Items.Add(dr.Item(1))
+            g_id_dep_clin_serv = l_id_dep_clin_serv_aux
 
-            ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
-            a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = dr.Item(2)
-            a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = dr.Item(1)
-            a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "N"
+            'Dim i As Integer = 0
 
-            l_dimension_exams_cs = l_dimension_exams_cs + 1
+            '6 - Ler cursor e popular o campo
+            While dr.Read()
 
-            ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
+                CheckedListBox4.Items.Add(dr.Item(1))
 
-            a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = dr.Item(2)
-            a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = dr.Item(1)
+                ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
 
-            l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr.Item(0)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr.Item(1)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr.Item(3)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
 
-        End While
+                g_dimension_exams_cs = g_dimension_exams_cs + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
 
     End Sub
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+
+        Cursor = Cursors.WaitCursor
 
         If ComboBox6.SelectedItem = "" Then
 
@@ -759,7 +938,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Else
 
-            Dim l_id_dep_clin_serv As Int64 = a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
+            Dim g_id_dep_clin_serv As Int64 = g_a_dep_clin_serv_inst(ComboBox6.SelectedIndex)
 
             Dim l_sucess As Boolean = True
 
@@ -767,17 +946,9 @@ Public Class INSERT_IMAGING_EXAMS
 
                 For Each indexChecked In CheckedListBox4.CheckedIndices
 
-                    'Estrutura auxiliar para ir gravando os dados dos exames marcados com o check
-                    'Dim l_checked_alert_exams_temp(0) As EXAMS_API.exams_alert
+                    If (g_a_exams_for_clinical_service(indexChecked).flg_new = "Y") Then
 
-                    'l_checked_alert_exams_temp(0).desc_exam = a_selected_exams_alert(indexChecked).desc_exam
-                    'l_checked_alert_exams_temp(0).id_exam = a_selected_exams_alert(indexChecked).id_exam
-
-                    If (a_exams_for_clinical_service(indexChecked).flg_new = "Y") Then
-
-                        If Not db_access.SET_EXAM_DEP_CLIN_SERV(a_exams_for_clinical_service(indexChecked).id_exam, l_id_dep_clin_serv, "M", TextBox1.Text,
-                                                                l_selected_soft, "DT", "Y", "N",
-                                                                "N", "DT", oradb) Then
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked), g_record_type, g_id_dep_clin_serv, conn) Then
 
                             l_sucess = False
 
@@ -794,19 +965,12 @@ Public Class INSERT_IMAGING_EXAMS
                     CheckedListBox4.Items.Clear()
                 Else
 
-                    MsgBox("ERROR SAVING EXAMS AS FAVORITE. Button8_Click", vbCritical)
+                    MsgBox("ERROR SAVING EXAM(S) AS FAVORITE(S). Button8_Click", vbCritical)
 
                 End If
 
-
-                ''TESTE
-                ReDim a_selected_exams_alert(0)
-                l_index_selected_exams_from_alert = 0
-
-                ReDim a_exams_for_clinical_service(0)
-                l_dimension_exams_cs = 0
-
-                ''FIm TESTE
+                ReDim g_a_exams_for_clinical_service(0)
+                g_dimension_exams_cs = 0
 
                 For ii As Integer = 0 To CheckedListBox3.Items.Count - 1
 
@@ -822,31 +986,38 @@ Public Class INSERT_IMAGING_EXAMS
 
         End If
 
+        Dim dr As OracleDataReader
 
-        'Apresentar os exames do dep_clin_serv
-        Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-        Dim i As Integer = 0
+            MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV", vbCritical)
 
-        While dr.Read()
+        Else
 
-            CheckedListBox4.Items.Add(dr.Item(1))
+            Dim i As Integer = 0
 
-            ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
-            a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = dr.Item(2)
-            a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = dr.Item(1)
-            a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "N"
+            While dr.Read()
 
-            l_dimension_exams_cs = l_dimension_exams_cs + 1
+                CheckedListBox4.Items.Add(dr.Item(1))
 
-            ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
+                ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr.Item(0)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr.Item(1)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr.Item(2)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
 
-            a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = dr.Item(2)
-            a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = dr.Item(1)
+                g_dimension_exams_cs = g_dimension_exams_cs + 1
 
-            l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
+            End While
 
-        End While
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -880,212 +1051,200 @@ Public Class INSERT_IMAGING_EXAMS
 
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
 
-        If CheckedListBox3.CheckedIndices.Count() > 0 Then
+        If CheckedListBox3.CheckedIndices.Count > 0 Then
+
+            Cursor = Cursors.WaitCursor
 
             Dim result As Integer = 0
+            Dim l_sucess As Boolean = True
 
+            'Variável que determina se pelo menos um registo foi eliminado (Implementar ISTo)
+            Dim record_deleted As Boolean = False
+
+            'Perguntar se utilizador pretende mesmo apagar todos os exames de uma categoria
             If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
 
                 result = MsgBox("All records from the chosen category will be deleted! Confirm?", MessageBoxButtons.YesNo)
 
             End If
 
-
             If (result = DialogResult.Yes Or CheckedListBox3.CheckedIndices.Count < CheckedListBox3.Items.Count()) Then
 
                 Dim indexChecked As Integer
 
-                Dim total_selected_exams As Integer = 0
-
+                'Ciclo para correr todos os registos do ALERT marcados com o check
                 For Each indexChecked In CheckedListBox3.CheckedIndices
 
-                    total_selected_exams = total_selected_exams + 1
+                    'Apagar da ALERT.EXAM_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
+
+                    If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_alert(indexChecked), False, g_record_type, conn) Then
+
+                        l_sucess = False
+
+                    End If
 
                 Next
 
-                ReDim l_selected_exam(total_selected_exams - 1)
+                ''3 - Refresh à grelha
+                ''3.1 - Se estão a ser apagados todos os registos de uma categoria:
+                If CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count() Then
 
-                ''Determinar ID_EXAM
-                '' 1 - Determinar a categoria selecionada
-                '' 2 - Fazer um search a todos os exames da cat selecionada
-                '' 3 - Ecolher os ids dos exames selecionados
-                '' 4 - Apagar os exames selecionados
-                '' 5 - Refresh à grid de exames
-
-                '1
-
-                Dim l_index_cat As Integer = ComboBox5.SelectedIndex
-                Dim l_id_cat_exam As Int64 = 0
-
-                Dim dr_exam_cat As OracleDataReader
-
-                Dim i_index As Integer = 0
-
-                Try
-
-                    dr_exam_cat = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
-
-                    While dr_exam_cat.Read()
-
-                        If l_index_cat = 0 Then
-
-                            l_id_cat_exam = 0
-                            Exit While
-
-                        ElseIf i_index = l_index_cat - 1 Then
-
-                            l_id_cat_exam = dr_exam_cat.Item(1)
-                            Exit While
-
-                        End If
-
-                        i_index = i_index + 1
-
-                    End While
-
-                Catch ex As Exception
-
-                    MsgBox("ERROR GETTING EXAM CATEGORY - Button11_Click", vbCritical)
-
-                End Try
-
-                '2 e 3
-
-                Dim l_array_exams(CheckedListBox3.Items.Count() - 1) As Int64
-
-                Dim dr_exams As OracleDataReader
-
-                Dim l_array_selected_exams(CheckedListBox3.CheckedIndices.Count() - 1) As Int64 ''Array que vai guardar o id dos exames selecionados
-
-                Try
-
-                    'Lista de exames de categoria selecionada
-                    dr_exams = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "I", oradb)
-
-                    'Lista de indexes de exames selecionados
-                    Dim l_array_selected_indexes(CheckedListBox3.CheckedIndices.Count()) As Integer
-                    Dim i_index_checked_aux As Integer = 0
-
-                    For Each indexChecked In CheckedListBox3.CheckedIndices
-
-                        l_array_selected_indexes(i_index_checked_aux) = indexChecked.ToString()
-
-                        i_index_checked_aux = i_index_checked_aux + 1
-
-                    Next
-
-                    ''Lista de exames selecionados - ERRO
-                    i_index_checked_aux = 0
-                    Dim i_selected_exams_aux As Int16 = 0
-
-                    Dim l_index_selected_exams As Integer = 0
-
-                    If (CheckedListBox3.CheckedIndices.Count() > 0) Then
-
-                        While dr_exams.Read() ''Ler todos os exames da categoria selecionada
-
-                            For ii As Integer = 0 To (CheckedListBox3.CheckedIndices.Count() - 1)
-
-                                If (l_array_selected_indexes(ii) = i_selected_exams_aux) Then
-
-                                    l_array_selected_exams(l_index_selected_exams) = dr_exams.Item(3)
-                                    l_index_selected_exams = l_index_selected_exams + 1
-
-                                End If
-
-                            Next
-
-                            i_selected_exams_aux = i_selected_exams_aux + 1
-
-                        End While
-
-                    End If
-
-
-                Catch ex As Exception
-
-                    MsgBox("ERROR GETTING SELECTED EXAMS - Button11_Click", vbCritical)
-
-                End Try
-
-                '4
-                Try
-                    If db_access.DELETE_EXAMS(l_array_selected_exams, TextBox1.Text, l_selected_soft, oradb) Then
-
-                        MsgBox("Record(s) deleted!")
-
-                    Else
-
-                        MsgBox("No records deleted.")
-
-                    End If
-                Catch ex As Exception
-
-                    MsgBox("ERROR DELETING EXAMS - Button11_Click", vbCritical)
-
-                End Try
-
-                '5
-
-                Try
                     CheckedListBox3.Items.Clear()
-                    CheckedListBox4.Items.Clear()
-                    ComboBox6.SelectedItem = ""
-
-
-                    Dim dr_exams_cat As OracleDataReader = db_access.GET_EXAMS(TextBox1.Text, l_selected_soft, l_id_cat_exam, "I", oradb)
-
-                    Dim i As Integer = 0
-
-                    While dr_exams_cat.Read()
-
-                        CheckedListBox3.Items.Add(dr_exams_cat.Item(0))
-
-                    End While
-
-                Catch ex As Exception
-
-                    MsgBox("ERROR GETTING EXAMS BY CATEGORY - Button11_Click", vbCritical)
-
-                End Try
-
-                If ((result = DialogResult.Yes)) Then
-
                     ComboBox5.Items.Clear()
                     ComboBox5.Text = ""
 
-                    Try
+                    Dim dr_exam_cat As OracleDataReader
 
-                        Dim dr_exam_cat_new As OracleDataReader = db_access.GET_EXAMS_CAT(TextBox1.Text, l_selected_soft, "I", oradb)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR LOADING EXAMS CATEGORIES FROM INSTITUTION!", vbCritical)
+                        dr_exam_cat.Dispose()
+                        dr_exam_cat.Close()
+
+                    Else
 
                         ComboBox5.Items.Add("ALL")
 
-                        While dr_exam_cat_new.Read()
+                        'Limpar array de intervenções disponíveis no ALERT para a categoria selecionada antes de se ter feito o delete
+                        ReDim g_a_exam_cats_alert(0)
+                        g_a_exam_cats_alert(0) = 0
 
-                            ComboBox5.Items.Add(dr_exam_cat_new.Item(0))
-                            l_total_cats = l_total_cats + 1
+                        Dim l_index As Int16 = 1
+
+                        While dr_exam_cat.Read()
+
+                            ComboBox5.Items.Add(dr_exam_cat.Item(0))
+                            ReDim Preserve g_a_exam_cats_alert(l_index)
+                            g_a_exam_cats_alert(l_index) = dr_exam_cat.Item(1)
+                            l_index = l_index + 1
 
                         End While
 
-                    Catch ex As Exception
+                    End If
 
-                        MsgBox("ERROR LOADING EXAMS CATEGORIES - Button11_Click", MsgBoxStyle.Critical)
+                    dr_exam_cat.Dispose()
+                    dr_exam_cat.Close()
 
-                    End Try
+                    ReDim g_a_exams_for_clinical_service(0)
+                    ReDim g_a_exams_alert(0)
+
+                    g_dimension_exams_cs = 0
+                    g_dimension_exams_cs = 0
+
+                Else '3.2 - Eliminar apenas os registos selecionados
+
+                    CheckedListBox3.Items.Clear()
+
+                    Dim dr_exams As OracleDataReader
+
+                    Dim l_selected_category As String = ""
+
+                    l_selected_category = g_a_exam_cats_alert(ComboBox5.SelectedIndex)
+
+                    g_dimension_exams_alert = 0
+
+                    ReDim g_a_exams_alert(g_dimension_exams_alert)
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category, "I", g_record_type, conn, dr_exams) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR GETTING EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+                        dr_exams.Dispose()
+                        dr_exams.Close()
+
+                    Else
+
+                        While dr_exams.Read()
+
+                            g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(1)
+                            g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(2)
+                            g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(0)
+                            g_dimension_exams_alert = g_dimension_exams_alert + 1
+                            ReDim Preserve g_a_exams_alert(g_dimension_exams_alert)
+
+                            CheckedListBox3.Items.Add(dr_exams.Item(0))
+
+                        End While
+
+                        dr_exams.Dispose()
+                        dr_exams.Close()
+
+                        'Limpar arrays
+                        ReDim g_a_exams_for_clinical_service(0)
+
+                        g_dimension_exams_cs = 0
+
+                    End If
+
+                End If
+
+                ''4 - Mensagem de sucesso no final de todos os registos. (modificar mensagem de erro para surgir apenas uma vez.
+                If l_sucess = False Then
+
+                    MsgBox("ERROR DELETING EXAMS!", vbCritical)
+
+                ElseIf record_deleted = True Then
+
+                    MsgBox("Record(s) Successfuly deleted.", vbInformation)
 
                 End If
 
             End If
 
-        Else
+            ''APAGAR da grelah de favoritos (já foi apagado anteriormente)
+            ''4 - Limpar a box 
 
-            MsgBox("No selected exams!")
+            CheckedListBox4.Items.Clear()
+
+            '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+            Dim dr_delete As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr_delete) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV.", vbCritical)
+
+            Else
+
+                Dim i As Integer = 0
+
+                '6 - Ler cursor e popular o campo
+                While dr_delete.Read()
+
+                    CheckedListBox4.Items.Add(dr_delete.Item(1))
+
+                    ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
+
+
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr_delete.Item(0)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr_delete.Item(1)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr_delete.Item(2)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
+
+                    g_dimension_exams_cs = g_dimension_exams_cs + 1
+
+                End While
+
+            End If
+
+            dr_delete.Dispose()
+            dr_delete.Close()
+
+            Cursor = Cursors.Arrow
 
         End If
 
     End Sub
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+
+        Cursor = Cursors.WaitCursor
+
+        Dim l_exams_delete_dcs As EXAMS_API.exams_default
 
         If CheckedListBox4.CheckedIndices.Count() > 0 Then
 
@@ -1101,47 +1260,74 @@ Public Class INSERT_IMAGING_EXAMS
 
             Next
 
-            ReDim l_selected_exam(total_selected_exams - 1)
+            ReDim g_a_selected_exams_delete_cs(total_selected_exams - 1)
+
+            Dim dr As OracleDataReader
 
             For Each indexChecked In CheckedListBox4.CheckedIndices
 
-                Dim dr As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                Dim i_index As Integer = 0
+                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                While dr.Read()
+                    MsgBox("ERROR GETTING EXAM_DEP_CLIN_SERV.", vbCritical)
 
-                    If i_index = indexChecked.ToString() Then
+                Else
 
-                        l_selected_exam(i) = dr.Item(0)
+                    Dim i_index As Integer = 0
 
-                    End If
+                    While dr.Read()
 
-                    i_index = i_index + 1
+                        If i_index = indexChecked.ToString() Then
 
-                End While
+                            g_a_selected_exams_delete_cs(i) = dr.Item(1)
 
-                i = i + 1
+                        End If
+
+                        i_index = i_index + 1
+
+                    End While
+
+                    i = i + 1
+
+                End If
+
+                dr.Dispose()
+
             Next
 
+            dr.Dispose()
+            dr.Close()
 
-            If db_access.DELETE_EXAMS_DEP_CLIN_SERV(l_selected_exam, l_id_dep_clin_serv, oradb) Then
+            Dim l_sucess As Boolean = True
 
-                MsgBox("Record(s) Deleted")
+            For ii As Integer = 0 To g_a_selected_exams_delete_cs.Count() - 1
 
-                'Bloco para limpar os arrays
+                l_exams_delete_dcs.id_content_exam = g_a_selected_exams_delete_cs(ii)
 
-                ReDim Preserve a_exams_for_clinical_service(0)
-                l_dimension_exams_cs = 0
+#Disable Warning BC42109 ' Variable is used before it has been assigned a value
 
-                ReDim a_selected_exams_alert(0)
-                l_index_selected_exams_from_alert = 0
+                If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, l_exams_delete_dcs, True, g_record_type, conn) Then
 
-                'Fim bloco
+#Enable Warning BC42109 ' Variable is used before it has been assigned a value
 
-                CheckedListBox4.Items.Clear()
+                    l_sucess = False
 
-                Dim dr_new As OracleDataReader = db_access.GET_FREQ_EXAM(l_selected_soft, l_id_dep_clin_serv, TextBox1.Text, "I", oradb)
+                End If
+
+            Next
+
+            ReDim Preserve g_a_exams_for_clinical_service(0)
+            g_dimension_exams_cs = 0
+
+            CheckedListBox4.Items.Clear()
+
+            Dim dr_new As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr_new) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 Dim i_new As Integer = 0
 
@@ -1150,34 +1336,42 @@ Public Class INSERT_IMAGING_EXAMS
                     CheckedListBox4.Items.Add(dr_new.Item(1))
 
                     'Bloco para repopular os arrays
-                    ReDim Preserve a_exams_for_clinical_service(l_dimension_exams_cs)
-                    a_exams_for_clinical_service(l_dimension_exams_cs).id_exam = dr_new.Item(2)
-                    a_exams_for_clinical_service(l_dimension_exams_cs).desc_exam = dr_new.Item(1)
-                    a_exams_for_clinical_service(l_dimension_exams_cs).flg_new = "N"
+                    ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr_new.Item(0)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr_new.Item(1)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr_new.Item(2)
+                    g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
 
-                    l_dimension_exams_cs = l_dimension_exams_cs + 1
-
-                    ReDim Preserve a_selected_exams_alert(l_index_selected_exams_from_alert)
-
-                    a_selected_exams_alert(l_index_selected_exams_from_alert).id_exam = dr_new.Item(2)
-                    a_selected_exams_alert(l_index_selected_exams_from_alert).desc_exam = dr_new.Item(1)
-
-                    l_index_selected_exams_from_alert = l_index_selected_exams_from_alert + 1
-                    'Fim bloco
+                    g_dimension_exams_cs = g_dimension_exams_cs + 1
 
                 End While
 
             Else
 
-                MsgBox("ERROR!")
+                MsgBox("ERROR GETTING MOST FREQUENT EXAMS!")
+
+            End If
+
+            dr_new.Dispose()
+            dr_new.Close()
+
+            If l_sucess = True Then
+
+                MsgBox("Record(s) Deleted", vbInformation)
+
+            Else
+
+                MsgBox("ERROR DELETING INTERVENTIONS!", vbCritical)
 
             End If
 
         Else
 
-            MsgBox("No selected exams!")
+            MsgBox("No selected interventions!", vbCritical)
 
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -1205,6 +1399,58 @@ Public Class INSERT_IMAGING_EXAMS
 
             Next
 
+        End If
+
+    End Sub
+
+    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.Click
+
+        If CheckBox2.Checked = False Then
+            CheckBox1.Checked = True
+        End If
+
+        If (CheckBox1.Checked = True And CheckBox2.Checked = True) Then
+            g_record_type = 0
+        ElseIf (CheckBox1.Checked = True And CheckBox2.Checked = False) Then
+            g_record_type = 1
+        Else
+            g_record_type = 2
+        End If
+
+    End Sub
+
+    Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.Click
+
+        If CheckBox1.Checked = False Then
+            CheckBox2.Checked = True
+        End If
+
+        If (CheckBox1.Checked = True And CheckBox2.Checked = True) Then
+            g_record_type = 0
+        ElseIf (CheckBox1.Checked = True And CheckBox2.Checked = False) Then
+            g_record_type = 1
+        Else
+            g_record_type = 2
+        End If
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, False)
+            Next
         End If
 
     End Sub

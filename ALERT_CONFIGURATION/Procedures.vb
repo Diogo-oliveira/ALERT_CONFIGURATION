@@ -197,7 +197,9 @@ Public Class Procedures
         ComboBox2.Items.Clear()
         ComboBox2.Text = ""
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
 
@@ -567,7 +569,9 @@ Public Class Procedures
 
             Next
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, conn) Then
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
                 If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs, conn) Then
                     If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs, conn) Then
                         If db_intervention.SET_DEFAULT_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type, conn) Then
@@ -645,12 +649,12 @@ Public Class Procedures
 
                 Else
 
-                        MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
+                    MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
 
                 End If
 
             Else
-                    MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
+                MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
             End If
 
         End If
@@ -982,7 +986,9 @@ Public Class Procedures
             '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
             Dim dr_delete As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, conn, dr_delete) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
 
@@ -1013,7 +1019,7 @@ Public Class Procedures
 
             Cursor = Cursors.Arrow
 
-            End If
+        End If
     End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.Click
@@ -1292,7 +1298,9 @@ Public Class Procedures
 
                 l_intervention_delete_dcs.id_content_intervention = g_a_selected_intervs_delete_cs(ii)
 
+#Disable Warning BC42109 ' Variable is used before it has been assigned a value
                 If Not db_intervention.DELETE_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_intervention_delete_dcs, True, g_procedure_type, conn) Then
+#Enable Warning BC42109 ' Variable is used before it has been assigned a value
 
                     l_sucess = False
 
@@ -1448,4 +1456,7 @@ Public Class Procedures
 
     End Sub
 
+    Private Sub CheckBox1_CheckedChanged_1(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
+
+    End Sub
 End Class
