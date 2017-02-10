@@ -599,15 +599,17 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst, i_conn)
 
-        Dim sql As String = "Select distinct (tec.desc_lang_" & l_id_language & "),ec.id_exam_cat              
-                             from alert.exam_dep_clin_serv d
-                             join alert.exam e on e.id_exam=d.id_exam
-                             join alert.exam_cat ec on ec.id_exam_cat=e.id_exam_cat
-                             join translation tec on tec.code_translation=ec.code_exam_cat                             
-                             where d.id_institution in(0, " & i_id_inst & ")
-                             and e.flg_type='" & i_exam_type & "'
-                             and e.flg_available='Y' and ec.flg_available='Y'
-                             and d.id_software= " & i_id_soft & ""
+        Dim sql As String = "SELECT DISTINCT ec.id_content, tec.desc_lang_" & l_id_language & "
+                            FROM alert.exam_dep_clin_serv d
+                            JOIN alert.exam e ON e.id_exam = d.id_exam
+                            JOIN alert.exam_cat ec ON ec.id_exam_cat = e.id_exam_cat
+                            JOIN translation tec ON tec.code_translation = ec.code_exam_cat
+                                             AND tec.desc_lang_" & l_id_language & " IS NOT NULL
+                            WHERE (d.id_institution IS NULL OR d.id_institution IN (0, " & i_id_inst & "))
+                            AND e.flg_type = '" & i_exam_type & "'
+                            AND e.flg_available = 'Y'
+                            AND ec.flg_available = 'Y'
+                            AND d.id_software =  " & i_id_soft & ""
 
         If i_flg_type = 0 Then
 
@@ -623,7 +625,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End If
 
-        sql = sql & "order by 1 asc"
+        sql = sql & "order by 2 asc"
 
         Dim cmd As New OracleCommand(sql, i_conn)
         Try
@@ -812,7 +814,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                 on v.id_exam = e.id_exam
                               join alert_default.exam_clin_serv ecs
                                 on ecs.id_exam = e.id_exam and ecs.id_software in (0, " & i_software & ")
-                               and ecs.flg_type = 'P'
                               join institution i
                                 on i.id_market = v.id_market
                              where i.id_institution = " & i_institution & "
@@ -976,58 +977,26 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function CHECK_EXAM_TRANSLATION_EXISTANCE(ByVal i_id_content_exam, ByVal i_id_institution, ByVal i_oradb) As Boolean
+    Function CHECK_EXAM_TRANSLATION_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String, ByVal i_conn As OracleConnection) As Boolean
 
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_institution, i_conn)
 
         Dim sql As String = "Select count(*)
-  from alert.exam e
-  left join translation t
-    on t.code_translation = e.code_exam
-  join institution i
-    on i.id_institution = " & i_id_institution & "
- where e.id_content = '" & i_id_content_exam & "'
-   and e.flg_available = 'Y'
-   and (decode(i.id_market,
-              1,
-              t.desc_lang_1,
-              2,
-              t.desc_lang_2,
-              3,
-              t.desc_lang_11,
-              4,
-              t.desc_lang_5,
-              5,
-              t.desc_lang_4,
-              6,
-              t.desc_lang_3,
-              7,
-              t.desc_lang_10,
-              8,
-              t.desc_lang_7,
-              9,
-              t.desc_lang_6,
-              10,
-              t.desc_lang_9,
-              12,
-              t.desc_lang_16,
-              16,
-              t.desc_lang_17,
-              17,
-              t.desc_lang_18,
-              19,
-              t.desc_lang_19)) is not null"
+                              from alert.exam e
+                              left join translation t
+                                on t.code_translation = e.code_exam and t.desc_lang_" & l_id_language & " is not null
+                              join institution i
+                                on i.id_institution = " & i_id_institution & "
+                             where e.id_content = '" & i_id_content_exam & "'
+                               and e.flg_available = 'Y'"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, i_conn)
         cmd.CommandType = CommandType.Text
 
-        Try
+        Dim dr As OracleDataReader
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Try
+            dr = cmd.ExecuteReader()
 
             Dim l_exam_exist As Integer = 0
 
@@ -1039,30 +1008,27 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             If l_exam_exist > 0 Then
 
-
-                conn.Close()
-
-                conn.Dispose()
-
+                cmd.Dispose()
+                dr.Dispose()
+                dr.Close()
                 Return True
 
             Else
 
-
-                conn.Close()
-
-                conn.Dispose()
-
+                cmd.Dispose()
+                dr.Dispose()
+                dr.Close()
                 Return False
 
             End If
 
         Catch ex As Exception
 
-            conn.Close()
-
-            conn.Dispose()
-
+            cmd.Dispose()
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
+            dr.Dispose()
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
+            dr.Close()
             Return False
 
         End Try
@@ -1827,6 +1793,23 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                         END;"
 
 
+        Dim cmd_insert_edps As New OracleCommand(sql, i_conn)
+
+        Try
+
+            cmd_insert_edps.CommandType = CommandType.Text
+            cmd_insert_edps.ExecuteNonQuery()
+            cmd_insert_edps.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            cmd_insert_edps.Dispose()
+            Return False
+
+        End Try
+
     End Function
 
 
@@ -1834,19 +1817,17 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
 
-        Try
+        For i As Integer = 0 To i_set_exams.Count() - 1
 
-            For i As Integer = 0 To i_set_exams.Count() - 1
+            'Verificar se o exame existe na tabela alert.exam
+            If Not CHECK_EXAM_EXISTANCE(i_institution, i_set_exams(i).id_content_exam, i_conn) Then
 
-                'Verificar se o exame existe na tabela alert.exam
-                If Not CHECK_EXAM_EXISTANCE(i_institution, i_set_exams(i).id_content_exam, i_conn) Then
+                ''1 - Inserir o EXAME
+                Dim sql As String = ""
 
-                    ''1 - Inserir o EXAME
-                    Dim sql As String = ""
+                If i_set_exams(i).age_min < 0 And i_set_exams(i).age_max < 0 Then
 
-                    If i_set_exams(i).age_min < 0 And i_set_exams(i).age_max < 0 Then
-
-                        sql = "Declare
+                    sql = "Declare
                                          l_id_content_exam_cat alert.exam_cat.id_content%type;
                                          begin
                                          select ec.id_exam_cat
@@ -1858,9 +1839,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , null, null , l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
-                    ElseIf i_set_exams(i).age_min < 0 Then
+                ElseIf i_set_exams(i).age_min < 0 Then
 
-                        sql = "declare
+                    sql = "declare
                                          l_id_content_exam_cat alert.exam_cat.id_content%type;
                                          begin
                                          select ec.id_exam_cat
@@ -1872,9 +1853,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , null, " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
-                    ElseIf i_set_exams(i).age_max < 0 Then
+                ElseIf i_set_exams(i).age_max < 0 Then
 
-                        sql = "declare
+                    sql = "declare
                                          l_id_content_exam_cat alert.exam_cat.id_content%type;
                                          begin
                                          select ec.id_exam_cat
@@ -1886,9 +1867,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", null, l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
-                    Else
+                Else
 
-                        sql = "declare
+                    sql = "declare
                                          l_id_content_exam_cat alert.exam_cat.id_content%type;
                                          begin
                                          select ec.id_exam_cat
@@ -1900,66 +1881,68 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                          values (alert.seq_exam.nextval, 'EXAM.CODE_EXAM.'||alert.seq_exam.nextval, 'N', 'N', 'Y', 'Y', 0, '" & i_exam_type & "', '" & i_set_exams(i).gender & "' , " & i_set_exams(i).age_min & ", " & i_set_exams(i).age_max & ", l_id_content_exam_cat,'" & i_set_exams(i).id_content_exam & "');
                                          end;"
 
-                    End If
+                End If
 
-                    Dim cmd As New OracleCommand(sql, i_conn)
+                Dim cmd As New OracleCommand(sql, i_conn)
 
-                    Try
+                Try
 
-                        cmd.CommandType = CommandType.Text
-                        cmd.ExecuteNonQuery()
-                        cmd.Dispose()
+                    cmd.CommandType = CommandType.Text
+                    cmd.ExecuteNonQuery()
+                    cmd.Dispose()
 
-                    Catch ex As Exception
+                Catch ex As Exception
 
-                        cmd.Dispose()
-                        Return False
+                    cmd.Dispose()
+                    Return False
 
-                    End Try
+                End Try
 
-                    ''2 - Inserir a tradução do exame
-                    ''2.1 - Obter code DE TRADUÇÃO do exame
+                ''2 - Inserir a tradução do exame
+                ''2.1 - Obter code DE TRADUÇÃO do exame
 
-                    Dim l_code_desc As String = ""
+                Dim l_code_desc As String = ""
 
-                    sql = "Select e.code_exam from alert.exam e
+                sql = "Select e.code_exam from alert.exam e
                             where e.flg_available='Y'
                             and   e.id_content='" & i_set_exams(i).id_content_exam & "'"
 
-                    Dim cmd_get_code_trans As New OracleCommand(sql, i_conn)
-                    Dim dr As OracleDataReader
+                Dim cmd_get_code_trans As New OracleCommand(sql, i_conn)
+                Dim dr As OracleDataReader
 
-                    Try
+                Try
 
-                        cmd_get_code_trans.CommandType = CommandType.Text
-                        dr = cmd_get_code_trans.ExecuteReader()
+                    cmd_get_code_trans.CommandType = CommandType.Text
+                    dr = cmd_get_code_trans.ExecuteReader()
 
-                        While dr.Read()
+                    While dr.Read()
 
-                            l_code_desc = dr.Item(0)
+                        l_code_desc = dr.Item(0)
 
-                        End While
+                    End While
 
-                    Catch ex As Exception
+                Catch ex As Exception
 
-                        dr.Dispose()
-                        dr.Close()
-                        cmd.Dispose()
-                        Return False
-
-                    End Try
-
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                     dr.Dispose()
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
                     dr.Close()
                     cmd.Dispose()
+                    Return False
 
-                    ''2.2 - Obter a tradução
+                End Try
 
-                    Dim l_e_translation As String = i_set_exams(i).desc_exam
+                dr.Dispose()
+                dr.Close()
+                cmd.Dispose()
 
-                    ''2.4 - Fazer INSERT
+                ''2.2 - Obter a tradução
 
-                    sql = "declare 
+                Dim l_e_translation As String = i_set_exams(i).desc_exam
+
+                ''2.4 - Fazer INSERT
+
+                sql = "declare 
 
                                     l_desc clob; 
 
@@ -1979,56 +1962,56 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                     pk_translation.insert_into_translation( l_id_lang , '" & l_code_desc & "' , l_desc); 
                         end;"
 
-                    Dim cmd_insert_trans As New OracleCommand(sql, i_conn)
+                Dim cmd_insert_trans As New OracleCommand(sql, i_conn)
 
-                    Try
-
-
-                        cmd_insert_trans.CommandType = CommandType.Text
-                        cmd_insert_trans.ExecuteNonQuery()
-                        cmd.Dispose()
-
-                    Catch ex As Exception
-
-                        cmd.Dispose()
-                        Return False
-
-                    End Try
+                Try
 
 
-                    'Existe na tabela de exames. Verificar se tem tradução para a língua da instituição
-                ElseIf Not CHECK_EXAM_TRANSLATION_EXISTANCE(i_set_exams(i).id_content_exam, i_institution, i_conn) Then
+                    cmd_insert_trans.CommandType = CommandType.Text
+                    cmd_insert_trans.ExecuteNonQuery()
+                    cmd.Dispose()
 
-                    ''2 - Inserir a tradução do exame
+                Catch ex As Exception
 
-                    ''2.1 - Obter code DE TRADUÇÃO do exame
+                    cmd.Dispose()
+                    Return False
 
-                    Dim l_code_desc As String = ""
+                End Try
 
-                    Dim Sql = "Select e.code_exam from alert.exam e
+
+                'Existe na tabela de exames. Verificar se tem tradução para a língua da instituição
+            ElseIf Not CHECK_EXAM_TRANSLATION_EXISTANCE(i_institution, i_set_exams(i).id_content_exam, i_conn) Then
+
+                ''2 - Inserir a tradução do exame
+
+                ''2.1 - Obter code DE TRADUÇÃO do exame
+
+                Dim l_code_desc As String = ""
+
+                Dim Sql = "Select e.code_exam from alert.exam e
                                where e.id_content ='" & i_set_exams(i).id_content_exam & "'"
 
-                    Dim cmd_get_code_trans As New OracleCommand(Sql, i_conn)
-                    cmd_get_code_trans.CommandType = CommandType.Text
-                    Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
+                Dim cmd_get_code_trans As New OracleCommand(Sql, i_conn)
+                cmd_get_code_trans.CommandType = CommandType.Text
+                Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
 
-                    While dr.Read()
+                While dr.Read()
 
-                        l_code_desc = dr.Item(0)
+                    l_code_desc = dr.Item(0)
 
-                    End While
+                End While
 
-                    dr.Dispose()
-                    dr.Close()
-                    cmd_get_code_trans.Dispose()
+                dr.Dispose()
+                dr.Close()
+                cmd_get_code_trans.Dispose()
 
-                    ''2.2 - Obter a tradução 
+                ''2.2 - Obter a tradução 
 
-                    Dim l_e_translation As String = i_set_exams(i).desc_exam
+                Dim l_e_translation As String = i_set_exams(i).desc_exam
 
 
-                    ''2.4 - Fazer INSERT  (TRANSFORMAR Em FUNÇÂO)
-                    Sql = "declare 
+                ''2.4 - Fazer INSERT  (TRANSFORMAR Em FUNÇÂO)
+                Sql = "declare 
 
                              l_desc clob; 
 
@@ -2048,39 +2031,33 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                          pk_translation.insert_into_translation( l_id_lang , '" & l_code_desc & "' , l_desc); 
                         end;"
 
-                    Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
-                    cmd_insert_trans.CommandType = CommandType.Text
-                    cmd_insert_trans.ExecuteNonQuery()
-                    cmd_insert_trans.Dispose()
+                Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
+                cmd_insert_trans.CommandType = CommandType.Text
+                cmd_insert_trans.ExecuteNonQuery()
+                cmd_insert_trans.Dispose()
 
-                    'Exame existe e tem tradução. É necessário garantir que está na categoria correta.
-                Else
+                'Exame existe e tem tradução. É necessário garantir que está na categoria correta.
+            Else
 
-                    Try
+                Try
 
-                        If Not UPDATE_EXAM_CAT(i_set_exams(i).id_content_exam, i_set_exams(i).id_content_category, i_conn) Then
-
-                            Return False
-
-                        End If
-
-                    Catch ex As Exception
+                    If Not UPDATE_EXAM_CAT(i_set_exams(i).id_content_exam, i_set_exams(i).id_content_category, i_conn) Then
 
                         Return False
 
-                    End Try
+                    End If
 
-                End If
+                Catch ex As Exception
 
-                '4 - Inserir o registo na alert.exam_dep_clin_serv
+                    Return False
 
-            Next
+                End Try
 
-        Catch ex As Exception
+            End If
 
-            Return False
+            '4 - Inserir o registo na alert.exam_dep_clin_serv
 
-        End Try
+        Next
 
         '5 - correr o lucene?
 

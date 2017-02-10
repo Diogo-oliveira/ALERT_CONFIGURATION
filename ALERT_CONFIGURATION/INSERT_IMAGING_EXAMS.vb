@@ -4,7 +4,7 @@ Public Class INSERT_IMAGING_EXAMS
     Dim db_access_general As New General
 
     Dim db_access As New EXAMS_API
-    Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
+    Dim oradb As String = "Data Source=QC4V265;User Id=alert_config;Password=qcteam"
     Dim conn As New OracleConnection(oradb)
 
     Dim g_selected_soft As Int16 = -1
@@ -241,15 +241,14 @@ Public Class INSERT_IMAGING_EXAMS
         g_id_dep_clin_serv = 0
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_interventions(0)
-        'g_index_selected_intervention_from_default = 0
-        'ReDim g_a_interv_cats_alert(0)
-        'ReDim g_a_interv_cats_alert(0)
-        'g_dimension_intervs_alert = 0
-        'ReDim g_a_intervs_for_clinical_service(0)
-        'g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_intervs_delete_cs(0)
+        ReDim g_a_loaded_exams_default(0)
+        ReDim g_a_selected_default_exams(0)
+        g_index_selected_exam_from_default = 0
+        ReDim g_a_exam_cats_alert(0)
+        g_dimension_exams_alert = 0
+        ReDim g_a_exams_for_clinical_service(0)
+        g_dimension_exams_cs = 0
+        ReDim g_a_selected_exams_delete_cs(0)
 
         CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
@@ -271,7 +270,9 @@ Public Class INSERT_IMAGING_EXAMS
 
         Dim dr_def_versions As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_def_versions) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
 
@@ -288,12 +289,16 @@ Public Class INSERT_IMAGING_EXAMS
         dr_def_versions.Dispose()
         dr_def_versions.Close()
 
-        'Box de categorias na instituição/software
+        '2 - Box de categorias na instituição/software
         Dim dr_exam_cat As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
+
+        Else
 
             ComboBox5.Items.Add("ALL")
 
@@ -316,7 +321,7 @@ Public Class INSERT_IMAGING_EXAMS
         dr_exam_cat.Dispose()
         dr_exam_cat.Close()
 
-        'Preencher os Clinical Services
+        '3 - Preencher os Clinical Services
 
         Dim dr_clin_serv As OracleDataReader
 
@@ -356,7 +361,7 @@ Public Class INSERT_IMAGING_EXAMS
 
         Cursor = Cursors.WaitCursor
 
-        'Limpar arrays
+        '1 - Limpar arrays
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
         ReDim g_a_loaded_exams_default(0)
@@ -371,9 +376,12 @@ Public Class INSERT_IMAGING_EXAMS
         ReDim g_a_loaded_categories_default(0)
         Dim l_index_loaded_categories As Int16 = 0
 
+        '2 - Preencher categorias do default
         Dim dr_exam_cat_def As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, "I", g_record_type, conn, dr_exam_cat_def) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT EXAMS CATEGORY -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
@@ -413,13 +421,15 @@ Public Class INSERT_IMAGING_EXAMS
         Cursor = Cursors.WaitCursor
         CheckedListBox2.Items.Clear()
 
-        ''2 - Carregar a grelha de análises por categoria
+        ''2 - Carregar a grelha de Exames por categoria (Default)
         ''e    
-        ''3 - Criar estrutura com os elementos das análises carregados
+        ''3 - Criar estrutura com os elementos dos exames carregados (Default)
 
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, "I", g_record_type, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAMS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
 
@@ -617,10 +627,10 @@ Public Class INSERT_IMAGING_EXAMS
 
             Next
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
             If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams, conn) Then
-
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
                 If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", conn) Then
-
                     If db_access.SET_DEFAULT_EXAM_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", g_record_type, conn) Then
 
                         MsgBox("Record(s) successfully inserted.", vbInformation)
@@ -1115,9 +1125,9 @@ Public Class INSERT_IMAGING_EXAMS
 
                         While dr_exam_cat.Read()
 
-                            ComboBox5.Items.Add(dr_exam_cat.Item(0))
+                            ComboBox5.Items.Add(dr_exam_cat.Item(1))
                             ReDim Preserve g_a_exam_cats_alert(l_index)
-                            g_a_exam_cats_alert(l_index) = dr_exam_cat.Item(1)
+                            g_a_exam_cats_alert(l_index) = dr_exam_cat.Item(0)
                             l_index = l_index + 1
 
                         End While
