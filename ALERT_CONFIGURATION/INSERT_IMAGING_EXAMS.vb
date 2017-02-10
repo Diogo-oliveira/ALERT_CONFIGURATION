@@ -4,7 +4,7 @@ Public Class INSERT_IMAGING_EXAMS
     Dim db_access_general As New General
 
     Dim db_access As New EXAMS_API
-    Dim oradb As String = "Data Source=QC4V265;User Id=alert_config;Password=qcteam"
+    Dim oradb As String
     Dim conn As New OracleConnection(oradb)
 
     Dim g_selected_soft As Int16 = -1
@@ -36,6 +36,14 @@ Public Class INSERT_IMAGING_EXAMS
     Dim g_dimension_exams_cs As Integer = 0
 
     Dim g_a_selected_exams_delete_cs() As String ' Array para remover procedimentos do alert
+
+    Public Sub New(ByVal i_oradb As String)
+
+        InitializeComponent()
+        oradb = i_oradb
+        conn = New OracleConnection(oradb)
+
+    End Sub
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -743,6 +751,7 @@ Public Class INSERT_IMAGING_EXAMS
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
         Dim form1 As New Form1
+        form1.g_oradb = oradb
 
         form1.Show()
 

@@ -30,13 +30,22 @@ Partial Class Form1
         Me.Button6 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button5 = New System.Windows.Forms.Button()
+        Me.ComboBox1 = New System.Windows.Forms.ComboBox()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.Button7 = New System.Windows.Forms.Button()
+        Me.Button8 = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Button9 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(102, 12)
+        Me.PictureBox1.Location = New System.Drawing.Point(16, 12)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(500, 238)
         Me.PictureBox1.TabIndex = 3
@@ -44,16 +53,16 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(488, 302)
+        Me.Button1.Location = New System.Drawing.Point(402, 346)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(114, 40)
         Me.Button1.TabIndex = 4
-        Me.Button1.Text = "EXIT"
+        Me.Button1.Text = "Exit"
         Me.Button1.UseVisualStyleBackColor = True
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(102, 256)
+        Me.Button3.Location = New System.Drawing.Point(16, 256)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(116, 40)
         Me.Button3.TabIndex = 5
@@ -62,7 +71,7 @@ Partial Class Form1
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(488, 256)
+        Me.Button4.Location = New System.Drawing.Point(402, 256)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(114, 40)
         Me.Button4.TabIndex = 6
@@ -71,7 +80,7 @@ Partial Class Form1
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(102, 302)
+        Me.Button6.Location = New System.Drawing.Point(16, 302)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(116, 40)
         Me.Button6.TabIndex = 8
@@ -80,7 +89,7 @@ Partial Class Form1
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(102, 348)
+        Me.Button2.Location = New System.Drawing.Point(16, 348)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(116, 40)
         Me.Button2.TabIndex = 9
@@ -89,18 +98,107 @@ Partial Class Form1
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(224, 256)
+        Me.Button5.Location = New System.Drawing.Point(138, 256)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(116, 40)
         Me.Button5.TabIndex = 10
         Me.Button5.Text = "Procedures"
         Me.Button5.UseVisualStyleBackColor = True
         '
+        'ComboBox1
+        '
+        Me.ComboBox1.FormattingEnabled = True
+        Me.ComboBox1.Location = New System.Drawing.Point(230, 321)
+        Me.ComboBox1.Name = "ComboBox1"
+        Me.ComboBox1.Size = New System.Drawing.Size(166, 21)
+        Me.ComboBox1.TabIndex = 11
+        '
+        'TextBox1
+        '
+        Me.TextBox1.Location = New System.Drawing.Point(230, 269)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(166, 20)
+        Me.TextBox1.TabIndex = 12
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Location = New System.Drawing.Point(230, 295)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.Size = New System.Drawing.Size(166, 20)
+        Me.TextBox2.TabIndex = 13
+        Me.TextBox2.UseSystemPasswordChar = True
+        '
+        'Button7
+        '
+        Me.Button7.Location = New System.Drawing.Point(280, 348)
+        Me.Button7.Name = "Button7"
+        Me.Button7.Size = New System.Drawing.Size(116, 26)
+        Me.Button7.TabIndex = 14
+        Me.Button7.Text = "EXIT"
+        Me.Button7.UseVisualStyleBackColor = True
+        '
+        'Button8
+        '
+        Me.Button8.Location = New System.Drawing.Point(159, 348)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(116, 26)
+        Me.Button8.TabIndex = 15
+        Me.Button8.Text = "CONNECT"
+        Me.Button8.UseVisualStyleBackColor = True
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.Location = New System.Drawing.Point(153, 270)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(71, 16)
+        Me.Label1.TabIndex = 16
+        Me.Label1.Text = "Username"
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label2.Location = New System.Drawing.Point(156, 295)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(68, 16)
+        Me.Label2.TabIndex = 17
+        Me.Label2.Text = "Password"
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.Location = New System.Drawing.Point(156, 322)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(68, 16)
+        Me.Label3.TabIndex = 18
+        Me.Label3.Text = "Database"
+        '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(402, 302)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(114, 40)
+        Me.Button9.TabIndex = 19
+        Me.Button9.Text = "Logout"
+        Me.Button9.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(693, 415)
+        Me.ClientSize = New System.Drawing.Size(542, 395)
+        Me.Controls.Add(Me.Button9)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.Label1)
+        Me.Controls.Add(Me.Button8)
+        Me.Controls.Add(Me.Button7)
+        Me.Controls.Add(Me.TextBox2)
+        Me.Controls.Add(Me.TextBox1)
+        Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button6)
@@ -112,6 +210,7 @@ Partial Class Form1
         Me.Text = "ALERT Configuration"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents PictureBox1 As PictureBox
@@ -121,4 +220,13 @@ Partial Class Form1
     Friend WithEvents Button6 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button5 As Button
+    Friend WithEvents ComboBox1 As ComboBox
+    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents TextBox2 As TextBox
+    Friend WithEvents Button7 As Button
+    Friend WithEvents Button8 As Button
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Label3 As Label
+    Friend WithEvents Button9 As Button
 End Class

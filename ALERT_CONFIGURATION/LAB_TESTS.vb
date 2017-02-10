@@ -46,6 +46,14 @@ Public Class LAB_TESTS
 
     Dim g_a_selected_labs_delete_cs() As String ' Array para remover análises do alert
 
+    Public Sub New(ByVal i_oradb As String)
+
+        InitializeComponent()
+        oradb = i_oradb
+        conn_labs = New OracleConnection(oradb)
+
+    End Sub
+
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
@@ -90,7 +98,7 @@ Public Class LAB_TESTS
         conn_labs.Close()
 
         Dim form1 As New Form1
-
+        form1.g_oradb = oradb
         Me.Enabled = False
 
         Me.Dispose()

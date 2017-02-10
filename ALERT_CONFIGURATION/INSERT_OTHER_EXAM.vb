@@ -37,6 +37,14 @@ Public Class INSERT_OTHER_EXAM
 
     Dim g_a_selected_exams_delete_cs() As String ' Array para remover procedimentos do alert
 
+    Public Sub New(ByVal i_oradb As String)
+
+        InitializeComponent()
+        oradb = i_oradb
+        conn = New OracleConnection(oradb)
+
+    End Sub
+
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
@@ -744,7 +752,9 @@ Public Class INSERT_OTHER_EXAM
 
         Dim form1 As New Form1
 
+        form1.g_oradb = oradb
         form1.Show()
+
 
         Me.Close()
 

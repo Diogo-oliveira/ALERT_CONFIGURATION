@@ -1,70 +1,48 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class SYS_CONFIGS
 
-    Dim oradb As String = ""
+    Dim oradb As String
+    Dim conn As New OracleConnection
+
     Dim search_sys_config As String = ""
 
     Private Sub SYS_CONFIGS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ComboBox1.Items.Add("QC4 v2.6.3.8.2")
-        ComboBox1.Items.Add("QC4 v2.6.3.10.1")
-        ComboBox1.Items.Add("QC4 v2.6.3.15")
-        ComboBox1.Items.Add("QC4 v2.6.5.0")
-        ComboBox1.Items.Add("QC4 v2.6.5.0.6")
-        ComboBox1.Items.Add("QC4 v2.6.5.2.2")
-    End Sub
 
-    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+        Try
+            'Estabelecer ligação à BD
 
-        If ComboBox1.SelectedIndex = 0 Then
+            conn.Open()
 
-            oradb = "Data Source=QC4V26382;User Id=alert_config;Password=qcteam"
+        Catch ex As Exception
 
-        ElseIf ComboBox1.SelectedIndex = 1 Then
+            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
 
-            oradb = "Data Source=QC4V263101;User Id=alert_config;Password=qcteam"
-
-        ElseIf ComboBox1.SelectedIndex = 2 Then
-
-            oradb = "Data Source=QC4V26315;User Id=alert_config;Password=qcteam"
-
-        ElseIf ComboBox1.SelectedIndex = 3 Then
-
-            oradb = "Data Source=QC4V265;User Id=alert_config;Password=qcteam"
-
-        ElseIf ComboBox1.SelectedIndex = 4 Then
-
-            oradb = "Data Source=QC4V26506;User Id=alert_config;Password=qcteam"
-
-        ElseIf ComboBox1.SelectedIndex = 5 Then
-
-            oradb = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
-
-        ElseIf ComboBox1.SelectedIndex = 6 Then
-
-            oradb = "Data Source=QC264;User Id=alert_config;Password=qcteam"
-
-        End If
+        End Try
 
     End Sub
+
+    Public Sub New(ByVal i_oradb As String)
+
+        InitializeComponent()
+        oradb = i_oradb
+        conn = New OracleConnection(oradb)
+
+    End Sub
+
+
+
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        'Definir ligação à BD
-        If ComboBox1.SelectedIndex >= 0 Then
-
-            If TextBox1.Text = "" Then
+        If TextBox1.Text = "" Then
 
                 MsgBox("No SYS_CONFIG inserted!", vbCritical)
 
             Else
 
-                Dim conn As New OracleConnection(oradb)
+            search_sys_config = TextBox1.Text
 
-                conn.Open()
-
-                search_sys_config = TextBox1.Text
-
-                'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
-                Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
+            'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
+            Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
                 Dim cmd As New OracleCommand(sql, conn)
                 cmd.CommandType = CommandType.Text
 
@@ -90,19 +68,13 @@ Public Class SYS_CONFIGS
                 DataGridView1.Columns(4).ReadOnly = True
                 DataGridView1.Columns(5).ReadOnly = True
 
-                conn.Close()
 
-                conn.Dispose()
-
-                dr.Dispose()
-
-                cmd.Dispose()
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
 
             End If
 
-        Else
-            MsgBox("No Version selected!", vbCritical)
-        End If
 
     End Sub
 
@@ -110,9 +82,7 @@ Public Class SYS_CONFIGS
         Try
 
             Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & search_sys_config & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-            Dim conn As New OracleConnection(oradb)
 
-            conn.Open()
             Dim cmd As New OracleCommand(sql, conn)
             cmd.CommandType = CommandType.Text
 
@@ -146,12 +116,8 @@ Public Class SYS_CONFIGS
 
             End While
 
-            conn.Close()
-
-            conn.Dispose()
-
             dr.Dispose()
-
+            dr.Close()
             cmd.Dispose()
 
         Catch ex As Exception
@@ -163,7 +129,7 @@ Public Class SYS_CONFIGS
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
         Dim form1 As New Form1
-
+        form1.g_oradb = oradb
         form1.Show()
 
         Me.Close()
