@@ -503,17 +503,17 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         If i_flg_type = 0 Then
 
             sql = sql & " And s.flg_type In ('M','A')
-                    ORDER BY 3 ASC;"
+                    ORDER BY 3 ASC"
 
         ElseIf i_flg_type = 1 Then
 
             sql = sql & " And s.flg_type In ('M')
-                          ORDER BY 3 ASC;"
+                          ORDER BY 3 ASC"
 
         Else
 
             sql = sql & " And s.flg_type In ('A')
-                          ORDER BY 3 ASC;"
+                          ORDER BY 3 ASC"
 
         End If
 
@@ -605,7 +605,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             JOIN alert.exam_cat ec ON ec.id_exam_cat = e.id_exam_cat
                             JOIN translation tec ON tec.code_translation = ec.code_exam_cat
                                              AND tec.desc_lang_" & l_id_language & " IS NOT NULL
-                            WHERE (d.id_institution IS NULL OR d.id_institution IN (0, " & i_id_inst & "))
+                            WHERE d.id_institution IN (0, " & i_id_inst & ")
                             AND e.flg_type = '" & i_exam_type & "'
                             AND e.flg_available = 'Y'
                             AND ec.flg_available = 'Y'
@@ -640,13 +640,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Int64, ByVal i_id_content_exam_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_id_content_exam_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst, i_conn)
 
         Dim sql As String = ""
 
-        sql = " Select distinct pk_translation.get_translation(" & l_id_language & ",e.code_exam),ec.id_content,e.id_content          
+        sql = " Select distinct ec.id_content, e.id_content, pk_translation.get_translation(" & l_id_language & ",e.code_exam)          
                      from alert.exam_dep_clin_serv d
                      join alert.exam e on e.id_exam=d.id_exam
                      join alert.exam_cat ec on ec.id_exam_cat=e.id_exam_cat and ec.flg_available='Y'
@@ -672,26 +672,32 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End If
 
 
-        If i_id_content_exam_cat = 0 Then
+        If i_id_content_exam_cat = "0" Then
 
-            sql = sql & " order by 1 asc"
+            sql = sql & " order by 3 asc"
 
         Else
 
-            sql = sql & " and ec.id_content = " & i_id_content_exam_cat & " 
-                          order by 1 asc"
+
+            sql = sql & " and ec.id_content = '" & i_id_content_exam_cat & "' 
+                          order by 3 asc"
 
         End If
 
         Dim cmd As New OracleCommand(sql, i_conn)
+
         Try
+
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
+
         Catch ex As Exception
+
             cmd.Dispose()
             Return False
+
         End Try
 
     End Function
@@ -2693,7 +2699,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_EXAMS_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_exams As exams_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_EXAMS_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_exams As exams_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
 
         Dim sql As String = ""
 
@@ -2743,7 +2749,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                       WHEN DUP_VAL_ON_INDEX THEN
                         CONTINUE;
             
-                        END;"
+                    END;
+
+                    END LOOP;
+                   END;"
 
         Dim cmd_insert_exam_dep_clin_serv As New OracleCommand(sql, i_conn)
 

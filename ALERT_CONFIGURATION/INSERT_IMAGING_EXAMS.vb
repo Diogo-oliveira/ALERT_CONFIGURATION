@@ -37,30 +37,6 @@ Public Class INSERT_IMAGING_EXAMS
 
     Dim g_a_selected_exams_delete_cs() As String ' Array para remover procedimentos do alert
 
-    ''Estrutura dos exames carregados do default
-    'Dim l_loaded_exams() As EXAMS_API.exams_default
-
-    'Estrutura que vai guardar os exames de default selecionados
-    ' Dim l_selected_default_exams() As EXAMS_API.exams_default
-
-
-    'Dim l_index_selected_exams_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
-
-    '    Dim l_total_cats As Int64 = 0
-
-    'Dim a_loaded_exams_by_cat_alert() As EXAMS_API.exams_alert ''Array que vai carregar todos os ids e descritivos de uma categoria do alert
-    'Dim a_selected_exams_alert() As EXAMS_API.exams_alert      ''Array que vai guardar os exames selecionados do alert
-    'Dim l_index_selected_exams_from_alert As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 4 - do alert para o clinical service)
-    '
-    '   Dim a_dep_clin_serv_inst() As Int64 ''Array que vai guardar os dep_clin_serv da instituição
-
-    'Dim l_selected_exam() As Int64 ' Array para remover exames do alert
-
-    'Dim a_exams_for_clinical_service() As EXAMS_API.exams_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
-    'Dim l_dimension_exams_cs As Integer = 0
-
-    '    Dim l_id_dep_clin_serv As Int64 = 0 'Variavel que vai guardar o id do dep_clin_serv_selecionado
-
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
@@ -170,15 +146,14 @@ Public Class INSERT_IMAGING_EXAMS
         g_id_dep_clin_serv = 0
         ReDim g_a_loaded_categories_default(0)
         g_selected_category = -1
-        'ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_interventions(0)
-        'g_index_selected_intervention_from_default = 0
-        'ReDim g_a_interv_cats_alert(0)
-        'ReDim g_a_interv_cats_alert(0)
-        'g_dimension_intervs_alert = 0
-        'ReDim g_a_intervs_for_clinical_service(0)
-        'g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_intervs_delete_cs(0)
+        ReDim g_a_loaded_exams_default(0)
+        ReDim g_a_selected_default_exams(0)
+        g_index_selected_exam_from_default = 0
+        ReDim g_a_exam_cats_alert(0)
+        g_dimension_exams_alert = 0
+        ReDim g_a_exams_for_clinical_service(0)
+        g_dimension_exams_cs = 0
+        ReDim g_a_selected_exams_delete_cs(0)
 
         TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
 
@@ -732,32 +707,34 @@ Public Class INSERT_IMAGING_EXAMS
         g_dimension_exams_alert = 0
         ReDim g_a_exams_alert(g_dimension_exams_alert)
 
-
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, g_selected_category, "I", g_record_type, conn, dr_exams) Then
+        If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category_alert, "I", g_record_type, conn, dr_exams) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+            dr_exams.Dispose()
+            dr_exams.Close()
 
         Else
 
             While dr_exams.Read()
 
-                g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(0)
-                g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(1)
-                g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(2)
+                g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(2)
+                g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(0)
+                g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(1)
 
                 g_dimension_exams_alert = g_dimension_exams_alert + 1
                 ReDim Preserve g_a_exams_alert(g_dimension_exams_alert)
 
-                CheckedListBox3.Items.Add(dr_exams.Item(0))
+                CheckedListBox3.Items.Add(dr_exams.Item(2))
 
             End While
 
-        End If
+            dr_exams.Dispose()
+            dr_exams.Close()
 
-        dr_exams.Dispose()
-        dr_exams.Close()
+        End If
 
         Cursor = Cursors.Arrow
 
@@ -865,7 +842,7 @@ Public Class INSERT_IMAGING_EXAMS
                     If (g_a_exams_for_clinical_service(j).flg_new = "Y") Then
 
                         'CRIAR FUNÇÂO PARA INCLUIR NO DEP_CLIN_SERV
-                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(j), g_record_type, g_id_dep_clin_serv, conn) Then
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(j), g_id_dep_clin_serv, g_record_type, conn) Then
 
                             l_sucess = False
 
@@ -918,13 +895,13 @@ Public Class INSERT_IMAGING_EXAMS
             '6 - Ler cursor e popular o campo
             While dr.Read()
 
-                CheckedListBox4.Items.Add(dr.Item(1))
+                CheckedListBox4.Items.Add(dr.Item(2))
 
                 ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
 
                 g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr.Item(0)
                 g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr.Item(1)
-                g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr.Item(3)
+                g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr.Item(2)
                 g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
 
                 g_dimension_exams_cs = g_dimension_exams_cs + 1
@@ -958,7 +935,7 @@ Public Class INSERT_IMAGING_EXAMS
 
                     If (g_a_exams_for_clinical_service(indexChecked).flg_new = "Y") Then
 
-                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked), g_record_type, g_id_dep_clin_serv, conn) Then
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked), g_id_dep_clin_serv, g_record_type, conn) Then
 
                             l_sucess = False
 
@@ -1010,7 +987,7 @@ Public Class INSERT_IMAGING_EXAMS
 
             While dr.Read()
 
-                CheckedListBox4.Items.Add(dr.Item(1))
+                CheckedListBox4.Items.Add(dr.Item(2))
 
                 ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
                 g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr.Item(0)
@@ -1067,9 +1044,6 @@ Public Class INSERT_IMAGING_EXAMS
 
             Dim result As Integer = 0
             Dim l_sucess As Boolean = True
-
-            'Variável que determina se pelo menos um registo foi eliminado (Implementar ISTo)
-            Dim record_deleted As Boolean = False
 
             'Perguntar se utilizador pretende mesmo apagar todos os exames de uma categoria
             If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
@@ -1169,13 +1143,13 @@ Public Class INSERT_IMAGING_EXAMS
 
                         While dr_exams.Read()
 
-                            g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(1)
-                            g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(2)
-                            g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(0)
+                            g_a_exams_alert(g_dimension_exams_alert).id_content_category = dr_exams.Item(0)
+                            g_a_exams_alert(g_dimension_exams_alert).id_content_exam = dr_exams.Item(1)
+                            g_a_exams_alert(g_dimension_exams_alert).desc_exam = dr_exams.Item(2)
                             g_dimension_exams_alert = g_dimension_exams_alert + 1
                             ReDim Preserve g_a_exams_alert(g_dimension_exams_alert)
 
-                            CheckedListBox3.Items.Add(dr_exams.Item(0))
+                            CheckedListBox3.Items.Add(dr_exams.Item(2))
 
                         End While
 
@@ -1196,7 +1170,7 @@ Public Class INSERT_IMAGING_EXAMS
 
                     MsgBox("ERROR DELETING EXAMS!", vbCritical)
 
-                ElseIf record_deleted = True Then
+                Else
 
                     MsgBox("Record(s) Successfuly deleted.", vbInformation)
 
@@ -1209,44 +1183,48 @@ Public Class INSERT_IMAGING_EXAMS
 
             CheckedListBox4.Items.Clear()
 
-            '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
-            Dim dr_delete As OracleDataReader
+            If g_id_dep_clin_serv <> 0 Then
+
+                '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
+                Dim dr_delete As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr_delete) Then
+                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "I", conn, dr_delete) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV.", vbCritical)
+                    MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV.", vbCritical)
 
-            Else
+                Else
 
-                Dim i As Integer = 0
+                    Dim i As Integer = 0
 
-                '6 - Ler cursor e popular o campo
-                While dr_delete.Read()
+                    '6 - Ler cursor e popular o campo
+                    While dr_delete.Read()
 
-                    CheckedListBox4.Items.Add(dr_delete.Item(1))
+                        CheckedListBox4.Items.Add(dr_delete.Item(2))
 
-                    ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
+                        ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
 
 
-                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr_delete.Item(0)
-                    g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr_delete.Item(1)
-                    g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr_delete.Item(2)
-                    g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
+                        g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam_cat = dr_delete.Item(0)
+                        g_a_exams_for_clinical_service(g_dimension_exams_cs).id_content_exam = dr_delete.Item(1)
+                        g_a_exams_for_clinical_service(g_dimension_exams_cs).desc_exam = dr_delete.Item(2)
+                        g_a_exams_for_clinical_service(g_dimension_exams_cs).flg_new = "N"
 
-                    g_dimension_exams_cs = g_dimension_exams_cs + 1
+                        g_dimension_exams_cs = g_dimension_exams_cs + 1
 
-                End While
+                    End While
+
+                End If
+
+                dr_delete.Dispose()
+                dr_delete.Close()
 
             End If
 
-            dr_delete.Dispose()
-            dr_delete.Close()
-
             Cursor = Cursors.Arrow
 
-        End If
+            End If
 
     End Sub
 
@@ -1343,7 +1321,7 @@ Public Class INSERT_IMAGING_EXAMS
 
                 While dr_new.Read()
 
-                    CheckedListBox4.Items.Add(dr_new.Item(1))
+                    CheckedListBox4.Items.Add(dr_new.Item(2))
 
                     'Bloco para repopular os arrays
                     ReDim Preserve g_a_exams_for_clinical_service(g_dimension_exams_cs)
