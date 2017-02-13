@@ -39,6 +39,11 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Button9 = New System.Windows.Forms.Button()
+        Me.Button10 = New System.Windows.Forms.Button()
+        Me.Button11 = New System.Windows.Forms.Button()
+        Me.Button12 = New System.Windows.Forms.Button()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -53,55 +58,55 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(402, 346)
+        Me.Button1.Location = New System.Drawing.Point(389, 348)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(114, 40)
-        Me.Button1.TabIndex = 4
+        Me.Button1.TabIndex = 55
         Me.Button1.Text = "Exit"
         Me.Button1.UseVisualStyleBackColor = True
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(16, 256)
+        Me.Button3.Location = New System.Drawing.Point(23, 256)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(116, 40)
-        Me.Button3.TabIndex = 5
+        Me.Button3.TabIndex = 1
         Me.Button3.Text = "Imaging Exams"
         Me.Button3.UseVisualStyleBackColor = True
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(402, 256)
+        Me.Button4.Location = New System.Drawing.Point(389, 258)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(114, 40)
-        Me.Button4.TabIndex = 6
+        Me.Button4.TabIndex = 45
         Me.Button4.Text = "SYSTEM CONFIGURATIONS"
         Me.Button4.UseVisualStyleBackColor = True
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(16, 302)
+        Me.Button6.Location = New System.Drawing.Point(23, 302)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(116, 40)
-        Me.Button6.TabIndex = 8
+        Me.Button6.TabIndex = 5
         Me.Button6.Text = "Other Exams"
         Me.Button6.UseVisualStyleBackColor = True
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(16, 348)
+        Me.Button2.Location = New System.Drawing.Point(23, 348)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(116, 40)
-        Me.Button2.TabIndex = 9
+        Me.Button2.TabIndex = 10
         Me.Button2.Text = "Lab Tests"
         Me.Button2.UseVisualStyleBackColor = True
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(138, 256)
+        Me.Button5.Location = New System.Drawing.Point(145, 256)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(116, 40)
-        Me.Button5.TabIndex = 10
+        Me.Button5.TabIndex = 15
         Me.Button5.Text = "Procedures"
         Me.Button5.UseVisualStyleBackColor = True
         '
@@ -111,21 +116,21 @@ Partial Class Form1
         Me.ComboBox1.Location = New System.Drawing.Point(230, 321)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(166, 21)
-        Me.ComboBox1.TabIndex = 11
+        Me.ComboBox1.TabIndex = 3
         '
         'TextBox1
         '
         Me.TextBox1.Location = New System.Drawing.Point(230, 269)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(166, 20)
-        Me.TextBox1.TabIndex = 12
+        Me.TextBox1.TabIndex = 1
         '
         'TextBox2
         '
         Me.TextBox2.Location = New System.Drawing.Point(230, 295)
         Me.TextBox2.Name = "TextBox2"
         Me.TextBox2.Size = New System.Drawing.Size(166, 20)
-        Me.TextBox2.TabIndex = 13
+        Me.TextBox2.TabIndex = 2
         Me.TextBox2.UseSystemPasswordChar = True
         '
         'Button7
@@ -133,7 +138,7 @@ Partial Class Form1
         Me.Button7.Location = New System.Drawing.Point(280, 348)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(116, 26)
-        Me.Button7.TabIndex = 14
+        Me.Button7.TabIndex = 5
         Me.Button7.Text = "EXIT"
         Me.Button7.UseVisualStyleBackColor = True
         '
@@ -142,7 +147,7 @@ Partial Class Form1
         Me.Button8.Location = New System.Drawing.Point(159, 348)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(116, 26)
-        Me.Button8.TabIndex = 15
+        Me.Button8.TabIndex = 4
         Me.Button8.Text = "CONNECT"
         Me.Button8.UseVisualStyleBackColor = True
         '
@@ -150,7 +155,7 @@ Partial Class Form1
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(153, 270)
+        Me.Label1.Location = New System.Drawing.Point(156, 269)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(71, 16)
         Me.Label1.TabIndex = 16
@@ -178,18 +183,68 @@ Partial Class Form1
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(402, 302)
+        Me.Button9.Location = New System.Drawing.Point(389, 302)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(114, 40)
-        Me.Button9.TabIndex = 19
+        Me.Button9.TabIndex = 50
         Me.Button9.Text = "Logout"
         Me.Button9.UseVisualStyleBackColor = True
+        '
+        'Button10
+        '
+        Me.Button10.Location = New System.Drawing.Point(145, 302)
+        Me.Button10.Name = "Button10"
+        Me.Button10.Size = New System.Drawing.Size(116, 40)
+        Me.Button10.TabIndex = 20
+        Me.Button10.Text = "Surgical Procedures"
+        Me.Button10.UseVisualStyleBackColor = True
+        '
+        'Button11
+        '
+        Me.Button11.Location = New System.Drawing.Point(145, 348)
+        Me.Button11.Name = "Button11"
+        Me.Button11.Size = New System.Drawing.Size(116, 40)
+        Me.Button11.TabIndex = 25
+        Me.Button11.Text = "Supplies"
+        Me.Button11.UseVisualStyleBackColor = True
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(267, 256)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(116, 40)
+        Me.Button12.TabIndex = 30
+        Me.Button12.Text = "Translation Updates"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(267, 302)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(116, 40)
+        Me.Button13.TabIndex = 35
+        Me.Button13.Text = "Medication"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button14
+        '
+        Me.Button14.Location = New System.Drawing.Point(267, 348)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(116, 40)
+        Me.Button14.TabIndex = 40
+        Me.Button14.Text = "Texts"
+        Me.Button14.UseVisualStyleBackColor = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(542, 395)
+        Me.Controls.Add(Me.Button14)
+        Me.Controls.Add(Me.Button13)
+        Me.Controls.Add(Me.Button12)
+        Me.Controls.Add(Me.Button11)
+        Me.Controls.Add(Me.Button10)
         Me.Controls.Add(Me.Button9)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Label2)
@@ -206,6 +261,8 @@ Partial Class Form1
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.PictureBox1)
+        Me.MaximumSize = New System.Drawing.Size(558, 434)
+        Me.MinimumSize = New System.Drawing.Size(558, 434)
         Me.Name = "Form1"
         Me.Text = "ALERT Configuration"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -229,4 +286,9 @@ Partial Class Form1
     Friend WithEvents Label2 As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Button9 As Button
+    Friend WithEvents Button10 As Button
+    Friend WithEvents Button11 As Button
+    Friend WithEvents Button12 As Button
+    Friend WithEvents Button13 As Button
+    Friend WithEvents Button14 As Button
 End Class

@@ -810,7 +810,7 @@ Public Class Procedures
                         If (result_dialog <> DialogResult.OK And result_dialog <> DialogResult.Abort) Then
 
                             '"Record '" & g_desc_interv & "' exists for software 'ALL'. If you delete this record, it will also be deleted for all softwares. Confirm?"
-                            dialog = New YES_to_ALL("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. Do you also wish to inactivate this record for software 'ALL'?")
+                            dialog = New YES_to_ALL("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. Do you also wish to inactivate this record for software 'ALL'? (By selecting 'No', the record will only be inactivated for the selected software))")
                             result_dialog = dialog.ShowDialog(Me)
                             dialog.Dispose()
                             dialog.Close()

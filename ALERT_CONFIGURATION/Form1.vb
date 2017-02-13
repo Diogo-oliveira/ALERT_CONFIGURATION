@@ -18,6 +18,11 @@ Public Class Form1
             Button5.Visible = False
             Button6.Visible = False
             Button9.Visible = False
+            Button10.Visible = False
+            Button11.Visible = False
+            Button12.Visible = False
+            Button13.Visible = False
+            Button14.Visible = False
 
             Dim db_list As New OracleDataSourceEnumerator()
 
@@ -71,6 +76,11 @@ Public Class Form1
             Button5.Visible = True
             Button6.Visible = True
             Button9.Visible = True
+            Button10.Visible = True
+            Button11.Visible = True
+            Button12.Visible = True
+            Button13.Visible = True
+            Button14.Visible = True
 
         End If
     End Sub
@@ -182,6 +192,11 @@ Public Class Form1
                 Button5.Visible = True
                 Button6.Visible = True
                 Button9.Visible = True
+                Button10.Visible = True
+                Button11.Visible = True
+                Button12.Visible = True
+                Button13.Visible = True
+                Button14.Visible = True
 
             Catch ex As Exception
 
@@ -214,12 +229,47 @@ Public Class Form1
         Button5.Visible = False
         Button6.Visible = False
         Button9.Visible = False
+        Button10.Visible = False
+        Button11.Visible = False
+        Button12.Visible = False
+        Button13.Visible = False
+        Button14.Visible = False
 
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
         Application.Exit()
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+
+        MsgBox("Waiting Development!", vbInformation)
 
     End Sub
 End Class
