@@ -3323,14 +3323,14 @@ Public Class LABS_API
                                             LEFT JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
                                             LEFT JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
                                                                                  AND ais.id_sample_type = ast.id_sample_type
-                                                                                 AND ais.id_institution = 470
-                                                                                 AND ais.id_software = 11
+                                                                                 AND ais.id_institution = " & i_id_institution & "
+                                                                                 AND ais.id_software = " & i_id_software & "
                                             LEFT JOIN alert.analysis_instit_recipient air ON air.id_analysis_instit_soft = ais.id_analysis_instit_soft
                                             LEFT JOIN alert.sample_recipient sr ON sr.id_sample_recipient = air.id_sample_recipient
                                                                             AND sr.flg_available = 'Y'
                                             WHERE dais.flg_available = 'Y'
                                             AND dast.flg_available = 'Y'
-                                            AND dais.id_software = 11
+                                            AND dais.id_software = " & i_id_software & "
                                             AND dsr.flg_available = 'Y'
                                             AND ast.flg_available = 'Y'
                                             AND air.id_analysis_instit_recipient IS NULL

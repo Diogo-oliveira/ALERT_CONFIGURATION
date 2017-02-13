@@ -245,7 +245,12 @@ Public Class Form1
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
 
-        MsgBox("Waiting Development!", vbInformation)
+        Dim FOMR_SR_PROCEDURES As New SR_Procedures(g_oradb)
+
+        Me.Hide()
+
+        FOMR_SR_PROCEDURES.ShowDialog()
+
 
     End Sub
 
