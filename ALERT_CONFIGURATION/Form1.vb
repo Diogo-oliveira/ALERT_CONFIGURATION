@@ -168,8 +168,15 @@ Public Class Form1
 
         Else
 
-            g_oradb = "Data Source=" & ComboBox1.Text & ";User Id=" & TextBox1.Text & ";Password=" & TextBox2.Text & ""
+            If ComboBox1.Text.ToUpper = "SYS" Then
 
+                g_oradb = "Data Source=" & ComboBox1.Text & ";User Id=" & TextBox1.Text & ";Password=" & TextBox2.Text & "; DBA Privilege=SYSDBA"
+
+            Else
+
+                g_oradb = "Data Source=" & ComboBox1.Text & ";User Id=" & TextBox1.Text & ";Password=" & TextBox2.Text & ""
+
+            End If
 
             Dim conn As New OracleConnection(g_oradb)
             Try

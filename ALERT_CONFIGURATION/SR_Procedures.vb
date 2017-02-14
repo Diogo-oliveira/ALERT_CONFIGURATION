@@ -128,4 +128,8 @@ Public Class SR_Procedures
         ' g_procedure_type = 0
 
     End Sub
+
+    Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
+
+    End Sub
 End Class

@@ -320,76 +320,22 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "   Select (decode(i.id_market,
-                                  1,
-                                  tdep.desc_lang_1,
-                                  2,
-                                  tdep.desc_lang_2,
-                                  3,
-                                  tdep.desc_lang_11,
-                                  4,
-                                  tdep.desc_lang_5,
-                                  5,
-                                  tdep.desc_lang_4,
-                                  6,
-                                  tdep.desc_lang_3,
-                                  7,
-                                  tdep.desc_lang_10,
-                                  8,
-                                  tdep.desc_lang_7,
-                                  9,
-                                  tdep.desc_lang_6,
-                                  10,
-                                  tdep.desc_lang_9,
-                                  12,
-                                  tdep.desc_lang_16,
-                                  16,
-                                  tdep.desc_lang_17,
-                                  17,
-                                  tdep.desc_lang_18,
-                                  19,
-                                  tdep.desc_lang_19) || ' - ' || decode(i.id_market,
-                                  1,
-                                  T.desc_lang_1,
-                                  2,
-                                  T.desc_lang_2,
-                                  3,
-                                  T.desc_lang_11,
-                                  4,
-                                  T.desc_lang_5,
-                                  5,
-                                  T.desc_lang_4,
-                                  6,
-                                  T.desc_lang_3,
-                                  7,
-                                  T.desc_lang_10,
-                                  8,
-                                  T.desc_lang_7,
-                                  9,
-                                  T.desc_lang_6,
-                                  10,
-                                  T.desc_lang_9,
-                                  12,
-                                  T.desc_lang_16,
-                                  16,
-                                  T.desc_lang_17,
-                                  17,
-                                  T.desc_lang_18,
-                                  19,
-                                  T.desc_lang_19)), d.id_dep_clin_serv from alert.dep_clin_serv d
-                     join alert.clinical_service c
-                     on c.id_clinical_service=d.id_clinical_service
-                     join alert.department dep on dep.id_department=d.id_department
-                     join translation t on t.code_translation=c.code_clinical_service
-                     join software s on s.id_software=dep.id_software
-                     JOIN INSTITUTION I ON I.id_institution=DEP.ID_INSTITUTION
-                     join translation tdep on tdep.code_translation=dep.code_department
-                     where dep.id_institution= " & i_ID_INST & "
-                     and dep.id_software= " & i_ID_SOFT & "
-                     and dep.flg_available='Y'
-                     and c.flg_available='Y'
-                     and d.flg_available='Y'
-                     order by 1 asc"
+        Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST, i_conn)
+
+        Dim sql As String = "   Select pk_translation.get_translation(" & l_id_language & ",dep.code_department) || ' - ' ||  pk_translation.get_translation(" & l_id_language & ",c.code_clinical_service),
+                                      d.id_dep_clin_serv from alert.dep_clin_serv d
+                                 join alert.clinical_service c
+                                 on c.id_clinical_service=d.id_clinical_service
+                                 join alert.department dep on dep.id_department=d.id_department                                 
+                                 join software s on s.id_software=dep.id_software
+                                 JOIN INSTITUTION I ON I.id_institution=DEP.ID_INSTITUTION                                 
+                                 where dep.id_institution= " & i_ID_INST & "
+                                 and dep.id_software= " & i_ID_SOFT & "
+                                 and dep.flg_available='Y'
+                                 and c.flg_available='Y'
+                                 and d.flg_available='Y'
+                                 and pk_translation.get_translation(" & l_id_language & ",c.code_clinical_service) is not null
+                                 order by 1 asc"
 
         Try
 
