@@ -212,6 +212,7 @@
     <Compile Include="SR_Procedures.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SR_PROCEDURES_API.vb" />
     <Compile Include="SYS_CONFIGS.Designer.vb">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
     </Compile>

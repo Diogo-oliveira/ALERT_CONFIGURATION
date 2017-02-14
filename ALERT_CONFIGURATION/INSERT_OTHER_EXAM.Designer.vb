@@ -112,9 +112,9 @@ Partial Class INSERT_OTHER_EXAM
         Me.Label11.AutoSize = True
         Me.Label11.Location = New System.Drawing.Point(433, 15)
         Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(123, 13)
+        Me.Label11.Size = New System.Drawing.Size(85, 13)
         Me.Label11.TabIndex = 157
-        Me.Label11.Text = "TYPE OF PROCEDURE"
+        Me.Label11.Text = "TYPE OF EXAM"
         '
         'Button13
         '

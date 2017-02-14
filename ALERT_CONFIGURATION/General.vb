@@ -640,7 +640,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-
             Dim cmd As New OracleCommand(sql, i_conn)
             cmd.CommandType = CommandType.Text
 
