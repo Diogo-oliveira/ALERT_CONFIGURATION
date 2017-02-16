@@ -2429,9 +2429,6 @@ Public Class LABS_API
 
             End While
 
-            dr_distinct_parameters_translation.Dispose()
-            dr_distinct_parameters_translation.Close()
-
             If (l_index > 0) Then
 
                 For ii As Integer = 0 To dr_distinct_parameters_translation.FieldCount() - 1
@@ -2451,21 +2448,13 @@ Public Class LABS_API
             End If
 
 
-            'Ignrorar este Ponto. Para este tipo de atualizações, o utilizador terá que remover a análise do alert, e depois configurar novamente.
-            '1.3 - Ver se é necessário fazer update aos registos do ALERT (Registos que no default estão a N e no alert estão a Y)
-            ' If Not UPDATE_PARAMETER_AVAILABILITY(i_software, i_selected_default_analysis(ii).id_content_analysis_sample_type, i_conn) Then
-
-            'MsgBox("ERROR UPDATING PARAMETERS!", vbCritical)
-
-            '  End If
-
         Catch ex As Exception
 
             dr_distinct_parameters.Dispose()
-            dr_distinct_parameters.Close()
-            dr_distinct_parameters_translation.Dispose()
-            dr_distinct_parameters_translation.Close()
-            Return False
+        dr_distinct_parameters.Close()
+        dr_distinct_parameters_translation.Dispose()
+        dr_distinct_parameters_translation.Close()
+        Return False
 
         End Try
 

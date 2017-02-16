@@ -633,18 +633,36 @@ Public Class LAB_TESTS
                                                         g_dimension_labs_alert = 0
 
                                                     Else
-                                                        MsgBox("ERROR")
+                                                        MsgBox("ERROR INSERTING ANALYSIS_ROOM.", vbCritical)
                                                     End If
+                                                Else
+                                                    MsgBox("ERROR SET_ANALYSIS_INST_RECIPIENT!", vbCritical)
                                                 End If
+                                            Else
+                                                MsgBox("ERROR SET_ANALYSIS_INST_SOFT!", vbCritical)
                                             End If
+                                        Else
+                                            MsgBox("ERROR SET_SAMPLE_RECIPIENT!", vbCritical)
                                         End If
+                                    Else
+                                        MsgBox("ERROR SET_PARAM!", vbCritical)
                                     End If
+                                Else
+                                    MsgBox("ERROR SET_PARAMETER!", vbCritical)
                                 End If
+                            Else
+                                MsgBox("ERROR SET_ANALYSIS_SAMPLE_TYPE!", vbCritical)
                             End If
+                        Else
+                            MsgBox("ERROR SET_ANALYSIS!", vbCritical)
                         End If
+                    Else
+                        MsgBox("ERROR SET_SAMPLE_TYPE!", vbCritical)
                     End If
                 Else
+
                     MsgBox("ERROR INSERTING EXAM CATEGORY!", vbCritical)
+
                 End If
             End If
         Else
