@@ -45,10 +45,8 @@ Partial Class SR_Procedures
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.Label6 = New System.Windows.Forms.Label()
-        Me.ComboBox4 = New System.Windows.Forms.ComboBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.Button7 = New System.Windows.Forms.Button()
@@ -58,8 +56,8 @@ Partial Class SR_Procedures
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
-        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.ComboBox2 = New System.Windows.Forms.ComboBox()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -265,15 +263,6 @@ Partial Class SR_Procedures
         Me.Button2.Text = ">>"
         Me.Button2.UseVisualStyleBackColor = True
         '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(593, 148)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(161, 13)
-        Me.Label7.TabIndex = 129
-        Me.Label7.Text = "PROCEDURES BY CATEGORY"
-        '
         'CheckedListBox2
         '
         Me.CheckedListBox2.CheckOnClick = True
@@ -286,27 +275,16 @@ Partial Class SR_Procedures
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(11, 121)
+        Me.Label6.Location = New System.Drawing.Point(11, 148)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(197, 13)
+        Me.Label6.Size = New System.Drawing.Size(182, 13)
         Me.Label6.TabIndex = 127
-        Me.Label6.Text = "PROCEDURES CATEGORIES (Default)"
-        '
-        'ComboBox4
-        '
-        Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(14, 137)
-        Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
-        Me.ComboBox4.TabIndex = 126
+        Me.Label6.Text = "SURGICAL PROCEDURES (Default)"
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(614, 16)
+        Me.Label4.Location = New System.Drawing.Point(433, 15)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 125
@@ -316,7 +294,7 @@ Partial Class SR_Procedures
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(617, 31)
+        Me.ComboBox3.Location = New System.Drawing.Point(436, 30)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 124
@@ -381,31 +359,31 @@ Partial Class SR_Procedures
         Me.PictureBox1.TabIndex = 150
         Me.PictureBox1.TabStop = False
         '
-        'ComboBox7
+        'Label3
         '
-        Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(427, 30)
-        Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(167, 21)
-        Me.ComboBox7.TabIndex = 153
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(687, 15)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(82, 13)
+        Me.Label3.TabIndex = 154
+        Me.Label3.Text = "CODIFICATION"
         '
-        'Label5
+        'ComboBox2
         '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(424, 15)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(101, 13)
-        Me.Label5.TabIndex = 154
-        Me.Label5.Text = "TYPE OF RECORD"
+        Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox2.FormattingEnabled = True
+        Me.ComboBox2.Location = New System.Drawing.Point(690, 30)
+        Me.ComboBox2.Name = "ComboBox2"
+        Me.ComboBox2.Size = New System.Drawing.Size(79, 21)
+        Me.ComboBox2.TabIndex = 153
         '
         'SR_Procedures
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
-        Me.Controls.Add(Me.Label5)
-        Me.Controls.Add(Me.ComboBox7)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.ComboBox2)
         Me.Controls.Add(Me.Button15)
         Me.Controls.Add(Me.Button16)
         Me.Controls.Add(Me.PictureBox1)
@@ -429,10 +407,8 @@ Partial Class SR_Procedures
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
-        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.Label6)
-        Me.Controls.Add(Me.ComboBox4)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.ComboBox3)
         Me.Controls.Add(Me.Button7)
@@ -473,10 +449,8 @@ Partial Class SR_Procedures
     Friend WithEvents Button4 As Button
     Friend WithEvents Button3 As Button
     Friend WithEvents Button2 As Button
-    Friend WithEvents Label7 As Label
     Friend WithEvents CheckedListBox2 As CheckedListBox
     Friend WithEvents Label6 As Label
-    Friend WithEvents ComboBox4 As ComboBox
     Friend WithEvents Label4 As Label
     Friend WithEvents ComboBox3 As ComboBox
     Friend WithEvents Button7 As Button
@@ -485,6 +459,6 @@ Partial Class SR_Procedures
     Friend WithEvents Button1 As Button
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents ComboBox1 As ComboBox
-    Friend WithEvents ComboBox7 As ComboBox
-    Friend WithEvents Label5 As Label
+    Friend WithEvents Label3 As Label
+    Friend WithEvents ComboBox2 As ComboBox
 End Class
