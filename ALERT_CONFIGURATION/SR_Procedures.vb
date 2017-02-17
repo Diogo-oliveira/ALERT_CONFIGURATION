@@ -691,7 +691,7 @@ Public Class SR_Procedures
 
                 ''Limpar o array de sr_interventions do Clinical Service
                 ReDim g_a_intervs_for_clinical_service(0)
-                ReDim g_a_intervs_alert(0)
+                'ReDim g_a_intervs_alert(0) -- Acho qu enão posso fazer isto aqui. Verificar
 
                 g_dimension_intervs_cs = 0
                 g_dimension_intervs_alert = 0
