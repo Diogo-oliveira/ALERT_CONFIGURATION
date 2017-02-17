@@ -498,4 +498,9 @@
         1lPPonDSFNWrtn0c588qwP8B9KwjDhgU1iMAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>Please ensure that the CODIFICATION configured for the institution matches the CODIFICATION of the configured surgical interventions.
+
+The institution CODIFICATION is configured by SYS_CONFIG 'SURGICAL_PROCEDURES_CODING'</value>
+  </data>
 </root>

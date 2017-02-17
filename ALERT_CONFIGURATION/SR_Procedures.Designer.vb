@@ -56,12 +56,16 @@ Partial Class SR_Procedures
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Button15
         '
-        Me.Button15.Location = New System.Drawing.Point(1363, 447)
+        Me.Button15.Location = New System.Drawing.Point(1363, 430)
         Me.Button15.Name = "Button15"
         Me.Button15.Size = New System.Drawing.Size(101, 23)
         Me.Button15.TabIndex = 152
@@ -70,7 +74,7 @@ Partial Class SR_Procedures
         '
         'Button16
         '
-        Me.Button16.Location = New System.Drawing.Point(1255, 447)
+        Me.Button16.Location = New System.Drawing.Point(1255, 430)
         Me.Button16.Name = "Button16"
         Me.Button16.Size = New System.Drawing.Size(102, 23)
         Me.Button16.TabIndex = 151
@@ -198,7 +202,7 @@ Partial Class SR_Procedures
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(1470, 447)
+        Me.Button5.Location = New System.Drawing.Point(1470, 430)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(102, 23)
         Me.Button5.TabIndex = 134
@@ -209,14 +213,14 @@ Partial Class SR_Procedures
         '
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(832, 167)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(832, 150)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox1.TabIndex = 133
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(653, 447)
+        Me.Button4.Location = New System.Drawing.Point(653, 430)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(101, 23)
         Me.Button4.TabIndex = 132
@@ -225,7 +229,7 @@ Partial Class SR_Procedures
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(545, 447)
+        Me.Button3.Location = New System.Drawing.Point(545, 430)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 131
@@ -234,7 +238,7 @@ Partial Class SR_Procedures
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(773, 276)
+        Me.Button2.Location = New System.Drawing.Point(773, 259)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 130
@@ -245,7 +249,7 @@ Partial Class SR_Procedures
         '
         Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(14, 167)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(14, 150)
         Me.CheckedListBox2.Name = "CheckedListBox2"
         Me.CheckedListBox2.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox2.TabIndex = 128
@@ -253,7 +257,7 @@ Partial Class SR_Procedures
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(11, 148)
+        Me.Label6.Location = New System.Drawing.Point(11, 131)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(182, 13)
         Me.Label6.TabIndex = 127
@@ -262,7 +266,7 @@ Partial Class SR_Procedures
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(433, 15)
+        Me.Label4.Location = New System.Drawing.Point(421, 15)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 125
@@ -272,7 +276,7 @@ Partial Class SR_Procedures
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(436, 30)
+        Me.ComboBox3.Location = New System.Drawing.Point(424, 30)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 124
@@ -289,7 +293,7 @@ Partial Class SR_Procedures
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(175, 15)
+        Me.Label2.Location = New System.Drawing.Point(172, 14)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 120
@@ -323,7 +327,7 @@ Partial Class SR_Procedures
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(178, 31)
+        Me.ComboBox1.Location = New System.Drawing.Point(175, 30)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox1.TabIndex = 116
@@ -331,7 +335,7 @@ Partial Class SR_Procedures
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1365, 15)
+        Me.PictureBox1.Location = New System.Drawing.Point(1363, 21)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
         Me.PictureBox1.TabIndex = 150
@@ -340,7 +344,7 @@ Partial Class SR_Procedures
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(687, 15)
+        Me.Label3.Location = New System.Drawing.Point(672, 16)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(82, 13)
         Me.Label3.TabIndex = 154
@@ -350,16 +354,51 @@ Partial Class SR_Procedures
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(690, 30)
+        Me.ComboBox2.Location = New System.Drawing.Point(675, 31)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(79, 21)
         Me.ComboBox2.TabIndex = 153
+        '
+        'GroupBox1
+        '
+        Me.GroupBox1.Controls.Add(Me.Label5)
+        Me.GroupBox1.Controls.Add(Me.TextBox2)
+        Me.GroupBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox1.Location = New System.Drawing.Point(832, 15)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(450, 114)
+        Me.GroupBox1.TabIndex = 155
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "INSTITUTION CODIFICATION"
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox2.ForeColor = System.Drawing.Color.Red
+        Me.TextBox2.Location = New System.Drawing.Point(17, 31)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.ReadOnly = True
+        Me.TextBox2.Size = New System.Drawing.Size(24, 20)
+        Me.TextBox2.TabIndex = 0
+        Me.TextBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label5.Location = New System.Drawing.Point(54, 30)
+        Me.Label5.MaximumSize = New System.Drawing.Size(400, 200)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(388, 65)
+        Me.Label5.TabIndex = 2
+        Me.Label5.Text = resources.GetString("Label5.Text")
         '
         'SR_Procedures
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.ComboBox2)
         Me.Controls.Add(Me.Button15)
@@ -398,6 +437,8 @@ Partial Class SR_Procedures
         Me.Name = "SR_Procedures"
         Me.Text = "SR_Procedures"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox1.ResumeLayout(False)
+        Me.GroupBox1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -435,4 +476,7 @@ Partial Class SR_Procedures
     Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label3 As Label
     Friend WithEvents ComboBox2 As ComboBox
+    Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents TextBox2 As TextBox
+    Friend WithEvents Label5 As Label
 End Class

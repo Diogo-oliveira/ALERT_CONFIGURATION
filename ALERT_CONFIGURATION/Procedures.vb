@@ -1230,17 +1230,14 @@ Public Class Procedures
     End Sub
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
-
         If CheckedListBox4.Items.Count() > 0 Then
             For i As Integer = 0 To CheckedListBox4.Items.Count - 1
                 CheckedListBox4.SetItemChecked(i, True)
             Next
         End If
-
     End Sub
 
     Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
-
         If CheckedListBox4.Items.Count() > 0 Then
             For i As Integer = 0 To CheckedListBox4.Items.Count - 1
                 CheckedListBox4.SetItemChecked(i, False)

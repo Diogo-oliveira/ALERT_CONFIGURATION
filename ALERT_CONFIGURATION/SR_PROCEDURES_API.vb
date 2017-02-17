@@ -11,6 +11,12 @@ Public Class SR_PROCEDURES_API
 
     End Structure
 
+    Public Structure sr_interventions_alert_flg
+        Public id_content_intervention As String
+        Public desc_intervention As String
+        Public flg_new As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = ""
@@ -381,6 +387,59 @@ Public Class SR_PROCEDURES_API
 
     End Function
 
+    Function SET_SR_INTERV_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_a_interventions As sr_interventions_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim sql As String = "DECLARE
+
+                                l_a_id_content table_varchar := table_varchar('" & i_a_interventions.id_content_intervention & "'); "
+
+        sql = sql & "  l_id_sr_intervention alert.sr_intervention.id_sr_intervention%TYPE;
+
+                        l_a_dep_clin_serv table_number := table_number();
+
+                    BEGIN
+
+                        FOR i IN 1 .. l_a_id_content.count()
+                        LOOP
+    
+                            BEGIN
+        
+                                SELECT sr.id_sr_intervention
+                                INTO l_id_sr_intervention
+                                FROM alert.sr_intervention sr
+                                WHERE sr.id_content = l_a_id_content(i)
+                                AND sr.flg_status = 'A';
+        
+                                INSERT INTO alert.sr_interv_dep_clin_serv
+                                    (id_sr_interv_dep_clin_serv, id_dep_clin_serv, id_sr_intervention, flg_type, id_professional, id_institution, id_software, rank)
+                                VALUES
+                                    (alert.seq_sr_interv_dep_clin_serv.nextval, " & i_dep_clin_serv & ", l_id_sr_intervention, 'M', NULL, " & i_institution & ", 2, 0);
+            
+                            EXCEPTION 
+                                WHEN dup_val_on_index THEN continue;
+        
+                            END;                             
+    
+                        END LOOP;
+
+                    END;"
+
+        Dim cmd_insert_interv As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_interv.CommandType = CommandType.Text
+            cmd_insert_interv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_interv.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_interv.Dispose()
+        Return True
+
+    End Function
+
     Function GET_INTERVS_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_id_dep_clin_serv As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
@@ -389,7 +448,7 @@ Public Class SR_PROCEDURES_API
 
         If i_id_dep_clin_serv = 0 Then
 
-            sql = "SELECT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
+            sql = "SELECT DISTINCT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
                     FROM alert.sr_intervention sr
                     JOIN alert.sr_interv_dep_clin_serv srd ON srd.id_sr_intervention = sr.id_sr_intervention
                     WHERE sr.flg_status = 'A'
@@ -400,7 +459,7 @@ Public Class SR_PROCEDURES_API
 
         Else
 
-            sql = "SELECT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
+            sql = "SELECT DISTINCT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
                     FROM alert.sr_intervention sr
                     JOIN alert.sr_interv_dep_clin_serv srd ON srd.id_sr_intervention = sr.id_sr_intervention
                     WHERE sr.flg_status = 'A'
@@ -483,13 +542,13 @@ Public Class SR_PROCEDURES_API
 
         Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
 
-        ' Try
-        cmd_delete_dep_clin_serv.CommandType = CommandType.Text
-        cmd_delete_dep_clin_serv.ExecuteNonQuery()
-        ' Catch ex As Exception
-        'cmd_delete_dep_clin_serv.Dispose()
-        'Return False
-        'End Try
+        Try
+            cmd_delete_dep_clin_serv.CommandType = CommandType.Text
+            cmd_delete_dep_clin_serv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_dep_clin_serv.Dispose()
+            Return False
+        End Try
 
         cmd_delete_dep_clin_serv.Dispose()
         Return True

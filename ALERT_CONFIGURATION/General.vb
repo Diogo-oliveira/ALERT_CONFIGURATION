@@ -657,4 +657,28 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
+    Function GET_SYSCONFIG(ByVal i_institution As Int64, ByVal i_id_software As Integer, ByVal i_sysconfig As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT alert.pk_sysconfig.get_config('" & i_sysconfig & "', profissional(0, " & i_institution & ", " & i_id_software & "))
+                                         FROM dual"
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, i_conn)
+            cmd.CommandType = CommandType.Text
+
+            i_dr = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
 End Class
