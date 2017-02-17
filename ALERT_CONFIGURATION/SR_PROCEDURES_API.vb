@@ -368,15 +368,130 @@ Public Class SR_PROCEDURES_API
 
         Dim cmd_insert_interv As New OracleCommand(sql, i_conn)
 
+        Try
+            cmd_insert_interv.CommandType = CommandType.Text
+            cmd_insert_interv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_interv.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_interv.Dispose()
+        Return True
+
+    End Function
+
+    Function GET_INTERVS_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_id_dep_clin_serv As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = ""
+
+        If i_id_dep_clin_serv = 0 Then
+
+            sql = "SELECT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
+                    FROM alert.sr_intervention sr
+                    JOIN alert.sr_interv_dep_clin_serv srd ON srd.id_sr_intervention = sr.id_sr_intervention
+                    WHERE sr.flg_status = 'A'
+                    AND sr.flg_coding IN (SELECT alert.pk_sysconfig.get_config('SURGICAL_PROCEDURES_CODING', profissional(0, " & i_institution & ", 0))
+                                         FROM dual)
+                    AND srd.id_institution IN (0, " & i_institution & ")
+                    ORDER BY 2 ASC"
+
+        Else
+
+            sql = "SELECT sr.id_content, pk_translation.get_translation(" & l_id_language & ", sr.code_sr_intervention)
+                    FROM alert.sr_intervention sr
+                    JOIN alert.sr_interv_dep_clin_serv srd ON srd.id_sr_intervention = sr.id_sr_intervention
+                    WHERE sr.flg_status = 'A'
+                    AND sr.flg_coding IN (SELECT alert.pk_sysconfig.get_config('SURGICAL_PROCEDURES_CODING', profissional(0, " & i_institution & ", 0))
+                                         FROM dual)
+                    AND srd.id_institution IN (0, " & i_institution & ")
+                    AND srd.id_dep_clin_serv = " & i_id_dep_clin_serv & " and srd.flg_type = 'M'
+                    ORDER BY 2 ASC"
+
+        End If
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function DELETE_SR_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_intervention() As sr_interventions_default, ByVal i_id_dep_clin_serv As Int64, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String
+
+        If i_id_dep_clin_serv = 0 Then
+
+            sql = "DELETE
+                    FROM alert.sr_interv_dep_clin_serv srd
+                    WHERE srd.id_sr_intervention IN (SELECT s.id_sr_intervention
+                                                     FROM alert.sr_intervention s
+                                                     WHERE s.id_content IN('"
+
+            For i As Integer = 0 To i_intervention.Count() - 1
+
+                If i < i_intervention.Count() - 1 Then
+
+                    sql = sql & i_intervention(i).id_content_intervention & "', '"
+
+                Else
+
+                    sql = sql & i_intervention(i).id_content_intervention & "')"
+
+                End If
+
+            Next
+
+            sql = sql & "   AND s.flg_status = 'A')
+                            AND srd.id_institution IN (0," & i_institution & ")"
+        Else
+
+            sql = "DELETE
+                    FROM alert.sr_interv_dep_clin_serv srd
+                    WHERE srd.id_sr_intervention IN (SELECT s.id_sr_intervention
+                                                     FROM alert.sr_intervention s
+                                                     WHERE s.id_content IN ('"
+
+            For i As Integer = 0 To i_intervention.Count() - 1
+
+                If i < i_intervention.Count() - 1 Then
+
+                    sql = sql & i_intervention(i).id_content_intervention & "', '"
+
+                Else
+
+                    sql = sql & i_intervention(i).id_content_intervention & "')"
+
+                End If
+
+            Next
+            sql = sql & "   And s.flg_status = 'A')
+                            AND srd.id_institution IN  (0," & i_institution & ")
+                            And srd.id_dep_clin_serv = " & i_id_dep_clin_serv & "
+                            and srd.flg_type='M'"
+
+        End If
+
+        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
+
         ' Try
-        cmd_insert_interv.CommandType = CommandType.Text
-        cmd_insert_interv.ExecuteNonQuery()
-        'Catch ex As Exception
-        'cmd_insert_interv.Dispose()
+        cmd_delete_dep_clin_serv.CommandType = CommandType.Text
+        cmd_delete_dep_clin_serv.ExecuteNonQuery()
+        ' Catch ex As Exception
+        'cmd_delete_dep_clin_serv.Dispose()
         'Return False
         'End Try
 
-        cmd_insert_interv.Dispose()
+        cmd_delete_dep_clin_serv.Dispose()
         Return True
 
     End Function
