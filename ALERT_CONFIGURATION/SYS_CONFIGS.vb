@@ -6,11 +6,18 @@ Public Class SYS_CONFIGS
 
     Dim search_sys_config As String = ""
 
+    Dim db_access_general As New General
+
+    Dim g_a_softwares() As Integer
+    Dim g_selected_software As Integer = 0
+
+    Dim g_a_markets() As Integer
+    Dim g_selected_market As Integer = 0
+
     Private Sub SYS_CONFIGS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
             'Estabelecer ligação à BD
-
             conn.Open()
 
         Catch ex As Exception
@@ -18,6 +25,56 @@ Public Class SYS_CONFIGS
             MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
 
         End Try
+
+        Dim dr As OracleDataReader
+
+        If Not db_access_general.GET_SOFT_INST(0, conn, dr) Then
+
+            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+        Else
+
+            Dim l_index_soft As Integer = 0
+            ReDim g_a_softwares(0)
+
+            While dr.Read()
+
+                ComboBox3.Items.Add(dr.Item(1))
+                ReDim Preserve g_a_softwares(l_index_soft)
+                g_a_softwares(l_index_soft) = dr.Item(0)
+                l_index_soft = l_index_soft + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+        Dim dr_market As OracleDataReader
+
+        If Not db_access_general.GET_MARKETS(conn, dr_market) Then
+
+            MsgBox("ERROR GETTING MARKETS!", vbCritical)
+
+        Else
+
+            Dim l_index_market As Integer = 0
+            ReDim g_a_markets(0)
+
+            While dr_market.Read()
+
+                ComboBox1.Items.Add(dr_market.Item(1))
+                ReDim Preserve g_a_markets(l_index_market)
+                g_a_markets(l_index_market) = dr_market.Item(0)
+                l_index_market = l_index_market + 1
+
+            End While
+
+        End If
+
+        dr_market.Dispose()
+        dr_market.Close()
 
     End Sub
 
@@ -137,4 +194,46 @@ Public Class SYS_CONFIGS
 
     End Sub
 
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+        Dim sql As String = "Select DISTINCT s.id_sys_config  from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox2.Text & "%') order by 1 asc"
+        Dim cmd As New OracleCommand(sql, conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        ComboBox4.Items.Clear()
+        ComboBox4.SelectedText = ""
+        While dr.Read()
+
+            ComboBox4.Items.Add(dr.Item(0))
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+
+
+
+    End Sub
+
+    Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
+
+        g_selected_software = g_a_softwares(ComboBox3.SelectedIndex)
+
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        If Not db_access_general.SET_SYSCONFIG(ComboBox4.Text, TextBox3.Text, TextBox4.Text, g_selected_software, g_selected_market, conn) Then
+
+            MsgBox("ERROR INSERTING RECORD.", vbCritical)
+
+        Else
+
+            MsgBox("Record inserted.", vbInformation)
+
+        End If
+
+    End Sub
 End Class

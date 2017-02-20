@@ -294,11 +294,24 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
+        Dim sql As String = ""
+
+        If i_ID_INST = 0 Then
+
+            sql = "SELECT s.id_software, s.id_software || ' - ' || decode(s.name,'todos','ALL', s.name)
+                    From software s
+                    Where s.id_software >= 0
+                    Order By 1 ASC"
+
+        Else
+
+            sql = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
                             where i.id_ab_institution=" & i_ID_INST & "
                             and s.id_software > 0
                             order by 1 asc"
+
+        End If
 
         Try
 
@@ -678,6 +691,109 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             Return False
 
         End Try
+
+    End Function
+
+    Function GET_MARKETS(ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT m.id_market, (m.id_market || ' - ' || decode(t.desc_lang_2, 'None', 'ALL', t.desc_lang_2))
+                            FROM market m
+                            JOIN translation t ON t.code_translation = m.code_market
+                            ORDER BY 1 ASC"
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, i_conn)
+            cmd.CommandType = CommandType.Text
+
+            i_dr = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function SET_SYSCONFIG(ByVal i_id_sysconfig As String, ByVal i_value As String, ByVal i_institution As Int64, ByVal i_sofware As Integer, ByVal i_market As Integer, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim Sql As String = "DECLARE
+
+                                l_desc            sys_config.id_sys_config%TYPE;
+                                l_fill_type       sys_config.fill_type%TYPE;
+                                l_client_config   sys_config.client_configuration%TYPE;
+                                l_internal_config sys_config.internal_configuration%TYPE;
+                                l_global_config   sys_config.global_configuration%TYPE;
+                                l_flg_schema      sys_config.flg_schema%TYPE;
+                                l_mvalue          sys_config.mvalue%TYPE;
+
+                            BEGIN
+
+                                SELECT DISTINCT s.desc_sys_config, s.fill_type, s.client_configuration, s.internal_configuration, s.global_configuration, s.flg_schema, s.mvalue
+                                INTO l_desc, l_fill_type, l_client_config, l_internal_config, l_global_config, l_flg_schema, l_mvalue
+                                FROM sys_config s
+                                WHERE s.id_sys_config = '" & i_id_sysconfig & "';
+
+                                INSERT INTO sys_config
+                                    (id_sys_config,
+                                     VALUE,
+                                     desc_sys_config,
+                                     id_institution,
+                                     id_software,
+                                     fill_type,
+                                     client_configuration,
+                                     internal_configuration,
+                                     global_configuration,
+                                     flg_schema,
+                                     id_market,
+                                     mvalue)
+                                VALUES
+                                    ('" & i_id_sysconfig & "',
+                                     '" & i_value & "',
+                                     l_desc,
+                                     " & i_institution & ",
+                                     " & i_sofware & ",
+                                     l_fill_type,
+                                     l_client_config,
+                                     l_internal_config,
+                                     l_global_config,
+                                     l_flg_schema,
+                                     " & i_market & ",
+                                     l_mvalue);
+
+                            EXCEPTION
+                                WHEN dup_val_on_index THEN
+                                    UPDATE sys_config s
+                                    SET s.value = '" & i_value & "'
+                                    WHERE s.id_sys_config ='" & i_id_sysconfig & "'
+                                    AND s.id_software = " & i_sofware & "
+                                    AND s.id_institution = " & i_institution & "
+                                    AND s.id_market =" & i_market & ";
+    
+                            END;"
+
+        Dim cmd_insert_SC As New OracleCommand(Sql, i_conn)
+        cmd_insert_SC.CommandType = CommandType.Text
+
+        'Try
+
+        cmd_insert_SC.ExecuteNonQuery()
+
+
+        ' Catch ex As Exception
+
+        'cmd_insert_SC.Dispose()
+        'Return False
+
+        '   End Try
+
+        cmd_insert_SC.Dispose()
+        Return True
 
     End Function
 
