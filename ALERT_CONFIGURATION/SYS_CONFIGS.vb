@@ -35,45 +35,46 @@ Public Class SYS_CONFIGS
 
         If TextBox1.Text = "" Then
 
-                MsgBox("No SYS_CONFIG inserted!", vbCritical)
+            DataGridView1.Columns.Clear()
 
-            Else
+        Else
 
             search_sys_config = TextBox1.Text
 
             'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
             Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-                Dim cmd As New OracleCommand(sql, conn)
-                cmd.CommandType = CommandType.Text
+            Dim cmd As New OracleCommand(sql, conn)
+            cmd.CommandType = CommandType.Text
 
-                Dim dr As OracleDataReader = cmd.ExecuteReader()
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-                Dim Table As New DataTable
-                Table.Load(cmd.ExecuteReader)
-                DataGridView1.DataSource = Table
+            Dim Table As New DataTable
+            Table.Load(cmd.ExecuteReader)
+            DataGridView1.DataSource = Table
 
-                DataGridView1.Columns(0).Width = 200
-                DataGridView1.Columns(2).Width = 500
+            DataGridView1.Columns(0).Width = 350
+            DataGridView1.Columns(1).Width = 180
+            DataGridView1.Columns(2).Width = 670
 
-                DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
-                DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
-                DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
-                DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
-                DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
-                DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
 
-                DataGridView1.Columns(0).ReadOnly = True
-                DataGridView1.Columns(2).ReadOnly = True
-                DataGridView1.Columns(3).ReadOnly = True
-                DataGridView1.Columns(4).ReadOnly = True
-                DataGridView1.Columns(5).ReadOnly = True
+            DataGridView1.Columns(0).ReadOnly = True
+            DataGridView1.Columns(2).ReadOnly = True
+            DataGridView1.Columns(3).ReadOnly = True
+            DataGridView1.Columns(4).ReadOnly = True
+            DataGridView1.Columns(5).ReadOnly = True
 
 
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
 
-            End If
+        End If
 
 
     End Sub
@@ -135,4 +136,5 @@ Public Class SYS_CONFIGS
         Me.Close()
 
     End Sub
+
 End Class

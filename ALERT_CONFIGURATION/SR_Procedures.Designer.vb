@@ -389,9 +389,11 @@ Partial Class SR_Procedures
         Me.Label5.Location = New System.Drawing.Point(54, 30)
         Me.Label5.MaximumSize = New System.Drawing.Size(400, 200)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(388, 65)
+        Me.Label5.Size = New System.Drawing.Size(335, 65)
         Me.Label5.TabIndex = 2
-        Me.Label5.Text = resources.GetString("Label5.Text")
+        Me.Label5.Text = "Please ensure that the CODIFICATION for the institution matches the CODIFICATION " &
+    "of the surgical interventions." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The institution CODIFICATION is configured by " &
+    "SYS_CONFIG 'SURGICAL_PROCEDURES_CODING'"
         '
         'SR_Procedures
         '

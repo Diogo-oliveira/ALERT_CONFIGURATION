@@ -415,7 +415,7 @@ Public Class Procedures
 
             While dr_lab_cat_def.Read()
 
-                ComboBox4.Items.Add(dr_lab_cat_def.Item(1))
+                ComboBox4.Items.Add(dr_lab_cat_def.Item(1) & "  -  " & dr_lab_cat_def.Item(0)) 'Modificado para apresentar ID_CONTENT da categoria
                 g_a_loaded_categories_default(l_index_loaded_categories) = dr_lab_cat_def.Item(0)
                 l_index_loaded_categories = l_index_loaded_categories + 1
                 ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
