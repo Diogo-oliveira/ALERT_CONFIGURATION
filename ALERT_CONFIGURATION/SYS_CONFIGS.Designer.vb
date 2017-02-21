@@ -22,7 +22,7 @@ Partial Class SYS_CONFIGS
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.DataGridView1 = New System.Windows.Forms.DataGridView()
         Me.Button1 = New System.Windows.Forms.Button()
@@ -44,6 +44,7 @@ Partial Class SYS_CONFIGS
         Me.Label5 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.TextBox4 = New System.Windows.Forms.TextBox()
+        Me.Button6 = New System.Windows.Forms.Button()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -52,7 +53,7 @@ Partial Class SYS_CONFIGS
         'Button2
         '
         Me.Button2.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.Button2.Location = New System.Drawing.Point(20, 418)
+        Me.Button2.Location = New System.Drawing.Point(20, 554)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(83, 20)
         Me.Button2.TabIndex = 59
@@ -70,16 +71,16 @@ Partial Class SYS_CONFIGS
         Me.DataGridView1.Location = New System.Drawing.Point(20, 45)
         Me.DataGridView1.MultiSelect = False
         Me.DataGridView1.Name = "DataGridView1"
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.AppWorkspace
-        DataGridViewCellStyle13.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.AppWorkspace
+        DataGridViewCellStyle5.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle5
         Me.DataGridView1.RowHeadersVisible = False
-        Me.DataGridView1.Size = New System.Drawing.Size(1519, 367)
+        Me.DataGridView1.Size = New System.Drawing.Size(1519, 486)
         Me.DataGridView1.TabIndex = 55
         '
         'Button1
@@ -102,7 +103,7 @@ Partial Class SYS_CONFIGS
         'Button3
         '
         Me.Button3.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.Button3.Location = New System.Drawing.Point(1445, 775)
+        Me.Button3.Location = New System.Drawing.Point(12, 775)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(127, 32)
         Me.Button3.TabIndex = 60
@@ -111,6 +112,7 @@ Partial Class SYS_CONFIGS
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.Button6)
         Me.GroupBox1.Controls.Add(Me.Button2)
         Me.GroupBox1.Controls.Add(Me.DataGridView1)
         Me.GroupBox1.Controls.Add(Me.Button1)
@@ -118,7 +120,7 @@ Partial Class SYS_CONFIGS
         Me.GroupBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox1.Location = New System.Drawing.Point(12, 12)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(1560, 444)
+        Me.GroupBox1.Size = New System.Drawing.Size(1560, 593)
         Me.GroupBox1.TabIndex = 152
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Update System Configurations"
@@ -139,9 +141,9 @@ Partial Class SYS_CONFIGS
         Me.GroupBox2.Controls.Add(Me.Label1)
         Me.GroupBox2.Controls.Add(Me.ComboBox1)
         Me.GroupBox2.Controls.Add(Me.Label3)
-        Me.GroupBox2.Location = New System.Drawing.Point(12, 480)
+        Me.GroupBox2.Location = New System.Drawing.Point(12, 636)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(1560, 177)
+        Me.GroupBox2.Size = New System.Drawing.Size(1560, 114)
         Me.GroupBox2.TabIndex = 153
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Insert System Configuration"
@@ -149,7 +151,7 @@ Partial Class SYS_CONFIGS
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(935, 32)
+        Me.Label3.Location = New System.Drawing.Point(849, 26)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(76, 13)
         Me.Label3.TabIndex = 79
@@ -158,7 +160,7 @@ Partial Class SYS_CONFIGS
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(1169, 32)
+        Me.Label1.Location = New System.Drawing.Point(1317, 28)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(52, 13)
         Me.Label1.TabIndex = 81
@@ -168,15 +170,15 @@ Partial Class SYS_CONFIGS
         '
         Me.ComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(1172, 47)
+        Me.ComboBox1.Location = New System.Drawing.Point(1320, 43)
         Me.ComboBox1.Name = "ComboBox1"
-        Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
+        Me.ComboBox1.Size = New System.Drawing.Size(219, 21)
         Me.ComboBox1.TabIndex = 80
         '
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(701, 31)
+        Me.Label2.Location = New System.Drawing.Point(1083, 27)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(68, 13)
         Me.Label2.TabIndex = 83
@@ -186,21 +188,21 @@ Partial Class SYS_CONFIGS
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(704, 47)
+        Me.ComboBox3.Location = New System.Drawing.Point(1086, 43)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 82
         '
         'TextBox2
         '
-        Me.TextBox2.Location = New System.Drawing.Point(6, 49)
+        Me.TextBox2.Location = New System.Drawing.Point(20, 46)
         Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.Size = New System.Drawing.Size(226, 20)
+        Me.TextBox2.Size = New System.Drawing.Size(294, 20)
         Me.TextBox2.TabIndex = 84
         '
         'TextBox3
         '
-        Me.TextBox3.Location = New System.Drawing.Point(472, 49)
+        Me.TextBox3.Location = New System.Drawing.Point(620, 45)
         Me.TextBox3.Name = "TextBox3"
         Me.TextBox3.Size = New System.Drawing.Size(226, 20)
         Me.TextBox3.TabIndex = 85
@@ -209,15 +211,15 @@ Partial Class SYS_CONFIGS
         '
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.Location = New System.Drawing.Point(238, 49)
+        Me.ComboBox4.Location = New System.Drawing.Point(320, 45)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(228, 21)
+        Me.ComboBox4.Size = New System.Drawing.Size(294, 21)
         Me.ComboBox4.TabIndex = 86
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(6, 32)
+        Me.Label4.Location = New System.Drawing.Point(20, 28)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(143, 13)
         Me.Label4.TabIndex = 87
@@ -226,7 +228,7 @@ Partial Class SYS_CONFIGS
         'Button4
         '
         Me.Button4.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.Button4.Location = New System.Drawing.Point(6, 84)
+        Me.Button4.Location = New System.Drawing.Point(20, 84)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(83, 20)
         Me.Button4.TabIndex = 88
@@ -236,7 +238,7 @@ Partial Class SYS_CONFIGS
         'Button5
         '
         Me.Button5.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.Button5.Location = New System.Drawing.Point(6, 120)
+        Me.Button5.Location = New System.Drawing.Point(109, 84)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(83, 20)
         Me.Button5.TabIndex = 89
@@ -246,7 +248,7 @@ Partial Class SYS_CONFIGS
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(235, 32)
+        Me.Label5.Location = New System.Drawing.Point(317, 28)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(141, 13)
         Me.Label5.TabIndex = 90
@@ -255,7 +257,7 @@ Partial Class SYS_CONFIGS
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(469, 32)
+        Me.Label6.Location = New System.Drawing.Point(617, 28)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(42, 13)
         Me.Label6.TabIndex = 91
@@ -263,10 +265,20 @@ Partial Class SYS_CONFIGS
         '
         'TextBox4
         '
-        Me.TextBox4.Location = New System.Drawing.Point(938, 50)
+        Me.TextBox4.Location = New System.Drawing.Point(852, 44)
         Me.TextBox4.Name = "TextBox4"
         Me.TextBox4.Size = New System.Drawing.Size(226, 20)
         Me.TextBox4.TabIndex = 92
+        '
+        'Button6
+        '
+        Me.Button6.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.Button6.Location = New System.Drawing.Point(109, 554)
+        Me.Button6.Name = "Button6"
+        Me.Button6.Size = New System.Drawing.Size(83, 20)
+        Me.Button6.TabIndex = 154
+        Me.Button6.Text = "DELETE"
+        Me.Button6.UseVisualStyleBackColor = True
         '
         'SYS_CONFIGS
         '
@@ -310,4 +322,5 @@ Partial Class SYS_CONFIGS
     Friend WithEvents Label6 As Label
     Friend WithEvents Label5 As Label
     Friend WithEvents TextBox4 As TextBox
+    Friend WithEvents Button6 As Button
 End Class

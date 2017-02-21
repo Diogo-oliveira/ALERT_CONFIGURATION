@@ -780,17 +780,17 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         Dim cmd_insert_SC As New OracleCommand(Sql, i_conn)
         cmd_insert_SC.CommandType = CommandType.Text
 
-        'Try
+        Try
 
-        cmd_insert_SC.ExecuteNonQuery()
+            cmd_insert_SC.ExecuteNonQuery()
 
 
-        ' Catch ex As Exception
+        Catch ex As Exception
 
-        'cmd_insert_SC.Dispose()
-        'Return False
+            cmd_insert_SC.Dispose()
+            Return False
 
-        '   End Try
+        End Try
 
         cmd_insert_SC.Dispose()
         Return True

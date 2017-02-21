@@ -73,6 +73,8 @@ Public Class SYS_CONFIGS
 
         End If
 
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+
         dr_market.Dispose()
         dr_market.Close()
 
@@ -111,7 +113,7 @@ Public Class SYS_CONFIGS
 
             DataGridView1.Columns(0).Width = 350
             DataGridView1.Columns(1).Width = 180
-            DataGridView1.Columns(2).Width = 670
+            DataGridView1.Columns(2).Width = 685
 
             DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
             DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
@@ -151,8 +153,6 @@ Public Class SYS_CONFIGS
 
                 If dr.Item(1) <> DataGridView1(1, i).Value Then
 
-                    'Dim sql_update As String = "UPDATE SYS_CONFIG S SET S.Value = " & DataGridView1(1, i).Value & " WHERE S.ID_SYS_CONFIG = " & DataGridView1(0, i).Value & " AND S.ID_INSTITUTION= " & DataGridView1(3, i).Value & " AND S.ID_SOFTWARE= " & DataGridView1(4, i).Value & " AND S.ID_MARKET= " & DataGridView1(5, i).Value
-
                     Dim cmd_update As OracleCommand = conn.CreateCommand()
 
                     cmd_update.CommandType = CommandType.Text
@@ -179,7 +179,7 @@ Public Class SYS_CONFIGS
             cmd.Dispose()
 
         Catch ex As Exception
-            MsgBox("ERROR!", vbCritical)
+            MsgBox("ERROR UPDATING SYSCONFIG!", vbCritical)
         End Try
 
     End Sub
@@ -225,15 +225,145 @@ Public Class SYS_CONFIGS
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        If Not db_access_general.SET_SYSCONFIG(ComboBox4.Text, TextBox3.Text, TextBox4.Text, g_selected_software, g_selected_market, conn) Then
+        If ComboBox4.Text = "" Then
 
-            MsgBox("ERROR INSERTING RECORD.", vbCritical)
+            MsgBox("Please select a SYSCONFIG!")
+
+        ElseIf TextBox3.Text = "" Then
+
+            MsgBox("Please insert a VALUE for the sysconfig!")
+
+        ElseIf TextBox4.Text = "" Then
+
+            MsgBox("Please insert an INSTITUTION!")
+
+        ElseIf ComboBox3.Text = "" Then
+
+            MsgBox("Please select a SOFTWARE!")
+
+        ElseIf ComboBox1.Text = "" Then
+
+            MsgBox("Please select a MARKET!")
 
         Else
 
-            MsgBox("Record inserted.", vbInformation)
+            If Not db_access_general.SET_SYSCONFIG(ComboBox4.Text, TextBox3.Text, TextBox4.Text, g_selected_software, g_selected_market, conn) Then
+
+                MsgBox("ERROR INSERTING RECORD.", vbCritical)
+
+            Else
+
+                MsgBox("Record inserted.", vbInformation)
+
+                search_sys_config = ComboBox4.Text
+                TextBox1.Text = ComboBox4.Text
+
+                'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
+                Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
+                Dim cmd As New OracleCommand(sql, conn)
+                cmd.CommandType = CommandType.Text
+
+                Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+                Dim Table As New DataTable
+                Table.Load(cmd.ExecuteReader)
+                DataGridView1.DataSource = Table
+
+                DataGridView1.Columns(0).Width = 350
+                DataGridView1.Columns(1).Width = 180
+                DataGridView1.Columns(2).Width = 685
+
+                DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                DataGridView1.Columns(0).ReadOnly = True
+                DataGridView1.Columns(2).ReadOnly = True
+                DataGridView1.Columns(3).ReadOnly = True
+                DataGridView1.Columns(4).ReadOnly = True
+                DataGridView1.Columns(5).ReadOnly = True
+
+                dr.Dispose()
+                dr.Close()
+                cmd.Dispose()
+
+            End If
 
         End If
+
+    End Sub
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
+
+
+        Dim sql As String = "DELETE 
+                                    FROM sys_config sy
+                                    WHERE (sy.id_sys_config, sy.value, sy.desc_sys_config, sy.id_institution, sy.id_software, sy.id_market) IN
+                                          (SELECT tt.id_sys_config, tt.value, tt.desc_sys_config, tt.id_institution, tt.id_software, tt.id_market
+                                           FROM (SELECT t.*, rownum rn
+                                                 FROM (SELECT s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market
+                                                       FROM sys_config s
+                                                       WHERE upper(s.id_sys_config) LIKE upper('%" & search_sys_config & "%')
+                                                       ORDER BY 1 ASC, 6 ASC, 5 ASC, 4 ASC, 2 ASC) t) tt
+                                           WHERE rn = " & DataGridView1.CurrentRow.Index + 1 & ")"
+
+
+        Dim cmd_delete_sysconfig As New OracleCommand(sql, conn)
+
+        Try
+
+            cmd_delete_sysconfig.CommandType = CommandType.Text
+            cmd_delete_sysconfig.ExecuteNonQuery()
+            cmd_delete_sysconfig.Dispose()
+
+            MsgBox("Sysconfig deleted.", vbInformation)
+
+            TextBox1.Text = search_sys_config
+
+            'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
+            Dim sql_updated As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
+            Dim cmd As New OracleCommand(sql_updated, conn)
+            cmd.CommandType = CommandType.Text
+
+            Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+            Dim Table As New DataTable
+            Table.Load(cmd.ExecuteReader)
+            DataGridView1.DataSource = Table
+
+            DataGridView1.Columns(0).Width = 350
+            DataGridView1.Columns(1).Width = 180
+            DataGridView1.Columns(2).Width = 685
+
+            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
+
+            DataGridView1.Columns(0).ReadOnly = True
+            DataGridView1.Columns(2).ReadOnly = True
+            DataGridView1.Columns(3).ReadOnly = True
+            DataGridView1.Columns(4).ReadOnly = True
+            DataGridView1.Columns(5).ReadOnly = True
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+
+            MsgBox("ERROR DELETING SYSCONFIG", vbCritical)
+            cmd_delete_sysconfig.Dispose()
+        End Try
+
+    End Sub
+
+    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
 
     End Sub
 End Class
