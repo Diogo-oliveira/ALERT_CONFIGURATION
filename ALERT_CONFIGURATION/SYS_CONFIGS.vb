@@ -149,6 +149,8 @@ Public Class SYS_CONFIGS
             Dim dr As OracleDataReader = cmd.ExecuteReader()
             Dim i As Int16 = 0
 
+            Dim l_records_changed As Boolean = False
+
             While (dr.Read())
 
                 If dr.Item(1) <> DataGridView1(1, i).Value Then
@@ -166,7 +168,7 @@ Public Class SYS_CONFIGS
 
                     cmd_update.ExecuteNonQuery()
 
-                    MsgBox("Record(s) Updated!", vbOKOnly)
+                    l_records_changed = True
 
                 End If
 
@@ -177,6 +179,12 @@ Public Class SYS_CONFIGS
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
+
+            If l_records_changed = True Then
+
+                MsgBox("Record(s) updated.", vbInformation)
+
+            End If
 
         Catch ex As Exception
             MsgBox("ERROR UPDATING SYSCONFIG!", vbCritical)
@@ -212,7 +220,6 @@ Public Class SYS_CONFIGS
 
         dr.Dispose()
         dr.Close()
-
 
 
     End Sub
@@ -298,8 +305,12 @@ Public Class SYS_CONFIGS
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
+        Dim result As Integer = 0
+        result = MsgBox("Selected SYSCONFIG will be deleted. Confirm?", MessageBoxButtons.YesNo)
 
-        Dim sql As String = "DELETE 
+        If (result = DialogResult.Yes) Then
+
+            Dim sql As String = "DELETE 
                                     FROM sys_config sy
                                     WHERE (sy.id_sys_config, sy.value, sy.desc_sys_config, sy.id_institution, sy.id_software, sy.id_market) IN
                                           (SELECT tt.id_sys_config, tt.value, tt.desc_sys_config, tt.id_institution, tt.id_software, tt.id_market
@@ -311,59 +322,63 @@ Public Class SYS_CONFIGS
                                            WHERE rn = " & DataGridView1.CurrentRow.Index + 1 & ")"
 
 
-        Dim cmd_delete_sysconfig As New OracleCommand(sql, conn)
+            Dim cmd_delete_sysconfig As New OracleCommand(sql, conn)
 
-        Try
+            Try
 
-            cmd_delete_sysconfig.CommandType = CommandType.Text
-            cmd_delete_sysconfig.ExecuteNonQuery()
-            cmd_delete_sysconfig.Dispose()
+                cmd_delete_sysconfig.CommandType = CommandType.Text
+                cmd_delete_sysconfig.ExecuteNonQuery()
+                cmd_delete_sysconfig.Dispose()
 
-            MsgBox("Sysconfig deleted.", vbInformation)
+                MsgBox("Record deleted.", vbInformation)
 
-            TextBox1.Text = search_sys_config
+                TextBox1.Text = search_sys_config
 
-            'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
-            Dim sql_updated As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-            Dim cmd As New OracleCommand(sql_updated, conn)
-            cmd.CommandType = CommandType.Text
+                'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
+                Dim sql_updated As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
+                Dim cmd As New OracleCommand(sql_updated, conn)
+                cmd.CommandType = CommandType.Text
 
-            Dim dr As OracleDataReader = cmd.ExecuteReader()
+                Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-            Dim Table As New DataTable
-            Table.Load(cmd.ExecuteReader)
-            DataGridView1.DataSource = Table
+                Dim Table As New DataTable
+                Table.Load(cmd.ExecuteReader)
+                DataGridView1.DataSource = Table
 
-            DataGridView1.Columns(0).Width = 350
-            DataGridView1.Columns(1).Width = 180
-            DataGridView1.Columns(2).Width = 685
+                DataGridView1.Columns(0).Width = 350
+                DataGridView1.Columns(1).Width = 180
+                DataGridView1.Columns(2).Width = 685
 
-            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
-            DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
-            DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
-            DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
-            DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
-            DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(5).SortMode = DataGridViewColumnSortMode.NotSortable
 
-            DataGridView1.Columns(0).ReadOnly = True
-            DataGridView1.Columns(2).ReadOnly = True
-            DataGridView1.Columns(3).ReadOnly = True
-            DataGridView1.Columns(4).ReadOnly = True
-            DataGridView1.Columns(5).ReadOnly = True
+                DataGridView1.Columns(0).ReadOnly = True
+                DataGridView1.Columns(2).ReadOnly = True
+                DataGridView1.Columns(3).ReadOnly = True
+                DataGridView1.Columns(4).ReadOnly = True
+                DataGridView1.Columns(5).ReadOnly = True
 
-            dr.Dispose()
-            dr.Close()
-            cmd.Dispose()
+                dr.Dispose()
+                dr.Close()
+                cmd.Dispose()
 
-        Catch ex As Exception
+            Catch ex As Exception
 
-            MsgBox("ERROR DELETING SYSCONFIG", vbCritical)
-            cmd_delete_sysconfig.Dispose()
-        End Try
+                MsgBox("ERROR DELETING SYSCONFIG", vbCritical)
+                cmd_delete_sysconfig.Dispose()
+            End Try
+
+        End If
 
     End Sub
 
-    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        g_selected_market = g_a_markets(ComboBox1.SelectedIndex)
 
     End Sub
 End Class

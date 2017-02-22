@@ -50,7 +50,7 @@ Partial Class Form1
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(16, 12)
+        Me.PictureBox1.Location = New System.Drawing.Point(90, 12)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(500, 238)
         Me.PictureBox1.TabIndex = 3
@@ -58,7 +58,7 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(389, 348)
+        Me.Button1.Location = New System.Drawing.Point(463, 348)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(114, 40)
         Me.Button1.TabIndex = 55
@@ -67,7 +67,7 @@ Partial Class Form1
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(23, 256)
+        Me.Button3.Location = New System.Drawing.Point(97, 256)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(116, 40)
         Me.Button3.TabIndex = 1
@@ -76,7 +76,7 @@ Partial Class Form1
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(389, 258)
+        Me.Button4.Location = New System.Drawing.Point(463, 258)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(114, 40)
         Me.Button4.TabIndex = 45
@@ -85,7 +85,7 @@ Partial Class Form1
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(23, 302)
+        Me.Button6.Location = New System.Drawing.Point(97, 302)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(116, 40)
         Me.Button6.TabIndex = 5
@@ -94,7 +94,7 @@ Partial Class Form1
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(23, 348)
+        Me.Button2.Location = New System.Drawing.Point(97, 348)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(116, 40)
         Me.Button2.TabIndex = 10
@@ -103,7 +103,7 @@ Partial Class Form1
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(145, 256)
+        Me.Button5.Location = New System.Drawing.Point(219, 256)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(116, 40)
         Me.Button5.TabIndex = 15
@@ -113,21 +113,21 @@ Partial Class Form1
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(230, 321)
+        Me.ComboBox1.Location = New System.Drawing.Point(304, 321)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(166, 21)
         Me.ComboBox1.TabIndex = 3
         '
         'TextBox1
         '
-        Me.TextBox1.Location = New System.Drawing.Point(230, 269)
+        Me.TextBox1.Location = New System.Drawing.Point(304, 269)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(166, 20)
         Me.TextBox1.TabIndex = 1
         '
         'TextBox2
         '
-        Me.TextBox2.Location = New System.Drawing.Point(230, 295)
+        Me.TextBox2.Location = New System.Drawing.Point(304, 295)
         Me.TextBox2.Name = "TextBox2"
         Me.TextBox2.Size = New System.Drawing.Size(166, 20)
         Me.TextBox2.TabIndex = 2
@@ -135,7 +135,7 @@ Partial Class Form1
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(280, 348)
+        Me.Button7.Location = New System.Drawing.Point(354, 348)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(116, 26)
         Me.Button7.TabIndex = 5
@@ -144,7 +144,7 @@ Partial Class Form1
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(159, 348)
+        Me.Button8.Location = New System.Drawing.Point(233, 348)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(116, 26)
         Me.Button8.TabIndex = 4
@@ -155,7 +155,7 @@ Partial Class Form1
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(156, 269)
+        Me.Label1.Location = New System.Drawing.Point(230, 269)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(71, 16)
         Me.Label1.TabIndex = 16
@@ -165,7 +165,7 @@ Partial Class Form1
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(156, 295)
+        Me.Label2.Location = New System.Drawing.Point(230, 295)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(68, 16)
         Me.Label2.TabIndex = 17
@@ -175,7 +175,7 @@ Partial Class Form1
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(156, 322)
+        Me.Label3.Location = New System.Drawing.Point(230, 322)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 16)
         Me.Label3.TabIndex = 18
@@ -183,7 +183,7 @@ Partial Class Form1
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(389, 302)
+        Me.Button9.Location = New System.Drawing.Point(463, 302)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(114, 40)
         Me.Button9.TabIndex = 50
@@ -192,7 +192,7 @@ Partial Class Form1
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(145, 302)
+        Me.Button10.Location = New System.Drawing.Point(219, 302)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(116, 40)
         Me.Button10.TabIndex = 20
@@ -201,7 +201,7 @@ Partial Class Form1
         '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(145, 348)
+        Me.Button11.Location = New System.Drawing.Point(219, 348)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(116, 40)
         Me.Button11.TabIndex = 25
@@ -210,7 +210,7 @@ Partial Class Form1
         '
         'Button12
         '
-        Me.Button12.Location = New System.Drawing.Point(267, 256)
+        Me.Button12.Location = New System.Drawing.Point(341, 256)
         Me.Button12.Name = "Button12"
         Me.Button12.Size = New System.Drawing.Size(116, 40)
         Me.Button12.TabIndex = 30
@@ -219,7 +219,7 @@ Partial Class Form1
         '
         'Button13
         '
-        Me.Button13.Location = New System.Drawing.Point(267, 302)
+        Me.Button13.Location = New System.Drawing.Point(341, 302)
         Me.Button13.Name = "Button13"
         Me.Button13.Size = New System.Drawing.Size(116, 40)
         Me.Button13.TabIndex = 35
@@ -228,7 +228,7 @@ Partial Class Form1
         '
         'Button14
         '
-        Me.Button14.Location = New System.Drawing.Point(267, 348)
+        Me.Button14.Location = New System.Drawing.Point(341, 348)
         Me.Button14.Name = "Button14"
         Me.Button14.Size = New System.Drawing.Size(116, 40)
         Me.Button14.TabIndex = 40
@@ -239,7 +239,7 @@ Partial Class Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(542, 395)
+        Me.ClientSize = New System.Drawing.Size(684, 395)
         Me.Controls.Add(Me.Button14)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button12)
@@ -261,8 +261,9 @@ Partial Class Form1
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.PictureBox1)
-        Me.MaximumSize = New System.Drawing.Size(558, 434)
-        Me.MinimumSize = New System.Drawing.Size(558, 434)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximumSize = New System.Drawing.Size(700, 434)
+        Me.MinimumSize = New System.Drawing.Size(700, 434)
         Me.Name = "Form1"
         Me.Text = "ALERT Configuration"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
