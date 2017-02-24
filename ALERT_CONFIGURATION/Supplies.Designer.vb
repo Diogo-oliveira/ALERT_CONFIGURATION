@@ -187,9 +187,9 @@ Partial Class Supplies
         Me.Label10.AutoSize = True
         Me.Label10.Location = New System.Drawing.Point(593, 502)
         Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(161, 13)
+        Me.Label10.Size = New System.Drawing.Size(138, 13)
         Me.Label10.TabIndex = 140
-        Me.Label10.Text = "PROCEDURES BY CATEGORY"
+        Me.Label10.Text = "SUPPLIES BY CATEGORY"
         '
         'CheckedListBox3
         '
@@ -225,9 +225,9 @@ Partial Class Supplies
         Me.Label8.AutoSize = True
         Me.Label8.Location = New System.Drawing.Point(11, 475)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(174, 13)
+        Me.Label8.Size = New System.Drawing.Size(151, 13)
         Me.Label8.TabIndex = 136
-        Me.Label8.Text = "PROCEDURES CATEGORY (Alert)"
+        Me.Label8.Text = "SUPPLIES CATEGORY (Alert)"
         '
         'ComboBox5
         '
@@ -290,9 +290,9 @@ Partial Class Supplies
         Me.Label7.AutoSize = True
         Me.Label7.Location = New System.Drawing.Point(593, 148)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(161, 13)
+        Me.Label7.Size = New System.Drawing.Size(138, 13)
         Me.Label7.TabIndex = 129
-        Me.Label7.Text = "PROCEDURES BY CATEGORY"
+        Me.Label7.Text = "SUPPLIES BY CATEGORY"
         '
         'CheckedListBox2
         '
@@ -308,9 +308,9 @@ Partial Class Supplies
         Me.Label6.AutoSize = True
         Me.Label6.Location = New System.Drawing.Point(11, 121)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(197, 13)
+        Me.Label6.Size = New System.Drawing.Size(174, 13)
         Me.Label6.TabIndex = 127
-        Me.Label6.Text = "PROCEDURES CATEGORIES (Default)"
+        Me.Label6.Text = "SUPPLIES CATEGORIES (Default)"
         '
         'ComboBox4
         '

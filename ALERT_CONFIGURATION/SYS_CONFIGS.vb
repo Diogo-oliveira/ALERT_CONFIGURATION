@@ -381,4 +381,5 @@ Public Class SYS_CONFIGS
         g_selected_market = g_a_markets(ComboBox1.SelectedIndex)
 
     End Sub
+
 End Class

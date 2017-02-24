@@ -178,7 +178,7 @@ Partial Class SYS_CONFIGS
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(317, 28)
+        Me.Label5.Location = New System.Drawing.Point(285, 27)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(141, 13)
         Me.Label5.TabIndex = 90
@@ -215,11 +215,12 @@ Partial Class SYS_CONFIGS
         '
         'ComboBox4
         '
+        Me.ComboBox4.BackColor = System.Drawing.SystemColors.Window
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.Location = New System.Drawing.Point(320, 45)
+        Me.ComboBox4.Location = New System.Drawing.Point(288, 45)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(294, 21)
+        Me.ComboBox4.Size = New System.Drawing.Size(326, 21)
         Me.ComboBox4.TabIndex = 86
         '
         'TextBox3
@@ -233,7 +234,7 @@ Partial Class SYS_CONFIGS
         '
         Me.TextBox2.Location = New System.Drawing.Point(20, 46)
         Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.Size = New System.Drawing.Size(294, 20)
+        Me.TextBox2.Size = New System.Drawing.Size(262, 20)
         Me.TextBox2.TabIndex = 84
         '
         'Label2
@@ -313,7 +314,6 @@ Partial Class SYS_CONFIGS
     Friend WithEvents Label1 As Label
     Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label3 As Label
-    Friend WithEvents ComboBox4 As ComboBox
     Friend WithEvents TextBox3 As TextBox
     Friend WithEvents TextBox2 As TextBox
     Friend WithEvents Label2 As Label
@@ -325,4 +325,5 @@ Partial Class SYS_CONFIGS
     Friend WithEvents Label5 As Label
     Friend WithEvents TextBox4 As TextBox
     Friend WithEvents Button6 As Button
+    Friend WithEvents ComboBox4 As ComboBox
 End Class

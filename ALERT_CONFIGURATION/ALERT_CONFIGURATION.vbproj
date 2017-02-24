@@ -219,6 +219,7 @@
     <Compile Include="Supplies.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SUPPLIES_API.vb" />
     <Compile Include="SYS_CONFIGS.Designer.vb">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
     </Compile>

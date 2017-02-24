@@ -80,7 +80,8 @@ Public Class INTERVENTIONS_API
                                 AND iic.flg_add_remove = 'A'
                                 AND ic.flg_available = 'Y'
                                 AND idcs.id_institution IN (0, " & i_institution & ")
-                                AND idcs.id_software IN (0, " & i_software & ") "
+                                AND idcs.id_software IN (0, " & i_software & ") 
+                                And i.id_interv_physiatry_area is null " 'Linha para garantir que só aparecem as categorias com procedimentos paa a área normal
         If i_flg_type = 0 Then
 
             sql = sql & "And idcs.flg_type IN ('P', 'M', 'A', 'B') "
