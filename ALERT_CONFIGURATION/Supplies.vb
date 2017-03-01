@@ -3,8 +3,14 @@
 Public Class Supplies
 
     Dim db_access_general As New General
+    Dim db_supplies As New SUPPLIES_API
+
     Dim oradb As String
     Dim conn As New OracleConnection
+
+    'Array que vai guardar as SUPPLY_AREAS disponíveis
+
+    Dim g_a_SUP_AREAS() As SUPPLIES_API.SUP_AREAS
 
     'Bloco para definir os tipos de supplies
     Dim g_activity_desc As String = "Activity Theraphist Supplies"
@@ -71,6 +77,34 @@ Public Class Supplies
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
+        ''Popular SUP_AREAS
+        Dim dr_sup_areas As OracleDataReader
+
+        If Not db_supplies.GET_SUP_AREAS(conn, dr_sup_areas) Then
+
+            MsgBox("ERROR GETTING SUPPLY AREAS!", vbCritical)
+
+        End If
+
+        Dim l_index_sup_area As Integer = 0
+        ReDim g_a_SUP_AREAS(0)
+
+        While dr_sup_areas.Read()
+
+            ComboBox8.Items.Add(dr_sup_areas.Item(1))
+
+            ReDim Preserve g_a_SUP_AREAS(l_index_sup_area)
+            g_a_SUP_AREAS(l_index_sup_area).id_supply_area = dr_sup_areas.Item(0)
+            g_a_SUP_AREAS(l_index_sup_area).desc_supply_area = dr_sup_areas.Item(1)
+            l_index_sup_area = l_index_sup_area + 1
+
+        End While
+
+        dr_sup_areas.Dispose()
+        dr_sup_areas.Close()
+
+        ''Popular tipos de supplies
+        ComboBox7.Items.Add("ALL")
         ComboBox7.Items.Add(g_activity_desc)
         ComboBox7.Items.Add(g_implants_desc)
         ComboBox7.Items.Add(g_kits_desc)
