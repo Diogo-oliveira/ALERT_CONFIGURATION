@@ -32,8 +32,14 @@ Public Class Supplies
     Dim g_surgical_desc As String = "Surgical Equipments"
     Dim g_surgical_flag As String = "E"
 
-    Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim g_selected_category As String = ""
+
+    Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
+    Dim g_selected_supplycategory As String = ""
+
+    'Array que vai guardar os id_contents das análises carregadas do default
+    Dim g_a_loaded_supplies_default() As SUPPLIES_API.supplies_default
+
 
     Public Sub New(ByVal i_oradb As String)
 
@@ -370,7 +376,6 @@ Public Class Supplies
             Cursor = Cursors.WaitCursor
 
             'Limpar arrays
-            g_selected_category = -1
             'ReDim g_a_loaded_interventions_default(0)
             'ReDim g_a_selected_default_interventions(0)
             ' g_index_selected_intervention_from_default = 0
@@ -388,13 +393,11 @@ Public Class Supplies
 
             Dim dr_lab_cat_def As OracleDataReader
 
-            MsgBox(TextBox1.Text & " - " & g_selected_soft & " - " & ComboBox3.Text & " - " & g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area & " - " & g_selected_category)
-
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_supplies.GET_SUPP_CATS_DEFAULT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                MsgBox("ERROR LOADING DEFAULT INTERVENTION CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+                MsgBox("ERROR LOADING DEFAULT SUPPLIES CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
 
             Else
 
@@ -402,7 +405,7 @@ Public Class Supplies
 
                 While dr_lab_cat_def.Read()
 
-                    ComboBox4.Items.Add(dr_lab_cat_def.Item(1))
+                    ComboBox4.Items.Add(dr_lab_cat_def.Item(1) & "   -  [" & dr_lab_cat_def.Item(0) & "]")
                     g_a_loaded_categories_default(l_index_loaded_categories) = dr_lab_cat_def.Item(0)
                     l_index_loaded_categories = l_index_loaded_categories + 1
                     ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
@@ -423,6 +426,65 @@ Public Class Supplies
     End Sub
 
     Private Sub ComboBox8_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox8.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBox4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
+
+        '1 - Determinar o id_content da categoria selecionada
+        If ComboBox4.SelectedIndex = 0 Then
+            g_selected_supplycategory = 0
+        Else
+            g_selected_supplycategory = g_a_loaded_categories_default(ComboBox4.SelectedIndex - 1)
+        End If
+
+        Cursor = Cursors.WaitCursor
+        CheckedListBox2.Items.Clear()
+        ''2 - Carregar a grelha de análises por categoria
+        ''e    
+        ''3 - Criar estrutura com os elementos das análises carregados
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_supplies.GET_SUPS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, g_selected_supplycategory, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING SUPPLIES BY CATEGORY >> ComboBox4_SelectedIndexChanged")
+
+        Else
+            ReDim g_a_loaded_supplies_default(0) ''Limpar estrutura
+            Dim l_dimension_array_loaded_supplies As Int64 = 0
+
+            While dr.Read()
+
+                'Colocar a categoria quando se seleciona o ALL
+
+                If g_selected_supplycategory = "0" Then
+
+                    CheckedListBox2.Items.Add(dr.Item(3) & "  -  [" & dr.Item(2) & "]  >> " & dr.Item(1))
+
+                Else
+
+                    CheckedListBox2.Items.Add(dr.Item(3) & "  -  [" & dr.Item(2) & "]")
+
+                End If
+
+
+                ReDim Preserve g_a_loaded_supplies_default(l_dimension_array_loaded_supplies)
+
+                g_a_loaded_supplies_default(l_dimension_array_loaded_supplies).id_content_category = dr.Item(0)
+                g_a_loaded_supplies_default(l_dimension_array_loaded_supplies).desc_category = dr.Item(1)
+                g_a_loaded_supplies_default(l_dimension_array_loaded_supplies).id_content_supply = dr.Item(2)
+                g_a_loaded_supplies_default(l_dimension_array_loaded_supplies).desc_supply = dr.Item(3)
+
+                l_dimension_array_loaded_supplies = l_dimension_array_loaded_supplies + 1
+
+            End While
+        End If
+        dr.Dispose()
+        dr.Close()
+
+        Cursor = Cursors.Arrow
 
     End Sub
 End Class

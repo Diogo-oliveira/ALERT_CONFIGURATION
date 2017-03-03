@@ -281,6 +281,7 @@ Partial Class Supplies
         'CheckedListBox2
         '
         Me.CheckedListBox2.CheckOnClick = True
+        Me.CheckedListBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox2.FormattingEnabled = True
         Me.CheckedListBox2.Location = New System.Drawing.Point(16, 67)
         Me.CheckedListBox2.Name = "CheckedListBox2"
@@ -290,21 +291,21 @@ Partial Class Supplies
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(490, 21)
+        Me.Label6.Location = New System.Drawing.Point(493, 24)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(174, 13)
+        Me.Label6.Size = New System.Drawing.Size(114, 13)
         Me.Label6.TabIndex = 127
-        Me.Label6.Text = "SUPPLIES CATEGORIES (Default)"
+        Me.Label6.Text = "SUPPLY CATEGORIE"
         '
         'ComboBox4
         '
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.ItemHeight = 13
-        Me.ComboBox4.Location = New System.Drawing.Point(493, 40)
+        Me.ComboBox4.ItemHeight = 16
+        Me.ComboBox4.Location = New System.Drawing.Point(493, 38)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(237, 21)
+        Me.ComboBox4.Size = New System.Drawing.Size(237, 24)
         Me.ComboBox4.TabIndex = 126
         '
         'Label4
@@ -319,10 +320,11 @@ Partial Class Supplies
         'ComboBox3
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(334, 40)
+        Me.ComboBox3.Location = New System.Drawing.Point(334, 38)
         Me.ComboBox3.Name = "ComboBox3"
-        Me.ComboBox3.Size = New System.Drawing.Size(153, 21)
+        Me.ComboBox3.Size = New System.Drawing.Size(153, 24)
         Me.ComboBox3.TabIndex = 124
         '
         'Button7
@@ -346,6 +348,7 @@ Partial Class Supplies
         'ComboBox2
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox2.FormattingEnabled = True
         Me.ComboBox2.Location = New System.Drawing.Point(416, 31)
         Me.ComboBox2.Name = "ComboBox2"
@@ -381,6 +384,7 @@ Partial Class Supplies
         '
         'TextBox1
         '
+        Me.TextBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox1.Location = New System.Drawing.Point(14, 31)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(142, 20)
@@ -388,6 +392,7 @@ Partial Class Supplies
         '
         'ComboBox1
         '
+        Me.ComboBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox1.FormattingEnabled = True
         Me.ComboBox1.Location = New System.Drawing.Point(172, 30)
         Me.ComboBox1.Name = "ComboBox1"
@@ -397,19 +402,21 @@ Partial Class Supplies
         'ComboBox7
         '
         Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(175, 40)
+        Me.ComboBox7.Location = New System.Drawing.Point(175, 38)
         Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(153, 21)
+        Me.ComboBox7.Size = New System.Drawing.Size(153, 24)
         Me.ComboBox7.TabIndex = 154
         '
         'ComboBox8
         '
         Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox8.FormattingEnabled = True
-        Me.ComboBox8.Location = New System.Drawing.Point(16, 40)
+        Me.ComboBox8.Location = New System.Drawing.Point(16, 38)
         Me.ComboBox8.Name = "ComboBox8"
-        Me.ComboBox8.Size = New System.Drawing.Size(153, 21)
+        Me.ComboBox8.Size = New System.Drawing.Size(153, 24)
         Me.ComboBox8.TabIndex = 156
         '
         'Label11
