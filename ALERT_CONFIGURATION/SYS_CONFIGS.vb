@@ -28,7 +28,9 @@ Public Class SYS_CONFIGS
 
         Dim dr As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_SOFT_INST(0, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
 
@@ -53,7 +55,9 @@ Public Class SYS_CONFIGS
 
         Dim dr_market As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_MARKETS(conn, dr_market) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING MARKETS!", vbCritical)
 

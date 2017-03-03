@@ -163,7 +163,9 @@ Public Class SR_Procedures
 
             Dim dr_sysconfig As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not db_access_general.GET_SYSCONFIG(TextBox1.Text, 0, "SURGICAL_PROCEDURES_CODING", conn, dr_sysconfig) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING CODIFICATION FROM INSTITUTION!", vbCritical)
 
@@ -357,7 +359,9 @@ Public Class SR_Procedures
 
         Dim dr_sysconfig As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_access_general.GET_SYSCONFIG(TextBox1.Text, 0, "SURGICAL_PROCEDURES_CODING", conn, dr_sysconfig) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING CODIFICATION FROM INSTITUTION!", vbCritical)
 
@@ -396,7 +400,9 @@ Public Class SR_Procedures
         Dim dr_codification As OracleDataReader
 
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If db_sr_procedure.GET_DEFAULT_CODIFICATION(TextBox1.Text, ComboBox3.Text, conn, dr_codification) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             While dr_codification.Read()
 
@@ -586,12 +592,12 @@ Public Class SR_Procedures
 
                 Else
 
-                        MsgBox("ERROR INSERTING SR_INTERVENTIONS TRANSLATIONS!", vbCritical)
+                    MsgBox("ERROR INSERTING SR_INTERVENTIONS TRANSLATIONS!", vbCritical)
 
                 End If
 
             Else
-                    MsgBox("ERROR INSERTING SR_INTERVENTIONS!", vbCritical)
+                MsgBox("ERROR INSERTING SR_INTERVENTIONS!", vbCritical)
             End If
 
         End If
@@ -705,7 +711,9 @@ Public Class SR_Procedures
                 Dim dr_delete As OracleDataReader
 
                 '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                 If Not db_sr_procedure.GET_INTERVS_DEP_CLIN_SERV(TextBox1.Text, g_id_dep_clin_serv, conn, dr_delete) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                     '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING SR_INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
@@ -737,7 +745,7 @@ Public Class SR_Procedures
 
             End If
 
-                If l_sucess = True Then
+            If l_sucess = True Then
 
                 MsgBox("Records Deleted.")
 
@@ -750,7 +758,7 @@ Public Class SR_Procedures
 
             Cursor = Cursors.Arrow
 
-            End If
+        End If
 
     End Sub
 

@@ -4,6 +4,7 @@ Public Class Supplies
 
     Dim db_access_general As New General
     Dim db_supplies As New SUPPLIES_API
+    Dim g_selected_soft As Int16 = -1
 
     Dim oradb As String
     Dim conn As New OracleConnection
@@ -31,6 +32,7 @@ Public Class Supplies
     Dim g_surgical_desc As String = "Surgical Equipments"
     Dim g_surgical_flag As String = "E"
 
+    Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim g_selected_category As String = ""
 
     Public Sub New(ByVal i_oradb As String)
@@ -80,7 +82,9 @@ Public Class Supplies
         ''Popular SUP_AREAS
         Dim dr_sup_areas As OracleDataReader
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_supplies.GET_SUP_AREAS(conn, dr_sup_areas) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SUPPLY AREAS!", vbCritical)
 
@@ -226,7 +230,199 @@ Public Class Supplies
 
             g_selected_category = g_surgical_flag
 
+        Else
+
+            g_selected_category = "ALL"
+
         End If
+
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        g_selected_soft = -1
+        'ReDim g_a_dep_clin_serv_inst(0)
+        'g_id_dep_clin_serv = 0
+        'ReDim g_a_loaded_categories_default(0)
+        'g_selected_category = -1
+        'ReDim g_a_loaded_interventions_default(0)
+        'ReDim g_a_selected_default_interventions(0)
+        'g_index_selected_intervention_from_default = 0
+        'ReDim g_a_interv_cats_alert(0)
+        'ReDim g_a_interv_cats_alert(0)
+        'g_dimension_intervs_alert = 0
+        'ReDim g_a_intervs_for_clinical_service(0)
+        'g_dimension_intervs_cs = 0
+        'ReDim g_a_selected_intervs_delete_cs(0)
+
+        CheckedListBox1.Items.Clear()
+        CheckedListBox2.Items.Clear()
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
+
+        ComboBox3.Items.Clear()
+        ComboBox3.Text = ""
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
+
+        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
+
+        '1 - Fill Version combobox
+
+        Dim dr_def_versions As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_supplies.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_def_versions) Then
+
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+        Else
+
+            While dr_def_versions.Read()
+
+                ComboBox3.Items.Add(dr_def_versions.Item(0))
+
+            End While
+
+        End If
+
+        dr_def_versions.Dispose()
+        dr_def_versions.Close()
+
+        '        'Box de categorias na instituição/software
+        '        Dim dr_exam_cat As OracleDataReader
+
+        '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        '        If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
+        '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+        '            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
+
+        '        Else
+
+        '            ComboBox5.Items.Add("ALL")
+
+        '            ReDim g_a_interv_cats_alert(0)
+        '            g_a_interv_cats_alert(0) = 0
+
+        '            Dim l_index As Int16 = 1
+
+        '            While dr_exam_cat.Read()
+
+        '                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+        '                ReDim Preserve g_a_interv_cats_alert(l_index)
+        '                g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
+        '                l_index = l_index + 1
+
+        '            End While
+
+        '        End If
+
+        '        dr_exam_cat.Dispose()
+        '        dr_exam_cat.Close()
+
+        '        'Preencher os Clinical Services
+
+        '        Dim dr_clin_serv As OracleDataReader
+
+        '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        '        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
+        '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+        '            MsgBox("ERROR GETTING CLINICAL SERVICES!")
+
+        '        Else
+
+        '            Dim i As Integer = 0
+
+        '            Dim l_index_dep_clin_serv As Integer = 0
+        '            ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+
+        '            While dr_clin_serv.Read()
+
+        '                ComboBox6.Items.Add(dr_clin_serv.Item(0))
+
+        '                ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+        '                g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
+        '                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
+
+        '            End While
+
+        '        End If
+
+        '        dr_clin_serv.Dispose()
+        '        dr_clin_serv.Close()
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+
+    Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
+
+        If ComboBox2.Text <> "" And ComboBox8.Text <> "" And ComboBox7.Text <> "" Then
+
+            Cursor = Cursors.WaitCursor
+
+            'Limpar arrays
+            g_selected_category = -1
+            'ReDim g_a_loaded_interventions_default(0)
+            'ReDim g_a_selected_default_interventions(0)
+            ' g_index_selected_intervention_from_default = 0
+
+            ComboBox4.Items.Clear()
+            ComboBox4.Text = ""
+
+            CheckedListBox2.Items.Clear()
+
+            'Determinar as categorias disponíveis para a versão escolhida
+            'Array g_a_loaded_categories_default vai gaurdar os ids de todas as categorias
+
+            ReDim g_a_loaded_categories_default(0)
+            Dim l_index_loaded_categories As Int64 = 0
+
+            Dim dr_lab_cat_def As OracleDataReader
+
+            MsgBox(TextBox1.Text & " - " & g_selected_soft & " - " & ComboBox3.Text & " - " & g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area & " - " & g_selected_category)
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_supplies.GET_SUPP_CATS_DEFAULT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_lab_cat_def) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR LOADING DEFAULT INTERVENTION CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+            Else
+
+                ComboBox4.Items.Add("ALL")
+
+                While dr_lab_cat_def.Read()
+
+                    ComboBox4.Items.Add(dr_lab_cat_def.Item(1))
+                    g_a_loaded_categories_default(l_index_loaded_categories) = dr_lab_cat_def.Item(0)
+                    l_index_loaded_categories = l_index_loaded_categories + 1
+                    ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
+
+                End While
+
+            End If
+
+            dr_lab_cat_def.Dispose()
+            dr_lab_cat_def.Close()
+
+            CheckedListBox1.Items.Clear()
+
+            Cursor = Cursors.Arrow
+
+        End If
+
+    End Sub
+
+    Private Sub ComboBox8_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox8.SelectedIndexChanged
 
     End Sub
 End Class
