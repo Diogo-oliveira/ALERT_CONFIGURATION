@@ -487,4 +487,24 @@ Public Class Supplies
         Cursor = Cursors.Arrow
 
     End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                CheckedListBox2.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                CheckedListBox2.SetItemChecked(i, False)
+            Next
+        End If
+
+    End Sub
 End Class
