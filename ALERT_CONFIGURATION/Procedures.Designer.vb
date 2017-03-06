@@ -87,9 +87,9 @@ Partial Class Procedures
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1365, 8)
+        Me.PictureBox1.Location = New System.Drawing.Point(1376, 8)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
+        Me.PictureBox1.Size = New System.Drawing.Size(196, 100)
         Me.PictureBox1.TabIndex = 107
         Me.PictureBox1.TabStop = False
         '

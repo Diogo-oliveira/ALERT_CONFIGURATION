@@ -9,6 +9,12 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.BackColor = Color.FromArgb(215, 215, 180)
+
+        TextBox1.Text = "alert_config"
+        TextBox2.Text = "qcteam"
+        ComboBox1.Text = "QC4V26522"
+
         If g_oradb = "" Then
 
             Button1.Visible = False

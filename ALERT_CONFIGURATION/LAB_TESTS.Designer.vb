@@ -397,9 +397,9 @@ Partial Class LAB_TESTS
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1361, 5)
+        Me.PictureBox1.Location = New System.Drawing.Point(1371, 5)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(209, 100)
+        Me.PictureBox1.Size = New System.Drawing.Size(199, 100)
         Me.PictureBox1.TabIndex = 67
         Me.PictureBox1.TabStop = False
         '

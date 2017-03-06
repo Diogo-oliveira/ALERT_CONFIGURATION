@@ -99,7 +99,7 @@ Partial Class Supplies
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
         Me.PictureBox1.Location = New System.Drawing.Point(1365, 15)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(209, 95)
+        Me.PictureBox1.Size = New System.Drawing.Size(209, 98)
         Me.PictureBox1.TabIndex = 150
         Me.PictureBox1.TabStop = False
         '
@@ -285,7 +285,7 @@ Partial Class Supplies
         Me.CheckedListBox2.FormattingEnabled = True
         Me.CheckedListBox2.Location = New System.Drawing.Point(16, 67)
         Me.CheckedListBox2.Name = "CheckedListBox2"
-        Me.CheckedListBox2.Size = New System.Drawing.Size(714, 229)
+        Me.CheckedListBox2.Size = New System.Drawing.Size(714, 225)
         Me.CheckedListBox2.TabIndex = 128
         '
         'Label6
@@ -482,6 +482,7 @@ Partial Class Supplies
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.GroupBox1)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.MaximumSize = New System.Drawing.Size(1600, 880)
         Me.MinimumSize = New System.Drawing.Size(1598, 858)
         Me.Name = "Supplies"

@@ -2,6 +2,8 @@
 
 Public Class Supplies
 
+    Dim groupbox As myGroupBox
+
     Dim db_access_general As New General
     Dim db_supplies As New SUPPLIES_API
     Dim g_selected_soft As Int16 = -1
@@ -50,6 +52,11 @@ Public Class Supplies
     End Sub
 
     Private Sub Supplies_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.BackColor = Color.FromArgb(215, 215, 180)
+        CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
+        ' GroupBox1.bo
 
         Try
             'Estabelecer ligação à BD
@@ -505,6 +512,30 @@ Public Class Supplies
                 CheckedListBox2.SetItemChecked(i, False)
             Next
         End If
+
+    End Sub
+
+    Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
+
+        'Limpar Versão
+        ComboBox3.Text = ""
+        ComboBox3.Items.Clear()
+
+        'Limpar box de Supply Area
+        ComboBox8.Text = ""
+
+        'Limpar Array de categorias
+        ReDim g_a_loaded_categories_default(0)
+
+        'Limpar categoria selecionada
+        g_selected_category = ""
+        ComboBox7.Text = ""
+
+        g_selected_supplycategory = ""
+
+        'Limpar Box de Supplies
+        CheckedListBox2.Items.Clear()
+
 
     End Sub
 End Class

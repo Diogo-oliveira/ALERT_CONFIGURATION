@@ -47,6 +47,12 @@ Public Class INSERT_OTHER_EXAM
 
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.BackColor = Color.FromArgb(215, 215, 180)
+        CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
+
         Try
             'Estabelecer ligação à BD
             conn.Open()
