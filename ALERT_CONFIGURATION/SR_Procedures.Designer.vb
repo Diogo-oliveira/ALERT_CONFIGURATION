@@ -335,7 +335,7 @@ Partial Class SR_Procedures
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1377, 16)
+        Me.PictureBox1.Location = New System.Drawing.Point(1379, 8)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(197, 100)
         Me.PictureBox1.TabIndex = 150

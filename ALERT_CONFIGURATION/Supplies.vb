@@ -732,7 +732,11 @@ Public Class Supplies
 
         If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, g_a_selected_supplies_default, conn) Then
 
-            MsgBox("ERROR")
+            MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
+
+        ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, g_a_selected_supplies_default, conn) Then
+
+            MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
         End If
 

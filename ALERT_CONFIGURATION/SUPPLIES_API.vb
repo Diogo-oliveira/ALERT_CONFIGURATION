@@ -395,4 +395,159 @@ Public Class SUPPLIES_API
 
     End Function
 
+    'Esta Função faz Insert de novos supplies, e insert de traduções para supplies que não tinham tradução
+    Function SET_SUPPLY(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = "DECLARE
+
+                                l_a_supply_types table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "l_a_supplies     table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "       l_a_id_supliy_type table_varchar := table_varchar();
+
+                            l_id_supply   alert.supply.id_supply%TYPE;
+                            l_desc_supply translation.desc_lang_1%TYPE;
+
+                            l_flg_type alert.supply.flg_type%TYPE;
+
+                            l_id_supply_verifif table_number := table_number();
+
+                        BEGIN
+
+                            FOR i IN 1 .. l_a_supplies.count()
+                            LOOP
+    
+                                SELECT st.id_supply_type BULK COLLECT
+                                INTO l_a_id_supliy_type
+                                FROM alert.supply_type st
+                                WHERE st.id_content = l_a_supply_types(i)
+                                AND st.flg_available = 'Y';
+    
+                                SELECT ds.flg_type
+                                INTO l_flg_type
+                                FROM alert_default.supply ds
+                                JOIN alert_default.supply_type dst ON dst.id_supply_type = ds.id_supply_type
+                                WHERE ds.id_content = l_a_supplies(i)
+                                AND dst.id_content = l_a_supply_types(i)
+                                AND dst.flg_available = 'Y'
+                                AND ds.flg_available = 'Y';
+    
+                                BEGIN
+        
+                                    SELECT s.id_supply BULK COLLECT
+                                    INTO l_id_supply_verifif
+                                    FROM alert.supply s
+                                    WHERE s.id_content = l_a_supplies(i)
+                                    AND s.flg_available = 'Y';
+        
+                                    IF l_id_supply_verifif.count() = 0
+                                    THEN
+            
+                                        l_id_supply := alert.seq_supply.nextval;
+            
+                                        INSERT INTO alert.supply
+                                            (id_supply, code_supply, id_supply_type, flg_type, id_content, flg_available)
+                                        VALUES
+                                            (l_id_supply, 'SUPPLY.CODE_SUPPLY.' || l_id_supply, l_a_id_supliy_type(1), l_flg_type, l_a_supplies(i), 'Y');
+            
+                                        SELECT alert_default.pk_translation_default.get_translation_default(6, ds.code_supply)
+                                        INTO l_desc_supply
+                                        FROM alert_default.supply ds
+                                        WHERE ds.id_content = l_a_supplies(i)
+                                        AND ds.flg_available = 'Y';
+            
+                                        pk_translation.insert_into_translation(" & l_id_language & ", 'SUPPLY.CODE_SUPPLY.' || l_id_supply, l_desc_supply);
+            
+                                    ELSE
+            
+                                        --VERIFICAR SE TEM TRADUÇÃO (ATENÇÃO AOS DUPLICADOS)
+                                        SELECT s.id_supply BULK COLLECT
+                                        INTO l_id_supply_verifif
+                                        FROM alert.supply s
+                                        JOIN translation t ON t.code_translation = s.code_supply
+                                        WHERE s.id_content = l_a_supplies(i)
+                                        AND s.flg_available = 'Y'
+                                        AND t.desc_lang_" & l_id_language & " IS NULL;
+            
+                                        IF l_id_supply_verifif.count() > 0
+                                        THEN
+                
+                                            DECLARE
+                    
+                                                l_desc_supply translation.desc_lang_1%TYPE;
+                    
+                                            BEGIN
+                    
+                                                FOR j IN 1 .. l_id_supply_verifif.count()
+                                                LOOP
+                        
+                                                    SELECT alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", ds.code_supply)
+                                                    INTO l_desc_supply
+                                                    FROM alert_default.supply ds
+                                                    JOIN alert.supply s ON s.id_content = ds.id_content
+                                                    WHERE s.id_supply = l_id_supply_verifif(j)
+                                                    AND ds.flg_available = 'Y';
+                        
+                                                    pk_translation.insert_into_translation(" & l_id_language & ", 'SUPPLY.CODE_SUPPLY.' || l_id_supply_verifif(j), l_desc_supply);
+                        
+                                                END LOOP;
+                    
+                                            END;
+                
+                                        END IF;
+            
+                                    END IF;
+                                END;
+    
+                            END LOOP;
+
+                        END;"
+
+        Dim cmd_insert_st_translation As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_st_translation.CommandType = CommandType.Text
+            cmd_insert_st_translation.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_st_translation.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_st_translation.Dispose()
+
+        Return True
+
+    End Function
+
 End Class

@@ -16,6 +16,10 @@ Public Class SYS_CONFIGS
 
     Private Sub SYS_CONFIGS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.BackColor = Color.FromArgb(215, 215, 180)
+
+        DataGridView1.BackgroundColor = Color.FromArgb(195, 195, 165)
+
         Try
             'Estabelecer ligação à BD
             conn.Open()
