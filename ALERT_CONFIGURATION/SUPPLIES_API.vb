@@ -185,4 +185,214 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
+    Function GET_DISTINCT_SUPPLY_TYPE(ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "Select dst.id_content from alert_default.supply_type dst
+                             where dst.id_content in ("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If i < i_a_supplies.Count() - 1 Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "',"
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "')"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+
+    End Function
+
+    Function SET_SUPPLY_TYPE(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim dr_filtered_st As OracleDataReader
+
+        If Not GET_DISTINCT_SUPPLY_TYPE(i_a_supplies, i_conn, dr_filtered_st) Then
+
+            Return False
+
+        End If
+
+        Dim l_a_filtered_supplies(0) As supplies_default
+        Dim l_dimension_fs As Integer = 0
+
+        Dim sql As String = "DECLARE
+
+                              l_a_id_content_st  table_varchar := table_varchar("
+
+        While dr_filtered_st.Read()
+
+            'Código para depois se inserir as trduções
+            ReDim Preserve l_a_filtered_supplies(l_dimension_fs)
+            l_a_filtered_supplies(l_dimension_fs).id_content_category = dr_filtered_st.Item(0)
+            l_dimension_fs = l_dimension_fs + 1
+
+            'SQL para a inserção dos SUPPLY TYPES
+            sql = sql & " '" & dr_filtered_st.Item(0) & "', "
+
+        End While
+
+        While dr_filtered_st.Read()
+
+            sql = sql & " '" & dr_filtered_st.Item(0) & "', "
+
+        End While
+
+        dr_filtered_st.Dispose()
+        dr_filtered_st.Close()
+
+        'Garantir que o array é fechado
+        sql = sql & "'');"
+
+        sql = sql & "         l_st_aux ALERT.SUPPLY_TYPE.ID_CONTENT%TYPE;
+  
+                            BEGIN
+  
+                              FOR i IN 1 .. l_a_id_content_st.COUNT() LOOP
+     
+                                 BEGIN
+        
+                                     SELECT st.id_content
+                                     INTO l_st_aux
+                                     FROM alert.supply_type st
+                                     WHERE st.id_content = l_a_id_content_st(i)
+                                     AND st.flg_available = 'Y';
+     
+                                 EXCEPTION
+                                     WHEN TOO_MANY_ROWS THEN
+                                       CONTINUE;
+         
+                                     WHEN NO_DATA_FOUND THEN
+                                       insert into ALERT.SUPPLY_TYPE (ID_SUPPLY_TYPE, CODE_SUPPLY_TYPE, ID_CONTENT, FLG_AVAILABLE)
+                                       values (ALERT.SEQ_SUPPLY_TYPE.NEXTVAL, 'SUPPLY_TYPE.CODE_SUPPLY_TYPE.' || ALERT.SEQ_SUPPLY_TYPE.NEXTVAL, l_a_id_content_st(i), 'Y');
+                                       CONTINUE;     
+                                 END;     
+
+                              END LOOP;
+  
+                            END;"
+
+        Dim cmd_insert_st As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_st.CommandType = CommandType.Text
+            cmd_insert_st.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_st.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_st.Dispose()
+
+        If Not SET_SUPPLY_TYPE_TRANSLATION(i_institution, l_a_filtered_supplies, i_conn) Then
+
+            Return False
+
+        End If
+
+        Return True
+
+    End Function
+
+
+    Function SET_SUPPLY_TYPE_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = "DECLARE
+
+                                l_a_supply_types table_varchar := table_varchar("
+
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "
+                                l_st_desc TRANSLATION.DESC_LANG_1%TYPE;
+                                l_st_code table_varchar := table_varchar();
+
+                            BEGIN
+
+                                FOR i IN 1 .. l_a_supply_types.count()
+                                LOOP
+                                    BEGIN
+        
+                                        SELECT st.code_supply_type BULK COLLECT
+                                        INTO l_st_code
+                                        FROM alert.supply_type st
+                                        WHERE st.id_content = l_a_supply_types(i)
+                                        AND st.flg_available = 'Y'
+                                        AND pk_translation.get_translation(" & l_id_language & ", st.code_supply_type) IS NULL;
+        
+                                        FOR ii IN 1 .. l_st_code.count()
+                                        LOOP
+            
+                                            IF l_st_code(ii) IS NOT NULL
+                                            THEN
+                
+                                                SELECT alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dst.code_supply_type)
+                                                INTO l_st_desc
+                                                FROM alert_default.Supply_Type DST
+                                                WHERE DST.id_content = l_a_supply_types(i)
+                                                AND dST.Flg_Available = 'Y';
+                                
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_st_code(II), l_st_desc);
+                
+                                            END IF;
+
+                                        END LOOP;
+        
+                                    EXCEPTION
+                                        WHEN OTHERS THEN
+                                            continue;
+                                    END;
+        
+                                END LOOP;
+
+                            END;"
+
+        Dim cmd_insert_st_translation As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_st_translation.CommandType = CommandType.Text
+            cmd_insert_st_translation.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_st_translation.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_st_translation.Dispose()
+
+        Return True
+
+    End Function
+
 End Class

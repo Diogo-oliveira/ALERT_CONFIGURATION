@@ -245,6 +245,7 @@ Partial Class Supplies
         'CheckedListBox1
         '
         Me.CheckedListBox1.CheckOnClick = True
+        Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(830, 67)
         Me.CheckedListBox1.Name = "CheckedListBox1"
@@ -457,7 +458,7 @@ Partial Class Supplies
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.ClientSize = New System.Drawing.Size(1598, 858)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)

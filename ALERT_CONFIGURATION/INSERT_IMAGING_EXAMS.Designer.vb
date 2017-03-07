@@ -400,9 +400,9 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.CheckBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckBox2.Location = New System.Drawing.Point(436, 53)
         Me.CheckBox2.Name = "CheckBox2"
-        Me.CheckBox2.Size = New System.Drawing.Size(115, 19)
+        Me.CheckBox2.Size = New System.Drawing.Size(128, 19)
         Me.CheckBox2.TabIndex = 118
-        Me.CheckBox2.Text = "Past Treatments"
+        Me.CheckBox2.Text = "Past Examinations"
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
         'CheckBox1
@@ -411,9 +411,9 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.CheckBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckBox1.Location = New System.Drawing.Point(436, 28)
         Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(155, 19)
+        Me.CheckBox1.Size = New System.Drawing.Size(130, 19)
         Me.CheckBox1.TabIndex = 117
-        Me.CheckBox1.Text = "Requesting Procedures"
+        Me.CheckBox1.Text = "Requesting Exams"
         Me.CheckBox1.UseVisualStyleBackColor = True
         '
         'Label11

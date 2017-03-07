@@ -39,9 +39,13 @@ Public Class Supplies
     Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim g_selected_supplycategory As String = ""
 
-    'Array que vai guardar os id_contents das análises carregadas do default
+    'Array que vai guardar os id_contents dos supplies caregados do default
     Dim g_a_loaded_supplies_default() As SUPPLIES_API.supplies_default
 
+    'Array que vai guardar os id_contents dos supplies escolhidos do default
+    Dim g_a_selected_supplies_default() As SUPPLIES_API.supplies_default
+
+    Dim g_index_selected_supplies_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
 
     Public Sub New(ByVal i_oradb As String)
 
@@ -56,6 +60,7 @@ Public Class Supplies
         Me.BackColor = Color.FromArgb(215, 215, 180)
         CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
+
         ' GroupBox1.bo
 
         Try
@@ -164,6 +169,28 @@ Public Class Supplies
         'g_dimension_intervs_cs = 0
         'ReDim g_a_selected_intervs_delete_cs(0)
 
+        'Limpar Versão
+        ComboBox3.Text = ""
+        ComboBox3.Items.Clear()
+
+        'Limpar Seleção da box de Supply Area
+        ComboBox8.SelectedIndex = -1
+
+        'Limpar Array de categorias
+        ReDim g_a_loaded_categories_default(0)
+
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+
+        'Limpar categoria selecionada
+        g_selected_category = ""
+        ComboBox7.SelectedIndex = -1
+
+        g_selected_supplycategory = ""
+
+        'Limpar Box de Supplies
+        CheckedListBox2.Items.Clear()
+
         If TextBox1.Text <> "" Then
 
             ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn)
@@ -214,164 +241,179 @@ Public Class Supplies
 
         End If
 
+        ReDim g_a_loaded_categories_default(0)
+        ReDim g_a_loaded_supplies_default(0)
+        ReDim g_a_selected_supplies_default(0)
+        g_index_selected_supplies_from_default = 0
+
         Cursor = Cursors.Arrow
     End Sub
 
     Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
 
-        If ComboBox7.Text = g_activity_desc Then
+        If ComboBox8.SelectedIndex >= 0 Then
 
-            g_selected_category = g_activity_flag
+            If ComboBox7.Text = g_activity_desc Then
 
-        ElseIf ComboBox7.Text = g_implants_desc Then
+                g_selected_category = g_activity_flag
 
-            g_selected_category = g_implants_flag
+            ElseIf ComboBox7.Text = g_implants_desc Then
 
-        ElseIf ComboBox7.Text = g_kits_desc Then
+                g_selected_category = g_implants_flag
 
-            g_selected_category = g_kits_flag
+            ElseIf ComboBox7.Text = g_kits_desc Then
 
-        ElseIf ComboBox7.Text = g_sets_desc Then
+                g_selected_category = g_kits_flag
 
-            g_selected_category = g_sets_flag
+            ElseIf ComboBox7.Text = g_sets_desc Then
 
-        ElseIf ComboBox7.Text = g_supplies_desc Then
+                g_selected_category = g_sets_flag
 
-            g_selected_category = g_supplies_flag
+            ElseIf ComboBox7.Text = g_supplies_desc Then
 
-        ElseIf ComboBox7.Text = g_surgical_desc Then
+                g_selected_category = g_supplies_flag
 
-            g_selected_category = g_surgical_flag
+            ElseIf ComboBox7.Text = g_surgical_desc Then
 
-        Else
+                g_selected_category = g_surgical_flag
 
-            g_selected_category = "ALL"
+            Else
 
-        End If
+                g_selected_category = "ALL"
 
-        Cursor = Cursors.WaitCursor
+            End If
 
-        'Limpar arrays
-        g_selected_soft = -1
-        'ReDim g_a_dep_clin_serv_inst(0)
-        'g_id_dep_clin_serv = 0
-        'ReDim g_a_loaded_categories_default(0)
-        'g_selected_category = -1
-        'ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_interventions(0)
-        'g_index_selected_intervention_from_default = 0
-        'ReDim g_a_interv_cats_alert(0)
-        'ReDim g_a_interv_cats_alert(0)
-        'g_dimension_intervs_alert = 0
-        'ReDim g_a_intervs_for_clinical_service(0)
-        'g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_intervs_delete_cs(0)
+            Cursor = Cursors.WaitCursor
 
-        CheckedListBox1.Items.Clear()
-        CheckedListBox2.Items.Clear()
-        CheckedListBox3.Items.Clear()
-        CheckedListBox4.Items.Clear()
+            'Limpar arrays
+            g_selected_soft = -1
+            'ReDim g_a_dep_clin_serv_inst(0)
+            'g_id_dep_clin_serv = 0
+            'ReDim g_a_loaded_categories_default(0)
+            'g_selected_category = -1
+            'ReDim g_a_loaded_interventions_default(0)
+            'ReDim g_a_selected_default_interventions(0)
+            'g_index_selected_intervention_from_default = 0
+            'ReDim g_a_interv_cats_alert(0)
+            'ReDim g_a_interv_cats_alert(0)
+            'g_dimension_intervs_alert = 0
+            'ReDim g_a_intervs_for_clinical_service(0)
+            'g_dimension_intervs_cs = 0
+            'ReDim g_a_selected_intervs_delete_cs(0)
 
-        ComboBox3.Items.Clear()
-        ComboBox3.Text = ""
-        ComboBox4.Items.Clear()
-        ComboBox4.Text = ""
-        ComboBox5.Items.Clear()
-        ComboBox5.Text = ""
-        ComboBox6.Items.Clear()
-        ComboBox6.Text = ""
+            CheckedListBox1.Items.Clear()
+            CheckedListBox2.Items.Clear()
+            CheckedListBox3.Items.Clear()
+            CheckedListBox4.Items.Clear()
 
-        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
+            ComboBox3.Items.Clear()
+            ComboBox3.Text = ""
+            ComboBox4.Items.Clear()
+            ComboBox4.Text = ""
+            ComboBox5.Items.Clear()
+            ComboBox5.Text = ""
+            ComboBox6.Items.Clear()
+            ComboBox6.Text = ""
 
-        '1 - Fill Version combobox
+            g_selected_supplycategory = ""
+            ReDim g_a_loaded_categories_default(0)
+            ReDim g_a_loaded_supplies_default(0)
+            ReDim g_a_selected_supplies_default(0)
+            g_index_selected_supplies_from_default = 0
 
-        Dim dr_def_versions As OracleDataReader
+            g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
+
+            '1 - Fill Version combobox
+
+            Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_supplies.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_def_versions) Then
+            If Not db_supplies.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_def_versions) Then
 
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+                MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
 
-        Else
+            Else
 
-            While dr_def_versions.Read()
+                While dr_def_versions.Read()
 
-                ComboBox3.Items.Add(dr_def_versions.Item(0))
+                    ComboBox3.Items.Add(dr_def_versions.Item(0))
 
-            End While
+                End While
+
+            End If
+
+            dr_def_versions.Dispose()
+            dr_def_versions.Close()
+
+            '        'Box de categorias na instituição/software
+            '        Dim dr_exam_cat As OracleDataReader
+
+            '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            '        If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
+            '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            '            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
+
+            '        Else
+
+            '            ComboBox5.Items.Add("ALL")
+
+            '            ReDim g_a_interv_cats_alert(0)
+            '            g_a_interv_cats_alert(0) = 0
+
+            '            Dim l_index As Int16 = 1
+
+            '            While dr_exam_cat.Read()
+
+            '                ComboBox5.Items.Add(dr_exam_cat.Item(1))
+            '                ReDim Preserve g_a_interv_cats_alert(l_index)
+            '                g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
+            '                l_index = l_index + 1
+
+            '            End While
+
+            '        End If
+
+            '        dr_exam_cat.Dispose()
+            '        dr_exam_cat.Close()
+
+            '        'Preencher os Clinical Services
+
+            '        Dim dr_clin_serv As OracleDataReader
+
+            '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            '        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
+            '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            '            MsgBox("ERROR GETTING CLINICAL SERVICES!")
+
+            '        Else
+
+            '            Dim i As Integer = 0
+
+            '            Dim l_index_dep_clin_serv As Integer = 0
+            '            ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+
+            '            While dr_clin_serv.Read()
+
+            '                ComboBox6.Items.Add(dr_clin_serv.Item(0))
+
+            '                ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+            '                g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
+            '                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
+
+            '            End While
+
+            '        End If
+
+            '        dr_clin_serv.Dispose()
+            '        dr_clin_serv.Close()
+
+            Cursor = Cursors.Arrow
 
         End If
-
-        dr_def_versions.Dispose()
-        dr_def_versions.Close()
-
-        '        'Box de categorias na instituição/software
-        '        Dim dr_exam_cat As OracleDataReader
-
-        '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        '        If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
-        '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-        '            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
-
-        '        Else
-
-        '            ComboBox5.Items.Add("ALL")
-
-        '            ReDim g_a_interv_cats_alert(0)
-        '            g_a_interv_cats_alert(0) = 0
-
-        '            Dim l_index As Int16 = 1
-
-        '            While dr_exam_cat.Read()
-
-        '                ComboBox5.Items.Add(dr_exam_cat.Item(1))
-        '                ReDim Preserve g_a_interv_cats_alert(l_index)
-        '                g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
-        '                l_index = l_index + 1
-
-        '            End While
-
-        '        End If
-
-        '        dr_exam_cat.Dispose()
-        '        dr_exam_cat.Close()
-
-        '        'Preencher os Clinical Services
-
-        '        Dim dr_clin_serv As OracleDataReader
-
-        '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        '        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
-        '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-        '            MsgBox("ERROR GETTING CLINICAL SERVICES!")
-
-        '        Else
-
-        '            Dim i As Integer = 0
-
-        '            Dim l_index_dep_clin_serv As Integer = 0
-        '            ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-
-        '            While dr_clin_serv.Read()
-
-        '                ComboBox6.Items.Add(dr_clin_serv.Item(0))
-
-        '                ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-        '                g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
-        '                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
-
-        '            End While
-
-        '        End If
-
-        '        dr_clin_serv.Dispose()
-        '        dr_clin_serv.Close()
-
-        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -433,6 +475,31 @@ Public Class Supplies
     End Sub
 
     Private Sub ComboBox8_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox8.SelectedIndexChanged
+
+        ComboBox7.SelectedIndex = -1
+        ComboBox7.Text = ""
+
+        CheckedListBox1.Items.Clear()
+        CheckedListBox2.Items.Clear()
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
+
+        ComboBox3.Items.Clear()
+        ComboBox3.Text = ""
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
+
+        g_selected_category = ""
+        g_selected_supplycategory = ""
+
+        ReDim g_a_loaded_categories_default(0)
+        ReDim g_a_loaded_supplies_default(0)
+        ReDim g_a_selected_supplies_default(0)
+        g_index_selected_supplies_from_default = 0
 
     End Sub
 
@@ -521,21 +588,153 @@ Public Class Supplies
         ComboBox3.Text = ""
         ComboBox3.Items.Clear()
 
-        'Limpar box de Supply Area
-        ComboBox8.Text = ""
+        'Limpar Seleção da box de Supply Area
+        ComboBox8.SelectedIndex = -1
 
         'Limpar Array de categorias
         ReDim g_a_loaded_categories_default(0)
 
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+
         'Limpar categoria selecionada
         g_selected_category = ""
-        ComboBox7.Text = ""
+        ComboBox7.SelectedIndex = -1
 
         g_selected_supplycategory = ""
 
         'Limpar Box de Supplies
         CheckedListBox2.Items.Clear()
 
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        Cursor = Cursors.WaitCursor
+        For Each indexChecked In CheckedListBox2.CheckedIndices
+            'If para verificar se já está incluido na checkbox da direita
+
+            Dim l_record_already_selected As Boolean = False
+
+            Dim j As Integer = 0
+
+            For j = 0 To CheckedListBox1.Items.Count() - 1
+
+                If (g_a_loaded_supplies_default(indexChecked.ToString()).id_content_category = g_a_selected_supplies_default(j).id_content_category And g_a_loaded_supplies_default(indexChecked.ToString()).id_content_supply = g_a_selected_supplies_default(j).id_content_supply) Then
+
+                    l_record_already_selected = True
+                    Exit For
+
+                End If
+
+            Next
+
+            If l_record_already_selected = False Then
+
+                ReDim Preserve g_a_selected_supplies_default(g_index_selected_supplies_from_default)
+
+                g_a_selected_supplies_default(g_index_selected_supplies_from_default).id_content_category = g_a_loaded_supplies_default(indexChecked.ToString()).id_content_category
+                g_a_selected_supplies_default(g_index_selected_supplies_from_default).id_content_supply = g_a_loaded_supplies_default(indexChecked.ToString()).id_content_supply
+                g_a_selected_supplies_default(g_index_selected_supplies_from_default).desc_category = g_a_loaded_supplies_default(indexChecked.ToString()).desc_category
+                g_a_selected_supplies_default(g_index_selected_supplies_from_default).desc_supply = g_a_loaded_supplies_default(indexChecked.ToString()).desc_supply
+
+                CheckedListBox1.Items.Add((g_a_selected_supplies_default(g_index_selected_supplies_from_default).desc_supply) & " - [" & g_a_selected_supplies_default(g_index_selected_supplies_from_default).desc_category & "]")
+
+                CheckedListBox1.SetItemChecked((CheckedListBox1.Items.Count() - 1), True)
+
+                g_index_selected_supplies_from_default = g_index_selected_supplies_from_default + 1
+
+            End If
+
+        Next
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, True)
+            Next
+        End If
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, False)
+            Next
+        End If
+    End Sub
+
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        ComboBox8.SelectedIndex = -1
+        ComboBox8.Text = ""
+
+        ComboBox7.SelectedIndex = -1
+        ComboBox7.Text = ""
+
+        CheckedListBox1.Items.Clear()
+        CheckedListBox2.Items.Clear()
+        CheckedListBox3.Items.Clear()
+        CheckedListBox4.Items.Clear()
+
+        ComboBox3.Items.Clear()
+        ComboBox3.Text = ""
+        ComboBox4.Items.Clear()
+        ComboBox4.Text = ""
+        ComboBox5.Items.Clear()
+        ComboBox5.Text = ""
+        ComboBox6.Items.Clear()
+        ComboBox6.Text = ""
+
+        g_selected_category = ""
+        g_selected_supplycategory = ""
+
+        ReDim g_a_loaded_categories_default(0)
+        ReDim g_a_loaded_supplies_default(0)
+        ReDim g_a_selected_supplies_default(0)
+        g_index_selected_supplies_from_default = 0
+
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+        Dim dr As OracleDataReader
+
+        ComboBox2.Items.Clear()
+        ComboBox2.Text = ""
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+        Else
+
+            While dr.Read()
+
+                ComboBox2.Items.Add(dr.Item(1))
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, g_a_selected_supplies_default, conn) Then
+
+            MsgBox("ERROR")
+
+        End If
 
     End Sub
 End Class
