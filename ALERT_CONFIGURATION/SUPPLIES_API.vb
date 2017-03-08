@@ -550,4 +550,348 @@ Public Class SUPPLIES_API
 
     End Function
 
+    Function SET_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                 l_a_supplies table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "       l_id_supply table_varchar := table_varchar(); --Como existem supplies repetidos é necessário um table_varchar
+
+                            l_id_supply_soft_inst  alert.supply_soft_inst.id_supply_soft_inst%TYPE;
+                            l_quantity             alert_default.supply_soft_inst.quantity%TYPE;
+                            l_id_unit_measure      alert_default.supply_soft_inst.id_unit_measure%TYPE;
+                            l_flg_cons_type        alert_default.supply_soft_inst.flg_cons_type%TYPE;
+                            l_flg_reusable         alert_default.supply_soft_inst.flg_reusable%TYPE;
+                            l_flg_editable         alert_default.supply_soft_inst.flg_editable%TYPE;
+                            l_total_avail_quantity alert_default.supply_soft_inst.total_avail_quantity%TYPE;
+                            l_flg_preparing        alert_default.supply_soft_inst.flg_preparing%TYPE;
+                            l_flg_countable        alert_default.supply_soft_inst.flg_countable%TYPE;
+
+
+                        BEGIN
+
+                            FOR i IN 1 .. l_a_supplies.count()
+                            LOOP
+
+                                SELECT dssi.quantity,
+                                       dssi.id_unit_measure,
+                                       dssi.flg_cons_type,
+                                       dssi.flg_reusable,
+                                       dssi.flg_editable,
+                                       dssi.total_avail_quantity,
+                                       dssi.flg_preparing,
+                                       dssi.flg_countable
+                                INTO l_quantity,
+                                     l_id_unit_measure,
+                                     l_flg_cons_type,
+                                     l_flg_reusable,
+                                     l_flg_editable,
+                                     l_total_avail_quantity,
+                                     l_flg_preparing,
+                                     l_flg_countable
+                                FROM alert_default.supply_soft_inst dssi
+                                JOIN alert_default.supply ds ON ds.id_supply = dssi.id_supply
+        
+                                WHERE ds.id_content = l_a_supplies(i)
+                                AND ds.flg_available = 'Y';
+    
+                                SELECT s.id_supply BULK COLLECT
+                                INTO l_id_supply
+                                FROM alert.supply s
+                                WHERE s.id_content = l_a_supplies(i)
+                                AND s.flg_available = 'Y';
+    
+                                FOR j IN 1 .. l_id_supply.count()
+                                LOOP
+        
+                                    l_id_supply_soft_inst := alert.seq_supply_soft_inst.nextval;
+        
+                                    --INSERIR EM supply_soft_inst
+                                    BEGIN
+                                        INSERT INTO alert.supply_soft_inst
+                                            (id_supply_soft_inst,
+                                             id_supply,
+                                             id_institution,
+                                             id_software,
+                                             id_professional,
+                                             id_dept,
+                                             quantity,
+                                             id_unit_measure,
+                                             flg_cons_type,
+                                             flg_reusable,
+                                             flg_editable,
+                                             total_avail_quantity,
+                                             flg_preparing,
+                                             flg_countable)
+                                        VALUES
+                                            (l_id_supply_soft_inst,
+                                             l_id_supply(j),
+                                             " & i_institution & ",
+                                             " & i_software & ",
+                                             0,
+                                             NULL,
+                                             l_quantity,
+                                             l_id_unit_measure,
+                                             l_flg_cons_type,
+                                             l_flg_reusable,
+                                             l_flg_editable,
+                                             l_total_avail_quantity,
+                                             l_flg_preparing,
+                                             l_flg_countable);
+                                    EXCEPTION
+                                        WHEN dup_val_on_index THEN
+                                            continue;
+                                    END;
+               
+                                END LOOP;
+    
+                            END LOOP;
+
+                        END;"
+
+        Dim cmd_insert_supply_soft As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_supply_soft.CommandType = CommandType.Text
+            cmd_insert_supply_soft.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_supply_soft.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_supply_soft.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_SUPPLY_SUP_AREA(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_sup_area As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                 l_a_supplies table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "       l_id_supply table_varchar := table_varchar(); --Como existem supplies repetidos é necessário um table_varchar
+
+                            l_id_sup_area alert_default.supply_sup_area.id_supply_area%TYPE;
+
+                            l_a_supply_soft_inst table_number := table_number();
+
+                        BEGIN
+
+                            FOR i IN 1 .. l_a_supplies.count()
+                            LOOP
+    
+                                SELECT ssi.id_supply_soft_inst 
+                                BULK COLLECT
+                                INTO l_a_supply_soft_inst
+                                FROM alert.supply_soft_inst ssi
+                                JOIN alert.supply s ON s.id_supply = ssi.id_supply
+                                                AND s.flg_available = 'Y'
+                                WHERE ssi.id_institution = " & i_institution & "
+                                AND ssi.id_software = " & i_software & "
+                                AND s.id_content = l_a_supplies(i);
+    
+                                FOR j IN 1 .. l_a_supply_soft_inst.count()
+                                LOOP
+                
+                                    --INSERIR EM supply_sup_area
+                                    BEGIN
+                                        INSERT INTO alert.supply_sup_area
+                                            (id_supply_area, id_supply_soft_inst, flg_available)
+                                        VALUES
+                                            (" & i_sup_area & ", l_a_supply_soft_inst(j), 'Y');
+                                    EXCEPTION
+                                        WHEN dup_val_on_index THEN
+                                            continue;
+                                    END;
+        
+                                END LOOP;
+    
+                            END LOOP;
+
+                        END;"
+
+        Dim cmd_insert_supply_sup_area As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_supply_sup_area.CommandType = CommandType.Text
+            cmd_insert_supply_sup_area.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_supply_sup_area.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_supply_sup_area.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_SUPPLY_LOC_DEFAULT(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                 l_a_supplies table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "
+                        l_id_supply table_varchar := table_varchar(); --Como existem supplies repetidos é necessário um table_varchar
+
+                        l_a_supply_soft_inst table_number := table_number();
+
+                        l_default_supply_soft_inst alert_default.supply_soft_inst.id_supply_soft_inst%TYPE;
+
+                        FUNCTION record_exists
+                        (
+                            l_id_supply_location  IN alert.supply_location.id_supply_location%TYPE,
+                            l_id_supply_soft_inst IN alert.supply_loc_default.id_supply_soft_inst%TYPE
+                        ) RETURN BOOLEAN IS
+    
+                            l_count_rep INTEGER := 0;
+    
+                        BEGIN
+    
+                            SELECT COUNT(1)
+                            INTO l_count_rep
+                            FROM alert.supply_loc_default sld
+                            WHERE sld.id_supply_location = l_id_supply_location
+                            AND sld.id_supply_soft_inst = l_id_supply_soft_inst;
+    
+                            IF l_count_rep > 0
+                            THEN
+        
+                                RETURN TRUE;
+        
+                            ELSE
+        
+                                RETURN FALSE;
+        
+                            END IF;
+    
+                        END record_exists;
+
+                    BEGIN
+
+                        FOR i IN 1 .. l_a_supplies.count()
+                        LOOP
+    
+                            DECLARE
+        
+                                l_id_supply_location table_number := table_number();
+                                l_flg_default        table_varchar := table_varchar();
+        
+                            BEGIN
+        
+                                SELECT ssi.id_supply_soft_inst BULK COLLECT
+                                INTO l_a_supply_soft_inst
+                                FROM alert.supply_soft_inst ssi
+                                JOIN alert.supply s ON s.id_supply = ssi.id_supply
+                                                AND s.flg_available = 'Y'
+                                WHERE ssi.id_institution = " & i_institution & "
+                                AND ssi.id_software = " & i_software & "
+                                AND s.id_content = l_a_supplies(i);
+        
+                                SELECT dsld.id_supply_location, dsld.flg_default BULK COLLECT
+                                INTO l_id_supply_location, l_flg_default
+                                FROM alert_default.supply_loc_default dsld
+                                JOIN alert_default.supply_soft_inst ssi ON ssi.id_supply_soft_inst = dsld.id_supply_soft_inst
+                                JOIN alert_default.supply ds ON ds.id_supply = ssi.id_supply
+                                WHERE ds.id_content = l_a_supplies(i)
+                                AND ds.flg_available = 'Y';
+        
+                                FOR j IN 1 .. l_a_supply_soft_inst.count()
+                                LOOP
+                                    BEGIN
+                                        FOR jj IN 1 .. l_id_supply_location.count()
+                                        LOOP
+                    
+                                            BEGIN
+                        
+                                                IF NOT record_exists(l_id_supply_location(jj), l_a_supply_soft_inst(j))
+                                                THEN
+                                                        
+                                                    INSERT INTO alert.supply_loc_default
+                                                        (id_supply_location, id_supply_loc_default, id_supply_soft_inst, flg_default)
+                                                    VALUES
+                                                        (l_id_supply_location(jj), alert.seq_supply_loc_default.nextval, l_a_supply_soft_inst(j), l_flg_default(jj));
+                            
+                                                END IF;
+                        
+                                            EXCEPTION
+                                                WHEN dup_val_on_index THEN
+                                                    continue;
+                            
+                                            END;
+                    
+                                        END LOOP;
+                
+                                    EXCEPTION
+                                        WHEN dup_val_on_index THEN
+                                            continue;
+                                    END;
+            
+                                END LOOP;
+                            END;
+                        END LOOP;
+                    END;"
+
+        Dim cmd_insert_supply_loc_default As New OracleCommand(sql, i_conn)
+
+        Try
+            cmd_insert_supply_loc_default.CommandType = CommandType.Text
+            cmd_insert_supply_loc_default.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_supply_loc_default.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_supply_loc_default.Dispose()
+
+        Return True
+
+    End Function
+
 End Class

@@ -730,6 +730,8 @@ Public Class Supplies
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
+        'Modificar o Array que é enviado
+
         If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, g_a_selected_supplies_default, conn) Then
 
             MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
@@ -738,7 +740,20 @@ Public Class Supplies
 
             MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
+        ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, g_a_selected_supplies_default, conn) Then
+
+            MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+        ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_a_selected_supplies_default, conn) Then
+
+            MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+        ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, g_a_selected_supplies_default, conn) Then
+
+            MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
+
         End If
+
 
     End Sub
 End Class
