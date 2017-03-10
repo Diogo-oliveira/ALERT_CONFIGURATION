@@ -718,11 +718,10 @@ Public Class Procedures
                     g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = ""
                 End Try
 
-
                 g_dimension_intervs_alert = g_dimension_intervs_alert + 1
                 ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
 
-                CheckedListBox3.Items.Add((dr_intervs.Item(2)))
+                CheckedListBox3.Items.Add(dr_intervs.Item(2))
 
             End While
 

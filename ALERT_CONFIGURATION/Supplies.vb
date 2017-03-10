@@ -220,6 +220,9 @@ Public Class Supplies
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
         ComboBox6.Text = ""
+        ReDim g_a_supps_alert(0)
+        g_dimension_supp_alert = 0
+        CheckedListBox3.Items.Clear()
 
         If TextBox1.Text <> "" Then
 
@@ -256,7 +259,6 @@ Public Class Supplies
 
                 ComboBox5.Text = ""
                 ComboBox5.Items.Clear()
-                CheckedListBox3.Items.Clear()
 
                 'g_selected_category = ""
 
@@ -631,6 +633,8 @@ Public Class Supplies
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
         ComboBox6.Text = ""
+        ReDim g_a_supps_alert(0)
+        g_dimension_supp_alert = 0
 
         g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
 
@@ -737,6 +741,8 @@ Public Class Supplies
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
         ComboBox6.Text = ""
+        ReDim g_a_supps_alert(0)
+        g_dimension_supp_alert = 0
 
         Dim dr As OracleDataReader
 
@@ -806,7 +812,6 @@ Public Class Supplies
 
                 MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
 
-
             Else
 
                 MsgBox("Record(s) successfully inserted.", vbInformation)
@@ -830,39 +835,17 @@ Public Class Supplies
                 ComboBox5.Items.Clear()
                 ComboBox5.SelectedItem = ""
 
-                'Vai ser necessário limpar os procedimentos carregados para o ALERT!!
-
-                '                'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
-                '                Dim dr_exam_cat As OracleDataReader
-
-                '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                '                If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
-                '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                '                    MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
-
-                '                Else
-
-                '                    ComboBox5.Items.Add("ALL")
-
-                '                    ReDim g_a_interv_cats_alert(0)
-                '                    g_a_interv_cats_alert(0) = 0
-
-                '                    Dim l_index_ec As Int16 = 1
-
-                '                    While dr_exam_cat.Read()
-
-                '                        ComboBox5.Items.Add(dr_exam_cat.Item(1))
-                '                        ReDim Preserve g_a_interv_cats_alert(l_index_ec)
-                '                        g_a_interv_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
-                '                        l_index_ec = l_index_ec + 1
-
-                '                    End While
-
-                '                End If
-
-                '                dr_exam_cat.Dispose()
-                '                dr_exam_cat.Close()
+                'Bloco do ALERT
+                ComboBox5.Items.Clear()
+                ComboBox5.Text = ""
+                ReDim g_a_supp_cats_alert(0)
+                ComboBox9.SelectedIndex = -1
+                ComboBox9.Text = ""
+                ComboBox6.SelectedIndex = -1
+                ComboBox6.Text = ""
+                ReDim g_a_supps_alert(0)
+                g_dimension_supp_alert = 0
+                CheckedListBox3.Items.Clear()
 
             End If
 
@@ -884,7 +867,7 @@ Public Class Supplies
         If ComboBox5.SelectedIndex = 0 Then
             g_selected_supplycategory_alert = 0
         Else
-            g_selected_supplycategory_alert = g_a_supp_cats_alert(ComboBox5.SelectedIndex - 1)
+            g_selected_supplycategory_alert = g_a_supp_cats_alert(ComboBox5.SelectedIndex)
         End If
 
         CheckedListBox3.Items.Clear()
@@ -893,8 +876,6 @@ Public Class Supplies
 
         g_dimension_supp_alert = 0
         ReDim g_a_supps_alert(g_dimension_supp_alert)
-
-        MsgBox(g_selected_supplycategory_alert)
 
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -1000,7 +981,7 @@ Public Class Supplies
 
             While dr_supp_cat.Read()
 
-                ComboBox5.Items.Add(dr_supp_cat.Item(1) & " - " & dr_supp_cat.Item(0))
+                ComboBox5.Items.Add(dr_supp_cat.Item(1))
                 ReDim Preserve g_a_supp_cats_alert(l_index)
                 g_a_supp_cats_alert(l_index) = dr_supp_cat.Item(0)
                 l_index = l_index + 1
@@ -1026,6 +1007,177 @@ Public Class Supplies
         ComboBox9.Text = ""
 
         'Fim BLoco para Limpar Variaveis
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+                CheckedListBox3.SetItemChecked(i, True)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        If CheckedListBox3.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+                CheckedListBox3.SetItemChecked(i, False)
+            Next
+        End If
+
+    End Sub
+
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+
+        If CheckedListBox3.CheckedIndices.Count > 0 Then
+
+            Cursor = Cursors.WaitCursor
+
+            Dim result As Integer = 0
+            Dim l_sucess As Boolean = False
+
+            'Perguntar se utilizador pretende mesmo apagar todos os supplies de uma categoria
+            If (CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count()) Then
+
+                result = MsgBox("All records from the chosen category will be deleted! Confirm?", MessageBoxButtons.YesNo)
+
+            End If
+
+            If (result = DialogResult.Yes Or CheckedListBox3.CheckedIndices.Count < CheckedListBox3.Items.Count()) Then
+
+                Dim indexChecked As Integer
+
+                '1 - Apagar Registos
+                'Ciclo para correr todos os registos do ALERT marcados com o check
+
+
+                Dim l_selected_supplies_alert() As SUPPLIES_API.supplies_default
+                Dim l_dimension_selected_supplies As Integer = 0
+
+                For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                    ReDim Preserve l_selected_supplies_alert(l_dimension_selected_supplies)
+                    l_selected_supplies_alert(l_dimension_selected_supplies).id_content_category = g_a_supps_alert(indexChecked).id_content_category
+                    l_selected_supplies_alert(l_dimension_selected_supplies).id_content_supply = g_a_supps_alert(indexChecked).id_content_supply
+                    l_dimension_selected_supplies = l_dimension_selected_supplies + 1
+
+                Next
+
+                If Not db_supplies.DELETE_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_selected_supplies_alert, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, conn) Then
+
+                    MsgBox("ERROR DELETING SUPPLIES FROM ALERT!", vbCritical)
+
+                Else
+
+                    l_sucess = True
+
+                End If
+
+                ''2 - Refresh à grelha de registos do Alert
+                ''3.1 - Se estão a ser apagados todos os registos de uma categoria:
+                If CheckedListBox3.CheckedIndices.Count = CheckedListBox3.Items.Count() Then
+
+                    CheckedListBox3.Items.Clear()
+                    ComboBox5.Items.Clear()
+                    ComboBox5.Text = ""
+
+                    '3.1.1 - Obter novamente as categorias dos supplies
+                    Dim dr_supp_cat As OracleDataReader
+
+                    ReDim g_a_supp_cats_alert(0)
+                    Dim l_index_loaded_categories As Int64 = 0
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, conn, dr_supp_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
+
+                    Else
+
+                        ComboBox5.Items.Add("ALL")
+
+                        ReDim g_a_supp_cats_alert(0)
+                        g_a_supp_cats_alert(0) = 0
+
+                        Dim l_index As Int16 = 1
+
+                        While dr_supp_cat.Read()
+
+                            ComboBox5.Items.Add(dr_supp_cat.Item(1))
+                            ReDim Preserve g_a_supp_cats_alert(l_index)
+                            g_a_supp_cats_alert(l_index) = dr_supp_cat.Item(0)
+                            l_index = l_index + 1
+
+                        End While
+
+                    End If
+
+                    dr_supp_cat.Dispose()
+                    dr_supp_cat.Close()
+
+                    'Limpar arrays
+                    ReDim g_a_supps_alert(0)
+                    g_dimension_supp_alert = 0
+
+                Else '3.2 - Eliminar apenas os registos selecionados
+
+                    CheckedListBox3.Items.Clear()
+                    Dim dr_supplies As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_supplies.GET_SUPS_ALERT_BY_CAT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, g_selected_supplycategory_alert, conn, dr_supplies) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+                    Else
+
+                        While dr_supplies.Read()
+
+                            g_a_supps_alert(g_dimension_supp_alert).id_content_category = dr_supplies.Item(0)
+                            g_a_supps_alert(g_dimension_supp_alert).desc_category = dr_supplies.Item(1)
+
+                            g_a_supps_alert(g_dimension_supp_alert).id_content_supply = dr_supplies.Item(2)
+                            g_a_supps_alert(g_dimension_supp_alert).desc_supply = dr_supplies.Item(3)
+
+                            g_dimension_supp_alert = g_dimension_supp_alert + 1
+                            ReDim Preserve g_a_supps_alert(g_dimension_supp_alert)
+
+                            If g_selected_supplycategory_alert = "0" Then
+
+                                CheckedListBox3.Items.Add(dr_supplies.Item(3) & "  >>  [" & dr_supplies.Item(1) & "]")
+
+                            Else
+
+                                CheckedListBox3.Items.Add((dr_supplies.Item(3)))
+
+                            End If
+
+                        End While
+
+                    End If
+
+                    dr_supplies.Dispose()
+                    dr_supplies.Close()
+
+                End If
+
+            End If
+
+
+            If l_sucess = True Then
+
+                MsgBox("Record(s) Successfuly deleted.", vbInformation)
+
+            End If
+
+            Cursor = Cursors.Arrow
+
+        End If
 
     End Sub
 End Class

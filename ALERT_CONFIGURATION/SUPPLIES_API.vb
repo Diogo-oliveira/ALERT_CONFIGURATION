@@ -644,8 +644,10 @@ Public Class SUPPLIES_API
                                     SELECT s.id_supply BULK COLLECT
                                     INTO l_id_supply_verifif
                                     FROM alert.supply s
+                                    JOIN ALERT.SUPPLY_TYPE ST ON ST.ID_SUPPLY_TYPE=S.ID_SUPPLY_TYPE
                                     WHERE s.id_content = l_a_supplies(i)
-                                    AND s.flg_available = 'Y';
+                                    AND s.flg_available = 'Y'            
+                                    AND ST.FLG_AVAILABLE='Y';
         
                                     IF l_id_supply_verifif.count() = 0
                                     THEN
@@ -1066,6 +1068,136 @@ Public Class SUPPLIES_API
 
         cmd_insert_supply_loc_default.Dispose()
 
+        Return True
+
+    End Function
+
+    Function DELETE_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_supplies() As supplies_default, ByVal i_sup_area As Int16, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                l_a_supply_types table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_category & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "l_a_supplies     table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_a_supplies.Count() - 1
+
+            If (i < i_a_supplies.Count() - 1) Then
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "', "
+
+            Else
+
+                sql = sql & "'" & i_a_supplies(i).id_content_supply & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "
+                             l_id_supply_soft_inst table_number := table_number();
+
+                          FUNCTION RECORD_EXISTS
+                          (
+                             ID_SUPPLY_SOFT_INST     IN  alert.supply_soft_inst.id_supply_soft_inst%type
+    
+                           ) RETURN BOOLEAN IS
+    
+                            l_count_rep        integer := 0;
+    
+                           BEGIN
+           
+                               Select count(1)
+                                 into l_count_rep
+                                 from ALERT.SUPPLY_SUP_AREA SSA
+                                where SSA.ID_SUPPLY_SOFT_INST=ID_SUPPLY_SOFT_INST;
+                             
+                               IF l_count_rep > 0 then
+            
+                                         RETURN TRUE;
+                 
+                               ELSE
+             
+                                         RETURN FALSE;
+                     
+                               END IF;
+    
+                           END RECORD_EXISTS;
+
+                        BEGIN
+
+                            FOR i IN 1 .. l_a_supplies.count()
+                            LOOP
+    
+                                SELECT ssi.id_supply_soft_inst BULK COLLECT
+                                INTO l_id_supply_soft_inst
+                                FROM alert.supply_soft_inst ssi
+                                WHERE ssi.id_supply IN (
+                                
+                                                        SELECT s.id_supply
+                                                        FROM alert.supply s
+                                                        JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                                                                              AND st.flg_available = 'Y'
+                                                        WHERE s.id_content = l_a_supplies(i)
+                                                        AND st.id_content = l_a_supply_types(i))
+                                AND ssi.id_institution = " & i_institution & "
+                                AND ssi.id_software IN (0, " & i_software & ");
+    
+                                DELETE FROM alert.supply_sup_area ssa
+                                WHERE ssa.id_supply_soft_inst MEMBER OF(l_id_supply_soft_inst)
+                                AND ssa.id_supply_area = " & i_sup_area & ";
+        
+                                --Verificar se o registo exista para mais que uma área
+                                --Se não exisitr, apaga na LOC_DEFAULT e SOFT_INST
+                               FOR j IN 1 .. l_id_supply_soft_inst.count()
+                                LOOP
+        
+                                    IF NOT record_exists(l_id_supply_soft_inst(j))
+                                    THEN
+            
+                                        --1 Apagar de LOC_DEFAULT
+            
+                                        DELETE FROM alert.supply_loc_default sld
+                                        WHERE sld.id_supply_soft_inst IN (l_id_supply_soft_inst(j));
+            
+                                        --2 Apagar de SOFT_INST
+            
+                                        DELETE FROM alert.supply_soft_inst ssi
+                                        WHERE ssi.id_supply_soft_inst IN (l_id_supply_soft_inst(j));
+            
+                                    END IF;
+        
+                                END LOOP;
+    
+                            END LOOP;
+
+                        END;"
+
+        Dim cmd_supply_sup_area As New OracleCommand(sql, i_conn)
+
+        ' Try
+        cmd_supply_sup_area.CommandType = CommandType.Text
+            cmd_supply_sup_area.ExecuteNonQuery()
+            'Catch ex As Exception
+            '   cmd_supply_sup_area.Dispose()
+            '  Return False
+            'End Try
+
+            cmd_supply_sup_area.Dispose()
         Return True
 
     End Function
