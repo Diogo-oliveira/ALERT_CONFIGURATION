@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Supplies
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class Supplies
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Supplies))
         Me.Label5 = New System.Windows.Forms.Label()
@@ -31,14 +31,10 @@ Partial Class Supplies
         Me.Button14 = New System.Windows.Forms.Button()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.Button8 = New System.Windows.Forms.Button()
-        Me.Button6 = New System.Windows.Forms.Button()
-        Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button9 = New System.Windows.Forms.Button()
         Me.Button10 = New System.Windows.Forms.Button()
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
-        Me.Label9 = New System.Windows.Forms.Label()
-        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.ComboBox5 = New System.Windows.Forms.ComboBox()
         Me.Button5 = New System.Windows.Forms.Button()
@@ -63,8 +59,14 @@ Partial Class Supplies
         Me.ComboBox8 = New System.Windows.Forms.ComboBox()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.ComboBox9 = New System.Windows.Forms.ComboBox()
+        Me.Label9 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
+        Me.GroupBox2.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label5
@@ -139,27 +141,9 @@ Partial Class Supplies
         Me.Button8.Text = "SAVE"
         Me.Button8.UseVisualStyleBackColor = True
         '
-        'Button6
-        '
-        Me.Button6.Location = New System.Drawing.Point(172, 748)
-        Me.Button6.Name = "Button6"
-        Me.Button6.Size = New System.Drawing.Size(41, 39)
-        Me.Button6.TabIndex = 145
-        Me.Button6.Text = ">>"
-        Me.Button6.UseVisualStyleBackColor = True
-        '
-        'CheckedListBox4
-        '
-        Me.CheckedListBox4.CheckOnClick = True
-        Me.CheckedListBox4.FormattingEnabled = True
-        Me.CheckedListBox4.Location = New System.Drawing.Point(229, 748)
-        Me.CheckedListBox4.Name = "CheckedListBox4"
-        Me.CheckedListBox4.Size = New System.Drawing.Size(113, 34)
-        Me.CheckedListBox4.TabIndex = 144
-        '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(652, 801)
+        Me.Button11.Location = New System.Drawing.Point(627, 302)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(102, 23)
         Me.Button11.TabIndex = 143
@@ -168,7 +152,7 @@ Partial Class Supplies
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(544, 801)
+        Me.Button9.Location = New System.Drawing.Point(519, 302)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 142
@@ -177,7 +161,7 @@ Partial Class Supplies
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(436, 801)
+        Me.Button10.Location = New System.Drawing.Point(411, 302)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 141
@@ -188,35 +172,15 @@ Partial Class Supplies
         '
         Me.CheckedListBox3.CheckOnClick = True
         Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(12, 733)
+        Me.CheckedListBox3.Location = New System.Drawing.Point(15, 64)
         Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(148, 64)
+        Me.CheckedListBox3.Size = New System.Drawing.Size(714, 229)
         Me.CheckedListBox3.TabIndex = 139
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(226, 702)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(110, 13)
-        Me.Label9.TabIndex = 138
-        Me.Label9.Text = "CLINICAL SERVICES"
-        '
-        'ComboBox6
-        '
-        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox6.FormattingEnabled = True
-        Me.ComboBox6.ItemHeight = 16
-        Me.ComboBox6.Location = New System.Drawing.Point(229, 718)
-        Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(127, 24)
-        Me.ComboBox6.TabIndex = 137
         '
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(12, 687)
+        Me.Label8.Location = New System.Drawing.Point(375, 17)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(151, 13)
         Me.Label8.TabIndex = 136
@@ -228,9 +192,9 @@ Partial Class Supplies
         Me.ComboBox5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox5.FormattingEnabled = True
         Me.ComboBox5.ItemHeight = 16
-        Me.ComboBox5.Location = New System.Drawing.Point(12, 703)
+        Me.ComboBox5.Location = New System.Drawing.Point(378, 33)
         Me.ComboBox5.Name = "ComboBox5"
-        Me.ComboBox5.Size = New System.Drawing.Size(144, 24)
+        Me.ComboBox5.Size = New System.Drawing.Size(351, 24)
         Me.ComboBox5.TabIndex = 135
         '
         'Button5
@@ -249,7 +213,7 @@ Partial Class Supplies
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(830, 67)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(714, 229)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(714, 225)
         Me.CheckedListBox1.TabIndex = 133
         '
         'Button4
@@ -330,7 +294,7 @@ Partial Class Supplies
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(14, 803)
+        Me.Button7.Location = New System.Drawing.Point(12, 823)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(100, 23)
         Me.Button7.TabIndex = 123
@@ -454,26 +418,74 @@ Partial Class Supplies
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "SUPPLIES - DEFAULT"
         '
+        'GroupBox2
+        '
+        Me.GroupBox2.Controls.Add(Me.ComboBox6)
+        Me.GroupBox2.Controls.Add(Me.Label7)
+        Me.GroupBox2.Controls.Add(Me.ComboBox9)
+        Me.GroupBox2.Controls.Add(Me.Label9)
+        Me.GroupBox2.Controls.Add(Me.CheckedListBox3)
+        Me.GroupBox2.Controls.Add(Me.Label8)
+        Me.GroupBox2.Controls.Add(Me.Button9)
+        Me.GroupBox2.Controls.Add(Me.Button10)
+        Me.GroupBox2.Controls.Add(Me.Button11)
+        Me.GroupBox2.Controls.Add(Me.ComboBox5)
+        Me.GroupBox2.Location = New System.Drawing.Point(15, 481)
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.Size = New System.Drawing.Size(745, 336)
+        Me.GroupBox2.TabIndex = 158
+        Me.GroupBox2.TabStop = False
+        Me.GroupBox2.Text = "SUPPLIES - DEFAULT"
+        '
+        'ComboBox6
+        '
+        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox6.FormattingEnabled = True
+        Me.ComboBox6.Location = New System.Drawing.Point(15, 33)
+        Me.ComboBox6.Name = "ComboBox6"
+        Me.ComboBox6.Size = New System.Drawing.Size(153, 24)
+        Me.ComboBox6.TabIndex = 162
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(12, 19)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(81, 13)
+        Me.Label7.TabIndex = 161
+        Me.Label7.Text = "SUPPLY AREA"
+        '
+        'ComboBox9
+        '
+        Me.ComboBox9.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox9.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox9.FormattingEnabled = True
+        Me.ComboBox9.Location = New System.Drawing.Point(174, 33)
+        Me.ComboBox9.Name = "ComboBox9"
+        Me.ComboBox9.Size = New System.Drawing.Size(198, 24)
+        Me.ComboBox9.TabIndex = 160
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(171, 19)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(97, 13)
+        Me.Label9.TabIndex = 159
+        Me.Label9.Text = "TYPE OF SUPPLY"
+        '
         'Supplies
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1598, 858)
+        Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
         Me.Controls.Add(Me.Button12)
         Me.Controls.Add(Me.Button8)
-        Me.Controls.Add(Me.Button6)
-        Me.Controls.Add(Me.CheckedListBox4)
-        Me.Controls.Add(Me.Button11)
-        Me.Controls.Add(Me.Button9)
-        Me.Controls.Add(Me.Button10)
-        Me.Controls.Add(Me.CheckedListBox3)
-        Me.Controls.Add(Me.Label9)
-        Me.Controls.Add(Me.ComboBox6)
-        Me.Controls.Add(Me.Label8)
-        Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.ComboBox2)
@@ -483,7 +495,6 @@ Partial Class Supplies
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.GroupBox1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.MaximumSize = New System.Drawing.Size(1600, 880)
         Me.MinimumSize = New System.Drawing.Size(1598, 858)
         Me.Name = "Supplies"
@@ -491,6 +502,8 @@ Partial Class Supplies
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        Me.GroupBox2.ResumeLayout(False)
+        Me.GroupBox2.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -503,14 +516,10 @@ Partial Class Supplies
     Friend WithEvents Button14 As Button
     Friend WithEvents Button12 As Button
     Friend WithEvents Button8 As Button
-    Friend WithEvents Button6 As Button
-    Friend WithEvents CheckedListBox4 As CheckedListBox
     Friend WithEvents Button11 As Button
     Friend WithEvents Button9 As Button
     Friend WithEvents Button10 As Button
     Friend WithEvents CheckedListBox3 As CheckedListBox
-    Friend WithEvents Label9 As Label
-    Friend WithEvents ComboBox6 As ComboBox
     Friend WithEvents Label8 As Label
     Friend WithEvents ComboBox5 As ComboBox
     Friend WithEvents Button5 As Button
@@ -535,4 +544,9 @@ Partial Class Supplies
     Friend WithEvents ComboBox8 As ComboBox
     Friend WithEvents Label11 As Label
     Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents GroupBox2 As GroupBox
+    Friend WithEvents ComboBox6 As ComboBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents ComboBox9 As ComboBox
+    Friend WithEvents Label9 As Label
 End Class

@@ -147,6 +147,67 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
+    Function GET_SUPP_CATS_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = ""
+
+        If i_flg_type = "ALL" Then
+
+            sql = "SELECT distinct st.id_content, tst.desc_lang_" & l_id_language & "
+                    FROM alert.supply s
+                    JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                    JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                    join translation tst on tst.code_translation=st.code_supply_type
+                    join translation ts on ts.code_translation=s.code_supply
+                    join alert.supply_loc_default sl on sl.id_supply_soft_inst=ssi.id_supply_soft_inst
+                    WHERE ssi.id_institution= " & i_institution & "
+                    AND s.flg_available = 'Y'
+                    AND ssi.id_software IN (0, " & i_software & ")
+                    AND ssa.id_supply_area = " & i_sup_area & "
+                    AND ssa.flg_available = 'Y'
+                    AND st.flg_available = 'Y'
+                    AND tst.desc_lang_" & l_id_language & " is not null
+                    and ts.desc_lang_" & l_id_language & " is not null
+                    ORDER BY 2 ASC"
+
+        Else
+
+            sql = "SELECT distinct st.id_content, tst.desc_lang_" & l_id_language & "
+                    FROM alert.supply s
+                    JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                    JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                    join translation tst on tst.code_translation=st.code_supply_type
+                    join translation ts on ts.code_translation=s.code_supply
+                    join alert.supply_loc_default sl on sl.id_supply_soft_inst=ssi.id_supply_soft_inst
+                    WHERE ssi.id_institution= " & i_institution & "
+                    AND s.flg_available = 'Y'
+                    AND ssi.id_software IN (0, " & i_software & ")
+                    AND ssa.id_supply_area = " & i_sup_area & "
+                    AND s.flg_type = '" & i_flg_type & "'
+                    AND ssa.flg_available = 'Y'
+                    AND st.flg_available = 'Y'
+                    AND tst.desc_lang_" & l_id_language & " is not null
+                    and ts.desc_lang_" & l_id_language & " is not null
+                    ORDER BY 2 ASC"
+
+        End If
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
     Function GET_SUPS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
@@ -209,6 +270,82 @@ Public Class SUPPLIES_API
                                 AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", ds.Code_Supply) IS NOT NULL
                                 AND DST.ID_CONTENT='" & i_id_content_cat & "'
                                 ORDER BY 4 ASC"
+
+        End If
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+
+    Function GET_SUPS_ALERT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = ""
+
+        If i_id_content_cat = "0" Then
+
+            sql = "SELECT DISTINCT st.id_content, tst.desc_lang_" & l_id_language & ", s.id_content, ts.desc_lang_" & l_id_language & "
+                    FROM alert.supply s
+                    JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                    JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                    JOIN translation tst ON tst.code_translation = st.code_supply_type
+                    JOIN translation ts ON ts.code_translation = s.code_supply
+                    JOIN alert.supply_loc_default sl ON sl.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    WHERE ssi.id_institution = " & i_institution & "
+                    AND s.flg_available = 'Y'
+                    AND ssi.id_software IN (0, " & i_software & ")
+                    AND ssa.id_supply_area = " & i_sup_area & "                   
+                    AND ssa.flg_available = 'Y'
+                    AND st.flg_available = 'Y'
+                    AND tst.desc_lang_" & l_id_language & " IS NOT NULL
+                    AND ts.desc_lang_" & l_id_language & " IS NOT NULL "
+
+            If i_flg_type <> "ALL" Then
+
+                sql = sql & " And s.flg_type = '" & i_flg_type & "'"
+
+            End If
+
+            sql = sql & " ORDER BY 4 asc , 2 ASC"
+
+        Else
+
+            sql = sql & "SELECT DISTINCT st.id_content, tst.desc_lang_" & l_id_language & ", s.id_content, ts.desc_lang_" & l_id_language & "
+                            FROM alert.supply s
+                            JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                            JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                            JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                            JOIN translation tst ON tst.code_translation = st.code_supply_type
+                            JOIN translation ts ON ts.code_translation = s.code_supply
+                            JOIN alert.supply_loc_default sl ON sl.id_supply_soft_inst = ssi.id_supply_soft_inst
+                            WHERE ssi.id_institution = " & i_institution & "
+                            AND s.flg_available = 'Y'
+                            AND ssi.id_software IN (0, " & i_software & ")
+                            AND ssa.id_supply_area = " & i_sup_area & "                   
+                            AND ssa.flg_available = 'Y'
+                            AND st.flg_available = 'Y'
+                            AND tst.desc_lang_" & l_id_language & " IS NOT NULL
+                            AND ts.desc_lang_" & l_id_language & " IS NOT NULL
+                            AND ST.ID_CONTENT='" & i_id_content_cat & "'"
+
+            If i_flg_type <> "ALL" Then
+
+                sql = sql & " And s.flg_type = '" & i_flg_type & "'"
+
+            End If
+
+            sql = sql & " ORDER BY 4 asc , 2 ASC"
 
         End If
 
