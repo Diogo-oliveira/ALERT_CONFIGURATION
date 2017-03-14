@@ -127,6 +127,7 @@ Public Class Supplies
 
             ComboBox8.Items.Add(dr_sup_areas.Item(1))
             ComboBox6.Items.Add(dr_sup_areas.Item(1))
+            ComboBox10.Items.Add(dr_sup_areas.Item(1))
 
             ReDim Preserve g_a_SUP_AREAS(l_index_sup_area)
             g_a_SUP_AREAS(l_index_sup_area).id_supply_area = dr_sup_areas.Item(0)
@@ -176,19 +177,6 @@ Public Class Supplies
 
         'Limpar arrays
         g_selected_soft = -1
-        'ReDim g_a_dep_clin_serv_inst(0)
-        'g_id_dep_clin_serv = 0
-        'ReDim g_a_loaded_categories_default(0)
-        'g_selected_category = -1
-        'ReDim g_a_loaded_interventions_default(0)
-        'ReDim g_a_selected_default_interventions(0)
-        'g_index_selected_intervention_from_default = 0
-        'ReDim g_a_interv_cats_alert(0)
-        'ReDim g_a_interv_cats_alert(0)
-        'g_dimension_intervs_alert = 0
-        'ReDim g_a_intervs_for_clinical_service(0)
-        'g_dimension_intervs_cs = 0
-        'ReDim g_a_selected_intervs_delete_cs(0)
 
         'Limpar Versão
         ComboBox3.Text = ""
@@ -223,6 +211,9 @@ Public Class Supplies
         ReDim g_a_supps_alert(0)
         g_dimension_supp_alert = 0
         CheckedListBox3.Items.Clear()
+
+        ComboBox10.SelectedIndex = -1
+        ComboBox10.Text = ""
 
         If TextBox1.Text <> "" Then
 
@@ -259,8 +250,6 @@ Public Class Supplies
 
                 ComboBox5.Text = ""
                 ComboBox5.Items.Clear()
-
-                'g_selected_category = ""
 
             End If
 
@@ -313,21 +302,6 @@ Public Class Supplies
 
             Cursor = Cursors.WaitCursor
 
-            'Limpar arrays
-            'ReDim g_a_dep_clin_serv_inst(0)
-            'g_id_dep_clin_serv = 0
-            'ReDim g_a_loaded_categories_default(0)
-            'g_selected_category = -1
-            'ReDim g_a_loaded_interventions_default(0)
-            'ReDim g_a_selected_default_interventions(0)
-            'g_index_selected_intervention_from_default = 0
-            'ReDim g_a_interv_cats_alert(0)
-            'ReDim g_a_interv_cats_alert(0)
-            'g_dimension_intervs_alert = 0
-            'ReDim g_a_intervs_for_clinical_service(0)
-            'g_dimension_intervs_cs = 0
-            'ReDim g_a_selected_intervs_delete_cs(0)
-
             CheckedListBox1.Items.Clear()
             CheckedListBox2.Items.Clear()
             CheckedListBox3.Items.Clear()
@@ -369,70 +343,6 @@ Public Class Supplies
             dr_def_versions.Dispose()
             dr_def_versions.Close()
 
-            '        'Box de categorias na instituição/software
-            '        Dim dr_exam_cat As OracleDataReader
-
-            '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            '        If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, conn, dr_exam_cat) Then
-            '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-            '            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
-
-            '        Else
-
-            '            ComboBox5.Items.Add("ALL")
-
-            '            ReDim g_a_interv_cats_alert(0)
-            '            g_a_interv_cats_alert(0) = 0
-
-            '            Dim l_index As Int16 = 1
-
-            '            While dr_exam_cat.Read()
-
-            '                ComboBox5.Items.Add(dr_exam_cat.Item(1))
-            '                ReDim Preserve g_a_interv_cats_alert(l_index)
-            '                g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
-            '                l_index = l_index + 1
-
-            '            End While
-
-            '        End If
-
-            '        dr_exam_cat.Dispose()
-            '        dr_exam_cat.Close()
-
-            '        'Preencher os Clinical Services
-
-            '        Dim dr_clin_serv As OracleDataReader
-
-            '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            '        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
-            '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-            '            MsgBox("ERROR GETTING CLINICAL SERVICES!")
-
-            '        Else
-
-            '            Dim i As Integer = 0
-
-            '            Dim l_index_dep_clin_serv As Integer = 0
-            '            ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-
-            '            While dr_clin_serv.Read()
-
-            '                ComboBox6.Items.Add(dr_clin_serv.Item(0))
-
-            '                ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-            '                g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
-            '                l_index_dep_clin_serv = l_index_dep_clin_serv + 1
-
-            '            End While
-
-            '        End If
-
-            '        dr_clin_serv.Dispose()
-            '        dr_clin_serv.Close()
-
             Cursor = Cursors.Arrow
 
         End If
@@ -446,18 +356,10 @@ Public Class Supplies
 
             Cursor = Cursors.WaitCursor
 
-            'Limpar arrays
-            'ReDim g_a_loaded_interventions_default(0)
-            'ReDim g_a_selected_default_interventions(0)
-            ' g_index_selected_intervention_from_default = 0
-
             ComboBox4.Items.Clear()
             ComboBox4.Text = ""
 
             CheckedListBox2.Items.Clear()
-
-            'Determinar as categorias disponíveis para a versão escolhida
-            'Array g_a_loaded_categories_default vai gaurdar os ids de todas as categorias
 
             ReDim g_a_loaded_categories_default(0)
             Dim l_index_loaded_categories As Int64 = 0
@@ -562,7 +464,6 @@ Public Class Supplies
 
                 End If
 
-
                 ReDim Preserve g_a_loaded_supplies_default(l_dimension_array_loaded_supplies)
 
                 g_a_loaded_supplies_default(l_dimension_array_loaded_supplies).id_content_category = dr.Item(0)
@@ -635,6 +536,9 @@ Public Class Supplies
         ComboBox6.Text = ""
         ReDim g_a_supps_alert(0)
         g_dimension_supp_alert = 0
+
+        ComboBox10.SelectedIndex = -1
+        ComboBox10.Text = ""
 
         g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
 
@@ -744,6 +648,9 @@ Public Class Supplies
         ReDim g_a_supps_alert(0)
         g_dimension_supp_alert = 0
 
+        ComboBox10.SelectedIndex = -1
+        ComboBox10.Text = ""
+
         Dim dr As OracleDataReader
 
         ComboBox2.Items.Clear()
@@ -846,6 +753,9 @@ Public Class Supplies
                 ReDim g_a_supps_alert(0)
                 g_dimension_supp_alert = 0
                 CheckedListBox3.Items.Clear()
+
+                ComboBox10.SelectedIndex = -1
+                ComboBox10.Text = ""
 
             End If
 
@@ -1178,6 +1088,10 @@ Public Class Supplies
             Cursor = Cursors.Arrow
 
         End If
+
+    End Sub
+
+    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
 
     End Sub
 End Class
