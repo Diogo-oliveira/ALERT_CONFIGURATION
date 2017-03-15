@@ -36,6 +36,7 @@ Public Class Supplies
 
     Dim g_selected_category As String = ""
     Dim g_type_supply_alert As String = ""
+    Dim g_type_supply_alert_barcode As String = ""
 
     Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
     Dim g_selected_supplycategory As String = ""
@@ -50,12 +51,26 @@ Public Class Supplies
 
     'Array que vai guardar as categorias disponíveis no ALERT
     Dim g_a_supp_cats_alert() As String
+    Dim g_a_supp_cats_alert_barcode() As String
 
     'Array que vai guardar os supplies carregadas do ALERT
     Dim g_a_supps_alert() As SUPPLIES_API.supplies_default
     Dim g_dimension_supp_alert As Int64 = 0
 
     Dim g_selected_supplycategory_alert As String = ""
+    Dim g_selected_supplycategory_alert_barcode As String = ""
+
+    Public Structure TABLE_BARCODE
+
+        Public desc_supply_type As String
+        Public desc_supply As String
+        Public barcode As String
+        Public lote As String
+        Public serial As String
+        Public id_supply As Int64
+    End Structure
+
+    Dim g_supply_barcode() As TABLE_BARCODE
 
 
     Public Sub New(ByVal i_oradb As String)
@@ -72,6 +87,8 @@ Public Class Supplies
         CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
+
+        DataGridView1.BackgroundColor = Color.FromArgb(195, 195, 165)
 
         ' GroupBox1.bo
 
@@ -156,6 +173,14 @@ Public Class Supplies
         ComboBox9.Items.Add(g_supplies_desc)
         ComboBox9.Items.Add(g_surgical_desc)
 
+        ComboBox11.Items.Add("ALL")
+        ComboBox11.Items.Add(g_activity_desc)
+        ComboBox11.Items.Add(g_implants_desc)
+        ComboBox11.Items.Add(g_kits_desc)
+        ComboBox11.Items.Add(g_sets_desc)
+        ComboBox11.Items.Add(g_supplies_desc)
+        ComboBox11.Items.Add(g_surgical_desc)
+
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
@@ -204,6 +229,7 @@ Public Class Supplies
         ComboBox5.Items.Clear()
         ComboBox5.Text = ""
         ReDim g_a_supp_cats_alert(0)
+        ReDim g_a_supp_cats_alert_barcode(0)
         ComboBox9.SelectedIndex = -1
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
@@ -214,6 +240,9 @@ Public Class Supplies
 
         ComboBox10.SelectedIndex = -1
         ComboBox10.Text = ""
+
+        ComboBox11.SelectedIndex = -1
+        ComboBox11.Text = ""
 
         If TextBox1.Text <> "" Then
 
@@ -530,6 +559,7 @@ Public Class Supplies
         ComboBox5.Items.Clear()
         ComboBox5.Text = ""
         ReDim g_a_supp_cats_alert(0)
+        ReDim g_a_supp_cats_alert_barcode(0)
         ComboBox9.SelectedIndex = -1
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
@@ -539,6 +569,8 @@ Public Class Supplies
 
         ComboBox10.SelectedIndex = -1
         ComboBox10.Text = ""
+        ComboBox11.SelectedIndex = -1
+        ComboBox11.Text = ""
 
         g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
 
@@ -641,6 +673,7 @@ Public Class Supplies
         ComboBox5.Items.Clear()
         ComboBox5.Text = ""
         ReDim g_a_supp_cats_alert(0)
+        ReDim g_a_supp_cats_alert_barcode(0)
         ComboBox9.SelectedIndex = -1
         ComboBox9.Text = ""
         ComboBox6.SelectedIndex = -1
@@ -650,6 +683,8 @@ Public Class Supplies
 
         ComboBox10.SelectedIndex = -1
         ComboBox10.Text = ""
+        ComboBox11.SelectedIndex = -1
+        ComboBox11.Text = ""
 
         Dim dr As OracleDataReader
 
@@ -746,6 +781,7 @@ Public Class Supplies
                 ComboBox5.Items.Clear()
                 ComboBox5.Text = ""
                 ReDim g_a_supp_cats_alert(0)
+                ReDim g_a_supp_cats_alert_barcode(0)
                 ComboBox9.SelectedIndex = -1
                 ComboBox9.Text = ""
                 ComboBox6.SelectedIndex = -1
@@ -756,6 +792,8 @@ Public Class Supplies
 
                 ComboBox10.SelectedIndex = -1
                 ComboBox10.Text = ""
+                ComboBox11.SelectedIndex = -1
+                ComboBox11.Text = ""
 
             End If
 
@@ -1092,6 +1130,265 @@ Public Class Supplies
     End Sub
 
     Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+
+    End Sub
+
+    Private Sub ComboBox10_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox10.SelectedIndexChanged
+
+        ComboBox11.SelectedIndex = -1
+        ComboBox11.Text = ""
+
+    End Sub
+
+    Private Sub ComboBox11_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox11.SelectedIndexChanged
+
+        'Bloco Para Limpar Variaveis
+        ComboBox12.Items.Clear()
+        ComboBox12.Text = ""
+        ReDim g_a_supp_cats_alert_barcode(0)
+
+        'Fim BLoco para Limpar Variaveis
+
+        If ComboBox11.Text = g_activity_desc Then
+
+            g_type_supply_alert_barcode = g_activity_flag
+
+        ElseIf ComboBox11.Text = g_implants_desc Then
+
+            g_type_supply_alert_barcode = g_implants_flag
+
+        ElseIf ComboBox11.Text = g_kits_desc Then
+
+            g_type_supply_alert_barcode = g_kits_flag
+
+        ElseIf ComboBox11.Text = g_sets_desc Then
+
+            g_type_supply_alert_barcode = g_sets_flag
+
+        ElseIf ComboBox11.Text = g_supplies_desc Then
+
+            g_type_supply_alert_barcode = g_supplies_flag
+
+        ElseIf ComboBox11.Text = g_surgical_desc Then
+
+            g_type_supply_alert_barcode = g_surgical_flag
+
+        Else
+
+            g_type_supply_alert = "ALL"
+
+        End If
+
+        If ComboBox11.SelectedIndex > -1 Then
+
+            'Box de categorias na instituição/software
+            Dim dr_supp_cat As OracleDataReader
+
+            ReDim g_a_supp_cats_alert_barcode(0)
+            Dim l_index_loaded_categories As Int64 = 0
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, conn, dr_supp_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
+
+            Else
+
+                ComboBox12.Items.Add("ALL")
+
+                ReDim g_a_supp_cats_alert_barcode(0)
+                g_a_supp_cats_alert_barcode(0) = 0
+
+                Dim l_index As Int16 = 1
+
+                While dr_supp_cat.Read()
+
+                    ComboBox12.Items.Add(dr_supp_cat.Item(1))
+                    ReDim Preserve g_a_supp_cats_alert_barcode(l_index)
+                    g_a_supp_cats_alert_barcode(l_index) = dr_supp_cat.Item(0)
+                    l_index = l_index + 1
+
+                End While
+
+            End If
+
+            dr_supp_cat.Dispose()
+            dr_supp_cat.Close()
+
+        End If
+
+    End Sub
+
+    Private Sub ComboBox12_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox12.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        'Determinar o id_content da categoria selecionada
+        If ComboBox12.SelectedIndex = 0 Then
+            g_selected_supplycategory_alert_barcode = 0
+        Else
+            g_selected_supplycategory_alert_barcode = g_a_supp_cats_alert_barcode(ComboBox12.SelectedIndex)
+        End If
+
+        'g_dimension_supp_alert_barcode = 0
+        'ReDim g_a_supps_alert_barcode(g_dimension_supp_alert)
+
+        Dim dr As OracleDataReader
+
+        If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+
+            MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+        Else
+
+            ReDim g_supply_barcode(0)
+            Dim index As Integer = 0
+
+            While dr.Read()
+
+                ReDim Preserve g_supply_barcode(index)
+                g_supply_barcode(index).desc_supply_type = dr.Item(0)
+                g_supply_barcode(index).desc_supply = dr.Item(1)
+                Try
+                    g_supply_barcode(index).barcode = dr.Item(2)
+                Catch ex As Exception
+                    g_supply_barcode(index).barcode = ""
+                End Try
+
+                Try
+                    g_supply_barcode(index).lote = dr.Item(3)
+                Catch ex As Exception
+                    g_supply_barcode(index).lote = ""
+                End Try
+
+                Try
+                    g_supply_barcode(index).serial = dr.Item(4)
+                Catch ex As Exception
+                    g_supply_barcode(index).serial = ""
+                End Try
+
+                g_supply_barcode(index).id_supply = dr.Item(5)
+
+                index = index + 1
+
+            End While
+
+            DataGridView1.DataBindings.Clear()
+
+            DataGridView1.DataSource = Nothing
+
+            DataGridView1.Rows.Clear()
+
+            DataGridView1.ColumnCount = 5
+            DataGridView1.Columns(0).Name = "CATEGORY"
+            DataGridView1.Columns(1).Name = "SUPPLY"
+            DataGridView1.Columns(2).Name = "BARCODE"
+            DataGridView1.Columns(3).Name = "LOT"
+            DataGridView1.Columns(4).Name = "SERIAL_NUMBER"
+
+            DataGridView1.Columns(0).Width = 170
+            DataGridView1.Columns(1).Width = 265
+            DataGridView1.Columns(2).Width = 105
+            DataGridView1.Columns(3).Width = 105
+            DataGridView1.Columns(4).Width = 123
+
+            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+            DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+
+            DataGridView1.Columns(0).ReadOnly = True
+            DataGridView1.Columns(1).ReadOnly = True
+            DataGridView1.Columns(2).ReadOnly = False
+            DataGridView1.Columns(3).ReadOnly = False
+            DataGridView1.Columns(4).ReadOnly = False
+
+
+            For i As Integer = 0 To g_supply_barcode.Count() - 1
+
+                DataGridView1.Rows.Add()
+                DataGridView1.Rows(i).Cells(0).Value = g_supply_barcode(i).desc_supply_type
+                DataGridView1.Rows(i).Cells(1).Value = g_supply_barcode(i).desc_supply
+                DataGridView1.Rows(i).Cells(2).Value = g_supply_barcode(i).barcode
+                DataGridView1.Rows(i).Cells(3).Value = g_supply_barcode(i).lote
+                DataGridView1.Rows(i).Cells(4).Value = g_supply_barcode(i).serial
+
+            Next
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+
+        Dim l_success As Boolean = True 'Variável de controlo para os erros
+
+        Dim l_records_updated As Boolean = False 'Variável de controlo para mensagem de sucesso
+
+        For i As Integer = 0 To g_supply_barcode.Count() - 1
+
+            If DataGridView1.Rows(i).Cells(2).Value <> g_supply_barcode(i).barcode Then
+
+                If Not db_supplies.SET_BARCODE(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(2).Value, conn) Then
+
+                    l_success = False
+
+                Else
+
+                    l_records_updated = True
+
+                End If
+
+
+            End If
+
+            If DataGridView1.Rows(i).Cells(3).Value <> g_supply_barcode(i).lote Then
+
+                If Not db_supplies.SET_LOT(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(3).Value, conn) Then
+
+                    l_success = False
+
+                Else
+
+                    l_records_updated = True
+
+                End If
+
+            End If
+
+            If DataGridView1.Rows(i).Cells(4).Value <> g_supply_barcode(i).serial Then
+
+                If Not db_supplies.SET_SERIAL_NUMBER(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(4).Value, conn) Then
+
+                    l_success = False
+
+                Else
+
+                    l_records_updated = True
+
+                End If
+
+            End If
+
+        Next
+
+        If l_success = False Then
+
+            MsgBox("ERROR UPDATING SUPPLY INFORMATION!", vbCritical)
+
+        ElseIf l_success = True And l_records_updated = True Then
+
+            MsgBox("Records successfully updated.", vbInformation)
+
+        End If
 
     End Sub
 End Class

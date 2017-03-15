@@ -285,7 +285,6 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-
     Function GET_SUPS_ALERT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
@@ -346,6 +345,87 @@ Public Class SUPPLIES_API
             End If
 
             sql = sql & " ORDER BY 4 asc , 2 ASC"
+
+        End If
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_SUPS_ALERT_BARCODE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+
+        Dim sql As String = ""
+
+        If i_id_content_cat = "0" Then
+
+            sql = "SELECT DISTINCT tst.desc_lang_" & l_id_language & " AS ""CATEGORY"", ts.desc_lang_" & l_id_language & " AS ""SUPPLY"",
+                                   sb.barcode, sb.lot, sb.serial_number, s.id_supply
+                    FROM alert.supply s
+                    JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                    JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                    JOIN translation tst ON tst.code_translation = st.code_supply_type
+                    JOIN translation ts ON ts.code_translation = s.code_supply
+                    JOIN alert.supply_loc_default sl ON sl.id_supply_soft_inst = ssi.id_supply_soft_inst
+                    LEFT JOIN alert.supply_barcode sb ON sb.id_supply = s.id_supply
+                                             AND sb.id_institution = ssi.id_institution
+                    WHERE ssi.id_institution = " & i_institution & "
+                    AND s.flg_available = 'Y'
+                    AND ssi.id_software IN (0, " & i_software & ")
+                    AND ssa.id_supply_area = " & i_sup_area & "                   
+                    AND ssa.flg_available = 'Y'
+                    AND st.flg_available = 'Y'
+                    AND tst.desc_lang_" & l_id_language & " IS NOT NULL
+                    AND ts.desc_lang_" & l_id_language & " IS NOT NULL "
+
+            If i_flg_type <> "ALL" Then
+
+                sql = sql & " And s.flg_type = '" & i_flg_type & "'"
+
+            End If
+
+            sql = sql & " ORDER BY 1 asc , 2 ASC"
+
+        Else
+
+            sql = sql & "SELECT DISTINCT tst.desc_lang_" & l_id_language & " AS ""CATEGORY"", ts.desc_lang_" & l_id_language & " AS ""SUPPLY"",
+                                   sb.barcode, sb.lot, sb.serial_number, s.id_supply
+                            FROM alert.supply s
+                            JOIN alert.supply_soft_inst ssi ON ssi.id_supply = s.id_supply
+                            JOIN alert.supply_sup_area ssa ON ssa.id_supply_soft_inst = ssi.id_supply_soft_inst
+                            JOIN alert.supply_type st ON st.id_supply_type = s.id_supply_type
+                            JOIN translation tst ON tst.code_translation = st.code_supply_type
+                            JOIN translation ts ON ts.code_translation = s.code_supply
+                            JOIN alert.supply_loc_default sl ON sl.id_supply_soft_inst = ssi.id_supply_soft_inst
+                            LEFT JOIN alert.supply_barcode sb ON sb.id_supply = s.id_supply
+                                                     AND sb.id_institution = ssi.id_institution
+                            WHERE ssi.id_institution = " & i_institution & "
+                            AND s.flg_available = 'Y'
+                            AND ssi.id_software IN (0, " & i_software & ")
+                            AND ssa.id_supply_area = " & i_sup_area & "                   
+                            AND ssa.flg_available = 'Y'
+                            AND st.flg_available = 'Y'
+                            AND tst.desc_lang_" & l_id_language & " IS NOT NULL
+                            AND ts.desc_lang_" & l_id_language & " IS NOT NULL
+                            AND ST.ID_CONTENT='" & i_id_content_cat & "'"
+
+            If i_flg_type <> "ALL" Then
+
+                sql = sql & " And s.flg_type = '" & i_flg_type & "'"
+
+            End If
+
+            sql = sql & " ORDER BY 1 asc , 2 ASC"
 
         End If
 
@@ -1189,16 +1269,184 @@ Public Class SUPPLIES_API
 
         Dim cmd_supply_sup_area As New OracleCommand(sql, i_conn)
 
-        ' Try
-        cmd_supply_sup_area.CommandType = CommandType.Text
+        Try
+            cmd_supply_sup_area.CommandType = CommandType.Text
             cmd_supply_sup_area.ExecuteNonQuery()
-            'Catch ex As Exception
-            '   cmd_supply_sup_area.Dispose()
-            '  Return False
-            'End Try
-
+        Catch ex As Exception
             cmd_supply_sup_area.Dispose()
+            Return False
+        End Try
+
+        cmd_supply_sup_area.Dispose()
         Return True
+
+    End Function
+
+    Function CHECK_SUPPY_BARCODE_EXISTS(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_conn As OracleConnection) As Boolean
+
+        Dim sql As String = "Select count(*) from alert.supply_barcode b
+                                where b.id_supply=" & i_id_supply & "
+                                and b.id_institution in (0," & i_id_institution & ")"
+
+        Dim cmd As New OracleCommand(sql, i_conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+
+        Dim l_count As Int64 = 0
+
+        While dr.Read()
+
+            l_count = dr.Item(0)
+
+        End While
+
+        cmd.Dispose()
+        dr.Dispose()
+        dr.Close()
+
+        If l_count > 0 Then
+
+            Return True
+
+        Else
+
+            Return False
+
+        End If
+
+    End Function
+
+    Function SET_BARCODE(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_barcode As String, ByVal i_conn As OracleConnection) As Boolean
+
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+
+            Dim sql As String = "UPDATE alert.supply_barcode b
+                                    SET b.barcode = '" & i_barcode & "'
+                                    WHERE b.id_supply = " & i_id_supply & " 
+                                    AND b.id_institution IN (0, " & i_id_institution & ")"
+
+            Dim cmd_update_barcode As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_update_barcode.CommandType = CommandType.Text
+                cmd_update_barcode.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_update_barcode.Dispose()
+                Return False
+            End Try
+
+            cmd_update_barcode.Dispose()
+            Return True
+
+        Else
+
+            Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, BARCODE, FLG_AVAILABLE)
+                                 values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_barcode & "', 'Y')"
+
+            Dim cmd_insert_barcode As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_insert_barcode.CommandType = CommandType.Text
+                cmd_insert_barcode.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_insert_barcode.Dispose()
+                Return False
+            End Try
+
+            cmd_insert_barcode.Dispose()
+            Return True
+
+        End If
+
+    End Function
+
+    Function SET_LOT(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_lot As String, ByVal i_conn As OracleConnection) As Boolean
+
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+
+            Dim sql As String = "UPDATE alert.supply_barcode b
+                                    SET b.LOT = '" & i_lot & "'
+                                    WHERE b.id_supply = " & i_id_supply & " 
+                                    AND b.id_institution IN (0, " & i_id_institution & ")"
+
+            Dim cmd_update_lot As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_update_lot.CommandType = CommandType.Text
+                cmd_update_lot.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_update_lot.Dispose()
+                Return False
+            End Try
+
+            cmd_update_lot.Dispose()
+            Return True
+
+        Else
+
+            Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, LOT, FLG_AVAILABLE)
+                                 values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_lot & "', 'Y')"
+
+            Dim cmd_insert_lot As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_insert_lot.CommandType = CommandType.Text
+                cmd_insert_lot.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_insert_lot.Dispose()
+                Return False
+            End Try
+
+            cmd_insert_lot.Dispose()
+            Return True
+
+        End If
+
+    End Function
+
+    Function SET_SERIAL_NUMBER(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_serial_number As String, ByVal i_conn As OracleConnection) As Boolean
+
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+
+            Dim sql As String = "UPDATE alert.supply_barcode b
+                                    SET b.SERIAL_NUMBER = '" & i_serial_number & "'
+                                    WHERE b.id_supply = " & i_id_supply & " 
+                                    AND b.id_institution IN (0, " & i_id_institution & ")"
+
+            Dim cmd_update_serial_number As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_update_serial_number.CommandType = CommandType.Text
+                cmd_update_serial_number.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_update_serial_number.Dispose()
+                Return False
+            End Try
+
+            cmd_update_serial_number.Dispose()
+            Return True
+
+        Else
+
+            Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, SERIAL_NUMBER, FLG_AVAILABLE)
+                                 values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_serial_number & "', 'Y')"
+
+            Dim cmd_insert_serial_number As New OracleCommand(sql, i_conn)
+
+            Try
+                cmd_insert_serial_number.CommandType = CommandType.Text
+                cmd_insert_serial_number.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_insert_serial_number.Dispose()
+                Return False
+            End Try
+
+            cmd_insert_serial_number.Dispose()
+            Return True
+
+        End If
 
     End Function
 
