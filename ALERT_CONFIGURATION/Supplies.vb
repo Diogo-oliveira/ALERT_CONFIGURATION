@@ -333,14 +333,11 @@ Public Class Supplies
 
             CheckedListBox1.Items.Clear()
             CheckedListBox2.Items.Clear()
-            CheckedListBox3.Items.Clear()
 
             ComboBox3.Items.Clear()
             ComboBox3.Text = ""
             ComboBox4.Items.Clear()
             ComboBox4.Text = ""
-            ComboBox5.Items.Clear()
-            ComboBox5.Text = ""
 
             g_selected_supplycategory = ""
             ReDim g_a_loaded_categories_default(0)
@@ -434,14 +431,11 @@ Public Class Supplies
 
         CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
-        CheckedListBox3.Items.Clear()
 
         ComboBox3.Items.Clear()
         ComboBox3.Text = ""
         ComboBox4.Items.Clear()
         ComboBox4.Text = ""
-        ComboBox5.Items.Clear()
-        ComboBox5.Text = ""
 
         g_selected_category = ""
         g_selected_supplycategory = ""
@@ -1329,6 +1323,8 @@ Public Class Supplies
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
+        Cursor = Cursors.WaitCursor
+
         Dim l_success As Boolean = True 'Variável de controlo para os erros
 
         Dim l_records_updated As Boolean = False 'Variável de controlo para mensagem de sucesso
@@ -1384,11 +1380,185 @@ Public Class Supplies
 
             MsgBox("ERROR UPDATING SUPPLY INFORMATION!", vbCritical)
 
+            'Bloco para Limpara a DATAGRIDVIEW e a estrutura
+            Dim dr As OracleDataReader
+
+            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+
+                MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+            Else
+
+                ReDim g_supply_barcode(0)
+                Dim index As Integer = 0
+
+                While dr.Read()
+
+                    ReDim Preserve g_supply_barcode(index)
+                    g_supply_barcode(index).desc_supply_type = dr.Item(0)
+                    g_supply_barcode(index).desc_supply = dr.Item(1)
+                    Try
+                        g_supply_barcode(index).barcode = dr.Item(2)
+                    Catch ex As Exception
+                        g_supply_barcode(index).barcode = ""
+                    End Try
+
+                    Try
+                        g_supply_barcode(index).lote = dr.Item(3)
+                    Catch ex As Exception
+                        g_supply_barcode(index).lote = ""
+                    End Try
+
+                    Try
+                        g_supply_barcode(index).serial = dr.Item(4)
+                    Catch ex As Exception
+                        g_supply_barcode(index).serial = ""
+                    End Try
+
+                    g_supply_barcode(index).id_supply = dr.Item(5)
+
+                    index = index + 1
+
+                End While
+
+                DataGridView1.DataBindings.Clear()
+
+                DataGridView1.DataSource = Nothing
+
+                DataGridView1.Rows.Clear()
+
+                DataGridView1.ColumnCount = 5
+                DataGridView1.Columns(0).Name = "CATEGORY"
+                DataGridView1.Columns(1).Name = "SUPPLY"
+                DataGridView1.Columns(2).Name = "BARCODE"
+                DataGridView1.Columns(3).Name = "LOT"
+                DataGridView1.Columns(4).Name = "SERIAL_NUMBER"
+
+                DataGridView1.Columns(0).Width = 170
+                DataGridView1.Columns(1).Width = 265
+                DataGridView1.Columns(2).Width = 105
+                DataGridView1.Columns(3).Width = 105
+                DataGridView1.Columns(4).Width = 123
+
+                DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                DataGridView1.Columns(0).ReadOnly = True
+                DataGridView1.Columns(1).ReadOnly = True
+                DataGridView1.Columns(2).ReadOnly = False
+                DataGridView1.Columns(3).ReadOnly = False
+                DataGridView1.Columns(4).ReadOnly = False
+
+
+                For i As Integer = 0 To g_supply_barcode.Count() - 1
+
+                    DataGridView1.Rows.Add()
+                    DataGridView1.Rows(i).Cells(0).Value = g_supply_barcode(i).desc_supply_type
+                    DataGridView1.Rows(i).Cells(1).Value = g_supply_barcode(i).desc_supply
+                    DataGridView1.Rows(i).Cells(2).Value = g_supply_barcode(i).barcode
+                    DataGridView1.Rows(i).Cells(3).Value = g_supply_barcode(i).lote
+                    DataGridView1.Rows(i).Cells(4).Value = g_supply_barcode(i).serial
+
+                Next
+            End If
+
+
         ElseIf l_success = True And l_records_updated = True Then
 
             MsgBox("Records successfully updated.", vbInformation)
 
+            'Bloco para Limpara a DATAGRIDVIEW e a estrutura e para repopular grelha e estrutura
+            Dim dr As OracleDataReader
+
+            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+
+                MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+            Else
+
+                ReDim g_supply_barcode(0)
+                Dim index As Integer = 0
+
+                While dr.Read()
+
+                    ReDim Preserve g_supply_barcode(index)
+                    g_supply_barcode(index).desc_supply_type = dr.Item(0)
+                    g_supply_barcode(index).desc_supply = dr.Item(1)
+                    Try
+                        g_supply_barcode(index).barcode = dr.Item(2)
+                    Catch ex As Exception
+                        g_supply_barcode(index).barcode = ""
+                    End Try
+
+                    Try
+                        g_supply_barcode(index).lote = dr.Item(3)
+                    Catch ex As Exception
+                        g_supply_barcode(index).lote = ""
+                    End Try
+
+                    Try
+                        g_supply_barcode(index).serial = dr.Item(4)
+                    Catch ex As Exception
+                        g_supply_barcode(index).serial = ""
+                    End Try
+
+                    g_supply_barcode(index).id_supply = dr.Item(5)
+
+                    index = index + 1
+
+                End While
+
+                DataGridView1.DataBindings.Clear()
+
+                DataGridView1.DataSource = Nothing
+
+                DataGridView1.Rows.Clear()
+
+                DataGridView1.ColumnCount = 5
+                DataGridView1.Columns(0).Name = "CATEGORY"
+                DataGridView1.Columns(1).Name = "SUPPLY"
+                DataGridView1.Columns(2).Name = "BARCODE"
+                DataGridView1.Columns(3).Name = "LOT"
+                DataGridView1.Columns(4).Name = "SERIAL_NUMBER"
+
+                DataGridView1.Columns(0).Width = 170
+                DataGridView1.Columns(1).Width = 265
+                DataGridView1.Columns(2).Width = 105
+                DataGridView1.Columns(3).Width = 105
+                DataGridView1.Columns(4).Width = 123
+
+                DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(3).SortMode = DataGridViewColumnSortMode.NotSortable
+                DataGridView1.Columns(4).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                DataGridView1.Columns(0).ReadOnly = True
+                DataGridView1.Columns(1).ReadOnly = True
+                DataGridView1.Columns(2).ReadOnly = False
+                DataGridView1.Columns(3).ReadOnly = False
+                DataGridView1.Columns(4).ReadOnly = False
+
+
+                For i As Integer = 0 To g_supply_barcode.Count() - 1
+
+                    DataGridView1.Rows.Add()
+                    DataGridView1.Rows(i).Cells(0).Value = g_supply_barcode(i).desc_supply_type
+                    DataGridView1.Rows(i).Cells(1).Value = g_supply_barcode(i).desc_supply
+                    DataGridView1.Rows(i).Cells(2).Value = g_supply_barcode(i).barcode
+                    DataGridView1.Rows(i).Cells(3).Value = g_supply_barcode(i).lote
+                    DataGridView1.Rows(i).Cells(4).Value = g_supply_barcode(i).serial
+
+                Next
+
+            End If
+
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 End Class
