@@ -297,6 +297,101 @@ Public Class Supplies
 
     Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
 
+        If CheckedListBox1.Items.Count() > 0 Then
+
+            Dim result As Integer = 0
+
+            result = MsgBox("There are unsaved records. Do you wish to save them?", vbYesNo)
+
+            If (result = DialogResult.Yes) Then
+
+                Cursor = Cursors.WaitCursor
+
+                Dim l_a_checked_supplies() As SUPPLIES_API.supplies_default
+                Dim l_index As Integer = 0
+
+                For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                    ReDim Preserve l_a_checked_supplies(l_index)
+
+                    l_a_checked_supplies(l_index).id_content_category = g_a_selected_supplies_default(indexChecked).id_content_category
+                    l_a_checked_supplies(l_index).id_content_supply = g_a_selected_supplies_default(indexChecked).id_content_supply
+                    l_a_checked_supplies(l_index).desc_category = g_a_selected_supplies_default(indexChecked).desc_category
+                    l_a_checked_supplies(l_index).desc_supply = g_a_selected_supplies_default(indexChecked).desc_supply
+
+                    l_index = l_index + 1
+
+                Next
+
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
+
+                Else
+
+                    MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                    '1 - Processo Limpeza
+                    '1.1 - Limpar a box de materiais a gravar no alert
+                    CheckedListBox1.Items.Clear()
+
+                    '1.2 - Remover o check dos materiais do default
+                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                        CheckedListBox2.SetItemChecked(i, False)
+
+                    Next
+
+                    '1.3 - Limpar g_a_selected_supplies_default (Array materiais do default selecionadas pelo utilizador)
+                    ReDim g_a_selected_supplies_default(0)
+                    g_index_selected_supplies_from_default = 0
+
+                    '1.4 - Limpar a caixa de categorias de materiais do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.SelectedItem = ""
+
+                    'Bloco do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.Text = ""
+                    ReDim g_a_supp_cats_alert(0)
+                    ReDim g_a_supp_cats_alert_barcode(0)
+                    ComboBox9.SelectedIndex = -1
+                    ComboBox9.Text = ""
+                    ComboBox6.SelectedIndex = -1
+                    ComboBox6.Text = ""
+                    ReDim g_a_supps_alert(0)
+                    g_dimension_supp_alert = 0
+                    CheckedListBox3.Items.Clear()
+
+                    ComboBox10.SelectedIndex = -1
+                    ComboBox10.Text = ""
+                    ComboBox11.SelectedIndex = -1
+                    ComboBox11.Text = ""
+
+                End If
+
+            End If
+
+            Cursor = Cursors.Arrow
+
+        End If
+
         If ComboBox8.SelectedIndex >= 0 Then
 
             If ComboBox7.Text = g_activity_desc Then
@@ -331,8 +426,8 @@ Public Class Supplies
 
             Cursor = Cursors.WaitCursor
 
-            CheckedListBox1.Items.Clear()
             CheckedListBox2.Items.Clear()
+            CheckedListBox1.Items.Clear()
 
             ComboBox3.Items.Clear()
             ComboBox3.Text = ""
@@ -378,9 +473,106 @@ Public Class Supplies
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
 
+        If CheckedListBox1.Items.Count() > 0 Then
+
+            Dim result As Integer = 0
+
+            result = MsgBox("There are unsaved records. Do you wish to save them?", vbYesNo)
+
+            If (result = DialogResult.Yes) Then
+
+                Cursor = Cursors.WaitCursor
+
+                Dim l_a_checked_supplies() As SUPPLIES_API.supplies_default
+                Dim l_index As Integer = 0
+
+                For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                    ReDim Preserve l_a_checked_supplies(l_index)
+
+                    l_a_checked_supplies(l_index).id_content_category = g_a_selected_supplies_default(indexChecked).id_content_category
+                    l_a_checked_supplies(l_index).id_content_supply = g_a_selected_supplies_default(indexChecked).id_content_supply
+                    l_a_checked_supplies(l_index).desc_category = g_a_selected_supplies_default(indexChecked).desc_category
+                    l_a_checked_supplies(l_index).desc_supply = g_a_selected_supplies_default(indexChecked).desc_supply
+
+                    l_index = l_index + 1
+
+                Next
+
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
+
+                Else
+
+                    MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                    '1 - Processo Limpeza
+                    '1.1 - Limpar a box de materiais a gravar no alert
+                    CheckedListBox1.Items.Clear()
+
+                    '1.2 - Remover o check dos materiais do default
+                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                        CheckedListBox2.SetItemChecked(i, False)
+
+                    Next
+
+                    '1.3 - Limpar g_a_selected_supplies_default (Array materiais do default selecionadas pelo utilizador)
+                    ReDim g_a_selected_supplies_default(0)
+                    g_index_selected_supplies_from_default = 0
+
+                    '1.4 - Limpar a caixa de categorias de materiais do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.SelectedItem = ""
+
+                    'Bloco do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.Text = ""
+                    ReDim g_a_supp_cats_alert(0)
+                    ReDim g_a_supp_cats_alert_barcode(0)
+                    ComboBox9.SelectedIndex = -1
+                    ComboBox9.Text = ""
+                    ComboBox6.SelectedIndex = -1
+                    ComboBox6.Text = ""
+                    ReDim g_a_supps_alert(0)
+                    g_dimension_supp_alert = 0
+                    CheckedListBox3.Items.Clear()
+
+                    ComboBox10.SelectedIndex = -1
+                    ComboBox10.Text = ""
+                    ComboBox11.SelectedIndex = -1
+                    ComboBox11.Text = ""
+
+                End If
+
+            End If
+
+            Cursor = Cursors.Arrow
+
+        End If
+
         If ComboBox2.Text <> "" And ComboBox8.Text <> "" And ComboBox7.Text <> "" Then
 
             Cursor = Cursors.WaitCursor
+
+            CheckedListBox1.Items.Clear()
 
             ComboBox4.Items.Clear()
             ComboBox4.Text = ""
@@ -416,8 +608,6 @@ Public Class Supplies
             dr_lab_cat_def.Dispose()
             dr_lab_cat_def.Close()
 
-            CheckedListBox1.Items.Clear()
-
             Cursor = Cursors.Arrow
 
         End If
@@ -426,10 +616,106 @@ Public Class Supplies
 
     Private Sub ComboBox8_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox8.SelectedIndexChanged
 
+        If CheckedListBox1.Items.Count() > 0 Then
+
+            Dim result As Integer = 0
+
+            result = MsgBox("There are unsaved records. Do you wish to save them?", vbYesNo)
+
+            If (result = DialogResult.Yes) Then
+
+                Cursor = Cursors.WaitCursor
+
+                Dim l_a_checked_supplies() As SUPPLIES_API.supplies_default
+                Dim l_index As Integer = 0
+
+                For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                    ReDim Preserve l_a_checked_supplies(l_index)
+
+                    l_a_checked_supplies(l_index).id_content_category = g_a_selected_supplies_default(indexChecked).id_content_category
+                    l_a_checked_supplies(l_index).id_content_supply = g_a_selected_supplies_default(indexChecked).id_content_supply
+                    l_a_checked_supplies(l_index).desc_category = g_a_selected_supplies_default(indexChecked).desc_category
+                    l_a_checked_supplies(l_index).desc_supply = g_a_selected_supplies_default(indexChecked).desc_supply
+
+                    l_index = l_index + 1
+
+                Next
+
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
+
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+
+                    MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
+
+                Else
+
+                    MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                    '1 - Processo Limpeza
+                    '1.1 - Limpar a box de materiais a gravar no alert
+                    CheckedListBox1.Items.Clear()
+
+                    '1.2 - Remover o check dos materiais do default
+                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                        CheckedListBox2.SetItemChecked(i, False)
+
+                    Next
+
+                    '1.3 - Limpar g_a_selected_supplies_default (Array materiais do default selecionadas pelo utilizador)
+                    ReDim g_a_selected_supplies_default(0)
+                    g_index_selected_supplies_from_default = 0
+
+                    '1.4 - Limpar a caixa de categorias de materiais do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.SelectedItem = ""
+
+                    'Bloco do ALERT
+                    ComboBox5.Items.Clear()
+                    ComboBox5.Text = ""
+                    ReDim g_a_supp_cats_alert(0)
+                    ReDim g_a_supp_cats_alert_barcode(0)
+                    ComboBox9.SelectedIndex = -1
+                    ComboBox9.Text = ""
+                    ComboBox6.SelectedIndex = -1
+                    ComboBox6.Text = ""
+                    ReDim g_a_supps_alert(0)
+                    g_dimension_supp_alert = 0
+                    CheckedListBox3.Items.Clear()
+
+                    ComboBox10.SelectedIndex = -1
+                    ComboBox10.Text = ""
+                    ComboBox11.SelectedIndex = -1
+                    ComboBox11.Text = ""
+
+                End If
+
+            End If
+
+            Cursor = Cursors.Arrow
+
+        End If
+
+        CheckedListBox1.Items.Clear()
+
         ComboBox7.SelectedIndex = -1
         ComboBox7.Text = ""
 
-        CheckedListBox1.Items.Clear()
         CheckedListBox2.Items.Clear()
 
         ComboBox3.Items.Clear()
