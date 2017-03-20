@@ -23,9 +23,9 @@ Partial Class Supplies
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Supplies))
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle21 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.Button15 = New System.Windows.Forms.Button()
         Me.Button16 = New System.Windows.Forms.Button()
@@ -82,7 +82,7 @@ Partial Class Supplies
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(172, 24)
+        Me.Label5.Location = New System.Drawing.Point(251, 16)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(97, 13)
         Me.Label5.TabIndex = 153
@@ -90,7 +90,7 @@ Partial Class Supplies
         '
         'Button15
         '
-        Me.Button15.Location = New System.Drawing.Point(1335, 302)
+        Me.Button15.Location = New System.Drawing.Point(1336, 293)
         Me.Button15.Name = "Button15"
         Me.Button15.Size = New System.Drawing.Size(101, 23)
         Me.Button15.TabIndex = 152
@@ -99,7 +99,7 @@ Partial Class Supplies
         '
         'Button16
         '
-        Me.Button16.Location = New System.Drawing.Point(1227, 302)
+        Me.Button16.Location = New System.Drawing.Point(1228, 293)
         Me.Button16.Name = "Button16"
         Me.Button16.Size = New System.Drawing.Size(102, 23)
         Me.Button16.TabIndex = 151
@@ -117,7 +117,7 @@ Partial Class Supplies
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(683, 299)
+        Me.Button8.Location = New System.Drawing.Point(683, 314)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(100, 23)
         Me.Button8.TabIndex = 146
@@ -126,7 +126,7 @@ Partial Class Supplies
         '
         'Button11
         '
-        Me.Button11.Location = New System.Drawing.Point(627, 302)
+        Me.Button11.Location = New System.Drawing.Point(627, 314)
         Me.Button11.Name = "Button11"
         Me.Button11.Size = New System.Drawing.Size(102, 23)
         Me.Button11.TabIndex = 143
@@ -135,7 +135,7 @@ Partial Class Supplies
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(519, 302)
+        Me.Button9.Location = New System.Drawing.Point(519, 314)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(102, 23)
         Me.Button9.TabIndex = 142
@@ -144,7 +144,7 @@ Partial Class Supplies
         '
         'Button10
         '
-        Me.Button10.Location = New System.Drawing.Point(411, 302)
+        Me.Button10.Location = New System.Drawing.Point(411, 314)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(102, 23)
         Me.Button10.TabIndex = 141
@@ -154,10 +154,11 @@ Partial Class Supplies
         'CheckedListBox3
         '
         Me.CheckedListBox3.CheckOnClick = True
+        Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox3.FormattingEnabled = True
         Me.CheckedListBox3.Location = New System.Drawing.Point(15, 64)
         Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(714, 229)
+        Me.CheckedListBox3.Size = New System.Drawing.Size(714, 242)
         Me.CheckedListBox3.TabIndex = 139
         '
         'Label8
@@ -165,9 +166,9 @@ Partial Class Supplies
         Me.Label8.AutoSize = True
         Me.Label8.Location = New System.Drawing.Point(375, 17)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(121, 13)
+        Me.Label8.Size = New System.Drawing.Size(66, 13)
         Me.Label8.TabIndex = 136
-        Me.Label8.Text = "SUPPLIES CATEGORY"
+        Me.Label8.Text = "CATEGORY"
         '
         'ComboBox5
         '
@@ -182,7 +183,7 @@ Partial Class Supplies
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(1442, 302)
+        Me.Button5.Location = New System.Drawing.Point(1443, 293)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(102, 23)
         Me.Button5.TabIndex = 134
@@ -194,14 +195,14 @@ Partial Class Supplies
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(830, 67)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(828, 62)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(714, 225)
         Me.CheckedListBox1.TabIndex = 133
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(629, 302)
+        Me.Button4.Location = New System.Drawing.Point(629, 293)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(101, 23)
         Me.Button4.TabIndex = 132
@@ -210,7 +211,7 @@ Partial Class Supplies
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(521, 302)
+        Me.Button3.Location = New System.Drawing.Point(521, 293)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 131
@@ -219,7 +220,7 @@ Partial Class Supplies
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(759, 171)
+        Me.Button2.Location = New System.Drawing.Point(759, 153)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 130
@@ -231,7 +232,7 @@ Partial Class Supplies
         Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(16, 67)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(15, 62)
         Me.CheckedListBox2.Name = "CheckedListBox2"
         Me.CheckedListBox2.Size = New System.Drawing.Size(714, 225)
         Me.CheckedListBox2.TabIndex = 128
@@ -239,11 +240,11 @@ Partial Class Supplies
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(493, 24)
+        Me.Label6.Location = New System.Drawing.Point(732, 16)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(111, 13)
+        Me.Label6.Size = New System.Drawing.Size(66, 13)
         Me.Label6.TabIndex = 127
-        Me.Label6.Text = "SUPPLY CATEGORY"
+        Me.Label6.Text = "CATEGORY"
         '
         'ComboBox4
         '
@@ -251,15 +252,15 @@ Partial Class Supplies
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.ItemHeight = 16
-        Me.ComboBox4.Location = New System.Drawing.Point(493, 38)
+        Me.ComboBox4.Location = New System.Drawing.Point(735, 32)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(237, 24)
+        Me.ComboBox4.Size = New System.Drawing.Size(356, 24)
         Me.ComboBox4.TabIndex = 126
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(331, 24)
+        Me.Label4.Location = New System.Drawing.Point(483, 16)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 125
@@ -270,9 +271,9 @@ Partial Class Supplies
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(334, 38)
+        Me.ComboBox3.Location = New System.Drawing.Point(486, 32)
         Me.ComboBox3.Name = "ComboBox3"
-        Me.ComboBox3.Size = New System.Drawing.Size(153, 24)
+        Me.ComboBox3.Size = New System.Drawing.Size(243, 24)
         Me.ComboBox3.TabIndex = 124
         '
         'Button7
@@ -352,9 +353,9 @@ Partial Class Supplies
         Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(175, 38)
+        Me.ComboBox7.Location = New System.Drawing.Point(251, 32)
         Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(153, 24)
+        Me.ComboBox7.Size = New System.Drawing.Size(229, 24)
         Me.ComboBox7.TabIndex = 154
         '
         'ComboBox8
@@ -362,15 +363,15 @@ Partial Class Supplies
         Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox8.FormattingEnabled = True
-        Me.ComboBox8.Location = New System.Drawing.Point(16, 38)
+        Me.ComboBox8.Location = New System.Drawing.Point(16, 32)
         Me.ComboBox8.Name = "ComboBox8"
-        Me.ComboBox8.Size = New System.Drawing.Size(153, 24)
+        Me.ComboBox8.Size = New System.Drawing.Size(229, 24)
         Me.ComboBox8.TabIndex = 156
         '
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(13, 24)
+        Me.Label11.Location = New System.Drawing.Point(13, 16)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(81, 13)
         Me.Label11.TabIndex = 155
@@ -394,9 +395,9 @@ Partial Class Supplies
         Me.GroupBox1.Controls.Add(Me.Label6)
         Me.GroupBox1.Controls.Add(Me.Button2)
         Me.GroupBox1.Controls.Add(Me.CheckedListBox1)
-        Me.GroupBox1.Location = New System.Drawing.Point(14, 102)
+        Me.GroupBox1.Location = New System.Drawing.Point(14, 105)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(1560, 345)
+        Me.GroupBox1.Size = New System.Drawing.Size(1560, 326)
         Me.GroupBox1.TabIndex = 157
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "SUPPLIES - DEFAULT"
@@ -415,7 +416,7 @@ Partial Class Supplies
         Me.GroupBox2.Controls.Add(Me.ComboBox5)
         Me.GroupBox2.Location = New System.Drawing.Point(14, 453)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(745, 336)
+        Me.GroupBox2.Size = New System.Drawing.Size(745, 347)
         Me.GroupBox2.TabIndex = 158
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "SUPPLIES - ALERT"
@@ -464,37 +465,38 @@ Partial Class Supplies
         Me.DataGridView1.AllowUserToDeleteRows = False
         Me.DataGridView1.AllowUserToResizeColumns = False
         Me.DataGridView1.AllowUserToResizeRows = False
+        Me.DataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.DataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridView1.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridView1.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle19
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle5.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle5
+        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle20.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle20.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle20.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle20
         Me.DataGridView1.Location = New System.Drawing.Point(14, 63)
         Me.DataGridView1.Name = "DataGridView1"
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle6.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle6
+        DataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle21.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle21.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle21.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle21.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle21.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle21
         Me.DataGridView1.RowHeadersVisible = False
         Me.DataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.DataGridView1.Size = New System.Drawing.Size(771, 229)
+        Me.DataGridView1.Size = New System.Drawing.Size(771, 243)
         Me.DataGridView1.TabIndex = 159
         '
         'ComboBox10
@@ -540,9 +542,9 @@ Partial Class Supplies
         Me.Label13.AutoSize = True
         Me.Label13.Location = New System.Drawing.Point(432, 17)
         Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(151, 13)
+        Me.Label13.Size = New System.Drawing.Size(66, 13)
         Me.Label13.TabIndex = 164
-        Me.Label13.Text = "SUPPLIES CATEGORY (Alert)"
+        Me.Label13.Text = "CATEGORY"
         '
         'ComboBox12
         '
@@ -567,10 +569,10 @@ Partial Class Supplies
         Me.GroupBox3.Controls.Add(Me.Label12)
         Me.GroupBox3.Location = New System.Drawing.Point(773, 453)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(801, 336)
+        Me.GroupBox3.Size = New System.Drawing.Size(801, 347)
         Me.GroupBox3.TabIndex = 169
         Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "GroupBox3"
+        Me.GroupBox3.Text = "Barcode Configuration"
         '
         'Supplies
         '

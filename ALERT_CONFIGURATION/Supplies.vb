@@ -1075,6 +1075,13 @@ Public Class Supplies
                 ComboBox11.SelectedIndex = -1
                 ComboBox11.Text = ""
 
+                g_type_supply_alert_barcode = ""
+                g_selected_supplycategory_alert_barcode = ""
+
+                DataGridView1.DataBindings.Clear()
+                DataGridView1.DataSource = Nothing
+                DataGridView1.Rows.Clear()
+
             End If
 
         End If
@@ -1403,9 +1410,65 @@ Public Class Supplies
 
             End If
 
+            'Bloco para limpar grelha de barcodes caso se tenha apagado um material da categoria selecionada na grelha de barcode
+            If (ComboBox6.Text = ComboBox10.Text And ComboBox9.Text = ComboBox11.Text And ComboBox5.Text = ComboBox12.Text) Or (ComboBox5.Text = "") Then
+
+                ReDim g_a_supp_cats_alert_barcode(0)
+
+                ComboBox12.Items.Clear()
+                ComboBox12.Text = ""
+                ReDim g_a_supp_cats_alert_barcode(0)
+
+                g_selected_supplycategory_alert_barcode = ""
+
+                DataGridView1.DataBindings.Clear()
+                DataGridView1.DataSource = Nothing
+                DataGridView1.Rows.Clear()
+
+                If ComboBox11.SelectedIndex > -1 Then
+
+                    'Box de categorias na instituição/software
+                    Dim dr_supp_cat As OracleDataReader
+
+                    ReDim g_a_supp_cats_alert_barcode(0)
+                    Dim l_index_loaded_categories As Int64 = 0
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, conn, dr_supp_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
+
+                    Else
+
+                        ComboBox12.Items.Add("ALL")
+
+                        ReDim g_a_supp_cats_alert_barcode(0)
+                        g_a_supp_cats_alert_barcode(0) = 0
+
+                        Dim l_index As Int16 = 1
+
+                        While dr_supp_cat.Read()
+
+                            ComboBox12.Items.Add(dr_supp_cat.Item(1))
+                            ReDim Preserve g_a_supp_cats_alert_barcode(l_index)
+                            g_a_supp_cats_alert_barcode(l_index) = dr_supp_cat.Item(0)
+                            l_index = l_index + 1
+
+                        End While
+
+                    End If
+
+                    dr_supp_cat.Dispose()
+                    dr_supp_cat.Close()
+
+                End If
+
+            End If
+
             Cursor = Cursors.Arrow
 
-        End If
+            End If
 
     End Sub
 

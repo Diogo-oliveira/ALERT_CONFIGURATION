@@ -199,6 +199,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection.vb" />
     <Compile Include="EXAMS_API.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>

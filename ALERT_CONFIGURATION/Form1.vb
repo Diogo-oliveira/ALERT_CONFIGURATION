@@ -3,7 +3,7 @@
 Public Class Form1
 
     Public g_oradb As String = ""
-    Dim conn As New OracleConnection
+    Public Shared conn As New OracleConnection
 
     Dim g_a_databases() As String
 
@@ -89,6 +89,7 @@ Public Class Form1
             Button14.Visible = True
 
         End If
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
