@@ -4,8 +4,6 @@ Public Class INSERT_OTHER_EXAM
     Dim db_access_general As New General
 
     Dim db_access As New EXAMS_API
-    Dim oradb As String = "Data Source=QC4V265;User Id=alert_config;Password=qcteam"
-    Dim conn As New OracleConnection(oradb)
 
     Dim g_selected_soft As Int16 = -1
     ''Array que vai guardar os dep_clin_serv da instituição
@@ -37,14 +35,6 @@ Public Class INSERT_OTHER_EXAM
 
     Dim g_a_selected_exams_delete_cs() As String ' Array para remover procedimentos do alert
 
-    Public Sub New(ByVal i_oradb As String)
-
-        InitializeComponent()
-        oradb = i_oradb
-        conn = New OracleConnection(oradb)
-
-    End Sub
-
     Private Sub INSERT_IMAGING_EXAMS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
@@ -53,20 +43,10 @@ Public Class INSERT_OTHER_EXAM
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
 
-        Try
-            'Estabelecer ligação à BD
-            conn.Open()
-
-        Catch ex As Exception
-
-            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
-
-        End Try
-
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_ALL_INSTITUTIONS(conn, dr) Then
+        If Not db_access_general.GET_ALL_INSTITUTIONS(dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ALL INSTITUTIONS!")
@@ -98,7 +78,7 @@ Public Class INSERT_OTHER_EXAM
 
         If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn)
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
 
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
@@ -106,7 +86,7 @@ Public Class INSERT_OTHER_EXAM
             Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -169,7 +149,7 @@ Public Class INSERT_OTHER_EXAM
         g_dimension_exams_cs = 0
         ReDim g_a_selected_exams_delete_cs(0)
 
-        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex)
 
         ComboBox2.Items.Clear()
         ComboBox2.Text = ""
@@ -180,7 +160,7 @@ Public Class INSERT_OTHER_EXAM
         ComboBox2.Text = ""
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -253,14 +233,14 @@ Public Class INSERT_OTHER_EXAM
         ComboBox6.Items.Clear()
         ComboBox6.Text = ""
 
-        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
+        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text)
 
         '1 - Fill Version combobox
 
         Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, "E", g_record_type, conn, dr_def_versions) Then
+        If Not db_access.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, "E", g_record_type, dr_def_versions) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -282,7 +262,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, conn, dr_exam_cat) Then
+        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -315,7 +295,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr_clin_serv As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn, dr_clin_serv) Then
+        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, dr_clin_serv) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING CLINICAL SERVICES!")
@@ -369,7 +349,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr_exam_cat_def As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, "E", g_record_type, conn, dr_exam_cat_def) Then
+        If Not db_access.GET_EXAMS_CAT_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, "E", g_record_type, dr_exam_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT EXAMS CATEGORY -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -417,7 +397,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, "E", g_record_type, conn, dr) Then
+        If Not db_access.GET_EXAMS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, "E", g_record_type, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAMS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
@@ -617,10 +597,10 @@ Public Class INSERT_OTHER_EXAM
             Next
 
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
-            If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams, conn) Then
+            If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
-                If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "E", conn) Then
-                    If db_access.SET_DEFAULT_EXAM_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_exams, "E", g_record_type, conn) Then
+                If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "E") Then
+                    If db_access.SET_DEFAULT_EXAM_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_exams, "E", g_record_type) Then
 
                         MsgBox("Record(s) successfully inserted.", vbInformation)
 
@@ -647,7 +627,7 @@ Public Class INSERT_OTHER_EXAM
                         Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, conn, dr_exam_cat) Then
+                        If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                             MsgBox("ERROR LOADING EXAM CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -722,7 +702,7 @@ Public Class INSERT_OTHER_EXAM
         ReDim g_a_exams_alert(g_dimension_exams_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category_alert, "E", g_record_type, conn, dr_exams) Then
+        If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category_alert, "E", g_record_type, dr_exams) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -758,9 +738,7 @@ Public Class INSERT_OTHER_EXAM
 
         Dim form1 As New Form1
 
-        form1.g_oradb = oradb
         form1.Show()
-
 
         Me.Close()
 
@@ -858,7 +836,7 @@ Public Class INSERT_OTHER_EXAM
                     If (g_a_exams_for_clinical_service(j).flg_new = "Y") Then
 
                         'CRIAR FUNÇÂO PARA INCLUIR NO DEP_CLIN_SERV
-                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(j), g_id_dep_clin_serv, g_record_type, conn) Then
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(j), g_id_dep_clin_serv, g_record_type) Then
 
                             l_sucess = False
 
@@ -897,7 +875,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, l_id_dep_clin_serv_aux, "E", conn, dr) Then
+        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, l_id_dep_clin_serv_aux, "E", dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAM_DEP_CLIN_SERV.", vbCritical)
@@ -951,7 +929,7 @@ Public Class INSERT_OTHER_EXAM
 
                     If (g_a_exams_for_clinical_service(indexChecked).flg_new = "Y") Then
 
-                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked), g_id_dep_clin_serv, g_record_type, conn) Then
+                        If Not db_access.SET_EXAMS_DEP_CLIN_SERV_FREQ(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked), g_id_dep_clin_serv, g_record_type) Then
 
                             l_sucess = False
 
@@ -992,7 +970,7 @@ Public Class INSERT_OTHER_EXAM
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", conn, dr) Then
+        If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV", vbCritical)
@@ -1077,7 +1055,7 @@ Public Class INSERT_OTHER_EXAM
 
                     'Apagar da ALERT.EXAM_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
 
-                    If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_alert(indexChecked), False, g_record_type, conn) Then
+                    If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_alert(indexChecked), False, g_record_type) Then
 
                         l_sucess = False
 
@@ -1096,7 +1074,7 @@ Public Class INSERT_OTHER_EXAM
                     Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, conn, dr_exam_cat) Then
+                    If Not db_access.GET_EXAMS_CAT(TextBox1.Text, g_selected_soft, "E", g_record_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR LOADING EXAMS CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1148,7 +1126,7 @@ Public Class INSERT_OTHER_EXAM
                     ReDim g_a_exams_alert(g_dimension_exams_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category, "E", g_record_type, conn, dr_exams) Then
+                    If Not db_access.GET_EXAMS(TextBox1.Text, g_selected_soft, l_selected_category, "E", g_record_type, dr_exams) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -1205,7 +1183,7 @@ Public Class INSERT_OTHER_EXAM
                 Dim dr_delete As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", conn, dr_delete) Then
+                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", dr_delete) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING EXAMS_DEP_CLIN_SERV.", vbCritical)
@@ -1272,7 +1250,7 @@ Public Class INSERT_OTHER_EXAM
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", conn, dr) Then
+                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING EXAM_DEP_CLIN_SERV.", vbCritical)
@@ -1312,7 +1290,7 @@ Public Class INSERT_OTHER_EXAM
 
 #Disable Warning BC42109 ' Variable is used before it has been assigned a value
 
-                If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, l_exams_delete_dcs, True, g_record_type, conn) Then
+                If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, l_exams_delete_dcs, True, g_record_type) Then
 
 #Enable Warning BC42109 ' Variable is used before it has been assigned a value
 
@@ -1330,7 +1308,7 @@ Public Class INSERT_OTHER_EXAM
             Dim dr_new As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", conn, dr_new) Then
+            If db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", dr_new) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 Dim i_new As Integer = 0

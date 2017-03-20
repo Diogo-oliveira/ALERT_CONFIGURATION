@@ -42,7 +42,7 @@ Public Class Procedures
 
         InitializeComponent()
         oradb = i_oradb
-        conn = New OracleConnection(oradb)
+        'conn = New OracleConnection(oradb)
 
     End Sub
 
@@ -138,27 +138,29 @@ Public Class Procedures
 
     Private Sub Procedures_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        MsgBox(Connection.conn.State())
+
         Me.BackColor = Color.FromArgb(215, 215, 180)
         CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
 
-        Try
-            'Estabelecer ligação à BD
+        'Try
+        '    'Estabelecer ligação à BD
 
-            conn.Open()
+        '    conn.Open()
 
-        Catch ex As Exception
+        'Catch ex As Exception
 
-            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
+        '    MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
 
-        End Try
+        'End Try
 
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_ALL_INSTITUTIONS(conn, dr) Then
+        If Not db_access_general.GET_ALL_INSTITUTIONS(Connection.conn, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ALL INSTITUTIONS!")

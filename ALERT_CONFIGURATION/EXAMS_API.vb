@@ -35,13 +35,7 @@ Public Class EXAMS_API
 
     End Structure
 
-    Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_oradb As String) As Int64
-
-        Dim oradb As String = i_oradb
-
-        Dim conn_new As New OracleConnection(oradb)
-
-        conn_new.Open()
+    Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64) As Int64
 
         Dim sql As String = "select decode(i.id_market,
                       1,
@@ -109,10 +103,91 @@ Public Class EXAMS_API
                        T.desc_lang_19)) is not null
          order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn_new)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
+
+        Try
+
+            dr = cmd.ExecuteReader()
+
+        Catch ex As Exception
+
+            sql = "select decode(i.id_market,
+                      1,
+                      T.desc_lang_1,
+                      2,
+                      T.desc_lang_2,
+                      3,
+                      T.desc_lang_11,
+                      4,
+                      T.desc_lang_5,
+                      5,
+                      T.desc_lang_4,
+                      6,
+                      T.desc_lang_3,
+                      7,
+                      T.desc_lang_10,
+                      8,
+                      T.desc_lang_7,
+                      9,
+                      T.desc_lang_6,
+                      10,
+                      T.desc_lang_9,
+                      12,
+                      T.desc_lang_16,
+                      16,
+                      T.desc_lang_17,
+                      17,
+                      T.desc_lang_18,
+                      19,
+                      T.desc_lang_1),
+                      i.id_institution
+          from institution i
+          join translation t
+            on t.code_translation = i.code_institution
+         where i.flg_available = 'Y'
+           and i.flg_type = 'H'
+           and (decode(i.id_market,
+                       1,
+                       T.desc_lang_1,
+                       2,
+                       T.desc_lang_2,
+                       3,
+                       T.desc_lang_11,
+                       4,
+                       T.desc_lang_5,
+                       5,
+                       T.desc_lang_4,
+                       6,
+                       T.desc_lang_3,
+                       7,
+                       T.desc_lang_10,
+                       8,
+                       T.desc_lang_7,
+                       9,
+                       T.desc_lang_6,
+                       10,
+                       T.desc_lang_9,
+                       12,
+                       T.desc_lang_16,
+                       16,
+                       T.desc_lang_17,
+                       17,
+                       T.desc_lang_18,
+                       19,
+                       T.desc_lang_1)) is not null
+         order by 1 asc"
+
+            Dim cmd_old_version As New OracleCommand(sql, Connection.conn)
+            cmd_old_version.CommandType = CommandType.Text
+
+            dr = cmd_old_version.ExecuteReader()
+
+            cmd_old_version.Dispose()
+
+        End Try
 
         Dim l_id_inst As Int64 = 0
 
@@ -136,23 +211,13 @@ Public Class EXAMS_API
 
         End While
 
-        conn_new.Close()
-
-        conn_new.Dispose()
-
         Return l_id_inst
 
     End Function
 
-    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64, ByVal i_oradb As String) As String
+    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
         Dim l_inst As String = ""
-
-        Dim oradb As String = i_oradb
-
-        Dim conn_new As New OracleConnection(oradb)
-
-        conn_new.Open()
 
         Dim sql As String = "select decode(i.id_market,
               1,
@@ -220,11 +285,91 @@ Public Class EXAMS_API
               T.desc_lang_19)) is not null
 and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn_new)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
 
+        Try
+
+            dr = cmd.ExecuteReader()
+
+        Catch ex As Exception
+
+            sql = "select decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_1),
+              i.id_institution
+  from institution i
+  join translation t
+    on t.code_translation = i.code_institution
+ where i.flg_available = 'Y'
+   and i.flg_type = 'H'
+   and (decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_1)) is not null
+and i.id_institution = " & i_ID_INST & "order by 1 asc"
+
+            Dim cmd_old_version As New OracleCommand(sql, Connection.conn)
+            cmd_old_version.CommandType = CommandType.Text
+
+            dr = cmd_old_version.ExecuteReader()
+
+            cmd_old_version.Dispose()
+
+        End Try
 
         While dr.Read()
 
@@ -232,22 +377,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End While
 
-        conn_new.Close()
-
-        conn_new.Dispose()
-
         Return l_inst
 
     End Function
 
-
-    Public Function GET_ALL_INSTITUTIONS(ByVal i_oradb As String) As OracleDataReader
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+    Public Function GET_ALL_INSTITUTIONS() As OracleDataReader
 
         Dim sql As String = "select decode(i.id_market,
               1,
@@ -314,22 +448,96 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
               T.desc_lang_19)) is not null
  order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+        Catch ex As Exception
+
+            sql = "select decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_19)
+  from institution i
+  join translation t
+    on t.code_translation = i.code_institution
+ where i.flg_available = 'Y'
+   and i.flg_type = 'H'
+   and (decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_19)) is not null
+ order by 1 asc"
+
+            Dim cmd_old_version As New OracleCommand(sql, Connection.conn)
+            cmd_old_version.CommandType = CommandType.Text
+
+            dr = cmd_old_version.ExecuteReader()
+
+            cmd_old_version.Dispose()
+
+        End Try
+
+        cmd.Dispose()
 
         Return dr
 
     End Function
 
-    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByVal i_oradb As String) As OracleDataReader
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64) As OracleDataReader
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
@@ -337,24 +545,16 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             and s.id_software > 0
                             order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
         Return dr
 
-        conn.Close()
-
     End Function
 
-    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16, ByVal i_oradb As String) As OracleDataReader
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16) As OracleDataReader
 
         Dim sql As String = "   Select (decode(i.id_market,
               1,
@@ -427,22 +627,102 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
  and d.flg_available='Y'
  order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
+
+        Try
+
+            dr = cmd.ExecuteReader()
+
+        Catch ex As Exception
+
+            sql = "   Select (decode(i.id_market,
+              1,
+              tdep.desc_lang_1,
+              2,
+              tdep.desc_lang_2,
+              3,
+              tdep.desc_lang_11,
+              4,
+              tdep.desc_lang_5,
+              5,
+              tdep.desc_lang_4,
+              6,
+              tdep.desc_lang_3,
+              7,
+              tdep.desc_lang_10,
+              8,
+              tdep.desc_lang_7,
+              9,
+              tdep.desc_lang_6,
+              10,
+              tdep.desc_lang_9,
+              12,
+              tdep.desc_lang_16,
+              16,
+              tdep.desc_lang_17,
+              17,
+              tdep.desc_lang_18,
+              19,
+              tdep.desc_lang_19) || ' - ' || decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_19)), d.id_dep_clin_serv from alert.dep_clin_serv d
+ join alert.clinical_service c
+ on c.id_clinical_service=d.id_clinical_service
+ join alert.department dep on dep.id_department=d.id_department
+ join translation t on t.code_translation=c.code_clinical_service
+ join software s on s.id_software=dep.id_software
+ JOIN INSTITUTION I ON I.id_institution=DEP.ID_INSTITUTION
+ join translation tdep on tdep.code_translation=dep.code_department
+ where dep.id_institution= " & i_ID_INST & "
+ and dep.id_software= " & i_ID_SOFT & "
+ and dep.flg_available='Y'
+ and c.flg_available='Y'
+ and d.flg_available='Y'
+ order by 1 asc"
+
+            Dim cmd_old_version As New OracleCommand(sql, Connection.conn)
+            cmd_old_version.CommandType = CommandType.Text
+
+            dr = cmd_old_version.ExecuteReader()
+
+            cmd_old_version.Dispose()
+
+        End Try
 
         Return dr
 
     End Function
 
-    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64, ByVal i_oradb As String) As Int16
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64) As Int16
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
@@ -450,7 +730,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             and s.id_software > 0
                             order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -471,16 +751,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End While
 
-        conn.Close()
-        conn.Dispose()
-
         Return l_soft
 
     End Function
 
-    Function GET_FREQ_EXAM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByVal i_id_exam_type As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_FREQ_EXAM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByVal i_id_exam_type As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -517,7 +794,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -531,13 +808,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function GET_SELECTED_DEP_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_index As Int16, ByVal i_oradb As String) As Int64
-
-        Dim oradb As String = i_oradb
+    Function GET_SELECTED_DEP_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_index As Int16) As Int64
 
         Dim l_dep_clin_serv As Int64 = -1
 
-        Dim dr As OracleDataReader = GET_CLIN_SERV(i_ID_INST, i_ID_SOFT, i_oradb)
+        Dim dr As OracleDataReader = GET_CLIN_SERV(i_ID_INST, i_ID_SOFT)
 
         Dim i As Int16 = 0
 
@@ -558,15 +833,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Int64(), ByVal i_dep_clin_serv As Int64, ByVal i_oradb As String) As Boolean
+    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Int64(), ByVal i_dep_clin_serv As Int64) As Boolean
 
         Try
-
-            Dim oradb As String = i_oradb
-
-            Dim conn As New OracleConnection(oradb)
-
-            conn.Open()
 
             For i As Integer = 0 To i_exam.Count() - 1
 
@@ -575,15 +844,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                              And S.FLG_TYPE='M'
                              And S.ID_DEP_CLIN_SERV= " & i_dep_clin_serv
 
-                Dim cmd As New OracleCommand(sql, conn)
+                Dim cmd As New OracleCommand(sql, Connection.conn)
                 cmd.CommandType = CommandType.Text
 
                 cmd.ExecuteNonQuery()
 
             Next
-
-            conn.Close()
-            conn.Dispose()
 
             Return True
 
@@ -595,9 +861,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS_CAT(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_EXAMS_CAT(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst)
 
         Dim sql As String = "SELECT DISTINCT ec.id_content, tec.desc_lang_" & l_id_language & "
                             FROM alert.exam_dep_clin_serv d
@@ -627,7 +893,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         sql = sql & "order by 2 asc"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -640,9 +906,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_id_content_exam_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_id_content_exam_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst)
 
         Dim sql As String = ""
 
@@ -684,7 +950,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
 
         Try
 
@@ -702,7 +968,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function DELETE_EXAMS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_exam As exams_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_EXAMS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_exam As exams_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
 
 
         Dim sql As String = "   DELETE from alert.exam_dep_clin_serv dps
@@ -748,7 +1014,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End If
 
-        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
+        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_delete_dep_clin_serv.CommandType = CommandType.Text
@@ -763,9 +1029,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "Select distinct ec.id_content, 
                                     tc.desc_lang_" & l_id_language & "         
@@ -799,7 +1065,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         sql = sql & "order by 2 asc"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -812,7 +1078,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "Select distinct v.version
                               From alert_default.exam e
@@ -841,7 +1107,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         sql = sql & "  ORDER BY 1 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
         Try
             i_dr = cmd.ExecuteReader()
@@ -855,9 +1121,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "Select  distinct ec.id_content,        
                                                   tc.desc_lang_" & l_id_language & ", 
@@ -909,7 +1175,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                          order by 2 asc, 4 asc"
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -922,20 +1188,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function CHECK_CATEGORY_EXISTANCE(ByVal i_id_content_cat, ByVal i_id_institution, ByVal i_oradb) As Boolean
-
-        Dim oradb As String = i_oradb
-
-        Dim conn As New OracleConnection(oradb)
-
-        conn.Open()
+    Function CHECK_CATEGORY_EXISTANCE(ByVal i_id_content_cat, ByVal i_id_institution) As Boolean
 
         Dim sql As String = "Select count(*)
   from alert.exam_cat ec
  where ec.id_content = '" & i_id_content_cat & "'
    and ec.flg_available = 'Y'"
 
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Try
@@ -952,19 +1212,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             If l_cat_exist > 0 Then
 
-
-                conn.Close()
-
-                conn.Dispose()
-
                 Return True
 
             Else
-
-
-                conn.Close()
-
-                conn.Dispose()
 
                 Return False
 
@@ -972,20 +1222,15 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
-
-            conn.Close()
-
-            conn.Dispose()
-
             Return False
 
         End Try
 
     End Function
 
-    Function CHECK_EXAM_TRANSLATION_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_EXAM_TRANSLATION_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_institution)
 
         Dim sql As String = "Select count(*)
                               from alert.exam e
@@ -996,7 +1241,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                              where e.id_content = '" & i_id_content_exam & "'
                                and e.flg_available = 'Y'"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader
@@ -1041,7 +1286,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_LANGUAGE_ID(ByVal i_institution As Int64, ByVal i_oradb As String) As Integer
+    Function GET_LANGUAGE_ID(ByVal i_institution As Int64) As Integer
 
         Dim l_id_lang As Integer = 0
 
@@ -1077,11 +1322,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
   from institution i
     where i.id_institution = " & i_institution
 
-        Dim conn As New OracleConnection(i_oradb)
-
-        conn.Open()
-
-        Dim cmd_get_id_lang As New OracleCommand(Sql, conn)
+        Dim cmd_get_id_lang As New OracleCommand(Sql, Connection.conn)
         cmd_get_id_lang.CommandType = CommandType.Text
         Dim dr As OracleDataReader = cmd_get_id_lang.ExecuteReader()
 
@@ -1091,57 +1332,39 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         End While
 
-        conn.Close()
-
-        conn.Dispose()
-
         Return l_id_lang
 
     End Function
 
-    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, i_oradb As String) As Boolean
-
-        Dim conn As New OracleConnection(i_oradb)
-
-        conn.Open()
+    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String) As Boolean
 
         Try
 
             Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
 
-            Dim cmd_insert_trans As New OracleCommand(Sql, conn)
+            Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
             cmd_insert_trans.CommandType = CommandType.Text
 
             cmd_insert_trans.ExecuteNonQuery()
-
-
-            conn.Close()
-
-            conn.Dispose()
 
             Return True
 
         Catch ex As Exception
 
-            conn.Close()
-
-            conn.Dispose()
-
             Return False
 
         End Try
 
-
     End Function
 
-    Function CHECK_EXAM_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_EXAM_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String) As Boolean
 
         Dim sql As String = "Select count(*)
                              from alert.exam e
                              where e.id_content = '" & i_id_content_exam & "'
                              and e.flg_available = 'Y'"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Try
@@ -1174,7 +1397,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function UPDATE_EXAM_CAT(ByVal i_id_content_exam As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection) As Boolean
+    Function UPDATE_EXAM_CAT(ByVal i_id_content_exam As String, ByVal i_id_content_cat As String) As Boolean
 
         Dim Sql = "declare
 
@@ -1195,7 +1418,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                         end;"
 
-        Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
+        Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
 
         Try
 
@@ -1216,11 +1439,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function SET_EXAM_DEP_CLIN_SERV(ByVal i_id_exam As String, ByVal i_id_dep_clin_serv As String, ByVal i_flg_type As String, ByVal i_id_institution As Int64,
                                    ByVal i_id_soft As Int64, ByVal i_flg_first_result As String, ByVal flg_execute As String, ByVal flg_timeout As String,
-                                   ByVal flg_result_notes As String, ByVal flg_first_execute As String, ByVal i_oradb As String) As Boolean
-
-        Dim conn As New OracleConnection(i_oradb)
-
-        conn.Open()
+                                   ByVal flg_result_notes As String, ByVal flg_first_execute As String) As Boolean
 
         Try
 
@@ -1271,22 +1490,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             End If
 
-            Dim cmd_insert_trans As New OracleCommand(Sql, conn)
+            Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
             cmd_insert_trans.CommandType = CommandType.Text
 
             cmd_insert_trans.ExecuteNonQuery()
 
-            conn.Close()
-
-            conn.Dispose()
-
             Return True
 
         Catch ex As Exception
-
-            conn.Close()
-
-            conn.Dispose()
 
             Return False
 
@@ -1294,7 +1505,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_DEFAULT_EXAM_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_exams() As exams_default, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_DEFAULT_EXAM_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_exams() As exams_default, ByVal i_exam_type As String, ByVal i_flg_type As Integer) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1799,7 +2010,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                         END;"
 
 
-        Dim cmd_insert_edps As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_edps As New OracleCommand(sql, Connection.conn)
 
         Try
 
@@ -1819,14 +2030,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_exam_type As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_exam_type As String) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         For i As Integer = 0 To i_set_exams.Count() - 1
 
             'Verificar se o exame existe na tabela alert.exam
-            If Not CHECK_EXAM_EXISTANCE(i_institution, i_set_exams(i).id_content_exam, i_conn) Then
+            If Not CHECK_EXAM_EXISTANCE(i_institution, i_set_exams(i).id_content_exam) Then
 
                 ''1 - Inserir o EXAME
                 Dim sql As String = ""
@@ -1889,7 +2100,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 End If
 
-                Dim cmd As New OracleCommand(sql, i_conn)
+                Dim cmd As New OracleCommand(sql, Connection.conn)
 
                 Try
 
@@ -1913,7 +2124,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             where e.flg_available='Y'
                             and   e.id_content='" & i_set_exams(i).id_content_exam & "'"
 
-                Dim cmd_get_code_trans As New OracleCommand(sql, i_conn)
+                Dim cmd_get_code_trans As New OracleCommand(sql, Connection.conn)
                 Dim dr As OracleDataReader
 
                 Try
@@ -1968,7 +2179,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                     pk_translation.insert_into_translation( l_id_lang , '" & l_code_desc & "' , l_desc); 
                         end;"
 
-                Dim cmd_insert_trans As New OracleCommand(sql, i_conn)
+                Dim cmd_insert_trans As New OracleCommand(sql, Connection.conn)
 
                 Try
 
@@ -1986,7 +2197,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
 
                 'Existe na tabela de exames. Verificar se tem tradução para a língua da instituição
-            ElseIf Not CHECK_EXAM_TRANSLATION_EXISTANCE(i_institution, i_set_exams(i).id_content_exam, i_conn) Then
+            ElseIf Not CHECK_EXAM_TRANSLATION_EXISTANCE(i_institution, i_set_exams(i).id_content_exam) Then
 
                 ''2 - Inserir a tradução do exame
 
@@ -1997,7 +2208,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                 Dim Sql = "Select e.code_exam from alert.exam e
                                where e.id_content ='" & i_set_exams(i).id_content_exam & "'"
 
-                Dim cmd_get_code_trans As New OracleCommand(Sql, i_conn)
+                Dim cmd_get_code_trans As New OracleCommand(Sql, Connection.conn)
                 cmd_get_code_trans.CommandType = CommandType.Text
                 Dim dr As OracleDataReader = cmd_get_code_trans.ExecuteReader()
 
@@ -2037,7 +2248,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                          pk_translation.insert_into_translation( l_id_lang , '" & l_code_desc & "' , l_desc); 
                         end;"
 
-                Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
+                Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
                 cmd_insert_trans.CommandType = CommandType.Text
                 cmd_insert_trans.ExecuteNonQuery()
                 cmd_insert_trans.Dispose()
@@ -2047,7 +2258,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 Try
 
-                    If Not UPDATE_EXAM_CAT(i_set_exams(i).id_content_exam, i_set_exams(i).id_content_category, i_conn) Then
+                    If Not UPDATE_EXAM_CAT(i_set_exams(i).id_content_exam, i_set_exams(i).id_content_category) Then
 
                         Return False
 
@@ -2071,9 +2282,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_EXAM_CAT_TRANSLATION(ByVal i_institution As Int64, ByVal i_exams As exams_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_EXAM_CAT_TRANSLATION(ByVal i_institution As Int64, ByVal i_exams As exams_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
 
                                 l_a_exams table_varchar := table_varchar('" & i_exams.id_content_category & "');"
@@ -2123,7 +2334,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                             END;"
 
-        Dim cmd_insert_exam_cat As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_exam_cat As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_exam_cat.CommandType = CommandType.Text
@@ -2139,7 +2350,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As exams_default, ByVal i_conn As OracleConnection, ByRef i_Dr As OracleDataReader) As Boolean
+    Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As exams_default, ByRef i_Dr As OracleDataReader) As Boolean
 
         Dim sql As String = "Select distinct ec.id_content from alert.exam_cat ec
                                     where ec.flg_available = 'Y'
@@ -2160,7 +2371,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Next
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
 
         Try
 
@@ -2178,7 +2389,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String) As Boolean
 
         Dim l_total_records As Int16 = 0
 
@@ -2186,7 +2397,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                  where r.id_content='" & i_id_content_record & "'
                                  and r.flg_available='Y'"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
@@ -2225,15 +2436,15 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String) As Boolean
 
         Dim l_translation As String = ""
 
-        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution, i_conn) & "," & i_sql & " r
+        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & "," & i_sql & " r
                              where r.id_content='" & id_content_record & "'
                              And r.flg_available='Y'"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2264,7 +2475,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection) As String
+    Function GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String) As String
 
         Dim sql As String = "Select ec.code_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2272,7 +2483,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_code As String = ""
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2291,7 +2502,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection) As String
+    Function GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String) As String
 
         Dim sql As String = "Select ec.code_exam_cat from alert_default.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2299,7 +2510,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_code As String = ""
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2318,7 +2529,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_ID_CAT_ALERT(ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection) As Int64
+    Function GET_ID_CAT_ALERT(ByVal i_id_content_exam_cat As String) As Int64
 
         Dim sql As String = "Select ec.id_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2326,7 +2537,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_id_alert As Int64 = 0
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2344,7 +2555,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_CAT_RANK(ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection) As Int64
+    Function GET_CAT_RANK(ByVal i_id_content_exam_cat As String) As Int64
 
         Dim sql As String = "Select ec.rank from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2352,7 +2563,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_id_alert As Int64 = 0
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2370,14 +2581,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_CAT_FLG_INTERFACE(ByVal i_id_content_exam_cat As String, ByVal i_conn As OracleConnection) As Char
+    Function GET_CAT_FLG_INTERFACE(ByVal i_id_content_exam_cat As String) As Char
 
         Dim sql As String = "Select ec.flg_interface from alert_DEFAULT.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'"
 
         Dim l_flg_interface As Char = ""
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -2395,9 +2606,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_a_exams() As exams_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_a_exams() As exams_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         '1 - Remover as categorias repetidas do array de entrada
         Dim l_a_distinct_ec() As String
@@ -2406,7 +2617,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         Try
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not GET_DISTINCT_CATEGORIES(i_a_exams, i_conn, dr_distinct_ec) Then
+            If Not GET_DISTINCT_CATEGORIES(i_a_exams, dr_distinct_ec) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 dr_distinct_ec.Dispose()
@@ -2456,7 +2667,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                      where ec.id_content='" & l_a_distinct_ec(i) & "'
                                      and ec.flg_available='Y'"
 
-                Dim cmd As New OracleCommand(sql, i_conn)
+                Dim cmd As New OracleCommand(sql, Connection.conn)
 
                 cmd.CommandType = CommandType.Text
 
@@ -2496,7 +2707,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                            and ec.flg_available='Y'"
 
                     Dim l_id_content_cat_parent As String = ""
-                    Dim cmd_2 As New OracleCommand(sql, i_conn)
+                    Dim cmd_2 As New OracleCommand(sql, Connection.conn)
                     cmd_2.CommandType = CommandType.Text
                     Dim dr_2 As OracleDataReader = cmd_2.ExecuteReader()
 
@@ -2510,14 +2721,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     dr_2.Close()
                     cmd_2.Dispose()
 
-                    If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat", i_conn) Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
+                    If Not CHECK_RECORD_EXISTENCE(l_id_content_cat_parent, "alert.exam_cat") Then 'Significa que Categoria Pai não existe no ALERT, é necessário inserir.
 
                         'INSERT EXAM_CAT_PARENT  -Criar função de inserção de categoria(Recursivo)? e função de inserção de tradução ( de tradução deve ir para o generall)
                         'Estrutura auxiliar para ser chamada na recursividade (apenas terá o  id_content da categoria pai)
                         Dim l_exam(0) As exams_default
                         l_exam(0).id_content_category = l_id_content_cat_parent
 
-                        If Not SET_EXAM_CAT(i_institution, l_exam, i_conn) Then
+                        If Not SET_EXAM_CAT(i_institution, l_exam) Then
 
                             Return False
 
@@ -2530,7 +2741,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                                                FROM alert.exam_cat ecp
                                                                                WHERE ecp.id_content = '" & l_id_content_cat_parent & "' and ec.flg_available='Y')"
 
-                        Dim cmd_update_parents As New OracleCommand(sql_update_parents, i_conn)
+                        Dim cmd_update_parents As New OracleCommand(sql_update_parents, Connection.conn)
                         cmd_update_parents.CommandType = CommandType.Text
 
                         cmd_update_parents.ExecuteNonQuery()
@@ -2538,25 +2749,25 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                         cmd_update_parents.Dispose()
 
                         '1.2 - Existe registo no ALERT, verificar se eciste tradução para a língua da isntituição
-                    ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_id_content_cat_parent, "r.code_exam_cat) from alert.exam_cat", i_conn) Then
+                    ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_id_content_cat_parent, "r.code_exam_cat) from alert.exam_cat") Then
 
                         ''Inserir tradução no ALERT
-                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_conn)
-                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_conn), i_conn)
+                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent)
+                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent))
 
-                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default, i_conn) Then
+                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default) Then
 
                             Return False
 
                         End If
 
                         '1.3 - Uma vez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
-                    ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_conn), GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_conn), i_conn) Then
+                    ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent), GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent)) Then
 
-                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent, i_conn)
-                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent, i_conn), i_conn)
+                        Dim l_code_cat_parent As String = GET_CODE_EXAM_CAT_ALERT(l_id_content_cat_parent)
+                        Dim l_exam_translation_default As String = db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_id_content_cat_parent))
 
-                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default, i_conn) Then
+                        If Not db_access_general.SET_TRANSLATION(l_id_language, l_code_cat_parent, l_exam_translation_default) Then
 
                             Return False
 
@@ -2566,7 +2777,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                     '' 1.2 - Se existir no alert, determinar id. (Neste ponto já vai sempre existir)
                     Try
-                        l_id_alert_cat_parent = GET_ID_CAT_ALERT(l_id_content_cat_parent, i_conn)
+                        l_id_alert_cat_parent = GET_ID_CAT_ALERT(l_id_content_cat_parent)
 
                     Catch ex As Exception
 
@@ -2577,13 +2788,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                 End If
 
                 '2 - Verificar se categoria já existe no ALERT
-                If Not CHECK_RECORD_EXISTENCE(l_a_distinct_ec(i), "alert.exam_cat", i_conn) Then
+                If Not CHECK_RECORD_EXISTENCE(l_a_distinct_ec(i), "alert.exam_cat") Then
 
                     '2.1 - Não existe, Inserir.
                     '2.1.1 - Determinar RANK da categoria E flg_interface
                     Try
 
-                        l_rank = GET_CAT_RANK(l_a_distinct_ec(i), i_conn)
+                        l_rank = GET_CAT_RANK(l_a_distinct_ec(i))
 
                     Catch ex As Exception
 
@@ -2594,7 +2805,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     '2.1.2 - Determinar flg_interface da categoria
                     Try
 
-                        l_flg_interface = GET_CAT_FLG_INTERFACE(l_a_distinct_ec(i), i_conn)
+                        l_flg_interface = GET_CAT_FLG_INTERFACE(l_a_distinct_ec(i))
 
                     Catch ex As Exception
 
@@ -2620,7 +2831,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                     End If
 
-                    Dim cmd_insert_cat As New OracleCommand(sql_insert_cat, i_conn)
+                    Dim cmd_insert_cat As New OracleCommand(sql_insert_cat, Connection.conn)
                     cmd_insert_cat.CommandType = CommandType.Text
 
                     Try
@@ -2634,11 +2845,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                     cmd_insert_cat.Dispose()
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i))
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i))
 
                     '2.1.4 Inserir translation
-                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default))) Then
 
                         MsgBox("ERROR INSERTING CATEGORY TRANSLATION - LABS_API >> SET_TRANSLATION")
                         Return False
@@ -2647,13 +2858,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                     '2.1.5 - Fazer update a todas as análises que utilizavam o id da categoria antiga com o id da nova categoria (alert.analysis_instit_soft)
 
-                    Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(l_a_distinct_ec(i), i_conn)
+                    Dim l_id_alert_category As Int64 = GET_ID_CAT_ALERT(l_a_distinct_ec(i))
 
                     Dim sql_update_analysis_cat As String = "update alert.analysis_instit_soft ais 
                                                          set ais.id_exam_cat=" & l_id_alert_category & "
                                                          where ais.id_exam_cat in (select ec.id_exam_cat  from alert.exam_cat ec where ec.id_content='" & l_a_distinct_ec(i) & "')"
 
-                    Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, i_conn)
+                    Dim cmd_update_analysis_cat As New OracleCommand(sql_update_analysis_cat, Connection.conn)
                     cmd_update_analysis_cat.CommandType = CommandType.Text
 
                     cmd_update_analysis_cat.ExecuteNonQuery()
@@ -2661,12 +2872,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     cmd_update_analysis_cat.Dispose()
 
                     '2.2 - Uma vez que existe no ALERT, verificar se exsite tradução para a lingua da instituição
-                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_a_distinct_ec(i), "r.code_exam_cat) from alert.exam_cat", i_conn) Then
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_a_distinct_ec(i), "r.code_exam_cat) from alert.exam_cat") Then
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i))
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i))
 
-                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default))) Then
 
                         MsgBox("ERROR INSERTING EXAM_CAT TRANSLATION - LABS_API >> CHECK_RECORD_TRANSLATION_EXISTENCE >> SET_TRANSLATION " & l_id_language)
                         Return False
@@ -2674,12 +2885,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     End If
 
                     '2.3 - Umvez que existe no alert e existe tradução, verificar se tradução do alert é igual à do default
-                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn), GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn), i_conn) Then
+                ElseIf Not db_access_general.CHECK_TRANSLATIONS(l_id_language, GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i)), GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i))) Then
 
-                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i), i_conn)
-                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i), i_conn)
+                    Dim l_code_ec_default As String = GET_CODE_EXAM_CAT_DEFAULT(l_a_distinct_ec(i))
+                    Dim l_code_ec_alert As String = GET_CODE_EXAM_CAT_ALERT(l_a_distinct_ec(i))
 
-                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default, i_conn)), (i_conn)) Then
+                    If Not db_access_general.SET_TRANSLATION((l_id_language), (l_code_ec_alert), (db_access_general.GET_DEFAULT_TRANSLATION(l_id_language, l_code_ec_default))) Then
 
                         MsgBox("ERROR INSERTING EXAM_CAT TRANSLATION - LABS_API >> CHECK_RECORD_TRANSLATION_EXISTENCE >> SET_TRANSLATION" & l_id_language)
                         Return False
@@ -2699,7 +2910,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_EXAMS_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_exams As exams_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_EXAMS_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_exams As exams_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer) As Boolean
 
         Dim sql As String = ""
 
@@ -2754,7 +2965,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     END LOOP;
                    END;"
 
-        Dim cmd_insert_exam_dep_clin_serv As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_exam_dep_clin_serv As New OracleCommand(sql)
 
         Try
             cmd_insert_exam_dep_clin_serv.CommandType = CommandType.Text

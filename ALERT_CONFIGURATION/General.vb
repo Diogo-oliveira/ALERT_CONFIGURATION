@@ -14,7 +14,7 @@ Public Class General
 
     Public g_notranslation As String = "no_translation"
 
-    Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64, ByVal i_conn As OracleConnection) As Int64
+    Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64) As Int64
 
         Dim sql As String = "select decode(i.id_market,
                       1,
@@ -82,10 +82,86 @@ Public Class General
                        T.desc_lang_19)) is not null
          order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+        Catch ex As Exception
+
+            sql = "select decode(i.id_market,
+                      1,
+                      T.desc_lang_1,
+                      2,
+                      T.desc_lang_2,
+                      3,
+                      T.desc_lang_11,
+                      4,
+                      T.desc_lang_5,
+                      5,
+                      T.desc_lang_4,
+                      6,
+                      T.desc_lang_3,
+                      7,
+                      T.desc_lang_10,
+                      8,
+                      T.desc_lang_7,
+                      9,
+                      T.desc_lang_6,
+                      10,
+                      T.desc_lang_9,
+                      12,
+                      T.desc_lang_16,
+                      16,
+                      T.desc_lang_17,
+                      17,
+                      T.desc_lang_18,
+                      19,
+                      T.desc_lang_1),
+                      i.id_institution
+          from institution i
+          join translation t
+            on t.code_translation = i.code_institution
+         where i.flg_available = 'Y'
+           and i.flg_type = 'H'
+           and (decode(i.id_market,
+                       1,
+                       T.desc_lang_1,
+                       2,
+                       T.desc_lang_2,
+                       3,
+                       T.desc_lang_11,
+                       4,
+                       T.desc_lang_5,
+                       5,
+                       T.desc_lang_4,
+                       6,
+                       T.desc_lang_3,
+                       7,
+                       T.desc_lang_10,
+                       8,
+                       T.desc_lang_7,
+                       9,
+                       T.desc_lang_6,
+                       10,
+                       T.desc_lang_9,
+                       12,
+                       T.desc_lang_16,
+                       16,
+                       T.desc_lang_17,
+                       17,
+                       T.desc_lang_18,
+                       19,
+                       T.desc_lang_1)) is not null
+         order by 1 asc"
+
+            Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
+            cmd_Old_version.CommandType = CommandType.Text
+            dr = cmd_Old_version.ExecuteReader()
+            cmd_Old_version.Dispose()
+        End Try
 
         Dim l_id_inst As Int64 = 0
 
@@ -117,7 +193,7 @@ Public Class General
 
     End Function
 
-    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64, ByVal i_conn As OracleConnection) As String
+    Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
         Dim l_inst As String = ""
 
@@ -187,10 +263,91 @@ Public Class General
               T.desc_lang_19)) is not null
 and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Dim dr As OracleDataReader
+
+        Try
+
+            dr = cmd.ExecuteReader()
+
+        Catch ex As Exception
+
+            sql = "select decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_1),
+              i.id_institution
+  from institution i
+  join translation t
+    on t.code_translation = i.code_institution
+ where i.flg_available = 'Y'
+   and i.flg_type = 'H'
+   and (decode(i.id_market,
+              1,
+              T.desc_lang_1,
+              2,
+              T.desc_lang_2,
+              3,
+              T.desc_lang_11,
+              4,
+              T.desc_lang_5,
+              5,
+              T.desc_lang_4,
+              6,
+              T.desc_lang_3,
+              7,
+              T.desc_lang_10,
+              8,
+              T.desc_lang_7,
+              9,
+              T.desc_lang_6,
+              10,
+              T.desc_lang_9,
+              12,
+              T.desc_lang_16,
+              16,
+              T.desc_lang_17,
+              17,
+              T.desc_lang_18,
+              19,
+              T.desc_lang_1)) is not null
+and i.id_institution = " & i_ID_INST & "order by 1 asc"
+
+            Dim cmd_Old_Version As New OracleCommand(sql, Connection.conn)
+            cmd_Old_Version.CommandType = CommandType.Text
+            dr = cmd_Old_Version.ExecuteReader()
+
+            cmd_Old_Version.Dispose()
+
+        End Try
+
 
         While dr.Read()
 
@@ -207,7 +364,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
 
-    Public Function GET_ALL_INSTITUTIONS(ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Public Function GET_ALL_INSTITUTIONS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "select decode(i.id_market,
                                                           1,
@@ -275,8 +432,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                              order by 1 asc"
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
-        cmd.CommandType = CommandType.Text
+            Dim cmd As New OracleCommand(sql, Connection.conn)
+            cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
 
@@ -286,13 +443,96 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            Try
+
+                sql = "select decode(i.id_market,
+                                                          1,
+                                                          T.desc_lang_1,
+                                                          2,
+                                                          T.desc_lang_2,
+                                                          3,
+                                                          T.desc_lang_11,
+                                                          4,
+                                                          T.desc_lang_5,
+                                                          5,
+                                                          T.desc_lang_4,
+                                                          6,
+                                                          T.desc_lang_3,
+                                                          7,
+                                                          T.desc_lang_10,
+                                                          8,
+                                                          T.desc_lang_7,
+                                                          9,
+                                                          T.desc_lang_6,
+                                                          10,
+                                                          T.desc_lang_9,
+                                                          12,
+                                                          T.desc_lang_16,
+                                                          16,
+                                                          T.desc_lang_17,
+                                                          17,
+                                                          T.desc_lang_18,
+                                                          19,
+                                                          T.desc_lang_1)
+                                              from institution i
+                                              join translation t
+                                                on t.code_translation = i.code_institution
+                                             where i.flg_available = 'Y'
+                                               and i.flg_type = 'H'
+                                               and (decode(i.id_market,
+                                                          1,
+                                                          T.desc_lang_1,
+                                                          2,
+                                                          T.desc_lang_2,
+                                                          3,
+                                                          T.desc_lang_11,
+                                                          4,
+                                                          T.desc_lang_5,
+                                                          5,
+                                                          T.desc_lang_4,
+                                                          6,
+                                                          T.desc_lang_3,
+                                                          7,
+                                                          T.desc_lang_10,
+                                                          8,
+                                                          T.desc_lang_7,
+                                                          9,
+                                                          T.desc_lang_6,
+                                                          10,
+                                                          T.desc_lang_9,
+                                                          12,
+                                                          T.desc_lang_16,
+                                                          16,
+                                                          T.desc_lang_17,
+                                                          17,
+                                                          T.desc_lang_18,
+                                                          19,
+                                                          T.desc_lang_1)) is not null
+                                             order by 1 asc"
+
+                Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
+                cmd_Old_version.CommandType = CommandType.Text
+
+                i_dr = cmd_Old_version.ExecuteReader()
+
+                cmd_Old_version.Dispose()
+
+                Return True
+
+            Catch ex_2 As Exception
+
+                Return False
+
+            End Try
+
+
             Return False
 
         End Try
 
     End Function
 
-    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = ""
 
@@ -315,7 +555,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
@@ -331,9 +571,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST, i_conn)
+        Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST)
 
         Dim sql As String = "   Select pk_translation.get_translation(" & l_id_language & ",dep.code_department) || ' - ' ||  pk_translation.get_translation(" & l_id_language & ",c.code_clinical_service),
                                       d.id_dep_clin_serv from alert.dep_clin_serv d
@@ -352,7 +592,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
@@ -369,7 +609,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64, ByVal i_conn As OracleConnection) As Int16
+    Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64) As Int16
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
@@ -377,7 +617,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                             and s.id_software > 0
                             order by 1 asc"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -406,7 +646,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_DEFAULT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_conn As OracleConnection) As String
+    Function GET_DEFAULT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String) As String
 
         'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation - SET TRANSLATION faz isso
 
@@ -414,7 +654,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim translation As String = ""
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -444,7 +684,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_ALERT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String, ByVal i_conn As OracleConnection) As String
+    Function GET_ALERT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String) As String
 
         'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation - SET TRANSLATION faz isso
 
@@ -452,7 +692,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim translation As String = ""
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -482,14 +722,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_ID_LANG(ByVal i_id_institution As Int64, ByVal i_conn As OracleConnection) As Int16
+    Function GET_ID_LANG(ByVal i_id_institution As Int64) As Int16
 
         Dim l_id_market As Int16 = 0
 
         Dim sql As String = "Select i.id_market from institution i
                              where i.id_institution= " & i_id_institution
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -567,7 +807,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String) As Boolean
 
         If i_desc = g_notranslation Then
 
@@ -577,7 +817,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
 
-            Dim cmd_insert_trans As New OracleCommand(Sql, i_conn)
+            Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
             cmd_insert_trans.CommandType = CommandType.Text
 
             Try
@@ -609,7 +849,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 cmd_insert_trans.Dispose()
 
-                Dim cmd_insert_trans_new As New OracleCommand(Sql, i_conn)
+                Dim cmd_insert_trans_new As New OracleCommand(Sql, Connection.conn)
                 cmd_insert_trans_new.CommandType = CommandType.Text
                 cmd_insert_trans_new.ExecuteNonQuery()
                 cmd_insert_trans_new.Dispose()
@@ -623,10 +863,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End If
     End Function
 
-    Function CHECK_TRANSLATIONS(ByVal i_id_lang As Integer, ByVal i_code_translation_default As String, ByVal i_code_translation_alert As String, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_TRANSLATIONS(ByVal i_id_lang As Integer, ByVal i_code_translation_default As String, ByVal i_code_translation_alert As String) As Boolean
 
-        Dim l_desc_default As String = GET_DEFAULT_TRANSLATION(i_id_lang, i_code_translation_default, i_conn)
-        Dim l_desc_alert As String = GET_ALERT_TRANSLATION(i_id_lang, i_code_translation_alert, i_conn)
+        Dim l_desc_default As String = GET_DEFAULT_TRANSLATION(i_id_lang, i_code_translation_default)
+        Dim l_desc_alert As String = GET_ALERT_TRANSLATION(i_id_lang, i_code_translation_alert)
 
         If l_desc_default = l_desc_alert And l_desc_default <> g_notranslation Then
 
@@ -640,9 +880,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_LAB_ROOMS(ByVal i_institution As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_LAB_ROOMS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "SELECT pk_translation.get_translation(" & GET_ID_LANG(i_institution, i_conn) & ", r.code_room), r.id_room
+        Dim sql As String = "SELECT pk_translation.get_translation(" & GET_ID_LANG(i_institution) & ", r.code_room), r.id_room
                                 FROM alert.department d
                                 JOIN alert.room r ON r.id_department = d.id_department
                                 JOIN translation t ON t.code_translation = r.code_room
@@ -653,7 +893,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
@@ -670,14 +910,14 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_SYSCONFIG(ByVal i_institution As Int64, ByVal i_id_software As Integer, ByVal i_sysconfig As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SYSCONFIG(ByVal i_institution As Int64, ByVal i_id_software As Integer, ByVal i_sysconfig As String, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT alert.pk_sysconfig.get_config('" & i_sysconfig & "', profissional(0, " & i_institution & ", " & i_id_software & "))
                                          FROM dual"
 
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
@@ -694,7 +934,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_MARKETS(ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_MARKETS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT m.id_market, (m.id_market || ' - ' || decode(t.desc_lang_2, 'None', 'ALL', t.desc_lang_2))
                             FROM market m
@@ -703,7 +943,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Try
 
-            Dim cmd As New OracleCommand(sql, i_conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
@@ -720,7 +960,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function SET_SYSCONFIG(ByVal i_id_sysconfig As String, ByVal i_value As String, ByVal i_institution As Int64, ByVal i_sofware As Integer, ByVal i_market As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SYSCONFIG(ByVal i_id_sysconfig As String, ByVal i_value As String, ByVal i_institution As Int64, ByVal i_sofware As Integer, ByVal i_market As Integer) As Boolean
 
         Dim Sql As String = "DECLARE
 
@@ -777,7 +1017,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     
                             END;"
 
-        Dim cmd_insert_SC As New OracleCommand(Sql, i_conn)
+        Dim cmd_insert_SC As New OracleCommand(Sql, Connection.conn)
         cmd_insert_SC.CommandType = CommandType.Text
 
         Try
