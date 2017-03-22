@@ -16,7 +16,7 @@ Public Class INTERVENTIONS_API
         Public flg_new As String
     End Structure
 
-    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT dim.version
                                 FROM alert_default.intervention di
@@ -48,7 +48,7 @@ Public Class INTERVENTIONS_API
 
         sql = sql & "  ORDER BY 1 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
         Try
             i_dr = cmd.ExecuteReader()
@@ -61,12 +61,12 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERV_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "with tbl_interv_cats (id_content_interv_cat,id_content_interv, cod_interv_cat)
                                 as
                                 (SELECT DISTINCT ic.id_content, i.id_content, ic.code_interv_category
@@ -192,7 +192,7 @@ Public Class INTERVENTIONS_API
                          -- and cod_interv_cat not like 'SPECIALITY%' (Existem associações a especialidades, por isso tive que remover isto)
                           ORDER BY 2 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -204,12 +204,12 @@ Public Class INTERVENTIONS_API
         End Try
     End Function
 
-    Function GET_FREQ_INTERVS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_FREQ_INTERVS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
         'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "with tbl_interv (id_content_interv, code_intervention)
                                 as
                                 (SELECT DISTINCT i.id_content, i.code_intervention
@@ -340,7 +340,7 @@ Public Class INTERVENTIONS_API
                           join translation t on t.code_translation=tbl_interv.code_intervention
                           ORDER BY 2 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -352,9 +352,9 @@ Public Class INTERVENTIONS_API
         End Try
     End Function
 
-    Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
                             id_content_intervention,
                             code_intervention) AS
@@ -489,7 +489,7 @@ Public Class INTERVENTIONS_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -502,9 +502,9 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
@@ -535,7 +535,7 @@ Public Class INTERVENTIONS_API
 
         sql = sql & "           ORDER BY 2 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -547,9 +547,9 @@ Public Class INTERVENTIONS_API
         End Try
     End Function
 
-    Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "SELECT DISTINCT ic.id_content, di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
@@ -581,7 +581,7 @@ Public Class INTERVENTIONS_API
             sql = sql & " and ic.id_content= '" & i_id_cat & "'
                           order by 3 asc"
         End If
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -594,7 +594,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function EXISTS_INTERV_INT_CAT_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function EXISTS_INTERV_INT_CAT_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -634,7 +634,7 @@ Public Class INTERVENTIONS_API
 
                             END;"
 
-        Dim cmd_get_interv As New OracleCommand(sql, i_conn)
+        Dim cmd_get_interv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_get_interv.CommandType = CommandType.Text
@@ -649,9 +649,9 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function EXIST_IN_OTHER_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_intervention As String, ByVal i_conn As OracleConnection) As Boolean
+    Function EXIST_IN_OTHER_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_intervention As String) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
                             id_content_intervention,
                             code_intervention) AS
@@ -713,7 +713,7 @@ Public Class INTERVENTIONS_API
                     FROM tbl_interventions
                     WHERE pk_translation.get_translation(" & l_id_language & ", code_intervention) IS NOT NULL"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Dim dr As OracleDataReader
         Dim l_total_records As Integer = 0
 
@@ -748,9 +748,9 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERVENTIONS(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_INTERVENTIONS(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
 
                                 l_a_interventions table_varchar := table_varchar("
@@ -822,7 +822,7 @@ Public Class INTERVENTIONS_API
 
                     END;"
 
-        Dim cmd_insert_interv As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_interv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_interv.CommandType = CommandType.Text
@@ -837,9 +837,9 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERVS_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_INTERVS_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
 
                                 l_a_interventions table_varchar := table_varchar("
@@ -903,7 +903,7 @@ Public Class INTERVENTIONS_API
 
                     END;"
 
-        Dim cmd_insert_interv As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_interv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_interv.CommandType = CommandType.Text
@@ -918,7 +918,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1003,7 +1003,7 @@ Public Class INTERVENTIONS_API
 
                     END;"
 
-        Dim cmd_insert_interv_int_cat As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_interv_int_cat As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_interv_int_cat.CommandType = CommandType.Text
@@ -1018,7 +1018,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_DEFAULT_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_DEFAULT_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_flg_type As Integer) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1446,7 +1446,7 @@ Public Class INTERVENTIONS_API
 
                         END;"
 
-        Dim cmd_insert_interv_int_cat As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_interv_int_cat As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_interv_int_cat.CommandType = CommandType.Text
@@ -1461,7 +1461,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERV_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions As interventions_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_INTERV_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions As interventions_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1523,7 +1523,7 @@ Public Class INTERVENTIONS_API
 
                     END;"
 
-        Dim cmd_delete_interv_dep_clin_serv As New OracleCommand(sql, i_conn)
+        Dim cmd_delete_interv_dep_clin_serv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_delete_interv_dep_clin_serv.CommandType = CommandType.Text
@@ -1538,7 +1538,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
 
         Dim sql As String = "DELETE FROM alert.interv_int_cat iic
                                 WHERE iic.id_intervention IN (SELECT i.id_intervention
@@ -1553,7 +1553,7 @@ Public Class INTERVENTIONS_API
                                 and iic.id_software=" & i_software & "
                                 and iic.id_institution in (0," & i_institution & ")"
 
-        Dim cmd_delete_interv_int_cat As New OracleCommand(sql, i_conn)
+        Dim cmd_delete_interv_int_cat As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_delete_interv_int_cat.CommandType = CommandType.Text
@@ -1568,7 +1568,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
 
         Dim sql As String
 
@@ -1609,7 +1609,7 @@ Public Class INTERVENTIONS_API
         End If
 
 
-        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, i_conn)
+        Dim cmd_delete_dep_clin_serv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_delete_dep_clin_serv.CommandType = CommandType.Text
@@ -1624,7 +1624,7 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function SET_INTERV_INT_CAT_REMOVE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_INTERV_INT_CAT_REMOVE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
 
         Dim sql As String
 
@@ -1661,7 +1661,7 @@ Public Class INTERVENTIONS_API
   
                 END;"
 
-        Dim cmd_set_iic_remove As New OracleCommand(sql, i_conn)
+        Dim cmd_set_iic_remove As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_set_iic_remove.CommandType = CommandType.Text
