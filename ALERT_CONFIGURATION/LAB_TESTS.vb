@@ -3,7 +3,6 @@ Public Class LAB_TESTS
 
     Dim db_access_general As New General
     Dim db_labs As New LABS_API
-    Dim oradb As String = "Data Source=QC4V26522;User Id=alert_config;Password=qcteam"
     Dim g_selected_soft As Int16 = -1
 
     Dim g_a_loaded_categories_default() As String ' Array que vai guardar os id_contents das categorias carregadas do default
@@ -13,9 +12,6 @@ Public Class LAB_TESTS
     Dim g_a_selected_default_analysis() As LABS_API.analysis_default 'Array que vai guardar os id_contents das análises selecionadas do default
 
     Dim g_index_selected_analysis_from_default As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 1)
-
-    'Ligação à BD
-    Dim conn_labs As New OracleConnection(oradb)
 
     'Array que vai guardar os quartos da instituição
     Dim g_a_loaded_rooms() As Int64
@@ -46,14 +42,6 @@ Public Class LAB_TESTS
 
     Dim g_a_selected_labs_delete_cs() As String ' Array para remover análises do alert
 
-    Public Sub New(ByVal i_oradb As String)
-
-        InitializeComponent()
-        oradb = i_oradb
-        conn_labs = New OracleConnection(oradb)
-
-    End Sub
-
     Private Sub LAB_TESTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
@@ -62,20 +50,10 @@ Public Class LAB_TESTS
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
 
-        Try
-            'Estabelecer ligação à BD
-            conn_labs.Open()
-
-        Catch ex As Exception
-
-            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
-
-        End Try
-
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_ALL_INSTITUTIONS(conn_labs, dr) Then
+        If Not db_access_general.GET_ALL_INSTITUTIONS(dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ALL INSTITUTIONS!")
@@ -99,16 +77,9 @@ Public Class LAB_TESTS
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
-        conn_labs.FlushCache()
-        conn_labs.Dispose()
-        conn_labs.Close()
-
         Dim form1 As New Form1
-        form1.g_oradb = oradb
         Me.Enabled = False
-
         Me.Dispose()
-
         form1.Show()
 
     End Sub
@@ -140,7 +111,7 @@ Public Class LAB_TESTS
 
         If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn_labs)
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
 
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
@@ -152,7 +123,7 @@ Public Class LAB_TESTS
 
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -187,7 +158,7 @@ Public Class LAB_TESTS
 
             End If
 
-            If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+            If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, dr) Then
 
                 MsgBox("ERROR GETTING LAB ROOMS!", vbCritical)
 
@@ -250,14 +221,14 @@ Public Class LAB_TESTS
         ComboBox6.Items.Clear()
         ComboBox6.Text = ""
 
-        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn_labs)
+        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text)
 
         '1 - Fill Version combobox
 
         Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, conn_labs, dr_def_versions) Then
+        If Not db_labs.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, dr_def_versions) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -281,7 +252,7 @@ Public Class LAB_TESTS
         Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, conn_labs, dr_exam_cat) Then
+        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -314,7 +285,7 @@ Public Class LAB_TESTS
         Dim dr_clin_serv As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, conn_labs, dr_clin_serv) Then
+        If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, g_selected_soft, dr_clin_serv) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING CLINICAL SERVICES!")
@@ -370,7 +341,7 @@ Public Class LAB_TESTS
         Dim dr_lab_cat_def As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, conn_labs, dr_lab_cat_def) Then
+        If Not db_labs.GET_LAB_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT LAB CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -424,7 +395,7 @@ Public Class LAB_TESTS
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, conn_labs, dr) Then
+        If Not db_labs.GET_LABS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB TESTS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
@@ -567,17 +538,17 @@ Public Class LAB_TESTS
                 Next
 
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
-                If db_labs.SET_EXAM_CAT(TextBox1.Text, l_a_checked_labs, conn_labs) Then
+                If db_labs.SET_EXAM_CAT(TextBox1.Text, l_a_checked_labs) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
-                    If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs, conn_labs) Then
-                        If db_labs.SET_ANALYSIS(TextBox1.Text, l_a_checked_labs, conn_labs) Then
-                            If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs, conn_labs) Then
-                                If db_labs.SET_PARAMETER(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                    If db_labs.SET_PARAM(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                        If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                            If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                                If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs, conn_labs) Then
-                                                    If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, g_selected_soft, g_selected_room, l_a_checked_labs, conn_labs) Then
+                    If db_labs.SET_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs) Then
+                        If db_labs.SET_ANALYSIS(TextBox1.Text, l_a_checked_labs) Then
+                            If db_labs.SET_ANALYSIS_SAMPLE_TYPE(TextBox1.Text, l_a_checked_labs) Then
+                                If db_labs.SET_PARAMETER(TextBox1.Text, g_selected_soft, l_a_checked_labs) Then
+                                    If db_labs.SET_PARAM(TextBox1.Text, g_selected_soft, l_a_checked_labs) Then
+                                        If db_labs.SET_SAMPLE_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs) Then
+                                            If db_labs.SET_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, l_a_checked_labs) Then
+                                                If db_labs.SET_ANALYSIS_INST_RECIPIENT(TextBox1.Text, g_selected_soft, l_a_checked_labs) Then
+                                                    If db_labs.SET_ANALYSIS_ROOM(TextBox1.Text, g_selected_soft, g_selected_room, l_a_checked_labs) Then
 
                                                         MsgBox("Record(s) successfully inserted.", vbInformation)
 
@@ -604,7 +575,7 @@ Public Class LAB_TESTS
                                                         Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                                                        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, conn_labs, dr_exam_cat) Then
+                                                        If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                                                             MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -703,7 +674,7 @@ Public Class LAB_TESTS
         g_dimension_labs_cs = 0
         ReDim g_a_selected_labs_delete_cs(0)
 
-        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn_labs)
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex)
 
         ComboBox2.Items.Clear()
         ComboBox2.Text = ""
@@ -716,7 +687,7 @@ Public Class LAB_TESTS
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, conn_labs, dr) Then
+        If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB ROOMS!", vbCritical)
@@ -741,7 +712,7 @@ Public Class LAB_TESTS
         ComboBox2.Items.Clear()
         ComboBox2.Text = ""
 
-        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn_labs, dr) Then
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
 
@@ -802,7 +773,7 @@ Public Class LAB_TESTS
         ReDim g_a_labs_alert(g_dimension_labs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, conn_labs, dr_labs) Then
+        If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, dr_labs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -955,14 +926,14 @@ Public Class LAB_TESTS
                 For Each indexChecked In CheckedListBox3.CheckedIndices
 
                     '2.1 - Apagar da analysis_inst_soft
-                    If Not db_labs.DELETE_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, g_a_labs_alert(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+                    If Not db_labs.DELETE_ANALYSIS_INST_SOFT(TextBox1.Text, g_selected_soft, g_a_labs_alert(indexChecked).id_content_analysis_sample_type) Then
 
                         l_sucess = False
 
                     End If
 
                     ''2.2 - Apagar da analysis_dep_clin_serv (Para evitar que, no futuro, quando alguém ativar outra vez a análise, ela não apareça como mais frequente.
-                    If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, 0, g_a_labs_alert(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+                    If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, 0, g_a_labs_alert(indexChecked).id_content_analysis_sample_type) Then
 
                         l_sucess = False
 
@@ -980,7 +951,7 @@ Public Class LAB_TESTS
                     Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, conn_labs, dr_exam_cat) Then
+                    If Not db_labs.GET_LAB_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1033,7 +1004,7 @@ Public Class LAB_TESTS
                     ReDim g_a_labs_alert(g_dimension_labs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, conn_labs, dr_labs) Then
+                    If Not db_labs.GET_LABS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, dr_labs) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING LAB EXAMS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -1088,7 +1059,7 @@ Public Class LAB_TESTS
             Dim dr_delete As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_delete, conn_labs) Then
+            If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_delete) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
@@ -1171,7 +1142,7 @@ Public Class LAB_TESTS
 
                     If (g_a_labs_for_clinical_service(j).flg_new = "Y") Then
 
-                        If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_labs_for_clinical_service(j).id_content_analysis_sample_type, conn_labs) Then
+                        If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_labs_for_clinical_service(j).id_content_analysis_sample_type) Then
 
                             l_sucess = False
 
@@ -1210,7 +1181,7 @@ Public Class LAB_TESTS
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_id_dep_clin_serv_aux, dr, conn_labs) Then
+        If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_id_dep_clin_serv_aux, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
@@ -1297,7 +1268,7 @@ Public Class LAB_TESTS
             For Each indexChecked In CheckedListBox4.CheckedIndices
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr, conn_labs) Then
+                If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV.", vbCritical)
@@ -1333,7 +1304,7 @@ Public Class LAB_TESTS
 
             For ii As Integer = 0 To g_a_selected_labs_delete_cs.Count() - 1
 
-                If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_selected_labs_delete_cs(ii), conn_labs) Then
+                If Not db_labs.DELETE_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_selected_labs_delete_cs(ii)) Then
 
                     l_sucess = False
 
@@ -1349,7 +1320,7 @@ Public Class LAB_TESTS
             Dim dr_new As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_new, conn_labs) Then
+            If db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr_new) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 Dim i_new As Integer = 0
@@ -1418,7 +1389,7 @@ Public Class LAB_TESTS
 
                     If (g_a_labs_for_clinical_service(indexChecked).flg_new = "Y") Then
 
-                        If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_labs_for_clinical_service(indexChecked).id_content_analysis_sample_type, conn_labs) Then
+                        If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_labs_for_clinical_service(indexChecked).id_content_analysis_sample_type) Then
 
                             l_sucess = False
 
@@ -1459,7 +1430,7 @@ Public Class LAB_TESTS
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr, conn_labs) Then
+        If Not db_labs.GET_ANALYSIS_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, g_id_dep_clin_serv, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ANALYSIS_DEP_CLIN_SERV", vbCritical)
