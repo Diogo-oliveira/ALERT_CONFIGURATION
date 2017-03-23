@@ -597,9 +597,9 @@ Public Class INSERT_IMAGING_EXAMS
             Next
 
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
-            If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams, conn) Then
+            If db_access.SET_EXAM_CAT(TextBox1.Text, l_a_checked_exams) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
-                If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", conn) Then
+                If db_access.SET_EXAM_ALERT(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I") Then
                     If db_access.SET_DEFAULT_EXAM_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_exams, "I", g_record_type) Then
 
                         MsgBox("Record(s) successfully inserted.", vbInformation)

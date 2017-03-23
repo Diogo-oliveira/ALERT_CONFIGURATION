@@ -2965,7 +2965,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     END LOOP;
                    END;"
 
-        Dim cmd_insert_exam_dep_clin_serv As New OracleCommand(sql)
+        Dim cmd_insert_exam_dep_clin_serv As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_exam_dep_clin_serv.CommandType = CommandType.Text

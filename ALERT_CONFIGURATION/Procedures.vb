@@ -123,8 +123,6 @@ Public Class Procedures
 
     Private Sub Procedures_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        MsgBox(Connection.conn.State())
-
         Me.BackColor = Color.FromArgb(215, 215, 180)
         CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
@@ -1182,7 +1180,9 @@ Public Class Procedures
 
             For j = 0 To CheckedListBox4.Items.Count() - 1
 
-                If (g_a_intervs_alert(indexChecked.ToString()).id_content_category = g_a_intervs_for_clinical_service(j).id_content_category And g_a_intervs_alert(indexChecked.ToString()).id_content_intervention = g_a_intervs_for_clinical_service(j).id_content_intervention) Then
+
+                'g_a_intervs_alert(indexChecked.ToString()).id_content_category = g_a_intervs_for_clinical_service(j).id_content_category And 
+                If (g_a_intervs_alert(indexChecked.ToString()).id_content_intervention = g_a_intervs_for_clinical_service(j).id_content_intervention) Then
 
                     l_record_already_selected = True
                     Exit For

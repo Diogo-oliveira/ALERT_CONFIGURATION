@@ -680,8 +680,10 @@ Public Class SR_Procedures
                 dr_intervs.Dispose()
                 dr_intervs.Close()
 
-                ''Limpar o array de sr_interventions do Clinical Service
-                ReDim g_a_intervs_for_clinical_service(0)
+                If ComboBox6.Text <> "" Then
+
+                    ''Limpar o array de sr_interventions do Clinical Service
+                    ReDim g_a_intervs_for_clinical_service(0)
                 'ReDim g_a_intervs_alert(0) -- Acho qu enão posso fazer isto aqui. Verificar
 
                 g_dimension_intervs_cs = 0
@@ -695,38 +697,40 @@ Public Class SR_Procedures
                 '5 - Determinar os exames disponíveis como mais frequentes para esse dep_clin_serv
                 Dim dr_delete As OracleDataReader
 
-                '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not db_sr_procedure.GET_INTERVS_DEP_CLIN_SERV(TextBox1.Text, g_id_dep_clin_serv, dr_delete) Then
+                    If Not db_sr_procedure.GET_INTERVS_DEP_CLIN_SERV(TextBox1.Text, g_id_dep_clin_serv, dr_delete) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                    MsgBox("ERROR GETTING SR_INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
+                        MsgBox("ERROR GETTING SR_INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
 
-                Else
+                    Else
 
-                    Dim i As Integer = 0
+                        Dim i As Integer = 0
 
-                    '6 - Ler cursor e popular o campo
-                    While dr_delete.Read()
+                        '6 - Ler cursor e popular o campo
+                        While dr_delete.Read()
 
-                        CheckedListBox4.Items.Add(dr_delete.Item(1))
+                            CheckedListBox4.Items.Add(dr_delete.Item(1))
 
-                        ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
+                            ReDim Preserve g_a_intervs_for_clinical_service(g_dimension_intervs_cs)
 
 
-                        g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr_delete.Item(0)
-                        g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr_delete.Item(1)
-                        g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
+                            g_a_intervs_for_clinical_service(g_dimension_intervs_cs).id_content_intervention = dr_delete.Item(0)
+                            g_a_intervs_for_clinical_service(g_dimension_intervs_cs).desc_intervention = dr_delete.Item(1)
+                            g_a_intervs_for_clinical_service(g_dimension_intervs_cs).flg_new = "N"
 
-                        g_dimension_intervs_cs = g_dimension_intervs_cs + 1
+                            g_dimension_intervs_cs = g_dimension_intervs_cs + 1
 
-                    End While
+                        End While
+
+                    End If
+
+                    dr_delete.Dispose()
+                    dr_delete.Close()
 
                 End If
-
-                dr_delete.Dispose()
-                dr_delete.Close()
 
             End If
 

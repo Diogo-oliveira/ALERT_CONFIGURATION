@@ -1,9 +1,6 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class SYS_CONFIGS
 
-    Dim oradb As String
-    Dim conn As New OracleConnection
-
     Dim search_sys_config As String = ""
 
     Dim db_access_general As New General
@@ -20,20 +17,10 @@ Public Class SYS_CONFIGS
 
         DataGridView1.BackgroundColor = Color.FromArgb(195, 195, 165)
 
-        Try
-            'Estabelecer ligação à BD
-            conn.Open()
-
-        Catch ex As Exception
-
-            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
-
-        End Try
-
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_SOFT_INST(0, conn, dr) Then
+        If Not db_access_general.GET_SOFT_INST(0, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -60,7 +47,7 @@ Public Class SYS_CONFIGS
         Dim dr_market As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_MARKETS(conn, dr_market) Then
+        If Not db_access_general.GET_MARKETS(dr_market) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING MARKETS!", vbCritical)
@@ -88,16 +75,6 @@ Public Class SYS_CONFIGS
 
     End Sub
 
-    Public Sub New(ByVal i_oradb As String)
-
-        InitializeComponent()
-        oradb = i_oradb
-        conn = New OracleConnection(oradb)
-
-    End Sub
-
-
-
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
         If TextBox1.Text = "" Then
@@ -110,7 +87,7 @@ Public Class SYS_CONFIGS
 
             'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
             Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-            Dim cmd As New OracleCommand(sql, conn)
+            Dim cmd As New OracleCommand(sql)
             cmd.CommandType = CommandType.Text
 
             Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -136,13 +113,11 @@ Public Class SYS_CONFIGS
             DataGridView1.Columns(4).ReadOnly = True
             DataGridView1.Columns(5).ReadOnly = True
 
-
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
 
         End If
-
 
     End Sub
 
@@ -151,7 +126,7 @@ Public Class SYS_CONFIGS
 
             Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & search_sys_config & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
 
-            Dim cmd As New OracleCommand(sql, conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -163,7 +138,7 @@ Public Class SYS_CONFIGS
 
                 If dr.Item(1) <> DataGridView1(1, i).Value Then
 
-                    Dim cmd_update As OracleCommand = conn.CreateCommand()
+                    Dim cmd_update As OracleCommand = Connection.conn.CreateCommand()
 
                     cmd_update.CommandType = CommandType.Text
 
@@ -203,7 +178,7 @@ Public Class SYS_CONFIGS
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
         Dim form1 As New Form1
-        form1.g_oradb = oradb
+
         form1.Show()
 
         Me.Close()
@@ -213,7 +188,7 @@ Public Class SYS_CONFIGS
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
 
         Dim sql As String = "Select DISTINCT s.id_sys_config  from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox2.Text & "%') order by 1 asc"
-        Dim cmd As New OracleCommand(sql, conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -262,7 +237,7 @@ Public Class SYS_CONFIGS
 
         Else
 
-            If Not db_access_general.SET_SYSCONFIG(ComboBox4.Text, TextBox3.Text, TextBox4.Text, g_selected_software, g_selected_market, conn) Then
+            If Not db_access_general.SET_SYSCONFIG(ComboBox4.Text, TextBox3.Text, TextBox4.Text, g_selected_software, g_selected_market) Then
 
                 MsgBox("ERROR INSERTING RECORD.", vbCritical)
 
@@ -275,7 +250,7 @@ Public Class SYS_CONFIGS
 
                 'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
                 Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-                Dim cmd As New OracleCommand(sql, conn)
+                Dim cmd As New OracleCommand(sql, Connection.conn)
                 cmd.CommandType = CommandType.Text
 
                 Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -330,7 +305,7 @@ Public Class SYS_CONFIGS
                                            WHERE rn = " & DataGridView1.CurrentRow.Index + 1 & ")"
 
 
-            Dim cmd_delete_sysconfig As New OracleCommand(sql, conn)
+            Dim cmd_delete_sysconfig As New OracleCommand(sql, Connection.conn)
 
             Try
 
@@ -344,7 +319,7 @@ Public Class SYS_CONFIGS
 
                 'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
                 Dim sql_updated As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-                Dim cmd As New OracleCommand(sql_updated, conn)
+                Dim cmd As New OracleCommand(sql_updated, Connection.conn)
                 cmd.CommandType = CommandType.Text
 
                 Dim dr As OracleDataReader = cmd.ExecuteReader()

@@ -15,7 +15,7 @@ Public Class Form1
         TextBox2.Text = "qcteam"
         ComboBox1.Text = "QC4V26522"
 
-        If g_oradb = "" Then
+        If Connection.conn.State = 0 Then
 
             Button1.Visible = False
             Button2.Visible = False
