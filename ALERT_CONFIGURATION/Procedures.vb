@@ -1180,7 +1180,6 @@ Public Class Procedures
 
             For j = 0 To CheckedListBox4.Items.Count() - 1
 
-
                 'g_a_intervs_alert(indexChecked.ToString()).id_content_category = g_a_intervs_for_clinical_service(j).id_content_category And 
                 If (g_a_intervs_alert(indexChecked.ToString()).id_content_intervention = g_a_intervs_for_clinical_service(j).id_content_intervention) Then
 

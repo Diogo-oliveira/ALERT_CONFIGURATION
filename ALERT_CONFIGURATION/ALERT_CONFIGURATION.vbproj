@@ -273,6 +273,12 @@
     <Compile Include="SYS_CONFIGS.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Translation_Updates.Designer.vb">
+      <DependentUpon>Translation_Updates.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Translation_Updates.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="YES_to_ALL.Designer.vb">
       <DependentUpon>YES_to_ALL.vb</DependentUpon>
     </Compile>
@@ -310,6 +316,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SYS_CONFIGS.resx">
       <DependentUpon>SYS_CONFIGS.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translation_Updates.resx">
+      <DependentUpon>Translation_Updates.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="YES_to_ALL.resx">
       <DependentUpon>YES_to_ALL.vb</DependentUpon>
