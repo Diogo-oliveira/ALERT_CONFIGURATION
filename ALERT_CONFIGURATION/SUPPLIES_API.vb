@@ -15,14 +15,14 @@ Public Class SUPPLIES_API
         Public desc_supply As String
     End Structure
 
-    Function GET_SUP_AREAS(ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUP_AREAS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT s.id_supply_area, pk_translation.get_translation(2, s.code_supply_area)
                              FROM alert.supply_area s"
 
         sql = sql & "  ORDER BY 2 ASC"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Try
@@ -36,7 +36,7 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_sup_area As Int16, ByVal i_sup_type As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_sup_area As Int16, ByVal i_sup_type As String, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = ""
 
@@ -76,7 +76,7 @@ Public Class SUPPLIES_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
         Try
             i_dr = cmd.ExecuteReader()
@@ -89,9 +89,9 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function GET_SUPP_CATS_DEFAULT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUPP_CATS_DEFAULT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -135,7 +135,7 @@ Public Class SUPPLIES_API
                                 ORDER BY 2 ASC"
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -147,9 +147,9 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-    Function GET_SUPP_CATS_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUPP_CATS_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -196,7 +196,7 @@ Public Class SUPPLIES_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -208,9 +208,9 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-    Function GET_SUPS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUPS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -273,7 +273,7 @@ Public Class SUPPLIES_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -285,9 +285,9 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-    Function GET_SUPS_ALERT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUPS_ALERT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -348,7 +348,7 @@ Public Class SUPPLIES_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -360,9 +360,9 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-    Function GET_SUPS_ALERT_BARCODE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_SUPS_ALERT_BARCODE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_sup_area As Int16, ByVal i_flg_type As String, ByVal i_id_content_cat As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = ""
 
@@ -429,7 +429,7 @@ Public Class SUPPLIES_API
 
         End If
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -441,7 +441,7 @@ Public Class SUPPLIES_API
         End Try
     End Function
 
-    Function GET_DISTINCT_SUPPLY_TYPE(ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_DISTINCT_SUPPLY_TYPE(ByVal i_a_supplies() As supplies_default, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "Select dst.id_content from alert_default.supply_type dst
                              where dst.id_content in ("
@@ -460,7 +460,7 @@ Public Class SUPPLIES_API
 
         Next
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -474,13 +474,13 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_SUPPLY_TYPE(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY_TYPE(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim dr_filtered_st As OracleDataReader
 
-        If Not GET_DISTINCT_SUPPLY_TYPE(i_a_supplies, i_conn, dr_filtered_st) Then
+        If Not GET_DISTINCT_SUPPLY_TYPE(i_a_supplies, dr_filtered_st) Then
 
             Return False
 
@@ -545,7 +545,7 @@ Public Class SUPPLIES_API
   
                             END;"
 
-        Dim cmd_insert_st As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_st As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_st.CommandType = CommandType.Text
@@ -557,7 +557,7 @@ Public Class SUPPLIES_API
 
         cmd_insert_st.Dispose()
 
-        If Not SET_SUPPLY_TYPE_TRANSLATION(i_institution, l_a_filtered_supplies, i_conn) Then
+        If Not SET_SUPPLY_TYPE_TRANSLATION(i_institution, l_a_filtered_supplies) Then
 
             Return False
 
@@ -568,9 +568,9 @@ Public Class SUPPLIES_API
     End Function
 
 
-    Function SET_SUPPLY_TYPE_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY_TYPE_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "DECLARE
 
@@ -635,7 +635,7 @@ Public Class SUPPLIES_API
 
                             END;"
 
-        Dim cmd_insert_st_translation As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_st_translation As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_st_translation.CommandType = CommandType.Text
@@ -652,9 +652,9 @@ Public Class SUPPLIES_API
     End Function
 
     'Esta Função faz Insert de novos supplies, e insert de traduções para supplies que não tinham tradução
-    Function SET_SUPPLY(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY(ByVal i_institution As Int64, ByVal i_a_supplies() As supplies_default) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, i_conn)
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "DECLARE
 
@@ -792,7 +792,7 @@ Public Class SUPPLIES_API
 
                         END;"
 
-        Dim cmd_insert_st_translation As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_st_translation As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_st_translation.CommandType = CommandType.Text
@@ -808,7 +808,7 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -922,7 +922,7 @@ Public Class SUPPLIES_API
 
                         END;"
 
-        Dim cmd_insert_supply_soft As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_supply_soft As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_supply_soft.CommandType = CommandType.Text
@@ -938,7 +938,7 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_SUPPLY_SUP_AREA(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_sup_area As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY_SUP_AREA(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_sup_area As Int16, ByVal i_a_supplies() As supplies_default) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -999,7 +999,7 @@ Public Class SUPPLIES_API
 
                         END;"
 
-        Dim cmd_insert_supply_sup_area As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_supply_sup_area As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_supply_sup_area.CommandType = CommandType.Text
@@ -1015,7 +1015,7 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_SUPPLY_LOC_DEFAULT(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SUPPLY_LOC_DEFAULT(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_supplies() As supplies_default) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1136,7 +1136,7 @@ Public Class SUPPLIES_API
                         END LOOP;
                     END;"
 
-        Dim cmd_insert_supply_loc_default As New OracleCommand(sql, i_conn)
+        Dim cmd_insert_supply_loc_default As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_insert_supply_loc_default.CommandType = CommandType.Text
@@ -1152,7 +1152,7 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function DELETE_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_supplies() As supplies_default, ByVal i_sup_area As Int16, ByVal i_conn As OracleConnection) As Boolean
+    Function DELETE_SUPPLY_SOFT_INST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_supplies() As supplies_default, ByVal i_sup_area As Int16) As Boolean
 
         Dim sql As String = "DECLARE
 
@@ -1267,7 +1267,7 @@ Public Class SUPPLIES_API
 
                         END;"
 
-        Dim cmd_supply_sup_area As New OracleCommand(sql, i_conn)
+        Dim cmd_supply_sup_area As New OracleCommand(sql, Connection.conn)
 
         Try
             cmd_supply_sup_area.CommandType = CommandType.Text
@@ -1282,13 +1282,13 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function CHECK_SUPPY_BARCODE_EXISTS(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_conn As OracleConnection) As Boolean
+    Function CHECK_SUPPY_BARCODE_EXISTS(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64) As Boolean
 
         Dim sql As String = "Select count(*) from alert.supply_barcode b
                                 where b.id_supply=" & i_id_supply & "
                                 and b.id_institution in (0," & i_id_institution & ")"
 
-        Dim cmd As New OracleCommand(sql, i_conn)
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
@@ -1318,16 +1318,16 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_BARCODE(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_barcode As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_BARCODE(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_barcode As String) As Boolean
 
-        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply) Then
 
             Dim sql As String = "UPDATE alert.supply_barcode b
                                     SET b.barcode = '" & i_barcode & "'
                                     WHERE b.id_supply = " & i_id_supply & " 
                                     AND b.id_institution IN (0, " & i_id_institution & ")"
 
-            Dim cmd_update_barcode As New OracleCommand(sql, i_conn)
+            Dim cmd_update_barcode As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_update_barcode.CommandType = CommandType.Text
@@ -1345,7 +1345,7 @@ Public Class SUPPLIES_API
             Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, BARCODE, FLG_AVAILABLE)
                                  values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_barcode & "', 'Y')"
 
-            Dim cmd_insert_barcode As New OracleCommand(sql, i_conn)
+            Dim cmd_insert_barcode As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_insert_barcode.CommandType = CommandType.Text
@@ -1362,16 +1362,16 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_LOT(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_lot As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_LOT(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_lot As String) As Boolean
 
-        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply) Then
 
             Dim sql As String = "UPDATE alert.supply_barcode b
                                     SET b.LOT = '" & i_lot & "'
                                     WHERE b.id_supply = " & i_id_supply & " 
                                     AND b.id_institution IN (0, " & i_id_institution & ")"
 
-            Dim cmd_update_lot As New OracleCommand(sql, i_conn)
+            Dim cmd_update_lot As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_update_lot.CommandType = CommandType.Text
@@ -1389,7 +1389,7 @@ Public Class SUPPLIES_API
             Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, LOT, FLG_AVAILABLE)
                                  values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_lot & "', 'Y')"
 
-            Dim cmd_insert_lot As New OracleCommand(sql, i_conn)
+            Dim cmd_insert_lot As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_insert_lot.CommandType = CommandType.Text
@@ -1406,16 +1406,16 @@ Public Class SUPPLIES_API
 
     End Function
 
-    Function SET_SERIAL_NUMBER(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_serial_number As String, ByVal i_conn As OracleConnection) As Boolean
+    Function SET_SERIAL_NUMBER(ByVal i_id_institution As Int64, ByVal i_id_supply As Int64, ByVal i_serial_number As String) As Boolean
 
-        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply, i_conn) Then
+        If CHECK_SUPPY_BARCODE_EXISTS(i_id_institution, i_id_supply) Then
 
             Dim sql As String = "UPDATE alert.supply_barcode b
                                     SET b.SERIAL_NUMBER = '" & i_serial_number & "'
                                     WHERE b.id_supply = " & i_id_supply & " 
                                     AND b.id_institution IN (0, " & i_id_institution & ")"
 
-            Dim cmd_update_serial_number As New OracleCommand(sql, i_conn)
+            Dim cmd_update_serial_number As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_update_serial_number.CommandType = CommandType.Text
@@ -1433,7 +1433,7 @@ Public Class SUPPLIES_API
             Dim sql As String = "insert into alert.supply_barcode (ID_SUPPLY_BARCODE, ID_SUPPLY, ID_INSTITUTION, SERIAL_NUMBER, FLG_AVAILABLE)
                                  values (alert.seq_supply_barcode.nextval, " & i_id_supply & ", " & i_id_institution & ", '" & i_serial_number & "', 'Y')"
 
-            Dim cmd_insert_serial_number As New OracleCommand(sql, i_conn)
+            Dim cmd_insert_serial_number As New OracleCommand(sql, Connection.conn)
 
             Try
                 cmd_insert_serial_number.CommandType = CommandType.Text

@@ -8,9 +8,6 @@ Public Class Supplies
     Dim db_supplies As New SUPPLIES_API
     Dim g_selected_soft As Int16 = -1
 
-    Dim oradb As String
-    Dim conn As New OracleConnection
-
     'Array que vai guardar as SUPPLY_AREAS disponíveis
 
     Dim g_a_SUP_AREAS() As SUPPLIES_API.SUP_AREAS
@@ -72,15 +69,6 @@ Public Class Supplies
 
     Dim g_supply_barcode() As TABLE_BARCODE
 
-
-    Public Sub New(ByVal i_oradb As String)
-
-        InitializeComponent()
-        oradb = i_oradb
-        conn = New OracleConnection(oradb)
-
-    End Sub
-
     Private Sub Supplies_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
@@ -90,23 +78,10 @@ Public Class Supplies
 
         DataGridView1.BackgroundColor = Color.FromArgb(195, 195, 165)
 
-        ' GroupBox1.bo
-
-        Try
-            'Estabelecer ligação à BD
-
-            conn.Open()
-
-        Catch ex As Exception
-
-            MsgBox("ERROR CONNECTING TO DATA BASE!", vbCritical)
-
-        End Try
-
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_ALL_INSTITUTIONS(conn, dr) Then
+        If Not db_access_general.GET_ALL_INSTITUTIONS(dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING ALL INSTITUTIONS!")
@@ -130,7 +105,7 @@ Public Class Supplies
         Dim dr_sup_areas As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_supplies.GET_SUP_AREAS(conn, dr_sup_areas) Then
+        If Not db_supplies.GET_SUP_AREAS(dr_sup_areas) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SUPPLY AREAS!", vbCritical)
@@ -184,17 +159,15 @@ Public Class Supplies
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
-        conn.Close()
-        conn.Dispose()
 
         Dim form1 As New Form1()
-        form1.g_oradb = oradb
 
         Me.Enabled = False
 
         Me.Dispose()
 
         form1.Show()
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -246,7 +219,7 @@ Public Class Supplies
 
         If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text, conn)
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
 
             ComboBox2.Items.Clear()
             ComboBox2.Text = ""
@@ -254,7 +227,7 @@ Public Class Supplies
             Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -323,23 +296,23 @@ Public Class Supplies
 
                 Next
 
-                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
 
@@ -445,7 +418,7 @@ Public Class Supplies
             Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_supplies.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_def_versions) Then
+            If Not db_supplies.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, dr_def_versions) Then
 
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
@@ -499,23 +472,23 @@ Public Class Supplies
 
                 Next
 
-                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
 
@@ -585,7 +558,7 @@ Public Class Supplies
             Dim dr_lab_cat_def As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_supplies.GET_SUPP_CATS_DEFAULT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, conn, dr_lab_cat_def) Then
+            If Not db_supplies.GET_SUPP_CATS_DEFAULT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR LOADING DEFAULT SUPPLIES CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -642,23 +615,23 @@ Public Class Supplies
 
                 Next
 
-                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+                If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+                ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                     MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
 
@@ -750,7 +723,7 @@ Public Class Supplies
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_supplies.GET_SUPS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, g_selected_supplycategory, conn, dr) Then
+        If Not db_supplies.GET_SUPS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.Text, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, g_selected_category, g_selected_supplycategory, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SUPPLIES BY CATEGORY >> ComboBox4_SelectedIndexChanged")
@@ -852,7 +825,7 @@ Public Class Supplies
         ComboBox11.SelectedIndex = -1
         ComboBox11.Text = ""
 
-        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text, conn)
+        g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text)
 
     End Sub
 
@@ -944,7 +917,7 @@ Public Class Supplies
         ReDim g_a_selected_supplies_default(0)
         g_index_selected_supplies_from_default = 0
 
-        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex, conn)
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex)
 
         ComboBox2.Items.Clear()
         ComboBox2.Text = ""
@@ -972,7 +945,7 @@ Public Class Supplies
         ComboBox2.Text = ""
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, conn, dr) Then
+        If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
@@ -1014,23 +987,23 @@ Public Class Supplies
 
             Next
 
-            If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies, conn) Then
+            If Not db_supplies.SET_SUPPLY_TYPE(TextBox1.Text, l_a_checked_supplies) Then
 
                 MsgBox("ERROR INSERTING SUPPLIES CATEGORIES!", vbCritical)
 
-            ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies, conn) Then
+            ElseIf Not db_supplies.SET_SUPPLY(TextBox1.Text, l_a_checked_supplies) Then
 
                 MsgBox("ERROR INSERTING SUPPLIES!", vbCritical)
 
-            ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+            ElseIf Not db_supplies.SET_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                 MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-            ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies, conn) Then
+            ElseIf Not db_supplies.SET_SUPPLY_SUP_AREA(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox8.SelectedIndex).id_supply_area, l_a_checked_supplies) Then
 
                 MsgBox("ERROR INSERTING SUPPLY_SOFT_INST!", vbCritical)
 
-            ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies, conn) Then
+            ElseIf Not db_supplies.SET_SUPPLY_LOC_DEFAULT(TextBox1.Text, g_selected_soft, l_a_checked_supplies) Then
 
                 MsgBox("ERROR INSERTING SUPPLY_LOC_DEFAULT!", vbCritical)
 
@@ -1114,7 +1087,7 @@ Public Class Supplies
 
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_supplies.GET_SUPS_ALERT_BY_CAT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, g_selected_supplycategory_alert, conn, dr_supplies) Then
+        If Not db_supplies.GET_SUPS_ALERT_BY_CAT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, g_selected_supplycategory_alert, dr_supplies) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -1200,7 +1173,7 @@ Public Class Supplies
         Dim l_index_loaded_categories As Int64 = 0
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, conn, dr_supp_cat) Then
+        If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, dr_supp_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1301,7 +1274,7 @@ Public Class Supplies
 
                 Next
 
-                If Not db_supplies.DELETE_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_selected_supplies_alert, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, conn) Then
+                If Not db_supplies.DELETE_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_selected_supplies_alert, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area) Then
 
                     MsgBox("ERROR DELETING SUPPLIES FROM ALERT!", vbCritical)
 
@@ -1326,7 +1299,7 @@ Public Class Supplies
                     Dim l_index_loaded_categories As Int64 = 0
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, conn, dr_supp_cat) Then
+                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, dr_supp_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1364,7 +1337,7 @@ Public Class Supplies
                     Dim dr_supplies As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_supplies.GET_SUPS_ALERT_BY_CAT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, g_selected_supplycategory_alert, conn, dr_supplies) Then
+                    If Not db_supplies.GET_SUPS_ALERT_BY_CAT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area, g_type_supply_alert, g_selected_supplycategory_alert, dr_supplies) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -1434,7 +1407,7 @@ Public Class Supplies
                     Dim l_index_loaded_categories As Int64 = 0
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, conn, dr_supp_cat) Then
+                    If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, dr_supp_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1531,7 +1504,7 @@ Public Class Supplies
             Dim l_index_loaded_categories As Int64 = 0
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, conn, dr_supp_cat) Then
+            If Not db_supplies.GET_SUPP_CATS_ALERT(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, dr_supp_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR LOADING SUPPLY CATEGORIES FROM INSTITUTION!", vbCritical)
@@ -1579,7 +1552,7 @@ Public Class Supplies
 
         Dim dr As OracleDataReader
 
-        If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+        If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, dr) Then
 
             MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
 
@@ -1682,7 +1655,7 @@ Public Class Supplies
 
             If DataGridView1.Rows(i).Cells(2).Value <> g_supply_barcode(i).barcode Then
 
-                If Not db_supplies.SET_BARCODE(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(2).Value, conn) Then
+                If Not db_supplies.SET_BARCODE(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(2).Value) Then
 
                     l_success = False
 
@@ -1697,7 +1670,7 @@ Public Class Supplies
 
             If DataGridView1.Rows(i).Cells(3).Value <> g_supply_barcode(i).lote Then
 
-                If Not db_supplies.SET_LOT(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(3).Value, conn) Then
+                If Not db_supplies.SET_LOT(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(3).Value) Then
 
                     l_success = False
 
@@ -1711,7 +1684,7 @@ Public Class Supplies
 
             If DataGridView1.Rows(i).Cells(4).Value <> g_supply_barcode(i).serial Then
 
-                If Not db_supplies.SET_SERIAL_NUMBER(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(4).Value, conn) Then
+                If Not db_supplies.SET_SERIAL_NUMBER(TextBox1.Text, g_supply_barcode(i).id_supply, DataGridView1.Rows(i).Cells(4).Value) Then
 
                     l_success = False
 
@@ -1732,7 +1705,7 @@ Public Class Supplies
             'Bloco para Limpara a DATAGRIDVIEW e a estrutura
             Dim dr As OracleDataReader
 
-            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, dr) Then
 
                 MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
 
@@ -1822,7 +1795,7 @@ Public Class Supplies
             'Bloco para Limpara a DATAGRIDVIEW e a estrutura e para repopular grelha e estrutura
             Dim dr As OracleDataReader
 
-            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, conn, dr) Then
+            If Not db_supplies.GET_SUPS_ALERT_BARCODE(TextBox1.Text, g_selected_soft, g_a_SUP_AREAS(ComboBox10.SelectedIndex).id_supply_area, g_type_supply_alert_barcode, g_selected_supplycategory_alert_barcode, dr) Then
 
                 MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
 
