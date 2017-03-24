@@ -1025,10 +1025,74 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd_insert_SC.ExecuteNonQuery()
 
 
-        Catch ex As Exception
+        Catch ex As Exception 'Dá exceção nas versões antigas. Não existe m_value
 
-            cmd_insert_SC.Dispose()
-            Return False
+
+            Dim Sql_versao_antiga As String = "DECLARE
+
+                                l_desc            sys_config.id_sys_config%TYPE;
+                                l_fill_type       sys_config.fill_type%TYPE;
+                                l_client_config   sys_config.client_configuration%TYPE;
+                                l_internal_config sys_config.internal_configuration%TYPE;
+                                l_global_config   sys_config.global_configuration%TYPE;
+                                l_flg_schema      sys_config.flg_schema%TYPE;                                
+
+                            BEGIN
+
+                                SELECT DISTINCT s.desc_sys_config, s.fill_type, s.client_configuration, s.internal_configuration, s.global_configuration, s.flg_schema
+                                INTO l_desc, l_fill_type, l_client_config, l_internal_config, l_global_config, l_flg_schema
+                                FROM sys_config s
+                                WHERE s.id_sys_config = '" & i_id_sysconfig & "';
+
+                                INSERT INTO sys_config
+                                    (id_sys_config,
+                                     VALUE,
+                                     desc_sys_config,
+                                     id_institution,
+                                     id_software,
+                                     fill_type,
+                                     client_configuration,
+                                     internal_configuration,
+                                     global_configuration,
+                                     flg_schema,
+                                     id_market )
+                                VALUES
+                                    ('" & i_id_sysconfig & "',
+                                     '" & i_value & "',
+                                     l_desc,
+                                     " & i_institution & ",
+                                     " & i_sofware & ",
+                                     l_fill_type,
+                                     l_client_config,
+                                     l_internal_config,
+                                     l_global_config,
+                                     l_flg_schema,
+                                     " & i_market & " );
+
+                            EXCEPTION
+                                WHEN dup_val_on_index THEN
+                                    UPDATE sys_config s
+                                    SET s.value = '" & i_value & "'
+                                    WHERE s.id_sys_config ='" & i_id_sysconfig & "'
+                                    AND s.id_software = " & i_sofware & "
+                                    AND s.id_institution = " & i_institution & "
+                                    AND s.id_market =" & i_market & ";
+    
+                            END;"
+
+            Dim cmd_insert_SC_v_antiga As New OracleCommand(Sql_versao_antiga, Connection.conn)
+            cmd_insert_SC_v_antiga.CommandType = CommandType.Text
+
+            Try
+                cmd_insert_SC_v_antiga.ExecuteNonQuery()
+                cmd_insert_SC_v_antiga.Dispose()
+
+            Catch ex_2 As Exception
+
+                cmd_insert_SC_v_antiga.Dispose()
+                Return False
+
+            End Try
 
         End Try
 

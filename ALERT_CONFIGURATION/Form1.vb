@@ -275,12 +275,12 @@ Public Class Form1
     End Sub
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+        MsgBox("Waiting Development!", vbInformation)
+        ' Dim FORM_TRANSLATION As New Translation_Updates
 
-        Dim FORM_TRANSLATION As New Translation_Updates
+        ' Me.Hide()
 
-        Me.Hide()
-
-        FORM_TRANSLATION.ShowDialog()
+        ' FORM_TRANSLATION.ShowDialog()
 
     End Sub
 

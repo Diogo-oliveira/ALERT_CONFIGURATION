@@ -87,7 +87,7 @@ Public Class SYS_CONFIGS
 
             'Definir o comando a ser executado (EXECUTAR UMA FUNÇAO)
             Dim sql As String = "Select s.id_sys_config, s.value, s.desc_sys_config, s.id_institution, s.id_software, s.id_market   from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox1.Text & "%') order by 1 asc, 6 asc, 5 asc, 4 asc, 2 asc"
-            Dim cmd As New OracleCommand(sql)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             Dim dr As OracleDataReader = cmd.ExecuteReader()
