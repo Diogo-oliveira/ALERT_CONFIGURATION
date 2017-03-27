@@ -245,6 +245,37 @@ Public Class Form1
         Button13.Visible = False
         Button14.Visible = False
 
+        Dim db_list As New OracleDataSourceEnumerator()
+
+        Dim l_index As Integer = 0
+        Try
+
+            ReDim g_a_databases(0)
+
+            While True
+
+                ReDim Preserve g_a_databases(l_index)
+                g_a_databases(l_index) = db_list.GetDataSources(l_index).Item(0)
+
+                l_index = l_index + 1
+
+            End While
+
+        Catch ex As Exception
+
+        End Try
+
+        ''Forma de remover o último valor que gerou a exceção anterior
+        ReDim Preserve g_a_databases(l_index - 1)
+
+        Array.Sort(g_a_databases)
+
+        For i As Integer = 0 To g_a_databases.Count() - 2
+
+            ComboBox1.Items.Add(g_a_databases(i))
+
+        Next
+
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
@@ -276,11 +307,11 @@ Public Class Form1
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
         MsgBox("Waiting Development!", vbInformation)
-        ' Dim FORM_TRANSLATION As New Translation_Updates
+        'Dim FORM_TRANSLATION As New Translation_Updates
 
-        ' Me.Hide()
+        'Me.Hide()
 
-        ' FORM_TRANSLATION.ShowDialog()
+        'FORM_TRANSLATION.ShowDialog()
 
     End Sub
 

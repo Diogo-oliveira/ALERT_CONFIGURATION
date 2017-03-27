@@ -195,73 +195,16 @@ Public Class General
 
     Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
+        Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST)
+
         Dim l_inst As String = ""
 
-        Dim sql As String = "select decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_19),
-              i.id_institution
-  from institution i
-  join translation t
-    on t.code_translation = i.code_institution
- where i.flg_available = 'Y'
-   and i.flg_type = 'H'
-   and (decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_19)) is not null
-and i.id_institution = " & i_ID_INST & "order by 1 asc"
+        Dim sql As String = "SELECT pk_translation.get_translation(" & l_id_language & ", i.code_institution)
+                            FROM institution i
+                            JOIN translation t ON t.code_translation = i.code_institution
+                            WHERE i.id_institution = " & i_ID_INST & "
+                            AND i.flg_available = 'Y'
+                            and i.flg_type='H'"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -272,92 +215,23 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             dr = cmd.ExecuteReader()
 
+            While dr.Read()
+
+                l_inst = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
         Catch ex As Exception
 
-            sql = "select decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_1),
-              i.id_institution
-  from institution i
-  join translation t
-    on t.code_translation = i.code_institution
- where i.flg_available = 'Y'
-   and i.flg_type = 'H'
-   and (decode(i.id_market,
-              1,
-              T.desc_lang_1,
-              2,
-              T.desc_lang_2,
-              3,
-              T.desc_lang_11,
-              4,
-              T.desc_lang_5,
-              5,
-              T.desc_lang_4,
-              6,
-              T.desc_lang_3,
-              7,
-              T.desc_lang_10,
-              8,
-              T.desc_lang_7,
-              9,
-              T.desc_lang_6,
-              10,
-              T.desc_lang_9,
-              12,
-              T.desc_lang_16,
-              16,
-              T.desc_lang_17,
-              17,
-              T.desc_lang_18,
-              19,
-              T.desc_lang_1)) is not null
-and i.id_institution = " & i_ID_INST & "order by 1 asc"
-
-            Dim cmd_Old_Version As New OracleCommand(sql, Connection.conn)
-            cmd_Old_Version.CommandType = CommandType.Text
-            dr = cmd_Old_Version.ExecuteReader()
-
-            cmd_Old_Version.Dispose()
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
 
         End Try
-
-
-        While dr.Read()
-
-            l_inst = dr.Item(0)
-
-        End While
-
-        dr.Dispose()
-        dr.Close()
-        cmd.Dispose()
 
         Return l_inst
 
@@ -797,6 +671,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             Return 18
 
+        ElseIf l_id_market = 18 Then   'Na Prática, o mercado KW usa a lingua 7
+
+            Return 7
+
         ElseIf l_id_market = 19 Then
 
             Return 19
@@ -977,7 +855,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                 SELECT DISTINCT s.desc_sys_config, s.fill_type, s.client_configuration, s.internal_configuration, s.global_configuration, s.flg_schema, s.mvalue
                                 INTO l_desc, l_fill_type, l_client_config, l_internal_config, l_global_config, l_flg_schema, l_mvalue
                                 FROM sys_config s
-                                WHERE s.id_sys_config = '" & i_id_sysconfig & "';
+                                WHERE s.id_sys_config = '" & i_id_sysconfig & "'
+                                and rownum=1;
 
                                 INSERT INTO sys_config
                                     (id_sys_config,
@@ -1014,7 +893,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                     AND s.id_software = " & i_sofware & "
                                     AND s.id_institution = " & i_institution & "
                                     AND s.id_market =" & i_market & ";
-    
+
                             END;"
 
         Dim cmd_insert_SC As New OracleCommand(Sql, Connection.conn)
@@ -1026,7 +905,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
 
         Catch ex As Exception 'Dá exceção nas versões antigas. Não existe m_value
-
 
             Dim Sql_versao_antiga As String = "DECLARE
 
@@ -1042,7 +920,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                 SELECT DISTINCT s.desc_sys_config, s.fill_type, s.client_configuration, s.internal_configuration, s.global_configuration, s.flg_schema
                                 INTO l_desc, l_fill_type, l_client_config, l_internal_config, l_global_config, l_flg_schema
                                 FROM sys_config s
-                                WHERE s.id_sys_config = '" & i_id_sysconfig & "';
+                                WHERE s.id_sys_config = '" & i_id_sysconfig & "'
+                                and rownum=1;
 
                                 INSERT INTO sys_config
                                     (id_sys_config,
@@ -1097,6 +976,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End Try
 
         cmd_insert_SC.Dispose()
+
         Return True
 
     End Function

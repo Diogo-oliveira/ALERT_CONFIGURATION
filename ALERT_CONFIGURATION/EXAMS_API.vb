@@ -1176,6 +1176,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         End If
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
+
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
