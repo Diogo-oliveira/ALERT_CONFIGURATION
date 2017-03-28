@@ -185,28 +185,6 @@ Public Class SYS_CONFIGS
 
     End Sub
 
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-
-        Dim sql As String = "Select DISTINCT s.id_sys_config  from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox2.Text & "%') order by 1 asc"
-        Dim cmd As New OracleCommand(sql, Connection.conn)
-        cmd.CommandType = CommandType.Text
-
-        Dim dr As OracleDataReader = cmd.ExecuteReader()
-
-        ComboBox4.Items.Clear()
-        ComboBox4.SelectedText = ""
-        While dr.Read()
-
-            ComboBox4.Items.Add(dr.Item(0))
-
-        End While
-
-        dr.Dispose()
-        dr.Close()
-
-
-    End Sub
-
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
 
         g_selected_software = g_a_softwares(ComboBox3.SelectedIndex)
@@ -368,4 +346,26 @@ Public Class SYS_CONFIGS
     Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
 
     End Sub
+
+    Private Sub ComboBox4_Click(sender As Object, e As EventArgs) Handles ComboBox4.Click
+
+        Dim sql As String = "Select DISTINCT s.id_sys_config  from sys_config s where upper(s.id_sys_config) like upper('%" & TextBox2.Text & "%') order by 1 asc"
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        ComboBox4.Items.Clear()
+        ComboBox4.SelectedText = ""
+        While dr.Read()
+
+            ComboBox4.Items.Add(dr.Item(0))
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+
+    End Sub
+
 End Class

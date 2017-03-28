@@ -11,6 +11,8 @@ Public Class Form1
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
+        Me.Location = New Point(Form_location.x_position, Form_location.y_position)
+
         TextBox1.Text = "alert_config"
         TextBox2.Text = "qcteam"
         ComboBox1.Text = "QC4V26522"
@@ -100,6 +102,9 @@ Public Class Form1
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
         Dim FORM_ADD_IMAGING As New INSERT_IMAGING_EXAMS
 
         Me.Hide()
@@ -125,6 +130,9 @@ Public Class Form1
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
         Dim form_insert_other As New INSERT_OTHER_EXAM
 
         Me.Hide()
@@ -135,6 +143,9 @@ Public Class Form1
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
         Dim FORM_LAB_TESTS As New LAB_TESTS
 
         Me.Hide()
@@ -144,6 +155,9 @@ Public Class Form1
     End Sub
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
 
         Dim FORM_PROCEDURES As New Procedures
 
@@ -280,11 +294,16 @@ Public Class Form1
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
-        Application.Exit()
+        MsgBox(Me.Location.X)
+        MsgBox(Me.Location.Y)
+        'Application.Exit()
 
     End Sub
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
 
         Dim FOMR_SR_PROCEDURES As New SR_Procedures
 
@@ -297,6 +316,9 @@ Public Class Form1
 
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
 
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
         Dim FORM_SUPPLIES As New Supplies
 
         Me.Hide()
@@ -306,12 +328,16 @@ Public Class Form1
     End Sub
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
-        MsgBox("Waiting Development!", vbInformation)
-        'Dim FORM_TRANSLATION As New Translation_Updates
 
-        'Me.Hide()
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
 
-        'FORM_TRANSLATION.ShowDialog()
+        'MsgBox("Waiting Development!", vbInformation)
+        Dim FORM_TRANSLATION As New Translation_Updates
+
+        Me.Hide()
+
+        FORM_TRANSLATION.ShowDialog()
 
     End Sub
 

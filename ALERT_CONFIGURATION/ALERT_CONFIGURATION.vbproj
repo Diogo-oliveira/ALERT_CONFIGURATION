@@ -208,6 +208,7 @@
       <DependentUpon>Form1.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Form_location.vb" />
     <Compile Include="General.vb" />
     <Compile Include="INSERT_IMAGING_EXAMS.Designer.vb">
       <DependentUpon>INSERT_IMAGING_EXAMS.vb</DependentUpon>
