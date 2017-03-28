@@ -15,6 +15,8 @@ Public Class SYS_CONFIGS
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
+        Me.Location = New Point(Form_location.x_position, Form_location.y_position)
+
         DataGridView1.BackgroundColor = Color.FromArgb(195, 195, 165)
 
         Dim dr As OracleDataReader

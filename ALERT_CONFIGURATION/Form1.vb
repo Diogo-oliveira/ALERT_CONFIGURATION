@@ -115,6 +115,9 @@ Public Class Form1
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
 
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
         Dim Form_SYS_CONFIG As New SYS_CONFIGS
 
         Me.Hide()
@@ -294,9 +297,7 @@ Public Class Form1
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
-        MsgBox(Me.Location.X)
-        MsgBox(Me.Location.Y)
-        'Application.Exit()
+        Application.Exit()
 
     End Sub
 
