@@ -71,6 +71,8 @@ Public Class Supplies
 
     Private Sub Supplies_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.Text = "SUPPLIES  ::::  Connected to " & Connection.db
+
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
@@ -162,6 +164,9 @@ Public Class Supplies
     End Sub
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
 
         Dim form1 As New Form1()
 

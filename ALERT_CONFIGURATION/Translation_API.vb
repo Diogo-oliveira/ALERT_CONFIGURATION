@@ -123,11 +123,11 @@ Public Class Translation_API
                                     IF (l_a_translation <> l_d_translation OR (l_a_translation IS NULL AND l_d_translation IS NOT NULL))
                                     THEN
         
-                                        l_output:= 'Record ''' || pk_translation.get_translation(6, l_a_code_translation) || ''' has been updated to ''' ;
+                                        l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
                                                                        
-                                        pk_translation.insert_into_translation(6, l_a_code_translation, l_d_translation);
+                                        pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
             
-                                        l_output:= l_output || pk_translation.get_translation(6, l_a_code_translation) || '''.';
+                                        l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''.';
 
                                         if not save_output(l_output) then
       
@@ -169,7 +169,7 @@ Public Class Translation_API
 
     End Function
 
-    Function GET_UPDTAED_RECORDS(ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_UPDATED_RECORDS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT desc_record as ""UPDATE LOG""
                             FROM (SELECT r.record_index ""INDEX_RECORD"", r.updated_records ""DESC_RECORD""

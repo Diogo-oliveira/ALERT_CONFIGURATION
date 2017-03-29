@@ -9,6 +9,18 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        If Connection.conn.State = 0 Then
+
+            Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION"
+
+        Else
+
+            Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION  ::::  Connected to " & Connection.db
+
+        End If
+
+
+
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
@@ -225,6 +237,10 @@ Public Class Form1
                 Button13.Visible = True
                 Button14.Visible = True
 
+                Connection.db = ComboBox1.Text
+
+                Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION  ::::  Connected to " & Connection.db
+
             Catch ex As Exception
 
                 MsgBox("Error connecting to Database. Please check credentials.", vbCritical)
@@ -239,6 +255,10 @@ Public Class Form1
 
         Connection.conn.Dispose()
         Connection.conn.Close()
+
+        Connection.db = ""
+
+        Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION"
 
         TextBox1.Visible = True
         TextBox2.Visible = True
