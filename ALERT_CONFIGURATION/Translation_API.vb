@@ -229,7 +229,7 @@ Public Class Translation_API
             
                                             BEGIN
             
-                                                select t.desc_lang_" & l_id_language & "
+                                                select distinct t.desc_lang_" & l_id_language & "
                                                 into  l_d_translation
                                                 from alert_default.translation t
                                                 join alert_default.exam_cat ec on ec.code_exam_cat=t.code_translation
@@ -350,7 +350,7 @@ Public Class Translation_API
             
                                             BEGIN
             
-                                                select t.desc_lang_" & l_id_language & "
+                                                select distinct t.desc_lang_" & l_id_language & "
                                                 into  l_d_translation
                                                 from alert_default.translation t
                                                 join alert_default.intervention i on i.code_intervention=t.code_translation
@@ -405,6 +405,489 @@ Public Class Translation_API
         End Try
 
         cmd_update_interventions.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_ANALYSIS(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+
+                                  l_a_translation translation.desc_lang_6%type;
+
+                                  l_d_translation translation.desc_lang_6%type;
+
+                                  l_id_content alert.intervention.id_content%type;
+
+                                  l_output     clob := '';
+
+                                  contador integer;
+      
+                                  l_index integer := 1;
+      
+                                  l_record_area varchar2(30) := 'ANALYSIS';
+
+                                  CURSOR c_ANALYSIS is
+                                    select a.id_content, a.code_analysis
+                                      from alert.analysis a
+                                      join translation t
+                                        on t.code_translation = a.code_analysis;
+            
+                                    FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+      
+                                        BEGIN
+          
+                                            insert into output_records
+                                            values (l_index,i_updated_records,l_record_area);
+                                            l_index:=l_index+1;
+          
+                                            return true;
+        
+                                        EXCEPTION  
+                                            when others then          
+                                              return false;              
+                
+                                   END save_output;               
+
+                            BEGIN
+
+                                  contador := 0;
+                                  OPEN c_ANALYSIS;
+
+                                  LOOP
+      
+                                    FETCH c_ANALYSIS
+                                      into l_id_content, l_a_code_translation;
+                                    EXIT WHEN c_ANALYSIS%notfound;
+      
+                                    select t.desc_lang_" & l_id_language & "
+                                      into l_a_translation
+                                      from translation t
+                                     where t.code_translation = l_a_code_translation;
+      
+                                    BEGIN
+        
+                                      select distinct t.desc_lang_" & l_id_language & "
+                                        into l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.analysis a
+                                          on a.code_analysis = t.code_translation
+                                       where a.id_content = l_id_content
+                                         and t.desc_lang_" & l_id_language & " is not null;
+             
+                                    EXCEPTION
+                                      WHEN no_data_found then
+                                        CONTINUE;
+                                    END;
+      
+                                    if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+        
+                                              l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                              pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                              l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                              if not save_output(l_output) then
+      
+                                                   dbms_output.put_line('ERROR');
+    
+                                              end if;
+
+                                              contador := contador + 1;
+        
+                                    END IF;
+      
+                                  END LOOP;
+
+                                  close c_ANALYSIS;
+
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+    
+                                   if not save_output(l_output) then
+      
+                                         dbms_output.put_line('ERROR');
+    
+                                   end if;
+
+                            END;"
+
+        Dim cmd_update_analysis As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_analysis.CommandType = CommandType.Text
+            cmd_update_analysis.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_analysis.Dispose()
+            Return False
+        End Try
+
+        cmd_update_analysis.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_SAMPLE_TYPE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.intervention.id_content%type;
+      
+                                  l_output     clob := '';      
+      
+                                  contador             integer;
+
+                                  l_index integer := 1;
+      
+                                  l_record_area varchar2(30) := 'SAMPLE_TYPE';      
+      
+                                  CURSOR c_SAMPLE_TYPE is
+                                  select st.id_content, st.code_sample_type
+                                  from alert.sample_type st
+                                  join translation t on t.code_translation=st.code_sample_type
+                                  where st.flg_available='Y';
+      
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+      
+                                  BEGIN
+          
+                                          insert into output_records
+                                          values (l_index,i_updated_records,l_record_area);
+                                          l_index:=l_index+1;
+          
+                                          return true;
+        
+                                      EXCEPTION  
+                                          when others then          
+                                            return false;              
+                
+                                  END save_output;                
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_SAMPLE_TYPE;
+       
+                                   LOOP
+         
+                                      FETCH c_SAMPLE_TYPE into l_id_content,l_a_code_translation;
+                                      EXIT WHEN c_SAMPLE_TYPE%notfound;
+          
+                                    select t.desc_lang_" & l_id_language & "
+                                      into l_a_translation
+                                      from translation t
+                                     where t.code_translation = l_a_code_translation;
+                       
+                                      BEGIN
+            
+                                        select distinct t.desc_lang_" & l_id_language & "
+                                          into l_d_translation
+                                          from alert_default.translation t
+                                          join alert_default.sample_type st
+                                            on st.code_sample_type = t.code_translation
+                                         where st.id_content = l_id_content
+                                         and t.desc_lang_" & l_id_language & " is not null;
+           
+                                       EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                     END;
+            
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;       
+
+                                   END LOOP;
+       
+                                   close c_SAMPLE_TYPE;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+    
+                                   if not save_output(l_output) then
+      
+                                         dbms_output.put_line('ERROR');
+    
+                                   end if;
+                
+                            END;"
+
+        Dim cmd_update_sampe_type As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_sampe_type.CommandType = CommandType.Text
+            cmd_update_sampe_type.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_sampe_type.Dispose()
+            Return False
+        End Try
+
+        cmd_update_sampe_type.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_ANALYSIS_SAMPLE_TYPE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.intervention.id_content%type;
+      
+                                  l_output     clob := '';    
+      
+                                  contador             integer;
+      
+                                  l_index integer := 1;
+      
+                                  l_record_area varchar2(30) := 'ANALYSIS_SAMPLE_TYPE'; 
+      
+                                  CURSOR c_ANALYSIS_SAMPLE_TYPE is
+                                        select ast.id_content, ast.code_analysis_sample_type
+                                        from alert.analysis_sample_type ast
+                                        join translation t on t.code_translation=ast.code_analysis_sample_type;
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+      
+                                  BEGIN
+          
+                                          insert into output_records
+                                          values (l_index,i_updated_records,l_record_area);
+                                          l_index:=l_index+1;
+          
+                                          return true;
+        
+                                      EXCEPTION  
+                                          when others then          
+                                            return false;              
+                
+                                  END save_output;   
+     
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_ANALYSIS_SAMPLE_TYPE;
+       
+                                   LOOP
+         
+                                      FETCH c_ANALYSIS_SAMPLE_TYPE into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_ANALYSIS_SAMPLE_TYPE%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                          into l_a_translation
+                                          from translation t
+                                         where t.code_translation = l_a_code_translation;      
+          
+                                      BEGIN
+   
+                                        select distinct t.desc_lang_" & l_id_language & "
+                                          into l_d_translation
+                                          from alert_default.translation t
+                                          join alert_default.analysis_sample_type ast
+                                            on ast.code_analysis_sample_type = t.code_translation
+                                         where ast.id_content = l_id_content
+                                         and t.desc_lang_" & l_id_language & " is not null;
+                          
+                                         EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                        END;     
+                 
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_ANALYSIS_SAMPLE_TYPE;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+    
+                                   if not save_output(l_output) then
+      
+                                         dbms_output.put_line('ERROR');
+    
+                                   end if;          
+                            END;"
+
+        Dim cmd_update_analysis_sampe_type As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_analysis_sampe_type.CommandType = CommandType.Text
+            cmd_update_analysis_sampe_type.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_analysis_sampe_type.Dispose()
+            Return False
+        End Try
+
+        cmd_update_analysis_sampe_type.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_ANALYSIS_PARAMETERS(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.intervention.id_content%type;
+      
+                                  l_output     clob := '';         
+      
+                                  contador             integer;
+      
+                                   l_index integer := 1;
+      
+                                   l_record_area varchar2(30) := 'ANALYSIS_PARAMETERS';              
+      
+                                  CURSOR c_ANALYSIS_PARAMETER is
+                                  select ap.id_content, ap.code_analysis_parameter
+                                  from alert.analysis_parameter ap
+                                  join translation t on t.code_translation=ap.code_analysis_parameter;
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+      
+                                  BEGIN
+          
+                                          insert into output_records
+                                          values (l_index,i_updated_records,l_record_area);
+                                          l_index:=l_index+1;
+          
+                                          return true;
+        
+                                      EXCEPTION  
+                                          when others then          
+                                            return false;              
+                
+                                  END save_output;         
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_ANALYSIS_PARAMETER;
+       
+                                   LOOP
+         
+                                        FETCH c_ANALYSIS_PARAMETER into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_ANALYSIS_PARAMETER%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                          into l_a_translation
+                                          from translation t
+                                         where t.code_translation = l_a_code_translation;
+       
+                                        BEGIN
+                    
+                                              select distinct t.desc_lang_" & l_id_language & "
+                                                into l_d_translation
+                                                from alert_default.translation t
+                                                join alert_default.analysis_parameter ap
+                                                  on ap.code_analysis_parameter = t.code_translation
+                                               where ap.id_content = l_id_content
+                                               and ap.flg_available='Y' and t.desc_lang_" & l_id_language & " is not null;
+           
+                                        EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+            
+                                        END;
+            
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+
+                                   END LOOP;
+       
+                                   close c_ANALYSIS_PARAMETER;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;       
+                
+                            END;"
+
+        Dim cmd_update_analysis_parameters As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_analysis_parameters.CommandType = CommandType.Text
+            cmd_update_analysis_parameters.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_analysis_parameters.Dispose()
+            Return False
+        End Try
+
+        cmd_update_analysis_parameters.Dispose()
         Return True
 
     End Function
