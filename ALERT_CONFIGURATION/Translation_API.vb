@@ -10,7 +10,7 @@ Public Class Translation_API
                                 (
                                     record_index  number,
                                     updated_records clob,
-                                    record_area     varchar2(20)
+                                    record_area     varchar2(50)
                                 )"
 
         Dim cmd_create_temp As New OracleCommand(sql, Connection.conn)
@@ -67,7 +67,7 @@ Public Class Translation_API
 
                                 l_index integer := 1;
     
-                                l_record_area varchar2(30) := 'EXAMS';
+                                l_record_area varchar2(50) := 'EXAMS';
     
                                 CURSOR c_exam IS
                                     SELECT e.id_content, e.code_exam
@@ -94,6 +94,13 @@ Public Class Translation_API
 
                                 contador := 0;
                                 OPEN c_exam;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
 
                                 LOOP
     
@@ -189,7 +196,7 @@ Public Class Translation_API
       
                                       l_index integer := 1;
       
-                                      l_record_area varchar2(30) := 'EXAM_CATEGORIES';
+                                      l_record_area varchar2(50) := 'EXAM_CATEGORIES';
       
                                       CURSOR c_EXAM_CAT is
                                       select ec.id_content, ec.code_exam_cat
@@ -216,6 +223,13 @@ Public Class Translation_API
        
                                        contador:=0;
                                        OPEN c_EXAM_CAT;
+
+                                       --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                       if not save_output(to_char(l_record_area)) then
+        
+                                                   dbms_output.put_line('ERROR');
+      
+                                       end if;  
        
                                        LOOP
          
@@ -308,7 +322,7 @@ Public Class Translation_API
       
                                       l_index integer := 1;
       
-                                      l_record_area varchar2(30) := 'INTERVENTIONS';
+                                      l_record_area varchar2(50) := 'INTERVENTIONS';
       
                                       CURSOR c_INTERVENTION is
                                       select i.id_content, i.code_intervention
@@ -336,6 +350,13 @@ Public Class Translation_API
        
                                        contador:=0;
                                        OPEN c_INTERVENTION;
+
+                                       --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                       if not save_output(to_char(l_record_area)) then
+        
+                                                   dbms_output.put_line('ERROR');
+      
+                                       end if;  
        
                                        LOOP
          
@@ -429,7 +450,7 @@ Public Class Translation_API
       
                                   l_index integer := 1;
       
-                                  l_record_area varchar2(30) := 'ANALYSIS';
+                                  l_record_area varchar2(50) := 'ANALYSIS';
 
                                   CURSOR c_ANALYSIS is
                                     select a.id_content, a.code_analysis
@@ -457,6 +478,13 @@ Public Class Translation_API
 
                                   contador := 0;
                                   OPEN c_ANALYSIS;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
 
                                   LOOP
       
@@ -551,7 +579,7 @@ Public Class Translation_API
 
                                   l_index integer := 1;
       
-                                  l_record_area varchar2(30) := 'SAMPLE_TYPE';      
+                                  l_record_area varchar2(50) := 'SAMPLE_TYPE';      
       
                                   CURSOR c_SAMPLE_TYPE is
                                   select st.id_content, st.code_sample_type
@@ -579,6 +607,13 @@ Public Class Translation_API
        
                                    contador:=0;
                                    OPEN c_SAMPLE_TYPE;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
        
                                    LOOP
          
@@ -672,7 +707,7 @@ Public Class Translation_API
       
                                   l_index integer := 1;
       
-                                  l_record_area varchar2(30) := 'ANALYSIS_SAMPLE_TYPE'; 
+                                  l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_TYPE'; 
       
                                   CURSOR c_ANALYSIS_SAMPLE_TYPE is
                                         select ast.id_content, ast.code_analysis_sample_type
@@ -699,6 +734,13 @@ Public Class Translation_API
        
                                    contador:=0;
                                    OPEN c_ANALYSIS_SAMPLE_TYPE;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
        
                                    LOOP
          
@@ -789,9 +831,9 @@ Public Class Translation_API
       
                                   contador             integer;
       
-                                   l_index integer := 1;
+                                  l_index integer := 1;
       
-                                   l_record_area varchar2(30) := 'ANALYSIS_PARAMETERS';              
+                                  l_record_area varchar2(50) := 'ANALYSIS_PARAMETERS';              
       
                                   CURSOR c_ANALYSIS_PARAMETER is
                                   select ap.id_content, ap.code_analysis_parameter
@@ -818,6 +860,13 @@ Public Class Translation_API
        
                                    contador:=0;
                                    OPEN c_ANALYSIS_PARAMETER;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
        
                                    LOOP
          
@@ -888,6 +937,132 @@ Public Class Translation_API
         End Try
 
         cmd_update_analysis_parameters.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_ANALYSIS_SR(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.intervention.id_content%type;
+      
+                                  contador             integer;
+      
+                                  l_output     clob := '';               
+      
+                                  l_index integer := 1;
+      
+                                  l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_RECIPIENT';  
+      
+                                  CURSOR c_SAMPLE_RECIPIENT is
+                                  select sr.id_content, sr.code_sample_recipient
+                                  from alert.sample_recipient sr
+                                  join translation t on t.code_translation=sr.code_sample_recipient;
+      
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                  BEGIN
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;   
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_SAMPLE_RECIPIENT;
+                                 
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;  
+       
+                                   LOOP
+         
+                                      FETCH c_SAMPLE_RECIPIENT into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_SAMPLE_RECIPIENT%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                          into l_a_translation
+                                          from translation t
+                                         where t.code_translation = l_a_code_translation;            
+             
+                                      BEGIN
+            
+                                        select distinct t.desc_lang_" & l_id_language & "
+                                          into l_d_translation
+                                          from alert_default.translation t
+                                          join alert_default.sample_recipient sr
+                                            on sr.code_sample_recipient = t.code_translation
+                                         where sr.id_content = l_id_content
+                                         and t.desc_lang_" & l_id_language & " is not null
+                                         and sr.flg_available='Y';
+
+                                      EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                      END;                                                        
+
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= l_output || 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_SAMPLE_RECIPIENT;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;                      
+                            END;"
+
+        Dim cmd_update_analysis_sr As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_analysis_sr.CommandType = CommandType.Text
+            cmd_update_analysis_sr.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_analysis_sr.Dispose()
+            Return False
+        End Try
+
+        cmd_update_analysis_sr.Dispose()
         Return True
 
     End Function
