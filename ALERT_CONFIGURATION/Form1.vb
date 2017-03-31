@@ -3,7 +3,6 @@
 Public Class Form1
 
     Public g_oradb As String = ""
-    'Public Shared conn As New OracleConnection
 
     Dim g_a_databases() As String
 
@@ -19,11 +18,13 @@ Public Class Form1
 
         End If
 
-
-
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
+
+        TextBox1.Text = "sys"
+        TextBox2.Text = "dbasysqc"
+        ComboBox1.Text = "QC4V26522"
 
         If Connection.conn.State = 0 Then
 
@@ -194,9 +195,9 @@ Public Class Form1
 
         Else
 
-            If ComboBox1.Text.ToUpper = "SYS" Then
+            If TextBox1.Text.ToUpper = "SYS" Then
 
-                g_oradb = "Data Source=" & ComboBox1.Text & ";User Id=" & TextBox1.Text & ";Password=" & TextBox2.Text & "; DBA Privilege=SYSDBA"
+                g_oradb = "Data Source=" & ComboBox1.Text & ";User Id=" & TextBox1.Text & ";Password=" & TextBox2.Text & ";DBA Privilege=SYSDBA"
 
             Else
 

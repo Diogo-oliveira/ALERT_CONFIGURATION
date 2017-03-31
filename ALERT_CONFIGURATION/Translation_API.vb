@@ -210,7 +210,8 @@ Public Class Translation_API
                                       CURSOR c_EXAM_CAT is
                                       select ec.id_content, ec.code_exam_cat
                                       from alert.exam_cat ec
-                                      join translation t on t.code_translation=ec.code_exam_cat;
+                                      join translation t on t.code_translation=ec.code_exam_cat
+                                      where ec.flg_lab='N';  
 
                                       FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
@@ -263,6 +264,7 @@ Public Class Translation_API
                                                 from alert_default.translation t
                                                 join alert_default.exam_cat ec on ec.code_exam_cat=t.code_translation
                                                 where ec.id_content=l_id_content
+                                                and ec.flg_lab='N'
                                                 and t.desc_lang_" & l_id_language & " is not null;
            
                                            EXCEPTION
@@ -1299,7 +1301,7 @@ Public Class Translation_API
 
         Dim sql As String = "SELECT desc_record as ""UPDATE LOG""
                             FROM (SELECT r.record_index ""INDEX_RECORD"", r.updated_records ""DESC_RECORD""
-                                  FROM alert_config.output_records r
+                                  FROM output_records r
                                   ORDER BY 1 ASC) updated_records"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
