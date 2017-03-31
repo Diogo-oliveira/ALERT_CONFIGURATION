@@ -14,9 +14,10 @@ Public Class Translation_Updates
     Dim g_analysis As String = "    1.1 - ANALYSIS"
     Dim g_sample_type As String = "    1.2 - SAMPLE TYPE"
     Dim g_analysis_sample_type As String = "    1.3 - ANALYSIS SAMPLE TYPE"
-    Dim g_analysis_parameters As String = "    1.4 - ANALYSS PARAMETER"
-    Dim g_analysis_recipient As String = "    1.5 - ANALYSIS SAMPLE RECIPIENT"
+    Dim g_analysis_parameters As String = "    1.5 - ANALYSS PARAMETER"
+    Dim g_analysis_recipient As String = "    1.6 - ANALYSIS SAMPLE RECIPIENT"
     Dim g_analysis_all As String = "1 - ANALYSIS (All content)"
+    Dim g_analysis_cat As String = "    1.4 - ANALYSS CATEGORY"
     '#
     '##################################################################
 
@@ -356,6 +357,47 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_analysis_cat) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_ANALYSIS_CAT(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_analysis_cat & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
             ElseIf (ComboBox2.Text = g_analysis_all) Then
 
                 If translation.CREATE_TEMP_TABLE() Then
@@ -421,6 +463,35 @@ Public Class Translation_Updates
                     If Not translation.UPDATE_ANALYSIS_SAMPLE_TYPE(TextBox1.Text) Then
 
                         MsgBox("ERROR UPDATING " & g_analysis_sample_type & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_ANALYSIS_CAT(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_analysis_cat & " TRANSLATION!", vbCritical)
 
                     Else
 
@@ -575,6 +646,7 @@ Public Class Translation_Updates
         ComboBox2.Items.Add(g_analysis)
         ComboBox2.Items.Add(g_sample_type)
         ComboBox2.Items.Add(g_analysis_sample_type)
+        ComboBox2.Items.Add(g_analysis_cat)
         ComboBox2.Items.Add(g_analysis_parameters)
         ComboBox2.Items.Add(g_analysis_recipient)
 

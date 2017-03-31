@@ -64,8 +64,6 @@ Public Class Translation_API
                                 l_output     clob := '';
 
                                 contador number;
-
-                                l_index integer := 1;
     
                                 l_record_area varchar2(50) := 'EXAMS';
     
@@ -75,8 +73,14 @@ Public Class Translation_API
                                     JOIN translation t ON t.code_translation = e.code_exam;
 
                                 FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
-    
-                                BEGIN
+                                    
+                                   l_index integer;  
+
+                                begin
+  
+                                    select (nvl(max(r.record_index),0)+1)
+                                    into l_index  
+                                    from output_records r;
         
                                     insert into output_records
                                     values (l_index,i_updated_records,l_record_area);
@@ -157,6 +161,13 @@ Public Class Translation_API
                                    dbms_output.put_line('ERROR');
     
                                 end if;
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
     
                             END;"
 
@@ -192,9 +203,7 @@ Public Class Translation_API
       
                                       l_output     clob := '';
       
-                                      contador             integer;
-      
-                                      l_index integer := 1;
+                                      contador             integer;     
       
                                       l_record_area varchar2(50) := 'EXAM_CATEGORIES';
       
@@ -205,7 +214,13 @@ Public Class Translation_API
 
                                       FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
-                                          BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
         
                                               insert into output_records
                                               values (l_index,i_updated_records,l_record_area);
@@ -284,6 +299,13 @@ Public Class Translation_API
                                              dbms_output.put_line('ERROR');
     
                                        end if;
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
              
                                 END;"
 
@@ -319,9 +341,7 @@ Public Class Translation_API
                                       l_output     clob := '';
       
                                       contador             integer;
-      
-                                      l_index integer := 1;
-      
+             
                                       l_record_area varchar2(50) := 'INTERVENTIONS';
       
                                       CURSOR c_INTERVENTION is
@@ -331,7 +351,13 @@ Public Class Translation_API
       
                                       FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
-                                          BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
         
                                               insert into output_records
                                               values (l_index,i_updated_records,l_record_area);
@@ -412,6 +438,13 @@ Public Class Translation_API
                                              dbms_output.put_line('ERROR');
     
                                        end if;
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
              
                                 END;"
 
@@ -446,9 +479,7 @@ Public Class Translation_API
 
                                   l_output     clob := '';
 
-                                  contador integer;
-      
-                                  l_index integer := 1;
+                                  contador integer;     
       
                                   l_record_area varchar2(50) := 'ANALYSIS';
 
@@ -460,7 +491,13 @@ Public Class Translation_API
             
                                     FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
-                                        BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
           
                                             insert into output_records
                                             values (l_index,i_updated_records,l_record_area);
@@ -542,6 +579,13 @@ Public Class Translation_API
     
                                    end if;
 
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
+
                             END;"
 
         Dim cmd_update_analysis As New OracleCommand(sql, Connection.conn)
@@ -576,9 +620,7 @@ Public Class Translation_API
                                   l_output     clob := '';      
       
                                   contador             integer;
-
-                                  l_index integer := 1;
-      
+    
                                   l_record_area varchar2(50) := 'SAMPLE_TYPE';      
       
                                   CURSOR c_SAMPLE_TYPE is
@@ -589,7 +631,13 @@ Public Class Translation_API
       
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
-                                  BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
           
                                           insert into output_records
                                           values (l_index,i_updated_records,l_record_area);
@@ -669,6 +717,13 @@ Public Class Translation_API
                                          dbms_output.put_line('ERROR');
     
                                    end if;
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
                 
                             END;"
 
@@ -703,9 +758,7 @@ Public Class Translation_API
       
                                   l_output     clob := '';    
       
-                                  contador             integer;
-      
-                                  l_index integer := 1;
+                                  contador             integer;     
       
                                   l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_TYPE'; 
       
@@ -716,7 +769,13 @@ Public Class Translation_API
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
-                                  BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
           
                                           insert into output_records
                                           values (l_index,i_updated_records,l_record_area);
@@ -796,6 +855,13 @@ Public Class Translation_API
                                          dbms_output.put_line('ERROR');
     
                                    end if;          
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;
                             END;"
 
         Dim cmd_update_analysis_sampe_type As New OracleCommand(sql, Connection.conn)
@@ -831,8 +897,6 @@ Public Class Translation_API
       
                                   contador             integer;
       
-                                  l_index integer := 1;
-      
                                   l_record_area varchar2(50) := 'ANALYSIS_PARAMETERS';              
       
                                   CURSOR c_ANALYSIS_PARAMETER is
@@ -842,7 +906,13 @@ Public Class Translation_API
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
-                                  BEGIN
+                                       l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
           
                                           insert into output_records
                                           values (l_index,i_updated_records,l_record_area);
@@ -922,7 +992,14 @@ Public Class Translation_API
         
                                          dbms_output.put_line('ERROR');
       
-                                   end if;       
+                                   end if;   
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;    
                 
                             END;"
 
@@ -959,8 +1036,6 @@ Public Class Translation_API
       
                                   l_output     clob := '';               
       
-                                  l_index integer := 1;
-      
                                   l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_RECIPIENT';  
       
                                   CURSOR c_SAMPLE_RECIPIENT is
@@ -969,7 +1044,14 @@ Public Class Translation_API
                                   join translation t on t.code_translation=sr.code_sample_recipient;
       
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
-                                  BEGIN
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
           
                                     insert into output_records
                                     values (l_index,i_updated_records,l_record_area);
@@ -1023,7 +1105,7 @@ Public Class Translation_API
 
                                         if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
                                                   
-                                                l_output:= l_output || 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
                                                                        
                                                 pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
             
@@ -1049,7 +1131,14 @@ Public Class Translation_API
         
                                          dbms_output.put_line('ERROR');
       
-                                   end if;                      
+                                   end if;    
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;                  
                             END;"
 
         Dim cmd_update_analysis_sr As New OracleCommand(sql, Connection.conn)
@@ -1063,6 +1152,145 @@ Public Class Translation_API
         End Try
 
         cmd_update_analysis_sr.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_ANALYSIS_CAT(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.diet.id_content%type;
+      
+                                  contador             integer;
+
+                                  l_output     clob := '';               
+      
+                                  l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_RECIPIENT';              
+      
+                                  CURSOR c_EXAM_CAT is
+                                  select ec.id_content, ec.code_exam_cat
+                                  from alert.exam_cat ec
+                                  join translation t on t.code_translation=ec.code_exam_cat
+                                  where ec.flg_lab='Y';  
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;             
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_EXAM_CAT;
+
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;         
+       
+                                   LOOP
+         
+                                        FETCH c_EXAM_CAT into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_EXAM_CAT%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_a_translation
+                                        from translation t 
+                                        where t.code_translation=l_a_code_translation;
+            
+                                        BEGIN
+            
+                                            select t.desc_lang_" & l_id_language & "
+                                            into  l_d_translation
+                                            from alert_default.translation t
+                                            join alert_default.exam_cat ec on ec.code_exam_cat=t.code_translation
+                                            where ec.id_content=l_id_content
+                                            and ec.flg_lab='Y'
+                                            and t.desc_lang_" & l_id_language & " is not null;
+           
+                                       EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                       END;
+            
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_EXAM_CAT;
+       
+                                     l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                     if not save_output(l_output) then
+        
+                                           dbms_output.put_line('ERROR');
+      
+                                     end if;    
+
+                                  --Garantir linha extra no final do log
+                                  if not save_output(' ') then
+      
+                                     dbms_output.put_line('ERROR');
+    
+                                  end if;      
+             
+                            END;"
+
+        Dim cmd_update_analysis_cat As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_analysis_cat.CommandType = CommandType.Text
+            cmd_update_analysis_cat.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_analysis_cat.Dispose()
+            Return False
+        End Try
+
+        cmd_update_analysis_cat.Dispose()
         Return True
 
     End Function
