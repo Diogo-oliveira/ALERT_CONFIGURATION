@@ -1201,7 +1201,7 @@ Public Class LABS_API
 
     Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "Select distinct ec.id_content from alert.exam_cat ec
+        Dim sql As String = "Select distinct ec.id_content from alert_default.exam_cat ec
                                 where ec.flg_available = 'Y'
                                 and ec.id_content in ("
 
@@ -1549,7 +1549,7 @@ Public Class LABS_API
 
     Function GET_DISTINCT_SAMPLE_TYPES(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "Select distinct st.id_content from alert.sample_type st
+        Dim sql As String = "Select distinct st.id_content from alert_default.sample_type st
                                 where st.flg_available = 'Y'
                                 and st.id_content in ("
 
@@ -1799,7 +1799,7 @@ Public Class LABS_API
 
     Function GET_DISTINCT_ANALYSIS(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "Select distinct a.id_content from alert.analysis a
+        Dim sql As String = "Select distinct a.id_content from alert_default.analysis a
                                 where a.flg_available = 'Y'
                                 and a.id_content in ("
 
@@ -1882,6 +1882,7 @@ Public Class LABS_API
         ''2 - Processar as análises já filtrados
 
         Try
+
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
             For i As Integer = 0 To l_a_distinct_analysis.Count() - 1
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
@@ -2362,10 +2363,23 @@ Public Class LABS_API
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                     '2.1 - Inserir registo na alert.analysis_parameter
-                    Dim sql_parameter As String = "begin
+                    Dim sql_parameter As String = "declare
+
+                                                       l_index alert.analysis_parameter.id_analysis_parameter%type;
+
+                                                begin
+                                                       
+                                                       Select max (ap.id_analysis_parameter) + 1
+                                                       into  l_index
+                                                       from alert.analysis_parameter ap;
+
                                                         insert into alert.analysis_parameter (ID_ANALYSIS_PARAMETER, CODE_ANALYSIS_PARAMETER, RANK, FLG_AVAILABLE, ID_CONTENT)
-                                                        values (alert.seq_analysis_parameter.nextval, 'ANALYSIS_PARAMETER.CODE_ANALYSIS_PARAMETER.' || seq_analysis_parameter.nextval, 0, 'Y', '" & l_array_parameters(i) & "');
-                                                    end;"
+                                                        values (l_index, 'ANALYSIS_PARAMETER.CODE_ANALYSIS_PARAMETER.' || l_index, 0, 'Y', '" & l_array_parameters(i) & "');
+
+                                                 EXCEPTION
+                                                        WHEN DUP_VAL_ON_INDEX THEN
+                                                            dbms_output.put_line('Duplicated Record!');                                                
+                                                 end;"
 
                     Dim cmd_insert_parameter As New OracleCommand(sql_parameter, Connection.conn)
                     cmd_insert_parameter.CommandType = CommandType.Text
