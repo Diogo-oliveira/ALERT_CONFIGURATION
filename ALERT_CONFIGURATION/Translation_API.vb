@@ -1176,7 +1176,7 @@ Public Class Translation_API
 
                                   l_output     clob := '';               
       
-                                  l_record_area varchar2(50) := 'ANALYSIS_SAMPLE_RECIPIENT';              
+                                  l_record_area varchar2(50) := 'ANALYSIS_CATEGORY';              
       
                                   CURSOR c_EXAM_CAT is
                                   select ec.id_content, ec.code_exam_cat
@@ -1293,6 +1293,161 @@ Public Class Translation_API
         End Try
 
         cmd_update_analysis_cat.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_INTERV_CAT(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.diet.id_content%type;
+
+                                  l_sql           VARCHAR2(3000) := '';
+      
+                                  contador             integer;
+      
+                                   l_output     clob := '';               
+      
+                                                              l_record_area varchar2(50) := 'INTERVENTION_CATEGORY';         
+      
+                                  CURSOR c_INTERV_CAT is
+                                  select ic.id_content, ic.code_interv_category
+                                  from alert.interv_category ic
+                                  join translation t on t.code_translation=ic.code_interv_category; 
+      
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;          
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_INTERV_CAT;
+       
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;     
+       
+                                   LOOP
+         
+                                        FETCH c_INTERV_CAT into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_INTERV_CAT%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_a_translation
+                                        from translation t 
+                                        where t.code_translation=l_a_code_translation;
+            
+                                        declare
+            
+                                           no_such_table EXCEPTION;
+                                           PRAGMA EXCEPTION_INIT(no_such_table, -942);   
+            
+                                        BEGIN
+            
+                                            l_sql := 'select t.desc_lang_" & l_id_language & "      
+                                            from alert_default.interv_category ic
+                                            join alert_default.translation t on ic.code_interv_category=t.code_translation
+                                            where ic.id_content= ''' || l_id_content || '''
+                                            and t.desc_lang_" & l_id_language & " is not null';
+                                        
+                                            EXECUTE immediate l_sql into  l_d_translation;
+           
+                                       EXCEPTION
+                                            WHEN no_data_found then
+                                              CONTINUE;
+                                  
+                                            WHEN no_such_table THEN
+                                               if not save_output('Intervention category does not need to be updated on this version of ALERT(R).') then
+        
+                                                    dbms_output.put_line('ERROR');
+      
+                                                end if;                                                     
+                                                exit;  
+             
+                                       END;
+            
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_INTERV_CAT;
+       
+       
+                                     l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                     if not save_output(l_output) then
+        
+                                           dbms_output.put_line('ERROR');
+      
+                                     end if;    
+
+                                  --Garantir linha extra no final do log
+                                  if not save_output(' ') then
+      
+                                     dbms_output.put_line('ERROR');
+    
+                                  end if;     
+
+                            END;"
+
+        Dim cmd_update_interv_cat As New OracleCommand(sql, Connection.conn)
+
+        'Try
+        cmd_update_interv_cat.CommandType = CommandType.Text
+            cmd_update_interv_cat.ExecuteNonQuery()
+        'Catch ex As Exception
+        'cmd_update_interv_cat.Dispose()
+        'Return False
+        'End Try
+
+        cmd_update_interv_cat.Dispose()
         Return True
 
     End Function

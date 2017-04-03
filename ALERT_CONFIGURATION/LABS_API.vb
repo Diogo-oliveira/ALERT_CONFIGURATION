@@ -217,11 +217,13 @@ Public Class LABS_API
 
     Function GET_LAB_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        Dim l_id_language As Integer = db_access_general.GET_ID_LANG(i_institution)
+
         Dim sql As String = "SELECT distinct ec.id_content,
-                                        nvl2(ec.parent_id,
-                                             (pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", ecp.code_exam_cat) || ' - ' ||
-                                              pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", ec.code_exam_cat)),
-                                             (pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", ec.code_exam_cat)))     
+                                         nvl2(ec.parent_id,
+                                             (tecp.desc_lang_" & l_id_language & " || ' - ' ||
+                                              tec.desc_lang_" & l_id_language & "),
+                                              tec.desc_lang_" & l_id_language & ")          
                                         FROM alert.analysis_room ar
 
                                         JOIN alert.analysis_sample_type ast ON ast.id_analysis = ar.id_analysis

@@ -35,7 +35,6 @@ Partial Class LAB_TESTS
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
@@ -51,7 +50,6 @@ Partial Class LAB_TESTS
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button9 = New System.Windows.Forms.Button()
         Me.Button10 = New System.Windows.Forms.Button()
-        Me.Label10 = New System.Windows.Forms.Label()
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
         Me.Button13 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
@@ -169,17 +167,8 @@ Partial Class LAB_TESTS
         Me.ComboBox4.ItemHeight = 16
         Me.ComboBox4.Location = New System.Drawing.Point(12, 119)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox4.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox4.TabIndex = 41
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(544, 130)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(208, 13)
-        Me.Label7.TabIndex = 44
-        Me.Label7.Text = "LABORATORIAL EXAMS BY CATEGORY"
         '
         'CheckedListBox2
         '
@@ -252,13 +241,13 @@ Partial Class LAB_TESTS
         Me.ComboBox6.ItemHeight = 16
         Me.ComboBox6.Location = New System.Drawing.Point(831, 483)
         Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.Size = New System.Drawing.Size(741, 24)
         Me.ComboBox6.TabIndex = 52
         '
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(9, 457)
+        Me.Label8.Location = New System.Drawing.Point(9, 467)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(151, 13)
         Me.Label8.TabIndex = 51
@@ -272,7 +261,7 @@ Partial Class LAB_TESTS
         Me.ComboBox5.ItemHeight = 16
         Me.ComboBox5.Location = New System.Drawing.Point(12, 483)
         Me.ComboBox5.Name = "ComboBox5"
-        Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox5.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox5.TabIndex = 50
         '
         'Label5
@@ -292,7 +281,7 @@ Partial Class LAB_TESTS
         Me.ComboBox7.ItemHeight = 16
         Me.ComboBox7.Location = New System.Drawing.Point(831, 119)
         Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox7.Size = New System.Drawing.Size(739, 24)
         Me.ComboBox7.TabIndex = 54
         '
         'Button11
@@ -321,15 +310,6 @@ Partial Class LAB_TESTS
         Me.Button10.TabIndex = 58
         Me.Button10.Text = "SELECT ALL"
         Me.Button10.UseVisualStyleBackColor = True
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(544, 494)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(208, 13)
-        Me.Label10.TabIndex = 57
-        Me.Label10.Text = "LABORATORIAL EXAMS BY CATEGORY"
         '
         'CheckedListBox3
         '
@@ -438,7 +418,6 @@ Partial Class LAB_TESTS
         Me.Controls.Add(Me.Button11)
         Me.Controls.Add(Me.Button9)
         Me.Controls.Add(Me.Button10)
-        Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.CheckedListBox3)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.ComboBox7)
@@ -451,7 +430,6 @@ Partial Class LAB_TESTS
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
-        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.ComboBox4)
@@ -488,7 +466,6 @@ Partial Class LAB_TESTS
     Friend WithEvents ComboBox3 As ComboBox
     Friend WithEvents Label6 As Label
     Friend WithEvents ComboBox4 As ComboBox
-    Friend WithEvents Label7 As Label
     Friend WithEvents CheckedListBox2 As CheckedListBox
     Friend WithEvents Button4 As Button
     Friend WithEvents Button3 As Button
@@ -504,7 +481,6 @@ Partial Class LAB_TESTS
     Friend WithEvents Button11 As Button
     Friend WithEvents Button9 As Button
     Friend WithEvents Button10 As Button
-    Friend WithEvents Label10 As Label
     Friend WithEvents CheckedListBox3 As CheckedListBox
     Friend WithEvents Button13 As Button
     Friend WithEvents Button14 As Button
