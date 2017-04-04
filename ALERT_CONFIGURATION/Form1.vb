@@ -350,7 +350,6 @@ Public Class Form1
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        'MsgBox("Waiting Development!", vbInformation)
         Dim FORM_TRANSLATION As New Translation_Updates
 
         Me.Hide()

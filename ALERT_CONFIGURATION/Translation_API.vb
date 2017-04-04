@@ -1439,15 +1439,430 @@ Public Class Translation_API
 
         Dim cmd_update_interv_cat As New OracleCommand(sql, Connection.conn)
 
-        'Try
-        cmd_update_interv_cat.CommandType = CommandType.Text
+        Try
+            cmd_update_interv_cat.CommandType = CommandType.Text
             cmd_update_interv_cat.ExecuteNonQuery()
-        'Catch ex As Exception
-        'cmd_update_interv_cat.Dispose()
-        'Return False
-        'End Try
+        Catch ex As Exception
+            cmd_update_interv_cat.Dispose()
+            Return False
+        End Try
 
         cmd_update_interv_cat.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_SR_INTERV(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.sr_intervention.id_content%type;
+      
+                                  contador             integer;
+
+                                  l_output     clob := '';               
+      
+                                  l_record_area varchar2(50) := 'SR_INTERVENTION';   
+      
+                                  CURSOR c_INTERVENTION is
+                                  select i.id_content, i.code_sr_intervention
+                                  from alert.sr_intervention i
+                                  join translation t on t.code_translation=i.code_sr_intervention;
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;     
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_INTERVENTION;
+       
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;         
+       
+                                   LOOP
+         
+                                        FETCH c_INTERVENTION into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_INTERVENTION%notfound;           
+
+                                       select t.desc_lang_" & l_id_language & "
+                                       into  l_a_translation
+                                       from translation t 
+                                       where t.code_translation=l_a_code_translation;
+
+          
+                                   BEGIN  
+              
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.sr_intervention i on i.code_sr_intervention=t.code_translation
+                                        where i.id_content=l_id_content
+                                        and t.desc_lang_" & l_id_language & " is not null;
+            
+                                   EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                   END;           
+  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_INTERVENTION;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                          dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;
+             
+                            END;"
+
+        Dim cmd_update_sr_interv As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_sr_interv.CommandType = CommandType.Text
+            cmd_update_sr_interv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_sr_interv.Dispose()
+            Return False
+        End Try
+
+        cmd_update_sr_interv.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_SUPPLIES(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.sr_intervention.id_content%type;
+      
+                                  contador             integer;
+      
+                                  l_output     clob := '';               
+      
+                                  l_record_area varchar2(50) := 'SUPPLY';      
+      
+                                  CURSOR c_SUPPLIES is
+                                  select s.id_content, s.code_supply
+                                  from alert.supply s
+                                  join translation t on t.code_translation=s.code_supply;
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;   
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_SUPPLIES;
+       
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;              
+       
+                                   LOOP
+         
+                                       FETCH c_SUPPLIES into l_id_content,l_a_code_translation;
+                                       EXIT WHEN c_SUPPLIES%notfound;            
+
+                                       select t.desc_lang_" & l_id_language & "
+                                       into  l_a_translation
+                                       from translation t 
+                                       where t.code_translation=l_a_code_translation;
+          
+                                   BEGIN  
+              
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.supply s on s.code_supply=t.code_translation
+                                        where s.id_content=l_id_content
+                                        and t.desc_lang_" & l_id_language & " is not null;
+            
+                                   EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                   END;
+            
+  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_SUPPLIES;
+       
+                                         l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                         if not save_output(l_output) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                         end if;    
+
+                                      --Garantir linha extra no final do log
+                                      if not save_output(' ') then
+      
+                                         dbms_output.put_line('ERROR');
+    
+                                      end if;   
+          
+                            END;"
+
+        Dim cmd_update_supplies As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_supplies.CommandType = CommandType.Text
+            cmd_update_supplies.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_supplies.Dispose()
+            Return False
+        End Try
+
+        cmd_update_supplies.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_SUPPLIES_CAT(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.sr_intervention.id_content%type;
+      
+                                  contador             integer;
+      
+                                  l_output     clob := '';               
+      
+                                  l_record_area varchar2(50) := 'SUPPLY_CATEGORY';          
+      
+                                  CURSOR c_SUPPLIES_CAT is
+                                  select s.id_content, s.code_supply_type
+                                  from alert.supply_type  s
+                                  join translation t on t.code_translation=s.code_supply_type
+                                  and s.id_content is not null; -- Existem registos no default sem id_content 
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+                                       
+                                        l_index integer;  
+
+                                    begin
+  
+                                        select (nvl(max(r.record_index),0)+1)
+                                        into l_index  
+                                        from output_records r;
+          
+                                    insert into output_records
+                                    values (l_index,i_updated_records,l_record_area);
+                                    l_index:=l_index+1;
+          
+                                    return true;
+        
+                                  EXCEPTION  
+                                    when others then          
+                                      return false;              
+                
+                                  END save_output;  
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_SUPPLIES_CAT;
+       
+                                   --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                   if not save_output(to_char(l_record_area)) then
+        
+                                               dbms_output.put_line('ERROR');
+      
+                                   end if;     
+       
+                                   LOOP
+         
+                                        FETCH c_SUPPLIES_CAT into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_SUPPLIES_CAT%notfound;
+            
+
+                                       select t.desc_lang_" & l_id_language & "
+                                       into  l_a_translation
+                                       from translation t 
+                                       where t.code_translation=l_a_code_translation;
+          
+                                   BEGIN  
+              
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.supply_type s on s.code_supply_type=t.code_translation
+                                        where s.id_content=l_id_content
+                                        and t.desc_lang_" & l_id_language & " is not null;
+            
+                                   EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                   END;            
+  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                                l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_SUPPLIES_CAT;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_supplies_cat As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_supplies_cat.CommandType = CommandType.Text
+            cmd_update_supplies_cat.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_supplies_cat.Dispose()
+            Return False
+        End Try
+
+        cmd_update_supplies_cat.Dispose()
         Return True
 
     End Function

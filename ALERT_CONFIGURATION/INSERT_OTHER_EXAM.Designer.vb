@@ -30,7 +30,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Button13 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
-        Me.Label10 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button9 = New System.Windows.Forms.Button()
@@ -40,7 +39,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.ComboBox6 = New System.Windows.Forms.ComboBox()
         Me.Button7 = New System.Windows.Forms.Button()
         Me.Button6 = New System.Windows.Forms.Button()
-        Me.Label5 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.ComboBox5 = New System.Windows.Forms.ComboBox()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
@@ -53,7 +51,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.CheckedListBox1 = New System.Windows.Forms.CheckedListBox()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
@@ -134,15 +131,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.Button14.Text = "SELECT ALL"
         Me.Button14.UseVisualStyleBackColor = True
         '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(1363, 501)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(209, 13)
-        Me.Label10.TabIndex = 154
-        Me.Label10.Text = "IMAGING EXAMS BY CLINICAL SERVICE"
-        '
         'Button12
         '
         Me.Button12.Location = New System.Drawing.Point(1365, 801)
@@ -205,7 +193,7 @@ Partial Class INSERT_OTHER_EXAM
         Me.ComboBox6.ItemHeight = 16
         Me.ComboBox6.Location = New System.Drawing.Point(833, 491)
         Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.Size = New System.Drawing.Size(739, 24)
         Me.ComboBox6.TabIndex = 147
         '
         'Button7
@@ -226,19 +214,10 @@ Partial Class INSERT_OTHER_EXAM
         Me.Button6.Text = ">>"
         Me.Button6.UseVisualStyleBackColor = True
         '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(582, 502)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(172, 13)
-        Me.Label5.TabIndex = 144
-        Me.Label5.Text = "IMAGING EXAMS BY CATEGORY"
-        '
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(22, 474)
+        Me.Label8.Location = New System.Drawing.Point(11, 474)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(129, 13)
         Me.Label8.TabIndex = 143
@@ -252,7 +231,7 @@ Partial Class INSERT_OTHER_EXAM
         Me.ComboBox5.ItemHeight = 16
         Me.ComboBox5.Location = New System.Drawing.Point(14, 491)
         Me.ComboBox5.Name = "ComboBox5"
-        Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox5.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox5.TabIndex = 142
         '
         'CheckedListBox4
@@ -345,15 +324,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.CheckedListBox1.Size = New System.Drawing.Size(740, 274)
         Me.CheckedListBox1.TabIndex = 132
         '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(582, 148)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(172, 13)
-        Me.Label7.TabIndex = 131
-        Me.Label7.Text = "IMAGING EXAMS BY CATEGORY"
-        '
         'CheckedListBox2
         '
         Me.CheckedListBox2.CheckOnClick = True
@@ -380,7 +350,7 @@ Partial Class INSERT_OTHER_EXAM
         Me.ComboBox4.ItemHeight = 16
         Me.ComboBox4.Location = New System.Drawing.Point(14, 137)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox4.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox4.TabIndex = 128
         '
         'Label3
@@ -455,7 +425,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
-        Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.Button12)
         Me.Controls.Add(Me.Button11)
         Me.Controls.Add(Me.Button9)
@@ -465,7 +434,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.Controls.Add(Me.ComboBox6)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.Button6)
-        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.CheckedListBox4)
@@ -478,7 +446,6 @@ Partial Class INSERT_OTHER_EXAM
         Me.Controls.Add(Me.ComboBox3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.CheckedListBox1)
-        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.ComboBox4)
@@ -507,7 +474,6 @@ Partial Class INSERT_OTHER_EXAM
     Friend WithEvents Label11 As Label
     Friend WithEvents Button13 As Button
     Friend WithEvents Button14 As Button
-    Friend WithEvents Label10 As Label
     Friend WithEvents Button12 As Button
     Friend WithEvents Button11 As Button
     Friend WithEvents Button9 As Button
@@ -517,7 +483,6 @@ Partial Class INSERT_OTHER_EXAM
     Friend WithEvents ComboBox6 As ComboBox
     Friend WithEvents Button7 As Button
     Friend WithEvents Button6 As Button
-    Friend WithEvents Label5 As Label
     Friend WithEvents Label8 As Label
     Friend WithEvents ComboBox5 As ComboBox
     Friend WithEvents CheckedListBox4 As CheckedListBox
@@ -530,7 +495,6 @@ Partial Class INSERT_OTHER_EXAM
     Friend WithEvents ComboBox3 As ComboBox
     Friend WithEvents Button2 As Button
     Friend WithEvents CheckedListBox1 As CheckedListBox
-    Friend WithEvents Label7 As Label
     Friend WithEvents CheckedListBox2 As CheckedListBox
     Friend WithEvents Label6 As Label
     Friend WithEvents ComboBox4 As ComboBox

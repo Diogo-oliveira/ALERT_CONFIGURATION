@@ -12,17 +12,24 @@ Public Class Translation_Updates
     Dim g_analysis_cat As String = "    1.1 - ANALYSIS CATEGORY"
     Dim g_analysis_sample_type As String = "    1.2 - ANALYSIS SAMPLE TYPE"
     Dim g_analysis As String = "    1.3 - ANALYSIS"
-    Dim g_sample_type As String = "    1.4 - SAMPLE TYPE"
-    Dim g_analysis_parameters As String = "    1.5 - ANALYSS PARAMETER"
-    Dim g_analysis_recipient As String = "    1.6 - ANALYSIS SAMPLE RECIPIENT"
+    Dim g_sample_type As String = "    1.4 - SAMPLE TYPES"
+    Dim g_analysis_parameters As String = "    1.5 - ANALYSS PARAMETERS"
+    Dim g_analysis_recipient As String = "    1.6 - ANALYSIS SAMPLE RECIPIENTS"
 
     Dim g_exams_all As String = "2 - IMAGING AND OTHER EXAMS (All content)"
-    Dim g_exam_categories As String = "    2.1 - EXAM CATEGORY"
-    Dim g_exams As String = "    2.2 - EXAM"
+    Dim g_exam_categories As String = "    2.1 - EXAM CATEGORIES"
+    Dim g_exams As String = "    2.2 - EXAMS"
 
     Dim g_procedures_all As String = "3 - INTERVENTIONS (All content)"
-    Dim g_procedures_cat As String = "    3.1 - INTERVENTION CATEGORY"
-    Dim g_procedures As String = "    3.2 - INTERVENTION"
+    Dim g_procedures_cat As String = "    3.1 - INTERVENTION CATEGORIES"
+    Dim g_procedures As String = "    3.2 - INTERVENTIONS"
+
+    Dim g_sr_intervs As String = "4 - SURGICAL INTERVENTIONS"
+
+    Dim g_supplies_all As String = "5 - DUPPLIES (All content)"
+    Dim g_supplies_cat As String = "    5.1 - SUPPLIES CATEGORIES"
+    Dim g_supplies As String = "    5.2 - SUPPLIES"
+
     '#
     '##################################################################
 
@@ -444,6 +451,130 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_sr_intervs) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_SR_INTERV(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_sr_intervs & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_supplies) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_SUPPLIES(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_supplies & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_supplies_cat) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_SUPPLIES_CAT(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_supplies_cat & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+                '########################################################### Selecção de ALL ##############################################
             ElseIf (ComboBox2.Text = g_exams_all) Then
 
                 If translation.CREATE_TEMP_TABLE() Then
@@ -770,6 +901,76 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_supplies_all) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_SUPPLIES_CAT(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_supplies_cat & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_SUPPLIES(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_supplies & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                End If
+
+                If Not translation.DELETE_TEMP_TABLE() Then
+
+                    MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                End If
+
             Else
 
                 MsgBox("Please select an area to be updated.", vbInformation)
@@ -828,6 +1029,10 @@ Public Class Translation_Updates
         dr.Dispose()
         dr.Close()
 
+
+        '###############################################
+        '# Bloco para inserir as categorias na BOX
+        '# É aqui que se define a ordem de apresentação
         ComboBox2.Items.Add(g_analysis_all)
         ComboBox2.Items.Add(g_analysis_cat)
         ComboBox2.Items.Add(g_analysis_sample_type)
@@ -847,6 +1052,18 @@ Public Class Translation_Updates
         ComboBox2.Items.Add(g_procedures_all)
         ComboBox2.Items.Add(g_procedures_cat)
         ComboBox2.Items.Add(g_procedures)
+
+        ComboBox2.Items.Add("")
+
+        ComboBox2.Items.Add(g_sr_intervs)
+
+        ComboBox2.Items.Add("")
+
+        ComboBox2.Items.Add(g_supplies_all)
+        ComboBox2.Items.Add(g_supplies_cat)
+        ComboBox2.Items.Add(g_supplies)
+        '#
+        '###############################################
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 

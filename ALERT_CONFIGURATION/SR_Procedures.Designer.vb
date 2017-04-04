@@ -197,7 +197,7 @@ Partial Class SR_Procedures
         Me.ComboBox6.ItemHeight = 16
         Me.ComboBox6.Location = New System.Drawing.Point(833, 491)
         Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.Size = New System.Drawing.Size(739, 24)
         Me.ComboBox6.TabIndex = 137
         '
         'Button5

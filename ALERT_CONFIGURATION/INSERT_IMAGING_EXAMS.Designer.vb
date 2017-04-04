@@ -30,7 +30,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button1 = New System.Windows.Forms.Button()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
@@ -44,7 +43,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button5 = New System.Windows.Forms.Button()
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
-        Me.Label5 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.ComboBox5 = New System.Windows.Forms.ComboBox()
         Me.Button6 = New System.Windows.Forms.Button()
@@ -56,7 +54,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button10 = New System.Windows.Forms.Button()
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button12 = New System.Windows.Forms.Button()
-        Me.Label10 = New System.Windows.Forms.Label()
         Me.Button13 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
@@ -127,15 +124,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox1.TabIndex = 7
         '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(582, 141)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(172, 13)
-        Me.Label7.TabIndex = 22
-        Me.Label7.Text = "IMAGING EXAMS BY CATEGORY"
-        '
         'CheckedListBox2
         '
         Me.CheckedListBox2.CheckOnClick = True
@@ -162,7 +150,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox4.ItemHeight = 16
         Me.ComboBox4.Location = New System.Drawing.Point(14, 130)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox4.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox4.TabIndex = 19
         '
         'CheckedListBox1
@@ -255,19 +243,10 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.CheckedListBox4.Size = New System.Drawing.Size(741, 274)
         Me.CheckedListBox4.TabIndex = 32
         '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(582, 495)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(172, 13)
-        Me.Label5.TabIndex = 35
-        Me.Label5.Text = "IMAGING EXAMS BY CATEGORY"
-        '
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(22, 467)
+        Me.Label8.Location = New System.Drawing.Point(11, 467)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(129, 13)
         Me.Label8.TabIndex = 34
@@ -281,7 +260,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox5.ItemHeight = 16
         Me.ComboBox5.Location = New System.Drawing.Point(14, 484)
         Me.ComboBox5.Name = "ComboBox5"
-        Me.ComboBox5.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox5.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox5.TabIndex = 33
         '
         'Button6
@@ -310,7 +289,7 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.ComboBox6.ItemHeight = 16
         Me.ComboBox6.Location = New System.Drawing.Point(833, 484)
         Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(449, 24)
+        Me.ComboBox6.Size = New System.Drawing.Size(739, 24)
         Me.ComboBox6.TabIndex = 38
         '
         'Label9
@@ -366,15 +345,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Button12.TabIndex = 44
         Me.Button12.Text = "DELETE"
         Me.Button12.UseVisualStyleBackColor = True
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(1363, 494)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(209, 13)
-        Me.Label10.TabIndex = 45
-        Me.Label10.Text = "IMAGING EXAMS BY CLINICAL SERVICE"
         '
         'Button13
         '
@@ -455,7 +425,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.Label11)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button14)
-        Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.Button12)
         Me.Controls.Add(Me.Button11)
         Me.Controls.Add(Me.Button9)
@@ -465,7 +434,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.ComboBox6)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.Button6)
-        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.CheckedListBox4)
@@ -478,7 +446,6 @@ Partial Class INSERT_IMAGING_EXAMS
         Me.Controls.Add(Me.ComboBox3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.CheckedListBox1)
-        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.ComboBox4)
@@ -507,7 +474,6 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button1 As Button
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents ComboBox1 As ComboBox
-    Friend WithEvents Label7 As Label
     Friend WithEvents CheckedListBox2 As CheckedListBox
     Friend WithEvents Label6 As Label
     Friend WithEvents ComboBox4 As ComboBox
@@ -521,7 +487,6 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button5 As Button
     Friend WithEvents CheckedListBox3 As CheckedListBox
     Friend WithEvents CheckedListBox4 As CheckedListBox
-    Friend WithEvents Label5 As Label
     Friend WithEvents Label8 As Label
     Friend WithEvents ComboBox5 As ComboBox
     Friend WithEvents Button6 As Button
@@ -533,7 +498,6 @@ Partial Class INSERT_IMAGING_EXAMS
     Friend WithEvents Button10 As Button
     Friend WithEvents Button11 As Button
     Friend WithEvents Button12 As Button
-    Friend WithEvents Label10 As Label
     Friend WithEvents Button13 As Button
     Friend WithEvents Button14 As Button
     Friend WithEvents CheckBox2 As CheckBox
