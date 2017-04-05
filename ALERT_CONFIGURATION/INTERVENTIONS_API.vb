@@ -18,16 +18,18 @@ Public Class INTERVENTIONS_API
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
         Dim sql As String = "SELECT DISTINCT dim.version
                                 FROM alert_default.intervention di
                                 JOIN alert_default.translation dti ON dti.code_translation = di.code_intervention
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
-                                JOIN alert.interv_category aic ON aic.id_interv_category = diic.id_interv_category
-                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
-                                JOIN translation t ON t.code_translation = aic.code_interv_category
+                                JOIN alert_default.interv_category aic ON aic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention                                
                                 JOIN institution i ON i.id_market = dim.id_market
                                 WHERE di.flg_status = 'A'
+                                And alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",  aic.code_interv_category) Is Not NULL
                                 AND diic.id_software IN (0, " & i_software & ")
                                 AND i.id_institution = " & i_institution & "
                                 AND dcs.id_software IN (0, " & i_software & ")"
@@ -50,13 +52,64 @@ Public Class INTERVENTIONS_API
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
+
         Try
+
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
+
         Catch ex As Exception
-            cmd.Dispose()
-            Return False
+
+            'Bloco que vai tratar a 1ª exceção - Não existência da tablela ALERT_DEFAULT.INTERV_CAT >> Versões anteriores à V2.7.0
+            sql = "SELECT DISTINCT dim.version
+                                FROM alert_default.intervention di
+                                JOIN alert_default.translation dti ON dti.code_translation = di.code_intervention
+                                JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
+                                JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
+                                JOIN alert.interv_category aic ON aic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
+                                JOIN translation t ON t.code_translation = aic.code_interv_category
+                                JOIN institution i ON i.id_market = dim.id_market
+                                WHERE di.flg_status = 'A'
+                                AND diic.id_software IN (0, " & i_software & ")
+                                AND i.id_institution = " & i_institution & "
+                                AND dcs.id_software IN (0, " & i_software & ")"
+
+            If i_flg_type = 0 Then
+
+                sql = sql & "And dcs.flg_type IN ('P', 'M', 'B','A') "
+
+            ElseIf i_flg_type = 1 Then
+
+                sql = sql & "And dcs.flg_type IN ('P', 'M') "
+
+            Else
+
+                sql = sql & "And dcs.flg_type IN ('B','A') "
+
+            End If
+
+            sql = sql & "  ORDER BY 1 ASC"
+
+            Dim cmd_old_v As New OracleCommand(sql, Connection.conn)
+            cmd_old_v.CommandType = CommandType.Text
+
+            Try
+
+                i_dr = cmd_old_v.ExecuteReader()
+                cmd.Dispose()
+                cmd_old_v.Dispose()
+                Return True
+
+            Catch ex_2 As Exception
+
+                cmd.Dispose()
+                cmd_old_v.Dispose()
+                Return False
+
+            End Try
+
         End Try
 
     End Function
@@ -505,19 +558,22 @@ Public Class INTERVENTIONS_API
     Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
-        Dim sql As String = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category)
+        'Bloco para versões >=V2.7.0
+        Dim sql As String = "SELECT DISTINCT ic.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",  ic.code_interv_category)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
-                                JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_category ic ON ic.id_interv_category = diic.id_interv_category
                                 JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
+                                JOIN institution i ON i.id_market = dim.id_market
+                                               AND i.id_institution =  " & i_institution & " 
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
-                                AND ic.flg_available = 'Y'
-                                AND pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category) IS NOT NULL
-                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention) IS NOT NULL
-                                AND dim.version = '" & i_version & "'
-                                AND dcs.id_software IN (0, " & i_software & ") "
+                                And ic.flg_available = 'Y'
+                                And alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",  ic.code_interv_category) Is Not NULL
+                                And alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",  di.code_intervention) Is Not NULL
+                                And dim.version = '" & i_version & "'
+                                And dcs.id_software IN (0, " & i_software & ") "
 
         If i_flg_type = 0 Then
 
@@ -533,28 +589,85 @@ Public Class INTERVENTIONS_API
 
         End If
 
-        sql = sql & "           ORDER BY 2 ASC"
+        sql = sql & "    ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
+
         Try
+
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
+
         Catch ex As Exception
-            cmd.Dispose()
-            Return False
+
+            'Bloco que vai tratar a 1ª exceção - Não existência da tablela ALERT_DEFAULT.INTERV_CAT >> Versões anteriores à V2.7.0
+            sql = "SELECT DISTINCT ic.id_content, pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category)
+                                FROM alert_default.intervention di
+                                JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
+                                JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
+                                JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_clin_serv dcs ON dcs.id_intervention = di.id_intervention
+                                JOIN institution i ON i.id_market = dim.id_market
+                                               AND i.id_institution = " & i_institution & "
+                                WHERE di.flg_status = 'A'
+                                AND diic.id_software IN (0, " & i_software & ")
+                                AND ic.flg_available = 'Y'
+                                AND pk_translation.get_translation(" & l_id_language & ", ic.code_interv_category) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention) IS NOT NULL
+                                AND dim.version = '" & i_version & "'
+                                AND dcs.id_software IN (0, " & i_software & ")
+                                "
+
+            If i_flg_type = 0 Then
+
+                sql = sql & "And dcs.flg_type IN ('P','M','A','B') "
+
+            ElseIf i_flg_type = 1 Then
+
+                sql = sql & "And dcs.flg_type IN ('P','M') "
+
+            Else
+
+                sql = sql & "And dcs.flg_type IN ('A','B') "
+
+            End If
+
+            sql = sql & "    ORDER BY 2 ASC"
+
+            Dim cmd_old_v As New OracleCommand(sql, Connection.conn)
+
+            Try
+
+                cmd_old_v.CommandType = CommandType.Text
+                i_dr = cmd_old_v.ExecuteReader()
+                cmd_old_v.Dispose()
+                cmd.Dispose()
+
+                Return True
+
+            Catch ex_2 As Exception
+
+                cmd_old_v.Dispose()
+                cmd.Dispose()
+                Return False
+
+            End Try
+
         End Try
+
     End Function
 
     Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        'Bloco para versões >=V2.7.0
         Dim sql As String = "SELECT DISTINCT ic.id_content, di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention)
                                 FROM alert_default.intervention di
                                 JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
                                 JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
-                                JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
+                                JOIN alert_default.interv_category ic ON ic.id_interv_category = diic.id_interv_category
                                 JOIN ALERT_DEFAULT.INTERV_CLIN_SERV DCS ON DCS.ID_INTERVENTION=DI.ID_INTERVENTION AND DCS.ID_SOFTWARE IN (0," & i_software & ")                                
                                 WHERE di.flg_status = 'A'
                                 AND diic.id_software IN (0, " & i_software & ")
@@ -583,13 +696,64 @@ Public Class INTERVENTIONS_API
         End If
         Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
+
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
+
         Catch ex As Exception
-            cmd.Dispose()
-            Return False
+            'Bloco que vai tratar a 1ª exceção - Não existência da tablela ALERT_DEFAULT.INTERV_CAT >> Versões anteriores à V2.7.0
+            sql = "SELECT DISTINCT ic.id_content, di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention)
+                                FROM alert_default.intervention di
+                                JOIN alert_default.interv_int_cat diic ON diic.id_intervention = di.id_intervention
+                                JOIN alert_default.interv_mrk_vrs dim ON dim.id_intervention = di.id_intervention
+                                JOIN alert.interv_category ic ON ic.id_interv_category = diic.id_interv_category
+                                JOIN ALERT_DEFAULT.INTERV_CLIN_SERV DCS ON DCS.ID_INTERVENTION=DI.ID_INTERVENTION AND DCS.ID_SOFTWARE IN (0," & i_software & ")                                
+                                WHERE di.flg_status = 'A'
+                                AND diic.id_software IN (0, " & i_software & ")
+                                AND ic.flg_available = 'Y'
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_intervention) IS NOT NULL
+                                AND dim.version = '" & i_version & "'"
+            If i_flg_type = 0 Then
+
+                sql = sql & "And dcs.flg_type IN ('P','M','A','B') "
+
+            ElseIf i_flg_type = 1 Then
+
+                sql = sql & "And dcs.flg_type IN ('P','M') "
+
+            Else
+
+                sql = sql & "And dcs.flg_type IN ('A','B') "
+
+            End If
+
+            If i_id_cat = "0" Then
+                sql = sql & " order by 3 asc"
+            Else
+                sql = sql & " and ic.id_content= '" & i_id_cat & "'
+                          order by 3 asc"
+            End If
+
+            Dim cmd_old_v As New OracleCommand(sql, Connection.conn)
+
+            Try
+
+                cmd_old_v.CommandType = CommandType.Text
+                i_dr = cmd_old_v.ExecuteReader()
+                cmd_old_v.Dispose()
+                cmd.Dispose()
+                Return True
+
+            Catch ex_2 As Exception
+
+                cmd_old_v.Dispose()
+                cmd.Dispose()
+                Return False
+
+            End Try
+
         End Try
 
     End Function
@@ -1631,7 +1795,7 @@ Public Class INTERVENTIONS_API
         sql = "DECLARE
 
                   l_id_intervention alert.intervention.id_intervention%type;
-                  l_id_interv_cat   alert.interv_category.id_interv_category%type;
+                  l_id_interv_cat   table_number:= table_number();
 
                 BEGIN
   
@@ -1642,23 +1806,30 @@ Public Class INTERVENTIONS_API
                   AND I.FLG_STATUS='A';
   
                   SELECT IC.ID_INTERV_CATEGORY
-                  INTO l_id_interv_cat
+                  BULK COLLECT INTO l_id_interv_cat
                   FROM ALERT.INTERV_CATEGORY IC
                   WHERE IC.ID_CONTENT='" & i_intervention.id_content_category & "'
                   AND IC.FLG_AVAILABLE='Y';
-    
-                  INSERT INTO ALERT.INTERV_INT_CAT(ID_INTERV_CATEGORY, ID_INTERVENTION, RANK,ID_SOFTWARE, ID_INSTITUTION, FLG_ADD_REMOVE)
-                  VALUES(l_id_interv_cat,l_id_intervention,0," & i_software & ", " & i_institution & ", 'R');
 
-                EXCEPTION
-                  WHEN DUP_VAL_ON_INDEX THEN
-                    UPDATE ALERT.INTERV_INT_CAT IIC
-                    SET IIC.FLG_ADD_REMOVE='R'
-                    WHERE IIC.ID_INTERV_CATEGORY=l_id_interv_cat
-                    AND IIC.ID_INTERVENTION = l_id_intervention
-                    AND IIC.ID_SOFTWARE=" & i_software & "
-                    AND IIC.ID_INSTITUTION IN (0," & i_institution & "); 
-  
+                  FOR i IN 1 .. l_id_interv_cat.count()
+                    LOOP    
+                        BEGIN                  
+    
+                              INSERT INTO ALERT.INTERV_INT_CAT(ID_INTERV_CATEGORY, ID_INTERVENTION, RANK,ID_SOFTWARE, ID_INSTITUTION, FLG_ADD_REMOVE)
+                              VALUES(l_id_interv_cat(i),l_id_intervention,0," & i_software & ", " & i_institution & ", 'R');
+
+                        EXCEPTION
+                          WHEN DUP_VAL_ON_INDEX THEN
+                            UPDATE ALERT.INTERV_INT_CAT IIC
+                            SET IIC.FLG_ADD_REMOVE='R'
+                            WHERE IIC.ID_INTERV_CATEGORY=l_id_interv_cat(i)
+                            AND IIC.ID_INTERVENTION = l_id_intervention
+                            AND IIC.ID_SOFTWARE=" & i_software & "
+                            AND IIC.ID_INSTITUTION IN (0," & i_institution & ");
+                            CONTINUE;
+                
+                        END;
+                    END LOOP;  
                 END;"
 
         Dim cmd_set_iic_remove As New OracleCommand(sql, Connection.conn)
@@ -1673,6 +1844,381 @@ Public Class INTERVENTIONS_API
 
         cmd_set_iic_remove.Dispose()
         Return True
+
+    End Function
+
+    Function SET_INTERV_CAT(ByVal i_institution As Int64, ByVal i_a_intervs() As interventions_default) As Boolean
+
+        If CHECK_CAT_VERSION() Then
+
+            Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+            '1 - Remover as categorias repetidas do array de entrada
+            Dim l_a_distinct_ic() As String
+            Dim dr_distinct_ic As OracleDataReader
+
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not GET_DISTINCT_CATEGORIES(i_a_intervs, dr_distinct_ic) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                dr_distinct_ic.Dispose()
+                dr_distinct_ic.Close()
+                Return False
+
+            Else
+
+                Try
+                    Dim l_index As Int64 = 0
+
+                    While dr_distinct_ic.Read()
+
+                        ReDim Preserve l_a_distinct_ic(l_index)
+                        l_a_distinct_ic(l_index) = dr_distinct_ic.Item(0)
+                        l_index = l_index + 1
+
+                    End While
+
+                    dr_distinct_ic.Dispose()
+                    dr_distinct_ic.Close()
+
+                Catch ex As Exception
+
+                    dr_distinct_ic.Dispose()
+                    dr_distinct_ic.Close()
+                    Return False
+
+                End Try
+
+            End If
+
+            Dim l_rank As Integer = 0
+
+            For i As Integer = 0 To l_a_distinct_ic.Count() - 1
+
+
+                '2 - Verificar se categoria já existe no ALERT
+                If Not CHECK_RECORD_EXISTENCE(l_a_distinct_ic(i), "alert.interv_category") Then
+
+                    '2.1 - Não existe, Inserir.
+                    '2.1.1 - Determinar RANK da categoria
+                    Try
+
+                        l_rank = GET_CAT_RANK(l_a_distinct_ic(i))
+
+                    Catch ex As Exception
+
+                        l_rank = 0
+
+                    End Try
+
+                    '2.2 - Inserir Categoria tradução
+                    Dim sql_insert_cat As String = "DECLARE
+
+                                                            l_desc_translation translation.desc_lang_6%TYPE;
+
+                                                            l_code translation.code_translation%TYPE;
+
+                                                            l_id_interv_cat alert.interv_category.id_interv_category%TYPE;
+
+                                                        BEGIN
+
+                                                            l_id_interv_cat := alert.seq_interv_category.nextval;
+
+                                                            SELECT dic.code_interv_category
+                                                            INTO l_code
+                                                            FROM alert_default.interv_category dic
+                                                            WHERE dic.flg_available = 'Y'
+                                                            AND dic.id_content = '" & l_a_distinct_ic(i) & "';
+
+                                                            SELECT alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", l_code)
+                                                            INTO l_desc_translation
+                                                            FROM dual;
+
+                                                            INSERT INTO alert.interv_category
+                                                                (id_interv_category, code_interv_category, flg_available, rank, id_content)
+                                                            VALUES
+                                                                (l_id_interv_cat, 'INTERV_CATEGORY.CODE_INTERV_CATEGORY.' || l_id_interv_cat, 'Y', " & l_rank & ", '" & l_a_distinct_ic(i) & "');
+
+                                                            l_code := 'INTERV_CATEGORY.CODE_INTERV_CATEGORY.' || l_id_interv_cat;
+                                                            pk_translation.insert_into_translation(" & l_id_language & ", l_code, l_desc_translation);
+
+                                                        END;"
+
+
+                    Dim cmd_insert_cat As New OracleCommand(sql_insert_cat, Connection.conn)
+
+                    Try
+
+                        cmd_insert_cat.CommandType = CommandType.Text
+                        cmd_insert_cat.ExecuteReader()
+                        cmd_insert_cat.Dispose()
+
+                    Catch ex As Exception
+
+                        cmd_insert_cat.Dispose()
+                        Return False
+
+                    End Try
+
+                    '2.2 - Uma vez que existe no ALERT, verificar se exsite tradução para a lingua da instituição
+                ElseIf Not CHECK_RECORD_TRANSLATION_EXISTENCE(i_institution, l_a_distinct_ic(i), "r.code_interv_category) from alert.interv_category") Then
+
+                    Dim l_code_ec_default As String = GET_CODE_INTERV_CAT_DEFAULT(l_a_distinct_ic(i))
+
+                    Dim sql_update As String = "DECLARE
+
+                                                        l_desc_default translation.desc_lang_6%TYPE;
+
+                                                        l_id_interv_cat table_number := table_number();
+
+                                                    BEGIN
+
+                                                        SELECT ic.id_interv_category BULK COLLECT
+                                                        INTO l_id_interv_cat
+                                                        FROM alert.interv_category ic
+                                                        WHERE ic.id_content = '" & l_a_distinct_ic(i) & "'
+                                                        AND ic.flg_available = 'Y'
+                                                        AND ic.code_interv_category LIKE '%INTERV_CATEGORY.%';
+
+                                                        select alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",'" & l_code_ec_default & "')
+                                                        into  l_desc_default
+                                                        from dual;
+
+                                                        FOR i IN 1 .. l_id_interv_cat.count()
+                                                        LOOP
+    
+                                                            pk_translation.insert_into_translation(" & l_id_language & ", 'INTERV_CATEGORY.CODE_INTERV_CATEGORY.' || l_id_interv_cat(i), l_desc_default);
+    
+                                                        END LOOP;
+
+                                                    END;"
+
+
+                    Dim cmd_upda_cat As New OracleCommand(sql_update, Connection.conn)
+
+                    Try
+
+                        cmd_upda_cat.CommandType = CommandType.Text
+                        cmd_upda_cat.ExecuteReader()
+                        cmd_upda_cat.Dispose()
+
+                    Catch ex As Exception
+
+                        MsgBox("erro A INSERIR TRADUÇÃO")
+                        cmd_upda_cat.Dispose()
+                        Return False
+
+                    End Try
+
+                End If
+
+            Next
+
+        End If
+
+        Return True
+
+    End Function
+
+    'fUNÇÃO QUE VERIFICA SE ESTAMOS NUMA VERSÃO DO ALERT QUE POSSUI INTERV_CAT NO DEFAULT
+    Function CHECK_CAT_VERSION() As Boolean
+
+        Dim sql As String = "SELECT COUNT(*)
+                             FROM alert_default.interv_category "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Try
+
+            cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function GET_DISTINCT_CATEGORIES(ByVal i_a_intervs() As interventions_default, ByRef i_Dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "Select distinct ic.id_content from alert_default.INTERV_CATEGORY ic
+                                    where ic.flg_available = 'Y'
+                                    and ic.id_content in ("
+
+
+        For i As Integer = 0 To i_a_intervs.Count() - 1
+
+            If i < i_a_intervs.Count() - 1 Then
+
+                sql = sql & "'" & i_a_intervs(i).id_content_category & "',"
+
+            Else
+
+                sql = sql & "'" & i_a_intervs(i).id_content_category & "')"
+
+            End If
+
+        Next
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Try
+
+            cmd.CommandType = CommandType.Text
+            i_Dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
+    Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String) As Boolean
+
+        Dim l_total_records As Int16 = 0
+
+        Dim sql As String = "Select count(*) from " & i_sql & " r
+                                 where r.id_content='" & i_id_content_record & "'
+                                 and r.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Try
+
+            While dr.Read()
+
+                l_total_records = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+            'Se l_total_records for maior que 0 significa que o registo já existe no ALERT
+
+            If l_total_records > 0 Then
+
+                Return True
+
+            Else
+
+                Return False
+
+            End If
+
+        Catch ex As Exception
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+            Return False
+
+        End Try
+
+    End Function
+
+    Function GET_CAT_RANK(ByVal i_id_content_interv_cat As String) As Integer
+
+        Dim sql As String = "SELECT DISTINCT ic.rank
+                             FROM alert_default.interv_category ic where ic.id_content='" & i_id_content_interv_cat & "'
+                             and ic.flg_available='Y'"
+
+        Dim l_rank As Integer = 0
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_rank = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
+        Return l_rank
+
+    End Function
+
+    Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String) As Boolean
+
+        Dim l_translation As String = ""
+
+        Dim sql As String = "Select pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & "," & i_sql & " r
+                             where r.id_content='" & id_content_record & "'
+                             And r.flg_available='Y'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        Try
+
+            While dr.Read()
+
+                l_translation = dr.Item(0)
+
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+            Return False
+
+        End Try
+
+        Return True
+
+    End Function
+
+    Function GET_CODE_INTERV_CAT_DEFAULT(ByVal i_id_content_interv_cat As String) As String
+
+        Dim sql As String = "Select ic.code_interv_category from alert_default.interv_category ic
+                             where ic.id_content='" & i_id_content_interv_cat & "'
+                             and ic.flg_available='Y'"
+
+        Dim l_code As String = ""
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader = cmd.ExecuteReader()
+
+        While dr.Read()
+
+            l_code = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
+
+        Return l_code
 
     End Function
 

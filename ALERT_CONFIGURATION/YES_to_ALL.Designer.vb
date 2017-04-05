@@ -32,7 +32,7 @@ Partial Class YES_to_ALL
         'Button3
         '
         Me.Button3.DialogResult = System.Windows.Forms.DialogResult.No
-        Me.Button3.Location = New System.Drawing.Point(215, 76)
+        Me.Button3.Location = New System.Drawing.Point(215, 96)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(96, 30)
         Me.Button3.TabIndex = 12
@@ -42,7 +42,7 @@ Partial Class YES_to_ALL
         'Button2
         '
         Me.Button2.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.Button2.Location = New System.Drawing.Point(113, 76)
+        Me.Button2.Location = New System.Drawing.Point(113, 96)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(96, 30)
         Me.Button2.TabIndex = 11
@@ -52,7 +52,7 @@ Partial Class YES_to_ALL
         'Button1
         '
         Me.Button1.DialogResult = System.Windows.Forms.DialogResult.Yes
-        Me.Button1.Location = New System.Drawing.Point(11, 76)
+        Me.Button1.Location = New System.Drawing.Point(11, 96)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(96, 30)
         Me.Button1.TabIndex = 10
@@ -62,7 +62,7 @@ Partial Class YES_to_ALL
         'Button4
         '
         Me.Button4.DialogResult = System.Windows.Forms.DialogResult.Abort
-        Me.Button4.Location = New System.Drawing.Point(316, 76)
+        Me.Button4.Location = New System.Drawing.Point(316, 96)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(96, 30)
         Me.Button4.TabIndex = 13
@@ -77,7 +77,7 @@ Partial Class YES_to_ALL
         Me.Label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.Label1.Location = New System.Drawing.Point(11, 9)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(401, 64)
+        Me.Label1.Size = New System.Drawing.Size(401, 82)
         Me.Label1.TabIndex = 16
         Me.Label1.Text = "Label1"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -86,16 +86,16 @@ Partial Class YES_to_ALL
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(424, 115)
+        Me.ClientSize = New System.Drawing.Size(424, 131)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button1)
-        Me.MaximumSize = New System.Drawing.Size(440, 154)
-        Me.MinimumSize = New System.Drawing.Size(440, 154)
+        Me.MaximumSize = New System.Drawing.Size(440, 170)
+        Me.MinimumSize = New System.Drawing.Size(440, 170)
         Me.Name = "YES_to_ALL"
-        Me.Text = ".:Warning:."
+        Me.Text = ".: Warning :."
         Me.ResumeLayout(False)
 
     End Sub

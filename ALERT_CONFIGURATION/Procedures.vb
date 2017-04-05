@@ -569,92 +569,102 @@ Public Class Procedures
 
             Next
 
+            ''INSERIR CATEGORIA
+
+            If db_intervention.SET_INTERV_CAT(TextBox1.Text, l_a_checked_intervs) Then
+
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
-            If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs) Then
+                If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
-                If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs) Then
-                    If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs) Then
-                        If db_intervention.SET_DEFAULT_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type) Then
+                    If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs) Then
+                        If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs) Then
+                            If db_intervention.SET_DEFAULT_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type) Then
 
-                            MsgBox("Record(s) successfully inserted.", vbInformation)
+                                MsgBox("Record(s) successfully inserted.", vbInformation)
 
-                            '1 - Processo Limpeza
-                            '1.1 - Limpar a box de análises a gravar no alert
-                            CheckedListBox1.Items.Clear()
+                                '1 - Processo Limpeza
+                                '1.1 - Limpar a box de análises a gravar no alert
+                                CheckedListBox1.Items.Clear()
 
-                            '1.2 - Remover o check das análises do default
-                            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+                                '1.2 - Remover o check das análises do default
+                                For i As Integer = 0 To CheckedListBox2.Items.Count - 1
 
-                                CheckedListBox2.SetItemChecked(i, False)
+                                    CheckedListBox2.SetItemChecked(i, False)
 
-                            Next
+                                Next
 
-                            '1.3 - Limpar g_a_selected_default_analysis (Array de analises do default selecionadas pelo utilizador)
-                            ReDim g_a_selected_default_interventions(0)
-                            g_index_selected_intervention_from_default = 0
+                                '1.3 - Limpar g_a_selected_default_analysis (Array de analises do default selecionadas pelo utilizador)
+                                ReDim g_a_selected_default_interventions(0)
+                                g_index_selected_intervention_from_default = 0
 
-                            '1.4 - Limpar a caixa de categorias de análises do ALERT
-                            ComboBox5.Items.Clear()
-                            ComboBox5.SelectedItem = ""
+                                '1.4 - Limpar a caixa de categorias de análises do ALERT
+                                ComboBox5.Items.Clear()
+                                ComboBox5.SelectedItem = ""
 
-                            'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
-                            Dim dr_exam_cat As OracleDataReader
+                                'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
+                                Dim dr_exam_cat As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                            If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
+                                If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                                MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
+                                    MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
 
+                                Else
+
+                                    ComboBox5.Items.Add("ALL")
+
+                                    ReDim g_a_interv_cats_alert(0)
+                                    g_a_interv_cats_alert(0) = 0
+
+                                    Dim l_index_ec As Int16 = 1
+
+                                    While dr_exam_cat.Read()
+
+                                        ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                                        ReDim Preserve g_a_interv_cats_alert(l_index_ec)
+                                        g_a_interv_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
+                                        l_index_ec = l_index_ec + 1
+
+                                    End While
+
+                                End If
+
+                                dr_exam_cat.Dispose()
+                                dr_exam_cat.Close()
+
+                                '1.5 - Limpar as análises do ALERT apresentadas na BOX 3
+                                'Isto porque podem ter sido adicionadas análises à categoria selecionada
+                                CheckedListBox3.Items.Clear()
+
+                                ReDim g_a_intervs_alert(0)
+                                g_dimension_intervs_alert = 0
                             Else
 
-                                ComboBox5.Items.Add("ALL")
-
-                                ReDim g_a_interv_cats_alert(0)
-                                g_a_interv_cats_alert(0) = 0
-
-                                Dim l_index_ec As Int16 = 1
-
-                                While dr_exam_cat.Read()
-
-                                    ComboBox5.Items.Add(dr_exam_cat.Item(1))
-                                    ReDim Preserve g_a_interv_cats_alert(l_index_ec)
-                                    g_a_interv_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
-                                    l_index_ec = l_index_ec + 1
-
-                                End While
+                                MsgBox("ERROR INSERTING INTERV_DEP_CLIN_SERV!", vbCritical)
 
                             End If
 
-                            dr_exam_cat.Dispose()
-                            dr_exam_cat.Close()
-
-                            '1.5 - Limpar as análises do ALERT apresentadas na BOX 3
-                            'Isto porque podem ter sido adicionadas análises à categoria selecionada
-                            CheckedListBox3.Items.Clear()
-
-                            ReDim g_a_intervs_alert(0)
-                            g_dimension_intervs_alert = 0
                         Else
 
-                            MsgBox("ERROR INSERTING INTERV_DEP_CLIN_SERV!", vbCritical)
+                            MsgBox("ERROR INSERTING INTERV_INT_CATS!", vbCritical)
 
                         End If
 
                     Else
 
-                        MsgBox("ERROR INSERTING INTERV_INT_CATS!", vbCritical)
+                        MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
 
                     End If
 
                 Else
-
-                    MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
-
+                    MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
                 End If
 
             Else
-                MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
+
+                MsgBox("ERROR INSERTING INTERVENTION CATEGORY!", vbCritical)
+
             End If
 
         End If
@@ -781,7 +791,6 @@ Public Class Procedures
                     'Nota: Vai-se apagar o registo para a instituição selecionada e para a instituição 0.
 
                     'Função que determina se há registos no soft ALL (Retorna True caso exista)
-                    'To DO: Vai ser necessário criar função que faça update à interv_int_cat, removendo a do soft específico
                     'Analisar combinações
                     If db_intervention.EXISTS_INTERV_INT_CAT_SOFT(TextBox1.Text, 0, g_a_intervs_alert(indexChecked)) Then
 
@@ -794,7 +803,10 @@ Public Class Procedures
                         If (result_dialog <> DialogResult.OK And result_dialog <> DialogResult.Abort) Then
 
                             '"Record '" & g_desc_interv & "' exists for software 'ALL'. If you delete this record, it will also be deleted for all softwares. Confirm?"
-                            dialog = New YES_to_ALL("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. Do you also wish to inactivate this record for software 'ALL'? (By selecting 'No', the record will only be inactivated for the selected software))")
+                            Form_location.x_position = Me.Location.X
+                            Form_location.y_position = Me.Location.Y
+
+                            dialog = New YES_to_ALL("Record '" & g_a_intervs_alert(indexChecked).desc_intervention & "' exists for software 'ALL'. Do you also wish to inactivate this record for software 'ALL'? (By selecting 'No', the record will only be inactivated for the selected software)")
                             result_dialog = dialog.ShowDialog(Me)
                             dialog.Dispose()
                             dialog.Close()

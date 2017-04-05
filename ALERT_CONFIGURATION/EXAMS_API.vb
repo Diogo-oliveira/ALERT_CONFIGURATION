@@ -1287,56 +1287,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function GET_LANGUAGE_ID(ByVal i_institution As Int64) As Integer
-
-        Dim l_id_lang As Integer = 0
-
-        Dim Sql = "Select decode(i.id_market,
-              1,
-              1,
-              2,
-              2,
-              3,
-              11,
-              4,
-              5,
-              5,
-              4,
-              6,
-              3,
-              7,
-              10,
-              8,
-              7,
-              9,
-              6,
-              10,
-              9,
-              12,
-              16,
-              16,
-              17,
-              17,
-              18,
-              19,
-              19)
-  from institution i
-    where i.id_institution = " & i_institution
-
-        Dim cmd_get_id_lang As New OracleCommand(Sql, Connection.conn)
-        cmd_get_id_lang.CommandType = CommandType.Text
-        Dim dr As OracleDataReader = cmd_get_id_lang.ExecuteReader()
-
-        While dr.Read()
-
-            l_id_lang = dr.Item(0)
-
-        End While
-
-        Return l_id_lang
-
-    End Function
-
     Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String) As Boolean
 
         Try
@@ -2353,7 +2303,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As exams_default, ByRef i_Dr As OracleDataReader) As Boolean
 
-        Dim sql As String = "Select distinct ec.id_content from alert.exam_cat ec
+        Dim sql As String = "Select distinct ec.id_content from alert_default.exam_cat ec
                                     where ec.flg_available = 'Y'
                                     and ec.id_content in ("
 

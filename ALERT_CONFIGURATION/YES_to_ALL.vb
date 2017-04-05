@@ -15,6 +15,10 @@
 
     Private Sub YES_to_ALL_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Me.Location = New Point(Form_location.x_position, Form_location.y_position)
+
+        Me.BackColor = Color.FromArgb(215, 215, 180)
+
         Label1.Text = g_desc_interv
 
     End Sub
