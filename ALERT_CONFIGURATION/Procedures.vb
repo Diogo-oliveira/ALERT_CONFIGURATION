@@ -572,7 +572,6 @@ Public Class Procedures
             ''INSERIR CATEGORIA
 
             If db_intervention.SET_INTERV_CAT(TextBox1.Text, l_a_checked_intervs) Then
-
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
                 If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value

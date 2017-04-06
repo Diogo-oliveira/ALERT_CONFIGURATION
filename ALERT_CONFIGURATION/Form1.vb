@@ -22,8 +22,8 @@ Public Class Form1
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 
-        TextBox1.Text = "alert_config"
-        TextBox2.Text = "qcteam"
+        TextBox1.Text = "sys"
+        TextBox2.Text = "dbasysqc"
         ComboBox1.Text = "qc4v2701"
 
         If Connection.conn.State = 0 Then
