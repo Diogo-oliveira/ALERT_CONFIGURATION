@@ -37,6 +37,10 @@ Public Class Translation_Updates
 
     Dim g_clin_serv As String = "7 - CLINICAL SERVICE"
 
+    Dim g_clin_quest As String = "8 - CLINICAL QUESTIONS (All content)"
+    Dim g_questionnaire As String = "    8.1 - QUESTIONNAIRE"
+    Dim g_response As String = "    8.2 - RESPONSE"
+
     '#
     '##################################################################
 
@@ -745,6 +749,88 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_questionnaire) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_QUESTIONNAIRE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_questionnaire & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_response) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_RESPONSE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_response & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
                 '########################################################### Selecção de ALL ##############################################
             ElseIf (ComboBox2.Text = g_exams_all) Then
 
@@ -1241,6 +1327,76 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_clin_quest) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_QUESTIONNAIRE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_questionnaire & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_RESPONSE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_response & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                End If
+
+                If Not translation.DELETE_TEMP_TABLE() Then
+
+                    MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                End If
+
             Else
 
                 MsgBox("Please select an area to be updated.", vbInformation)
@@ -1250,6 +1406,17 @@ Public Class Translation_Updates
             'Fazer WRAP do texto
             DataGridView1.RowsDefaultCellStyle.WrapMode = DataGridViewTriState.True
             DataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+
+            'Verificar lucene ficou desindexado
+            If (translation.GET_LUCENE(TextBox1.Text)) Then
+
+                PictureBox2.Show()
+
+            Else
+
+                PictureBox2.Hide()
+
+            End If
 
         Else
 
@@ -1267,6 +1434,16 @@ Public Class Translation_Updates
         If TextBox1.Text <> "" Then
 
             ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+
+        End If
+
+        If (translation.GET_LUCENE(TextBox1.Text)) Then
+
+            PictureBox2.Show()
+
+        Else
+
+            PictureBox2.Hide()
 
         End If
 
@@ -1347,8 +1524,17 @@ Public Class Translation_Updates
         ComboBox2.Items.Add("")
 
         ComboBox2.Items.Add(g_clin_serv)
+
+        ComboBox2.Items.Add("")
+
+        ComboBox2.Items.Add(g_clin_quest)
+        ComboBox2.Items.Add(g_questionnaire)
+        ComboBox2.Items.Add(g_response)
         '#
         '###############################################
+
+        PictureBox2.Hide()
+        PictureBox2.BackColor = Color.LightGreen
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
@@ -1371,5 +1557,43 @@ Public Class Translation_Updates
 
         DataGridView1.DataSource = ""
 
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        Cursor = Cursors.WaitCursor
+
+        If Not translation.UPDATE_LUCENE(TextBox1.Text) Then
+
+            MsgBox("ERROR UPDATEING LUCENE INDEXES!", vbCritical)
+
+        Else
+
+            MsgBox("Lucene indexes updated.", vbInformation)
+            PictureBox2.Hide()
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        TextBox1.Text = db_access_general.GET_INSTITUTION_ID(ComboBox1.SelectedIndex)
+
+        If (translation.GET_LUCENE(TextBox1.Text)) Then
+
+            PictureBox2.Show()
+
+        Else
+
+            PictureBox2.Hide()
+
+        End If
+
+        Cursor = Cursors.Arrow
     End Sub
 End Class

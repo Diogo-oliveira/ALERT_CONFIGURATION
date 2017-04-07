@@ -70,7 +70,8 @@ Public Class Translation_API
                                 CURSOR c_exam IS
                                     SELECT e.id_content, e.code_exam
                                     FROM alert.exam e
-                                    JOIN translation t ON t.code_translation = e.code_exam;
+                                    JOIN translation t ON t.code_translation = e.code_exam
+                                    and e.flg_available='Y';
 
                                 FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                     
@@ -211,7 +212,8 @@ Public Class Translation_API
                                       select ec.id_content, ec.code_exam_cat
                                       from alert.exam_cat ec
                                       join translation t on t.code_translation=ec.code_exam_cat
-                                      where ec.flg_lab='N';  
+                                      where ec.flg_lab='N'
+                                      and ec.flg_available='Y';  
 
                                       FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
@@ -349,7 +351,8 @@ Public Class Translation_API
                                       CURSOR c_INTERVENTION is
                                       select i.id_content, i.code_intervention
                                       from alert.intervention i
-                                      join translation t on t.code_translation=i.code_intervention;
+                                      join translation t on t.code_translation=i.code_intervention
+                                      where i.flg_status='A';
       
                                       FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
@@ -489,7 +492,8 @@ Public Class Translation_API
                                     select a.id_content, a.code_analysis
                                       from alert.analysis a
                                       join translation t
-                                        on t.code_translation = a.code_analysis;
+                                        on t.code_translation = a.code_analysis
+                                        where a.flg_available='Y';
             
                                     FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
@@ -767,7 +771,8 @@ Public Class Translation_API
                                   CURSOR c_ANALYSIS_SAMPLE_TYPE is
                                         select ast.id_content, ast.code_analysis_sample_type
                                         from alert.analysis_sample_type ast
-                                        join translation t on t.code_translation=ast.code_analysis_sample_type;
+                                        join translation t on t.code_translation=ast.code_analysis_sample_type
+                                        where ast.flg_available='Y';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
@@ -904,7 +909,8 @@ Public Class Translation_API
                                   CURSOR c_ANALYSIS_PARAMETER is
                                   select ap.id_content, ap.code_analysis_parameter
                                   from alert.analysis_parameter ap
-                                  join translation t on t.code_translation=ap.code_analysis_parameter;
+                                  join translation t on t.code_translation=ap.code_analysis_parameter
+                                  where ap.flg_available='Y';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
       
@@ -1043,7 +1049,8 @@ Public Class Translation_API
                                   CURSOR c_SAMPLE_RECIPIENT is
                                   select sr.id_content, sr.code_sample_recipient
                                   from alert.sample_recipient sr
-                                  join translation t on t.code_translation=sr.code_sample_recipient;
+                                  join translation t on t.code_translation=sr.code_sample_recipient
+                                  where sr.flg_available='Y';
       
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1182,7 +1189,8 @@ Public Class Translation_API
                                   select ec.id_content, ec.code_exam_cat
                                   from alert.exam_cat ec
                                   join translation t on t.code_translation=ec.code_exam_cat
-                                  where ec.flg_lab='Y';  
+                                  where ec.flg_lab='Y'
+                                  and ec.flg_available='Y';  
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1317,12 +1325,13 @@ Public Class Translation_API
       
                                    l_output     clob := '';               
       
-                                                              l_record_area varchar2(50) := 'INTERVENTION_CATEGORY';         
+                                   l_record_area varchar2(50) := 'INTERVENTION_CATEGORY';         
       
                                   CURSOR c_INTERV_CAT is
                                   select ic.id_content, ic.code_interv_category
                                   from alert.interv_category ic
-                                  join translation t on t.code_translation=ic.code_interv_category; 
+                                  join translation t on t.code_translation=ic.code_interv_category
+                                  WHERE IC.FLG_AVAILABLE='Y'; 
       
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1475,7 +1484,8 @@ Public Class Translation_API
                                   CURSOR c_INTERVENTION is
                                   select i.id_content, i.code_sr_intervention
                                   from alert.sr_intervention i
-                                  join translation t on t.code_translation=i.code_sr_intervention;
+                                  join translation t on t.code_translation=i.code_sr_intervention
+                                  where i.flg_status='A';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1613,7 +1623,8 @@ Public Class Translation_API
                                   CURSOR c_SUPPLIES is
                                   select s.id_content, s.code_supply
                                   from alert.supply s
-                                  join translation t on t.code_translation=s.code_supply;
+                                  join translation t on t.code_translation=s.code_supply
+                                  where s.flg_available='Y';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1752,7 +1763,8 @@ Public Class Translation_API
                                   select s.id_content, s.code_supply_type
                                   from alert.supply_type  s
                                   join translation t on t.code_translation=s.code_supply_type
-                                  and s.id_content is not null; -- Existem registos no default sem id_content 
+                                  and s.id_content is not null -- Existem registos no default sem id_content 
+                                  where s.flg_available='Y';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -1890,7 +1902,8 @@ Public Class Translation_API
                                   CURSOR c_DISCH_REASON is
                                   select d.id_content, d.code_discharge_reason
                                   from alert.discharge_reason d
-                                  join translation t on t.code_translation=d.code_discharge_reason;
+                                  join translation t on t.code_translation=d.code_discharge_reason
+                                  where d.flg_available='Y';
 
                                   FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
                                        
@@ -2031,7 +2044,8 @@ Public Class Translation_API
                                 CURSOR c_disch_dest IS
                                     SELECT d.id_content, d.code_discharge_dest
                                     FROM alert.discharge_dest d
-                                    JOIN translation t ON t.code_translation = d.code_discharge_dest;
+                                    JOIN translation t ON t.code_translation = d.code_discharge_dest
+                                    where d.flg_available='Y';
 
                                 FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
@@ -2181,7 +2195,8 @@ Public Class Translation_API
                                     CURSOR c_disch_instructions IS
                                         SELECT di.id_content, di.code_disch_instructions, di.code_disch_instructions_title
                                         FROM alert.disch_instructions di
-                                        JOIN translation t ON t.code_translation = di.code_disch_instructions;
+                                        JOIN translation t ON t.code_translation = di.code_disch_instructions
+                                        where di.flg_available='Y';
 
                                     FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
     
@@ -2475,15 +2490,293 @@ Public Class Translation_API
 
         Dim cmd_update_clin_serv As New OracleCommand(sql, Connection.conn)
 
-        ' Try
-        cmd_update_clin_serv.CommandType = CommandType.Text
-        cmd_update_clin_serv.ExecuteNonQuery()
-        'Catch ex As Exception
-        'cmd_update_clin_serv.Dispose()
-        'Return False
-        'End Try
+        Try
+            cmd_update_clin_serv.CommandType = CommandType.Text
+            cmd_update_clin_serv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_clin_serv.Dispose()
+            Return False
+        End Try
 
         cmd_update_clin_serv.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_QUESTIONNAIRE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.diet.id_content%type;
+      
+                                  contador             integer;
+
+                                  l_output CLOB := '';
+
+                                  l_record_area VARCHAR2(50) := 'QUESTIONNAIRE';           
+      
+                                  CURSOR c_QUESTIONNAIRE is
+                                  select q.id_content, q.code_questionnaire 
+                                  from alert.questionnaire q
+                                  join translation t on t.code_translation=q.code_questionnaire
+                                  where q.flg_available='Y';
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+    
+                                      l_index INTEGER;
+    
+                                  BEGIN
+    
+                                      SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                      INTO l_index
+                                      FROM output_records r;
+    
+                                      INSERT INTO output_records
+                                      VALUES
+                                          (l_index, i_updated_records, l_record_area);
+                                      l_index := l_index + 1;
+    
+                                      RETURN TRUE;
+    
+                                  EXCEPTION
+                                      WHEN OTHERS THEN
+                                          RETURN FALSE;
+        
+                                  END save_output;        
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_QUESTIONNAIRE;
+
+                                    --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                    IF NOT save_output(to_char(l_record_area))
+                                    THEN
+    
+                                        dbms_output.put_line('ERROR');
+    
+                                    END IF;            
+       
+                                   LOOP
+         
+                                        FETCH c_QUESTIONNAIRE into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_QUESTIONNAIRE%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_a_translation
+                                        from translation t 
+                                        where t.code_translation=l_a_code_translation;
+        
+                                        BEGIN             
+                                            select t.desc_lang_" & l_id_language & "
+                                            into  l_d_translation
+                                            from alert_default.translation t
+                                            join alert_default.questionnaire q on q.code_questionnaire=t.code_translation
+                                            where q.id_content=l_id_content
+                                            and t.desc_lang_" & l_id_language & " is not null;
+                
+                                       EXCEPTION
+                                                WHEN no_data_found then
+                                                 CONTINUE;
+                                       END;      
+               
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                               l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_QUESTIONNAIRE;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_questionnaire As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_questionnaire.CommandType = CommandType.Text
+            cmd_update_questionnaire.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_questionnaire.Dispose()
+            Return False
+        End Try
+
+        cmd_update_questionnaire.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_RESPONSE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.diet.id_content%type;
+      
+                                  contador             integer;
+
+                                  l_output CLOB := '';
+
+                                  l_record_area VARCHAR2(50) := 'RESPONSE';        
+      
+                                  CURSOR c_RESPONSE is
+                                  select r.id_content, r.code_response 
+                                  from alert.response r
+                                  join translation t on t.code_translation=r.code_response
+                                  where r.flg_available='Y';
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+    
+                                      l_index INTEGER;
+    
+                                  BEGIN
+    
+                                      SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                      INTO l_index
+                                      FROM output_records r;
+    
+                                      INSERT INTO output_records
+                                      VALUES
+                                          (l_index, i_updated_records, l_record_area);
+                                      l_index := l_index + 1;
+    
+                                      RETURN TRUE;
+    
+                                  EXCEPTION
+                                      WHEN OTHERS THEN
+                                          RETURN FALSE;
+        
+                                  END save_output;          
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_RESPONSE;
+
+                                    --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                    IF NOT save_output(to_char(l_record_area))
+                                    THEN
+    
+                                        dbms_output.put_line('ERROR');
+    
+                                    END IF;           
+       
+                                   LOOP
+         
+                                        FETCH c_RESPONSE into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_RESPONSE%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_a_translation
+                                        from translation t 
+                                        where t.code_translation=l_a_code_translation;
+            
+                                         BEGIN            
+                                              select t.desc_lang_" & l_id_language & "
+                                              into  l_d_translation
+                                              from alert_default.translation t
+                                              join alert_default.response r on r.code_response=t.code_translation
+                                              where r.id_content=l_id_content
+                                              and t.desc_lang_" & l_id_language & " is not null;
+                  
+                                         EXCEPTION
+                                                  WHEN no_data_found then
+                                                   CONTINUE;
+                                         END;
+                  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                               l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                                pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                                l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                                if not save_output(l_output) then
+      
+                                                     dbms_output.put_line('ERROR');
+    
+                                                end if;
+
+                                                contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_RESPONSE;       
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_response As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_response.CommandType = CommandType.Text
+            cmd_update_response.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_response.Dispose()
+            Return False
+        End Try
+
+        cmd_update_response.Dispose()
         Return True
 
     End Function
@@ -2505,6 +2798,64 @@ Public Class Translation_API
             cmd.Dispose()
             Return False
         End Try
+
+    End Function
+
+    Function GET_LUCENE(ByVal i_institution) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "select count(1) from alert_core_data.aq$desc_lang_" & l_id_language & "_lidx$qt"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_records As Int64
+
+        While dr.Read()
+
+            l_total_records = dr.Item(0)
+
+        End While
+
+        If l_total_records > 0 Then
+
+            Return True
+
+        Else
+
+            Return False
+
+        End If
+
+    End Function
+
+    Function UPDATE_LUCENE(ByVal i_institution) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "   begin 
+                                      pk_lucene_index_admin.sync_specific_index('ALERT_CORE_DATA','TRANSLATION'," & l_id_language & "); 
+                                end;"
+
+        Dim cmd_update_lucene As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_lucene.CommandType = CommandType.Text
+            cmd_update_lucene.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_lucene.Dispose()
+            Return False
+        End Try
+
+        cmd_update_lucene.Dispose()
+        Return True
 
     End Function
 
