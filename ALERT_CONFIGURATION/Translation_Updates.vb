@@ -47,6 +47,8 @@ Public Class Translation_Updates
     Dim g_way As String = "    10.1 - WAYS"
     Dim g_hidric As String = "    10.2 - HIDRICS"
     Dim g_hidric_charac As String = "    10.3 - HIDRIC CHARACTERISTICS"
+    Dim g_hidric_type As String = "    10.4 - HIDRICS TYPE"
+    Dim g_hidric_device As String = "    10.5 - HIDRICS DEVICE"
 
     '#
     '##################################################################
@@ -1002,6 +1004,88 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_hidric_type) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_HIDRIC_TYPE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_type & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_hidric_device) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_HIDRIC_DEVICE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_device & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
                 '########################################################### Selecção de ALL ##############################################
             ElseIf (ComboBox2.Text = g_exams_all) Then
 
@@ -1568,6 +1652,163 @@ Public Class Translation_Updates
 
                 End If
 
+                If Not translation.DELETE_TEMP_TABLE() Then
+
+                    MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_hidrics_all) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_WAY(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_way & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_HIDRIC(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_HIDRIC_CAHARCTERISIC(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_charac & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_HIDRIC_TYPE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_type & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                    If Not translation.UPDATE_HIDRIC_DEVICE(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_device & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
+                End If
+
             Else
 
                 MsgBox("Please select an area to be updated.", vbInformation)
@@ -1712,6 +1953,8 @@ Public Class Translation_Updates
         ComboBox2.Items.Add(g_way)
         ComboBox2.Items.Add(g_hidric)
         ComboBox2.Items.Add(g_hidric_charac)
+        ComboBox2.Items.Add(g_hidric_type)
+        ComboBox2.Items.Add(g_hidric_device)
         '#
         '###############################################
 

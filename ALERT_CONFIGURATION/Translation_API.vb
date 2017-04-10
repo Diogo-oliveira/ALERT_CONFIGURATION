@@ -3341,13 +3341,289 @@ Public Class Translation_API
 
     End Function
 
+    Function UPDATE_HIDRIC_TYPE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                              l_a_code_translation translation.code_translation%type;
+      
+                              l_a_translation      translation.desc_lang_6%type;
+      
+                              l_d_translation      translation.desc_lang_6%type;
+      
+                              l_id_content         alert.sr_intervention.id_content%type;
+      
+                              contador             integer;      
+
+                              l_output CLOB := '';
+
+                              l_record_area VARCHAR2(50) := 'HDRIC_TYPE';       
+      
+                              CURSOR c_HIDRICS_TYPE is
+                              select c.id_content, c.code_hidrics_type
+                              from alert.hidrics_type c
+                              join translation t on t.code_translation=c.code_hidrics_type
+                              where c.flg_available='Y'; 
+
+                             FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                  l_index INTEGER;
+
+                              BEGIN
+          
+                                  SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                  INTO l_index
+                                  FROM output_records r;
+          
+                                  INSERT INTO output_records
+                                  VALUES
+                                      (l_index, i_updated_records, l_record_area);
+                                  l_index := l_index + 1;
+          
+                                  RETURN TRUE;
+          
+                              EXCEPTION
+                                  WHEN OTHERS THEN
+                                      RETURN FALSE;
+              
+                              END save_output;           
+      
+                        BEGIN
+       
+                               contador:=0;
+                               OPEN c_HIDRICS_TYPE;
+
+                              --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                              IF NOT save_output(to_char(l_record_area))
+                              THEN
+    
+                                  dbms_output.put_line('ERROR');
+    
+                              END IF;          
+       
+                               LOOP
+         
+                                   FETCH c_HIDRICS_TYPE into l_id_content,l_a_code_translation;
+                                   EXIT WHEN c_HIDRICS_TYPE%notfound;            
+
+                                   select t.desc_lang_" & l_id_language & "
+                                   into  l_a_translation
+                                   from translation t 
+                                   where t.code_translation=l_a_code_translation;
+          
+                               BEGIN  
+              
+                                    select t.desc_lang_" & l_id_language & "
+                                    into  l_d_translation
+                                    from alert_default.translation t
+                                    join alert_default.hidrics_type c on c.code_hidrics_type=t.code_translation
+                                    where c.id_content=l_id_content
+                                    and t.desc_lang_" & l_id_language & " is not null;
+            
+                               EXCEPTION
+                                        WHEN no_data_found then
+                                         CONTINUE;
+                               END;            
+  
+                                    if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                            l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                              pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                              l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                              if not save_output(l_output) then
+      
+                                                   dbms_output.put_line('ERROR');
+   
+                                              end if;
+                                              contador := contador + 1;
+            
+                                    END IF;
+       
+                               END LOOP;
+       
+                               close c_HIDRICS_TYPE;
+       
+                               l_output:= to_char(contador) || ' record(s) updated!';
+      
+                               if not save_output(l_output) then
+        
+                                     dbms_output.put_line('ERROR');
+      
+                               end if;    
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;                
+                        END;"
+
+        Dim cmd_update_hidric_type As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_hidric_type.CommandType = CommandType.Text
+            cmd_update_hidric_type.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_hidric_type.Dispose()
+            Return False
+        End Try
+
+        cmd_update_hidric_type.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_HIDRIC_DEVICE(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                              l_a_code_translation translation.code_translation%type;
+      
+                              l_a_translation      translation.desc_lang_6%type;
+      
+                              l_d_translation      translation.desc_lang_6%type;
+      
+                              l_id_content         alert.sr_intervention.id_content%type;
+      
+                              contador             integer;      
+
+                              l_output CLOB := '';
+
+                              l_record_area VARCHAR2(50) := 'HDRIC_DEVICE';       
+      
+                              CURSOR c_HIDRICS_DEVICE is
+                              select c.id_content, c.code_hidrics_device
+                              from alert.hidrics_device c
+                              join translation t on t.code_translation=c.code_hidrics_device
+                              where c.flg_available='Y'; 
+
+                             FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                  l_index INTEGER;
+
+                              BEGIN
+          
+                                  SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                  INTO l_index
+                                  FROM output_records r;
+          
+                                  INSERT INTO output_records
+                                  VALUES
+                                      (l_index, i_updated_records, l_record_area);
+                                  l_index := l_index + 1;
+          
+                                  RETURN TRUE;
+          
+                              EXCEPTION
+                                  WHEN OTHERS THEN
+                                      RETURN FALSE;
+              
+                              END save_output;        
+      
+                        BEGIN
+       
+                               contador:=0;
+                               OPEN c_HIDRICS_DEVICE;
+
+                              --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                              IF NOT save_output(to_char(l_record_area))
+                              THEN
+    
+                                  dbms_output.put_line('ERROR');
+    
+                              END IF;          
+       
+                               LOOP
+         
+                                   FETCH c_HIDRICS_DEVICE into l_id_content,l_a_code_translation;
+                                   EXIT WHEN c_HIDRICS_DEVICE%notfound;            
+
+                                   select t.desc_lang_" & l_id_language & "
+                                   into  l_a_translation
+                                   from translation t 
+                                   where t.code_translation=l_a_code_translation;
+          
+                               BEGIN  
+              
+                                    select t.desc_lang_" & l_id_language & "
+                                    into  l_d_translation
+                                    from alert_default.translation t
+                                    join alert_default.hidrics_device c on c.code_hidrics_device=t.code_translation
+                                    where c.id_content=l_id_content
+                                    and t.desc_lang_" & l_id_language & " is not null;
+            
+                               EXCEPTION
+                                        WHEN no_data_found then
+                                         CONTINUE;
+                               END;            
+  
+                                    if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                          l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                            pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                            l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                            if not save_output(l_output) then
+      
+                                                 dbms_output.put_line('ERROR');
+   
+                                            end if;
+                                            contador := contador + 1;
+            
+                                    END IF;
+       
+                               END LOOP;
+       
+                               close c_HIDRICS_DEVICE;
+       
+                               l_output:= to_char(contador) || ' record(s) updated!';
+      
+                               if not save_output(l_output) then
+        
+                                     dbms_output.put_line('ERROR');
+      
+                               end if;    
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;       
+             
+                        END;"
+
+        Dim cmd_update_hidric_device As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_hidric_device.CommandType = CommandType.Text
+            cmd_update_hidric_device.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_hidric_device.Dispose()
+            Return False
+        End Try
+
+        cmd_update_hidric_device.Dispose()
+        Return True
+
+    End Function
 
     Function GET_UPDATED_RECORDS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT desc_record as ""UPDATE LOG""
-                            FROM (SELECT r.record_index ""INDEX_RECORD"", r.updated_records ""DESC_RECORD""
-                                  FROM output_records r
-                                  ORDER BY 1 ASC) updated_records"
+                             FROM (SELECT r.record_index ""INDEX_RECORD"", r.updated_records ""DESC_RECORD""
+                                   FROM output_records r
+                                   ORDER BY 1 ASC) updated_records"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -3362,6 +3638,7 @@ Public Class Translation_API
 
     End Function
 
+    'Função que devolve o número de registos não indexados
     Function GET_LUCENE(ByVal i_institution) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -3372,7 +3649,6 @@ Public Class Translation_API
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader
-
 
         dr = cmd.ExecuteReader()
         cmd.Dispose()

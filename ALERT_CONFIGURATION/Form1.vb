@@ -40,6 +40,8 @@ Public Class Form1
             Button12.Visible = False
             Button13.Visible = False
             Button14.Visible = False
+            Button15.Visible = False
+            Button16.Visible = False
 
             Dim db_list As New OracleDataSourceEnumerator()
 
@@ -95,6 +97,8 @@ Public Class Form1
             Button12.Visible = True
             Button13.Visible = True
             Button14.Visible = True
+            Button15.Visible = True
+            Button16.Visible = True
 
         End If
 
@@ -233,6 +237,8 @@ Public Class Form1
                 Button12.Visible = True
                 Button13.Visible = True
                 Button14.Visible = True
+                Button15.Visible = True
+                Button16.Visible = True
 
                 Connection.db = ComboBox1.Text
 
@@ -278,6 +284,8 @@ Public Class Form1
         Button12.Visible = False
         Button13.Visible = False
         Button14.Visible = False
+        Button15.Visible = False
+        Button16.Visible = False
 
         Dim db_list As New OracleDataSourceEnumerator()
 
@@ -365,6 +373,18 @@ Public Class Form1
     End Sub
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+
+        MsgBox("Waiting Development!", vbInformation)
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
 
         MsgBox("Waiting Development!", vbInformation)
 

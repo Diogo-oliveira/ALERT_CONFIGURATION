@@ -44,6 +44,8 @@ Partial Class Form1
         Me.Button12 = New System.Windows.Forms.Button()
         Me.Button13 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Button16 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -58,7 +60,7 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(463, 361)
+        Me.Button1.Location = New System.Drawing.Point(341, 407)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(114, 40)
         Me.Button1.TabIndex = 55
@@ -76,7 +78,7 @@ Partial Class Form1
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(463, 271)
+        Me.Button4.Location = New System.Drawing.Point(463, 269)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(114, 40)
         Me.Button4.TabIndex = 45
@@ -183,7 +185,7 @@ Partial Class Form1
         '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(463, 315)
+        Me.Button9.Location = New System.Drawing.Point(219, 409)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(114, 40)
         Me.Button9.TabIndex = 50
@@ -235,11 +237,31 @@ Partial Class Form1
         Me.Button14.Text = "Medication"
         Me.Button14.UseVisualStyleBackColor = True
         '
+        'Button15
+        '
+        Me.Button15.Location = New System.Drawing.Point(463, 315)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(116, 40)
+        Me.Button15.TabIndex = 56
+        Me.Button15.Text = "Hidrics"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Button16
+        '
+        Me.Button16.Location = New System.Drawing.Point(464, 361)
+        Me.Button16.Name = "Button16"
+        Me.Button16.Size = New System.Drawing.Size(116, 40)
+        Me.Button16.TabIndex = 57
+        Me.Button16.Text = "Vital Signs"
+        Me.Button16.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(684, 421)
+        Me.ClientSize = New System.Drawing.Size(684, 461)
+        Me.Controls.Add(Me.Button16)
+        Me.Controls.Add(Me.Button15)
         Me.Controls.Add(Me.Button14)
         Me.Controls.Add(Me.Button13)
         Me.Controls.Add(Me.Button12)
@@ -263,8 +285,8 @@ Partial Class Form1
         Me.Controls.Add(Me.PictureBox1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MaximumSize = New System.Drawing.Size(700, 460)
-        Me.MinimumSize = New System.Drawing.Size(700, 460)
+        Me.MaximumSize = New System.Drawing.Size(700, 500)
+        Me.MinimumSize = New System.Drawing.Size(700, 500)
         Me.Name = "Form1"
         Me.Text = "ALERT Configuration"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -293,4 +315,6 @@ Partial Class Form1
     Friend WithEvents Button12 As Button
     Friend WithEvents Button13 As Button
     Friend WithEvents Button14 As Button
+    Friend WithEvents Button15 As Button
+    Friend WithEvents Button16 As Button
 End Class
