@@ -2781,6 +2781,567 @@ Public Class Translation_API
 
     End Function
 
+    Function UPDATE_DIET(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.diet.id_content%type;
+      
+                                  contador             integer;
+
+                                  l_output CLOB := '';
+
+                                  l_record_area VARCHAR2(50) := 'DIET';            
+      
+                                  CURSOR c_DIET is
+                                  select d.id_content, d.code_diet 
+                                  from alert.diet d 
+                                  join translation t on t.code_translation=d.code_diet
+                                  where d.flg_available='Y';
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                      l_index INTEGER;
+          
+                                  BEGIN
+          
+                                      SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                      INTO l_index
+                                      FROM output_records r;
+          
+                                      INSERT INTO output_records
+                                      VALUES
+                                          (l_index, i_updated_records, l_record_area);
+                                      l_index := l_index + 1;
+          
+                                      RETURN TRUE;
+          
+                                  EXCEPTION
+                                      WHEN OTHERS THEN
+                                          RETURN FALSE;
+              
+                                  END save_output;          
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_DIET;
+
+                                  --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                  IF NOT save_output(to_char(l_record_area))
+                                  THEN
+    
+                                      dbms_output.put_line('ERROR');
+    
+                                  END IF;         
+       
+                                   LOOP
+         
+                                        FETCH c_DIET into l_id_content,l_a_code_translation;
+                                        EXIT WHEN c_DIET%notfound;
+            
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_a_translation
+                                        from translation t 
+                                        where t.code_translation=l_a_code_translation;
+                
+                                       BEGIN
+                                            select t.desc_lang_" & l_id_language & "
+                                            into  l_d_translation
+                                            from alert_default.translation t
+                                            join alert_default.diet d on d.code_diet=t.code_translation
+                                            where d.id_content=l_id_content
+                                            and t.desc_lang_" & l_id_language & " is not null;
+                
+                                       EXCEPTION
+                                                WHEN no_data_found then
+                                                 CONTINUE;
+                                       END;
+                   
+            
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+              
+                                            l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                              pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                              l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                              if not save_output(l_output) then
+      
+                                                   dbms_output.put_line('ERROR');
+    
+                                              end if;
+
+                                              contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_DIET;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_diet As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_diet.CommandType = CommandType.Text
+            cmd_update_diet.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_diet.Dispose()
+            Return False
+        End Try
+
+        cmd_update_diet.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_WAY(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                              l_a_code_translation translation.code_translation%type;
+      
+                              l_a_translation      translation.desc_lang_6%type;
+      
+                              l_d_translation      translation.desc_lang_6%type;
+      
+                              l_id_content         alert.sr_intervention.id_content%type;
+      
+                              contador             integer;
+
+                              l_output CLOB := '';
+
+                              l_record_area VARCHAR2(50) := 'WAY';           
+      
+                              CURSOR c_WAYS is
+                              select w.id_content, w.code_way
+                              from alert.way w
+                              join translation t on t.code_translation=w.code_way
+                              WHERE W.FLG_AVAILABLE='Y';
+
+                              FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                  l_index INTEGER;
+          
+                              BEGIN
+          
+                                  SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                  INTO l_index
+                                  FROM output_records r;
+          
+                                  INSERT INTO output_records
+                                  VALUES
+                                      (l_index, i_updated_records, l_record_area);
+                                  l_index := l_index + 1;
+          
+                                  RETURN TRUE;
+          
+                              EXCEPTION
+                                  WHEN OTHERS THEN
+                                      RETURN FALSE;
+              
+                              END save_output;   
+      
+                        BEGIN
+       
+                               contador:=0;
+                               OPEN c_WAYS;
+
+                                  --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                  IF NOT save_output(to_char(l_record_area))
+                                  THEN
+    
+                                      dbms_output.put_line('ERROR');
+    
+                                  END IF;   
+       
+                               LOOP
+         
+                                    FETCH c_WAYS into l_id_content,l_a_code_translation;
+                                    EXIT WHEN c_WAYS%notfound;            
+
+                                   select t.desc_lang_" & l_id_language & "
+                                   into  l_a_translation
+                                   from translation t 
+                                   where t.code_translation=l_a_code_translation;
+
+          
+                               BEGIN  
+              
+                                    select t.desc_lang_" & l_id_language & "
+                                    into  l_d_translation
+                                    from alert_default.translation t
+                                    join alert_default.way w on w.code_way=t.code_translation
+                                    where w.id_content=l_id_content
+                                    and t.desc_lang_" & l_id_language & " is not null;
+            
+                               EXCEPTION
+                                        WHEN no_data_found then
+                                         CONTINUE;
+                               END;
+            
+  
+                                    if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                        l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                          pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                          l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                          if not save_output(l_output) then
+      
+                                               dbms_output.put_line('ERROR');
+    
+                                          end if;
+
+                                          contador := contador + 1;
+            
+                                    END IF;
+       
+                               END LOOP;
+       
+                               close c_WAYS;
+       
+                               l_output:= to_char(contador) || ' record(s) updated!';
+      
+                               if not save_output(l_output) then
+        
+                                     dbms_output.put_line('ERROR');
+      
+                               end if;    
+
+                                --Garantir linha extra no final do log
+                                if not save_output(' ') then
+      
+                                   dbms_output.put_line('ERROR');
+    
+                                end if;   
+             
+                        END;"
+
+        Dim cmd_update_way As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_way.CommandType = CommandType.Text
+            cmd_update_way.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_way.Dispose()
+            Return False
+        End Try
+
+        cmd_update_way.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_HIDRIC(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.sr_intervention.id_content%type;
+      
+                                  contador             integer;      
+
+                                  l_output CLOB := '';
+
+                                  l_record_area VARCHAR2(50) := 'HDRIC';       
+      
+                                  CURSOR c_HIDRICS is
+                                  select h.id_content, h.code_hidrics
+                                  from alert.Hidrics h
+                                  join translation t on t.code_translation=h.code_hidrics
+                                  where h.flg_available='Y';
+
+                                  FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                      l_index INTEGER;
+          
+                                  BEGIN
+          
+                                      SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                      INTO l_index
+                                      FROM output_records r;
+          
+                                      INSERT INTO output_records
+                                      VALUES
+                                          (l_index, i_updated_records, l_record_area);
+                                      l_index := l_index + 1;
+          
+                                      RETURN TRUE;
+          
+                                  EXCEPTION
+                                      WHEN OTHERS THEN
+                                          RETURN FALSE;
+              
+                                  END save_output;         
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_HIDRICS;
+
+                                  --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                  IF NOT save_output(to_char(l_record_area))
+                                  THEN
+    
+                                      dbms_output.put_line('ERROR');
+    
+                                  END IF;   
+       
+                                   LOOP
+         
+                                       FETCH c_HIDRICS into l_id_content,l_a_code_translation;
+                                       EXIT WHEN c_HIDRICS%notfound;            
+
+                                       select t.desc_lang_" & l_id_language & "
+                                       into  l_a_translation
+                                       from translation t 
+                                       where t.code_translation=l_a_code_translation;
+          
+                                   BEGIN  
+              
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.hidrics h on h.code_hidrics=t.code_translation
+                                        where h.id_content=l_id_content
+                                        and t.desc_lang_" & l_id_language & " is not null;
+            
+                                   EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                   END;            
+  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                            l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                              pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                              l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                              if not save_output(l_output) then
+      
+                                                   dbms_output.put_line('ERROR');
+   
+                                              end if;
+                                              contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_HIDRICS;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_hidric As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_hidric.CommandType = CommandType.Text
+            cmd_update_hidric.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_hidric.Dispose()
+            Return False
+        End Try
+
+        cmd_update_hidric.Dispose()
+        Return True
+
+    End Function
+
+    Function UPDATE_HIDRIC_CAHARCTERISIC(ByVal i_institution As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                  l_a_code_translation translation.code_translation%type;
+      
+                                  l_a_translation      translation.desc_lang_6%type;
+      
+                                  l_d_translation      translation.desc_lang_6%type;
+      
+                                  l_id_content         alert.sr_intervention.id_content%type;
+      
+                                  contador             integer;      
+
+                                  l_output CLOB := '';
+
+                                  l_record_area VARCHAR2(50) := 'HDRIC_CHARAC';       
+      
+                                  CURSOR c_HIDRICS_CAHRAC is
+                                  select c.id_content, c.code_hidrics_charact
+                                  from alert.hidrics_charact c
+                                  join translation t on t.code_translation=c.code_hidrics_charact
+                                  where c.flg_available='Y'; 
+
+                                 FUNCTION save_output(i_updated_records IN CLOB) RETURN BOOLEAN IS
+          
+                                      l_index INTEGER;
+
+                                  BEGIN
+          
+                                      SELECT (nvl(MAX(r.record_index), 0) + 1)
+                                      INTO l_index
+                                      FROM output_records r;
+          
+                                      INSERT INTO output_records
+                                      VALUES
+                                          (l_index, i_updated_records, l_record_area);
+                                      l_index := l_index + 1;
+          
+                                      RETURN TRUE;
+          
+                                  EXCEPTION
+                                      WHEN OTHERS THEN
+                                          RETURN FALSE;
+              
+                                  END save_output;        
+      
+                            BEGIN
+       
+                                   contador:=0;
+                                   OPEN c_HIDRICS_CAHRAC;
+
+                                  --COLOCAR NO LOG A ÁREA QUE ESTÁ A SER ATUALIZADA
+                                  IF NOT save_output(to_char(l_record_area))
+                                  THEN
+    
+                                      dbms_output.put_line('ERROR');
+    
+                                  END IF;   
+       
+                                   LOOP
+         
+                                       FETCH c_HIDRICS_CAHRAC into l_id_content,l_a_code_translation;
+                                       EXIT WHEN c_HIDRICS_CAHRAC%notfound;            
+
+                                       select t.desc_lang_" & l_id_language & "
+                                       into  l_a_translation
+                                       from translation t 
+                                       where t.code_translation=l_a_code_translation;
+          
+                                   BEGIN  
+              
+                                        select t.desc_lang_" & l_id_language & "
+                                        into  l_d_translation
+                                        from alert_default.translation t
+                                        join alert_default.hidrics_charact c on c.code_hidrics_charact=t.code_translation
+                                        where c.id_content=l_id_content
+                                        and t.desc_lang_" & l_id_language & " is not null;
+            
+                                   EXCEPTION
+                                            WHEN no_data_found then
+                                             CONTINUE;
+                                   END;            
+  
+                                        if (l_a_translation<>l_d_translation or (l_a_translation is null and l_d_translation is not null)) THEN
+                                                  
+                                            l_output:= 'Record ''' || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || ''' has been updated to ''' ;
+                                                                       
+                                              pk_translation.insert_into_translation(" & l_id_language & ", l_a_code_translation, l_d_translation);
+            
+                                              l_output:= l_output || pk_translation.get_translation(" & l_id_language & ", l_a_code_translation) || '''  - ' || l_id_content || '.';
+
+                                              if not save_output(l_output) then
+      
+                                                   dbms_output.put_line('ERROR');
+   
+                                              end if;
+                                              contador := contador + 1;
+            
+                                        END IF;
+       
+                                   END LOOP;
+       
+                                   close c_HIDRICS_CAHRAC;
+       
+                                   l_output:= to_char(contador) || ' record(s) updated!';
+      
+                                   if not save_output(l_output) then
+        
+                                         dbms_output.put_line('ERROR');
+      
+                                   end if;    
+
+                                    --Garantir linha extra no final do log
+                                    if not save_output(' ') then
+      
+                                       dbms_output.put_line('ERROR');
+    
+                                    end if;   
+             
+                            END;"
+
+        Dim cmd_update_hidric_charac As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_hidric_charac.CommandType = CommandType.Text
+            cmd_update_hidric_charac.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_hidric_charac.Dispose()
+            Return False
+        End Try
+
+        cmd_update_hidric_charac.Dispose()
+        Return True
+
+    End Function
+
+
     Function GET_UPDATED_RECORDS(ByRef i_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT desc_record as ""UPDATE LOG""

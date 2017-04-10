@@ -251,7 +251,7 @@ Public Class LABS_API
                                         LEFT JOIN alert.exam_cat ecp ON ecp.id_exam_cat = ec.parent_id
                                         LEFT JOIN translation tecp ON tecp.code_translation = ecp.code_exam_cat
                                         JOIN translation tst ON tst.code_translation = ast.code_analysis_sample_type
-                                                         AND tst.desc_lang_16 IS NOT NULL
+                                                         AND tst.desc_lang_" & l_id_language & " IS NOT NULL
                                         WHERE ar.flg_available = 'Y'
                                         AND ar.id_institution = " & i_institution & "
                                         AND ais.id_software = " & i_software & "

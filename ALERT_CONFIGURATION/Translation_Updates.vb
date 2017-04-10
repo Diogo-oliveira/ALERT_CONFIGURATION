@@ -41,6 +41,13 @@ Public Class Translation_Updates
     Dim g_questionnaire As String = "    8.1 - QUESTIONNAIRE"
     Dim g_response As String = "    8.2 - RESPONSE"
 
+    Dim g_diet As String = "9 - DIETS"
+
+    Dim g_hidrics_all As String = "10 - HIDRICS (All content)"
+    Dim g_way As String = "    10.1 - WAYS"
+    Dim g_hidric As String = "    10.2 - HIDRICS"
+    Dim g_hidric_charac As String = "    10.3 - HIDRIC CHARACTERISTICS"
+
     '#
     '##################################################################
 
@@ -831,6 +838,170 @@ Public Class Translation_Updates
 
                 End If
 
+            ElseIf (ComboBox2.Text = g_diet) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_DIET(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_response & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_way) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_WAY(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_way & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_hidric) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_HIDRIC(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_hidric_charac) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_HIDRIC_CAHARCTERISIC(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_hidric_charac & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
                 '########################################################### Selecção de ALL ##############################################
             ElseIf (ComboBox2.Text = g_exams_all) Then
 
@@ -1530,11 +1701,22 @@ Public Class Translation_Updates
         ComboBox2.Items.Add(g_clin_quest)
         ComboBox2.Items.Add(g_questionnaire)
         ComboBox2.Items.Add(g_response)
+
+        ComboBox2.Items.Add("")
+
+        ComboBox2.Items.Add(g_diet)
+
+        ComboBox2.Items.Add("")
+
+        ComboBox2.Items.Add(g_hidrics_all)
+        ComboBox2.Items.Add(g_way)
+        ComboBox2.Items.Add(g_hidric)
+        ComboBox2.Items.Add(g_hidric_charac)
         '#
         '###############################################
 
         PictureBox2.Hide()
-        PictureBox2.BackColor = Color.LightGreen
+        PictureBox2.BackColor = Color.LightYellow
 
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
@@ -1561,20 +1743,24 @@ Public Class Translation_Updates
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        Cursor = Cursors.WaitCursor
+        If TextBox1.Text <> "" Then
 
-        If Not translation.UPDATE_LUCENE(TextBox1.Text) Then
+            Cursor = Cursors.WaitCursor
 
-            MsgBox("ERROR UPDATEING LUCENE INDEXES!", vbCritical)
+            If Not translation.UPDATE_LUCENE(TextBox1.Text) Then
 
-        Else
+                MsgBox("ERROR UPDATING LUCENE INDEXES!", vbCritical)
 
-            MsgBox("Lucene indexes updated.", vbInformation)
-            PictureBox2.Hide()
+            Else
+
+                MsgBox("Lucene indexes updated.", vbInformation)
+                PictureBox2.Hide()
+
+            End If
+
+            Cursor = Cursors.Arrow
 
         End If
-
-        Cursor = Cursors.Arrow
 
     End Sub
 
