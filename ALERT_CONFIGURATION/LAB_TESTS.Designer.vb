@@ -279,9 +279,9 @@ Partial Class LAB_TESTS
         Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox7.FormattingEnabled = True
         Me.ComboBox7.ItemHeight = 16
-        Me.ComboBox7.Location = New System.Drawing.Point(831, 119)
+        Me.ComboBox7.Location = New System.Drawing.Point(830, 119)
         Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(739, 24)
+        Me.ComboBox7.Size = New System.Drawing.Size(740, 24)
         Me.ComboBox7.TabIndex = 54
         '
         'Button11

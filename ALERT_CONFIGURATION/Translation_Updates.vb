@@ -34,6 +34,7 @@ Public Class Translation_Updates
     Dim g_disch_reas As String = "    6.1 - DISCHARGE REASONS"
     Dim g_disch_dest As String = "    6.2 - DISCHARGE DESTINATIONS"
     Dim g_disch_instruc As String = "    6.3 - DISCHARGE INSTRUCTIONS"
+    Dim g_disch_inst_group As String = "    6.4 - DISCHARGE INSTRUCTIONS GROUP"
 
     Dim g_clin_serv As String = "7 - CLINICAL SERVICE"
 
@@ -683,6 +684,47 @@ Public Class Translation_Updates
                     If Not translation.UPDATE_DISCHARGE_INSTRUC(TextBox1.Text) Then
 
                         MsgBox("ERROR UPDATING " & g_disch_instruc & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                        If Not translation.DELETE_TEMP_TABLE() Then
+
+                            MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                        End If
+
+                    End If
+
+                End If
+
+            ElseIf (ComboBox2.Text = g_disch_inst_group) Then
+
+                If translation.CREATE_TEMP_TABLE() Then
+
+                    If Not translation.UPDATE_DISCH_GROUP(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_disch_inst_group & " TRANSLATION!", vbCritical)
 
                     Else
 
@@ -1574,6 +1616,35 @@ Public Class Translation_Updates
 
                     End If
 
+                    If Not translation.UPDATE_DISCH_GROUP(TextBox1.Text) Then
+
+                        MsgBox("ERROR UPDATING " & g_disch_inst_group & " TRANSLATION!", vbCritical)
+
+                    Else
+
+                        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not translation.GET_UPDATED_RECORDS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                            MsgBox("ERROR GETTING UPDATED RECORDS!", vbCritical)
+
+                        Else
+                            DataGridView1.Columns.Clear()
+
+                            Dim Table As New DataTable
+
+                            Table.Load(dr)
+                            DataGridView1.DataSource = Table
+
+                            DataGridView1.Columns(0).Width = l_column_width
+                            DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                        End If
+
+                    End If
+
                 End If
 
                 If Not translation.DELETE_TEMP_TABLE() Then
@@ -1643,12 +1714,6 @@ Public Class Translation_Updates
                         End If
 
                     End If
-
-                End If
-
-                If Not translation.DELETE_TEMP_TABLE() Then
-
-                    MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
 
                 End If
 
@@ -1809,6 +1874,12 @@ Public Class Translation_Updates
 
                 End If
 
+                If Not translation.DELETE_TEMP_TABLE() Then
+
+                    MsgBox("ERROR DELETING TEMPORARY TABLE!", vbCritical)
+
+                End If
+
             Else
 
                 MsgBox("Please select an area to be updated.", vbInformation)
@@ -1932,6 +2003,7 @@ Public Class Translation_Updates
         ComboBox2.Items.Add(g_disch_reas)
         ComboBox2.Items.Add(g_disch_dest)
         ComboBox2.Items.Add(g_disch_instruc)
+        ComboBox2.Items.Add(g_disch_inst_group)
 
         ComboBox2.Items.Add("")
 

@@ -304,7 +304,7 @@ Public Class LABS_API
                                     JOIN alert.exam_cat ec ON ec.id_exam_cat = ais.id_exam_cat
                                                        AND ec.flg_available = 'Y'                                    
                                     JOIN alert.sample_recipient sr ON sr.id_sample_recipient = air.id_sample_recipient
-                                    AND sr.flg_available = 'Y'
+                                    --AND sr.flg_available = 'Y' --A Aplicação nã está a fazer esta verificação
 
                                     WHERE ar.flg_available = 'Y'
                                     AND ar.id_institution = " & i_institution & "
@@ -3845,7 +3845,7 @@ Public Class LABS_API
                                                                 AND ais.id_institution = " & i_institution & " 
                                 JOIN alert.analysis_instit_recipient air ON air.id_analysis_instit_soft = ais.id_analysis_instit_soft
                                 JOIN alert.sample_recipient sr ON sr.id_sample_recipient = air.id_sample_recipient
-                                                           AND sr.flg_available = 'Y'
+                                                           --AND sr.flg_available = 'Y' --A aplicação não faz esta verificação
                                 JOIN translation tsr ON tsr.code_translation = sr.code_sample_recipient
                                 WHERE ad.id_software = " & i_software & "
                                 AND ad.id_dep_clin_serv = " & i_dep_clin_serv & "
