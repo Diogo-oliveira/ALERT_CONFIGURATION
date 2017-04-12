@@ -6,6 +6,9 @@ Public Class Form1
 
     Dim g_a_databases() As String
 
+    Dim g_height_initial As Integer = 430
+    Dim g_height_extended As Integer = 500
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         If Connection.conn.State = 0 Then
@@ -19,6 +22,8 @@ Public Class Form1
         End If
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
+
+        Me.Height = g_height_initial
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 
@@ -216,6 +221,8 @@ Public Class Form1
 
                 Connection.conn.Open()
 
+                Me.Height = g_height_extended
+
                 TextBox1.Visible = False
                 TextBox2.Visible = False
                 ComboBox1.Visible = False
@@ -286,6 +293,8 @@ Public Class Form1
         Button14.Visible = False
         Button15.Visible = False
         Button16.Visible = False
+
+        Me.Height = g_height_initial
 
         Dim db_list As New OracleDataSourceEnumerator()
 
@@ -368,7 +377,16 @@ Public Class Form1
 
     Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
 
-        MsgBox("Waiting Development!", vbInformation)
+        ''MsgBox("Waiting Development!", vbInformation)
+
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
+        Dim FORM_DISCHARGE As New DISCHARGE
+
+        Me.Hide()
+
+        FORM_DISCHARGE.ShowDialog()
 
     End Sub
 

@@ -27,7 +27,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>\\clfs01\ProductDevelopment\ProductEvaluation\03Hotfixes\03Hotfixes_Tests\ALERT_CONFIGURATION\</UpdateUrl>
-    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationRevision>16</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -201,6 +201,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection.vb" />
+    <Compile Include="DISCHARGE.Designer.vb">
+      <DependentUpon>DISCHARGE.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DISCHARGE.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="EXAMS_API.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
@@ -290,6 +296,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DISCHARGE.resx">
+      <DependentUpon>DISCHARGE.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>

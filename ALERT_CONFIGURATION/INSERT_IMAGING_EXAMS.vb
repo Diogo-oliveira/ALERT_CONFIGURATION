@@ -129,7 +129,6 @@ Public Class INSERT_IMAGING_EXAMS
             dr.Close()
 
         End If
-
         Cursor = Cursors.Arrow
 
     End Sub
