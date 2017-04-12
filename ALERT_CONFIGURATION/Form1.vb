@@ -15,15 +15,17 @@ Public Class Form1
 
             Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION"
 
+            Me.Height = g_height_initial
+
         Else
 
             Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION  ::::  Connected to " & Connection.db
 
+            Me.Height = g_height_extended
+
         End If
 
         Me.BackColor = Color.FromArgb(215, 215, 180)
-
-        Me.Height = g_height_initial
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 

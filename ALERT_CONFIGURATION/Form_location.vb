@@ -15,7 +15,7 @@
     'Dim RatioX As Double
     'Dim RatioY As Double
 
-    '''+9 é o offset porque o maximize coloca no ponto -8, -8
+    '+9 é o offset porque o maximize coloca no ponto -8, -8
     'If (Me.Location.X + 9) > DesignScreenWidth Then
 
     '        'Ecrã secundário 

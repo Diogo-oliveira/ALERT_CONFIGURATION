@@ -28,7 +28,6 @@ Partial Class DISCHARGE
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -46,13 +45,14 @@ Partial Class DISCHARGE
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
+        Me.Button6 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(829, 10)
+        Me.Label4.Location = New System.Drawing.Point(824, 9)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 37
@@ -62,7 +62,7 @@ Partial Class DISCHARGE
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(832, 25)
+        Me.ComboBox3.Location = New System.Drawing.Point(827, 24)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 36
@@ -70,7 +70,7 @@ Partial Class DISCHARGE
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(574, 10)
+        Me.Label3.Location = New System.Drawing.Point(569, 9)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 35
@@ -80,7 +80,7 @@ Partial Class DISCHARGE
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(575, 25)
+        Me.ComboBox2.Location = New System.Drawing.Point(570, 24)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 34
@@ -88,7 +88,7 @@ Partial Class DISCHARGE
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(168, 9)
+        Me.Label2.Location = New System.Drawing.Point(163, 8)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 33
@@ -103,15 +103,6 @@ Partial Class DISCHARGE
         Me.Label1.TabIndex = 32
         Me.Label1.Text = "ID INSTITUTION"
         '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(7, 56)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(142, 34)
-        Me.Button1.TabIndex = 31
-        Me.Button1.Text = "SEARCH INSTITUTION"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
         'TextBox1
         '
         Me.TextBox1.Location = New System.Drawing.Point(7, 25)
@@ -122,7 +113,7 @@ Partial Class DISCHARGE
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(171, 25)
+        Me.ComboBox1.Location = New System.Drawing.Point(166, 24)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(382, 21)
         Me.ComboBox1.TabIndex = 29
@@ -130,7 +121,7 @@ Partial Class DISCHARGE
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(22, 119)
+        Me.Label5.Location = New System.Drawing.Point(15, 18)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(118, 13)
         Me.Label5.TabIndex = 39
@@ -140,7 +131,7 @@ Partial Class DISCHARGE
         '
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.Location = New System.Drawing.Point(23, 134)
+        Me.ComboBox4.Location = New System.Drawing.Point(18, 34)
         Me.ComboBox4.Name = "ComboBox4"
         Me.ComboBox4.Size = New System.Drawing.Size(530, 21)
         Me.ComboBox4.TabIndex = 38
@@ -150,7 +141,7 @@ Partial Class DISCHARGE
         Me.CheckedListBox1.CheckOnClick = True
         Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox1.FormattingEnabled = True
-        Me.CheckedListBox1.Location = New System.Drawing.Point(23, 186)
+        Me.CheckedListBox1.Location = New System.Drawing.Point(18, 85)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(530, 327)
         Me.CheckedListBox1.TabIndex = 40
@@ -177,7 +168,7 @@ Partial Class DISCHARGE
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(20, 170)
+        Me.Label7.Location = New System.Drawing.Point(15, 69)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(146, 13)
         Me.Label7.TabIndex = 43
@@ -213,18 +204,22 @@ Partial Class DISCHARGE
         'GroupBox1
         '
         Me.GroupBox1.Controls.Add(Me.Label8)
+        Me.GroupBox1.Controls.Add(Me.Label7)
         Me.GroupBox1.Controls.Add(Me.Button2)
+        Me.GroupBox1.Controls.Add(Me.CheckedListBox1)
         Me.GroupBox1.Controls.Add(Me.Button3)
+        Me.GroupBox1.Controls.Add(Me.Label5)
         Me.GroupBox1.Controls.Add(Me.Button4)
+        Me.GroupBox1.Controls.Add(Me.ComboBox4)
         Me.GroupBox1.Controls.Add(Me.CheckedListBox3)
         Me.GroupBox1.Controls.Add(Me.Button15)
         Me.GroupBox1.Controls.Add(Me.Label6)
         Me.GroupBox1.Controls.Add(Me.CheckedListBox2)
         Me.GroupBox1.Controls.Add(Me.Button5)
         Me.GroupBox1.Controls.Add(Me.Button16)
-        Me.GroupBox1.Location = New System.Drawing.Point(7, 101)
+        Me.GroupBox1.Location = New System.Drawing.Point(12, 61)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(815, 728)
+        Me.GroupBox1.Size = New System.Drawing.Size(815, 732)
         Me.GroupBox1.TabIndex = 124
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "DEFAULT"
@@ -234,14 +229,14 @@ Partial Class DISCHARGE
         Me.CheckedListBox3.CheckOnClick = True
         Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(16, 482)
+        Me.CheckedListBox3.Location = New System.Drawing.Point(16, 481)
         Me.CheckedListBox3.Name = "CheckedListBox3"
         Me.CheckedListBox3.Size = New System.Drawing.Size(780, 208)
         Me.CheckedListBox3.TabIndex = 124
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(124, 696)
+        Me.Button2.Location = New System.Drawing.Point(124, 695)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(101, 23)
         Me.Button2.TabIndex = 127
@@ -250,7 +245,7 @@ Partial Class DISCHARGE
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(231, 696)
+        Me.Button3.Location = New System.Drawing.Point(231, 695)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(102, 23)
         Me.Button3.TabIndex = 125
@@ -259,7 +254,7 @@ Partial Class DISCHARGE
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(16, 696)
+        Me.Button4.Location = New System.Drawing.Point(16, 695)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(102, 23)
         Me.Button4.TabIndex = 126
@@ -269,28 +264,33 @@ Partial Class DISCHARGE
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(15, 466)
+        Me.Label8.Location = New System.Drawing.Point(15, 465)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(154, 13)
         Me.Label8.TabIndex = 125
         Me.Label8.Text = "DISCHARGE INSTRUCTIONS"
+        '
+        'Button6
+        '
+        Me.Button6.Location = New System.Drawing.Point(12, 809)
+        Me.Button6.Name = "Button6"
+        Me.Button6.Size = New System.Drawing.Size(102, 23)
+        Me.Button6.TabIndex = 126
+        Me.Button6.Text = "BACK"
+        Me.Button6.UseVisualStyleBackColor = True
         '
         'DISCHARGE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
-        Me.Controls.Add(Me.Label7)
-        Me.Controls.Add(Me.CheckedListBox1)
-        Me.Controls.Add(Me.Label5)
-        Me.Controls.Add(Me.ComboBox4)
+        Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.ComboBox3)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.ComboBox2)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.GroupBox1)
@@ -311,7 +311,6 @@ Partial Class DISCHARGE
     Friend WithEvents ComboBox2 As ComboBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
-    Friend WithEvents Button1 As Button
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label5 As Label
@@ -329,4 +328,5 @@ Partial Class DISCHARGE
     Friend WithEvents Button3 As Button
     Friend WithEvents Button4 As Button
     Friend WithEvents CheckedListBox3 As CheckedListBox
+    Friend WithEvents Button6 As Button
 End Class
