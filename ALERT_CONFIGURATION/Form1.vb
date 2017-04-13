@@ -379,7 +379,7 @@ Public Class Form1
 
     Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
 
-        ''MsgBox("Waiting Development!", vbInformation)
+        ''MsgBox("AWAITING Development!", vbInformation)
 
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
@@ -394,19 +394,19 @@ Public Class Form1
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
 
-        MsgBox("Waiting Development!", vbInformation)
+        MsgBox("AWAITING Development!", vbInformation)
 
     End Sub
 
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
 
-        MsgBox("Waiting Development!", vbInformation)
+        MsgBox("AWAITING Development!", vbInformation)
 
     End Sub
 
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
 
-        MsgBox("Waiting Development!", vbInformation)
+        MsgBox("AWAITING Development!", vbInformation)
 
     End Sub
 End Class

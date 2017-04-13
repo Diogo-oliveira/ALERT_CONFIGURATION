@@ -22,6 +22,7 @@ Partial Class DISCHARGE
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DISCHARGE))
         Me.Label4 = New System.Windows.Forms.Label()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -46,7 +47,9 @@ Partial Class DISCHARGE
         Me.Button4 = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.Button6 = New System.Windows.Forms.Button()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.GroupBox1.SuspendLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label4
@@ -130,16 +133,17 @@ Partial Class DISCHARGE
         'ComboBox4
         '
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.Location = New System.Drawing.Point(18, 34)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(530, 21)
+        Me.ComboBox4.Size = New System.Drawing.Size(530, 23)
         Me.ComboBox4.TabIndex = 38
         '
         'CheckedListBox1
         '
         Me.CheckedListBox1.CheckOnClick = True
-        Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(18, 85)
         Me.CheckedListBox1.Name = "CheckedListBox1"
@@ -279,11 +283,21 @@ Partial Class DISCHARGE
         Me.Button6.Text = "BACK"
         Me.Button6.UseVisualStyleBackColor = True
         '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
+        Me.PictureBox1.Location = New System.Drawing.Point(1375, 8)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(207, 98)
+        Me.PictureBox1.TabIndex = 151
+        Me.PictureBox1.TabStop = False
+        '
         'DISCHARGE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.ComboBox3)
@@ -300,6 +314,7 @@ Partial Class DISCHARGE
         Me.Text = "DISCHARGE"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -329,4 +344,5 @@ Partial Class DISCHARGE
     Friend WithEvents Button4 As Button
     Friend WithEvents CheckedListBox3 As CheckedListBox
     Friend WithEvents Button6 As Button
+    Friend WithEvents PictureBox1 As PictureBox
 End Class
