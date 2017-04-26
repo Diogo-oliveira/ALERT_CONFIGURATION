@@ -1,14 +1,21 @@
 ﻿'TO DO:
-
-' Rever a função que vai buscar as reasons, pois não estou a fazer o join às Destinations
 ' Ver as reasons que estão associadas ao clinical service => ver se todas as reasons devem ter de facto associação na dest_reason
+'Nota: Exsitem registos na disch-reas_dest sem dest e com clinical service
+'1- Criar uma clasee CLinical Service 
+'1.1 - Criar uma função que verifique se o clinical service está disponível no alert
+'1.2 - Criar uma função para verificar se o dep_clin_serv existe
+'1.3 - Criar uma função para inserir clinical services
+'2 - Adpatar a função de versão, reason e dest para mostrar as reasons sem dest mas com clinical service
+
 ' Pensar numa função para devolver os profissionais associados a cada reason/dest
+
 
 Imports Oracle.DataAccess.Client
 Public Class DISCHARGE
 
     Dim db_access_general As New General
     Dim db_discharge As New DISCHARGE_API
+    Dim db_clin_serv As New CLINICAL_SERVICE_API
 
     'Variável que guarda o sotware selecionado
     Dim g_selected_soft As Int16 = -1
@@ -284,6 +291,34 @@ Public Class DISCHARGE
     End Sub
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+
+        If Not db_clin_serv.CHECK_CLIN_SERV(ComboBox1.Text) Then
+
+            If Not db_clin_serv.SET_CLIN_SERV(ComboBox1.Text) Then
+
+                MsgBox("ERROR")
+
+            Else
+
+                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+
+                    MsgBox("ERROR")
+
+                End If
+
+            End If
+
+
+
+        ElseIf Not db_clin_serv.CHECK_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+
+            If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+
+                MsgBox("ERROR")
+
+            End If
+
+        End If
 
     End Sub
 End Class

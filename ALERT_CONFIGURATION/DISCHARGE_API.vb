@@ -93,6 +93,8 @@ Public Class DISCHARGE_API
                                 JOIN alert_default.discharge_dest_mrk_vrs dv ON dv.id_discharge_dest = d.id_discharge_dest
                                                                          AND dv.id_market = i.id_market
                                                                          AND dv.version = drd.version
+                                JOIN ALERT_DEFAULT.DISCHARGE_DEST DD ON DD.ID_DISCHARGE_DEST=DRD.ID_DISCHARGE_DEST 
+                                                                     AND DD.FLG_AVAILABLE='Y'   
                                 WHERE dr.flg_available = 'Y'
                                 AND i.id_institution = " & i_institution & "
                                 AND drmv.version = '" & i_version & "'
@@ -104,6 +106,7 @@ Public Class DISCHARGE_API
                                 ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
+
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
@@ -113,6 +116,7 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return False
         End Try
+
     End Function
 
 End Class

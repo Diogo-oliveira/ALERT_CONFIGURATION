@@ -27,7 +27,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>\\clfs01\ProductDevelopment\ProductEvaluation\03Hotfixes\03Hotfixes_Tests\ALERT_CONFIGURATION\</UpdateUrl>
-    <ApplicationRevision>16</ApplicationRevision>
+    <ApplicationRevision>17</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -200,6 +200,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLINICAL_SERVICE_API.vb" />
     <Compile Include="Connection.vb" />
     <Compile Include="DISCHARGE.Designer.vb">
       <DependentUpon>DISCHARGE.vb</DependentUpon>
