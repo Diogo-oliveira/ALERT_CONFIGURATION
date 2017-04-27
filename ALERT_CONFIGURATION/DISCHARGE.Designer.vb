@@ -41,11 +41,11 @@ Partial Class DISCHARGE
         Me.Button16 = New System.Windows.Forms.Button()
         Me.Button5 = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Button4 = New System.Windows.Forms.Button()
-        Me.Label8 = New System.Windows.Forms.Label()
+        Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
         Me.Button6 = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.GroupBox1.SuspendLayout()
@@ -147,7 +147,7 @@ Partial Class DISCHARGE
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(18, 85)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(530, 327)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(530, 324)
         Me.CheckedListBox1.TabIndex = 40
         '
         'Label6
@@ -228,15 +228,14 @@ Partial Class DISCHARGE
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "DEFAULT"
         '
-        'CheckedListBox3
+        'Label8
         '
-        Me.CheckedListBox3.CheckOnClick = True
-        Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckedListBox3.FormattingEnabled = True
-        Me.CheckedListBox3.Location = New System.Drawing.Point(16, 481)
-        Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(780, 208)
-        Me.CheckedListBox3.TabIndex = 124
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(15, 465)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(154, 13)
+        Me.Label8.TabIndex = 125
+        Me.Label8.Text = "DISCHARGE INSTRUCTIONS"
         '
         'Button2
         '
@@ -265,14 +264,15 @@ Partial Class DISCHARGE
         Me.Button4.Text = "SELECT ALL"
         Me.Button4.UseVisualStyleBackColor = True
         '
-        'Label8
+        'CheckedListBox3
         '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(15, 465)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(154, 13)
-        Me.Label8.TabIndex = 125
-        Me.Label8.Text = "DISCHARGE INSTRUCTIONS"
+        Me.CheckedListBox3.CheckOnClick = True
+        Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox3.FormattingEnabled = True
+        Me.CheckedListBox3.Location = New System.Drawing.Point(16, 481)
+        Me.CheckedListBox3.Name = "CheckedListBox3"
+        Me.CheckedListBox3.Size = New System.Drawing.Size(780, 208)
+        Me.CheckedListBox3.TabIndex = 124
         '
         'Button6
         '

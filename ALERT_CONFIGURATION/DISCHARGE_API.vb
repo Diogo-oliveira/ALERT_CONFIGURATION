@@ -12,7 +12,6 @@ Public Class DISCHARGE_API
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        'Modificar o output. Passar apenas ID_CONTENT e DESCRITIVO. O Resto será chamado diretamente pela função responsável por incluir Reason e Dest na BD
         Dim sql As String = "SELECT DISTINCT drd.version
                                 FROM alert_default.discharge_reason dr
                                 JOIN alert_default.discharge_reason_mrk_vrs drmv ON drmv.id_discharge_reason = dr.id_discharge_reason

@@ -292,31 +292,131 @@ Public Class DISCHARGE
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
+        Dim l_has_parent As Boolean = False
+        Dim l_id_parent As Int64 = -1
+
         If Not db_clin_serv.CHECK_CLIN_SERV(ComboBox1.Text) Then
 
-            If Not db_clin_serv.SET_CLIN_SERV(ComboBox1.Text) Then
+            ''Verificação Parents
+            If db_clin_serv.CHECK_HAS_PARENT(470, ComboBox1.Text) Then
 
-                MsgBox("ERROR")
+                MsgBox("HAS PARENTS")
 
-            Else
+                l_has_parent = True
+                Dim dr As OracleDataReader
 
-                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+                If Not db_clin_serv.GET_PARENT(470, ComboBox1.Text, dr) Then
 
-                    MsgBox("ERROR")
+                    MsgBox("ERROR 1")
+
+                Else
+
+                    While dr.Read()
+
+                        If Not db_clin_serv.CHECK_CLIN_SERV(dr.Item(0)) Then
+
+                            If Not db_clin_serv.SET_CLIN_SERV(dr.Item(0)) Then
+                                MsgBox("ERROR 2")
+                            Else
+                                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, dr.Item(0)) Then
+                                    MsgBox("ERROR 3")
+                                End If
+                            End If
+
+                        End If
+
+                        If Not db_clin_serv.GET_ID_ALERT(dr.Item(0), l_id_parent) Then
+
+                            MsgBox("ERROR 3.1")
+
+                        Else
+
+                            MsgBox(l_id_parent)
+
+                        End If
+
+                    End While
 
                 End If
 
             End If
 
+            'Inserção Clinical Services
+            If Not db_clin_serv.SET_CLIN_SERV(ComboBox1.Text) Then
 
+                MsgBox("ERROR 4")
+
+            Else
+
+                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+
+                    MsgBox("ERROR 5")
+
+                End If
+
+            End If
+
+            If l_has_parent = True Then
+
+                If Not db_clin_serv.SET_PARENT(ComboBox1.Text, l_id_parent) Then
+
+                    MsgBox("ERROR 5.1")
+
+                End If
+
+            End If
 
         ElseIf Not db_clin_serv.CHECK_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
 
             If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
 
-                MsgBox("ERROR")
+                MsgBox("ERROR 6")
 
             End If
+
+        End If
+
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+
+        Dim l_dep_clin_serv As Int64 = -1
+
+        If Not db_clin_serv.GET_DEP_CLIN_SERV(470, 11, 47000000022, ComboBox1.Text, l_dep_clin_serv) Then
+
+            MsgBox("ERROR")
+
+        ElseIf l_dep_clin_serv <> -1 Then
+
+            MsgBox(l_dep_clin_serv)
+
+        Else
+
+            MsgBox("DEP_CLIN_SERV not available!")
+
+        End If
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+
+        Dim a_dep As Int64()
+
+        If Not db_clin_serv.GET_DEPARTMENTS(470, 11, a_dep) Then
+
+            MsgBox("ERROR")
+
+        End If
+
+        For i As Integer = 1 To a_dep.Count() - 1
+
+            MsgBox(a_dep(i))
+
+        Next
+
+        If Not db_clin_serv.SET_DEP_CLIN_SERV("TMP36.627", a_dep(0)) Then
+
+            MsgBox("ERROR")
 
         End If
 
