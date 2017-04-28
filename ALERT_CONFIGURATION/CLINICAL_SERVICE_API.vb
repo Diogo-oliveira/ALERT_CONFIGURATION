@@ -376,18 +376,48 @@ Public Class CLINICAL_SERVICE_API
 
         Dim cmd_insert_dep_clin_serv As New OracleCommand(sql, Connection.conn)
 
-        ' Try
-        cmd_insert_dep_clin_serv.CommandType = CommandType.Text
-        cmd_insert_dep_clin_serv.ExecuteNonQuery()
-        ' Catch ex As Exception
-        'cmd_insert_dep_clin_serv.Dispose()
-        'Return False
-        ' End Try
+        Try
+            cmd_insert_dep_clin_serv.CommandType = CommandType.Text
+            cmd_insert_dep_clin_serv.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_dep_clin_serv.Dispose()
+            Return False
+        End Try
 
         cmd_insert_dep_clin_serv.Dispose()
 
         Return True
 
     End Function
+
+    Function GET_CLIN_SERV_DESC(ByVal i_institution As Int64, ByVal i_id_content_clin_serv As String) As String
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT t.desc_lang_" & l_id_language & "
+                                FROM alert_default.clinical_service c
+                                JOIN alert_default.translation t ON t.code_translation = c.code_clinical_service
+                                WHERE c.id_content = '" & i_id_content_clin_serv & "'
+                                AND c.flg_available = 'Y'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+        Dim cs_translation As String
+
+        dr = cmd.ExecuteReader()
+            cmd.Dispose()
+
+            While dr.Read()
+
+            cs_translation = dr.Item(0)
+
+        End While
+
+        Return cs_translation
+
+    End Function
+
 
 End Class

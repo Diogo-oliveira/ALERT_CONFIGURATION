@@ -2,13 +2,12 @@
 ' Ver as reasons que estão associadas ao clinical service => ver se todas as reasons devem ter de facto associação na dest_reason
 'Nota: Exsitem registos na disch-reas_dest sem dest e com clinical service
 '1- Criar uma clasee CLinical Service 
-'1.1 - Criar uma função que verifique se o clinical service está disponível no alert
-'1.2 - Criar uma função para verificar se o dep_clin_serv existe
-'1.3 - Criar uma função para inserir clinical services
+'1.1 - Criar uma função que verifique se o clinical service está disponível no alert - OK
+'1.2 - Criar uma função para verificar se o dep_clin_serv existe - OK
+'1.3 - Criar uma função para inserir clinical services - OK
 '2 - Adpatar a função de versão, reason e dest para mostrar as reasons sem dest mas com clinical service
 
-' Pensar numa função para devolver os profissionais associados a cada reason/dest
-
+'3-Pensar numa função para devolver os profissionais associados a cada reason/dest
 
 Imports Oracle.DataAccess.Client
 Public Class DISCHARGE
@@ -21,10 +20,13 @@ Public Class DISCHARGE
     Dim g_selected_soft As Int16 = -1
 
     'Array que vai guardar as REASONS caregadas do default
-    Dim g_a_loaded_reasons_default() As DISCHARGE_API.DEFAULT_DISCAHRGE
+    Dim g_a_loaded_reasons_default() As DISCHARGE_API.DEFAULT_REASONS
 
     'Array que vai guardar as DESTINATIONS caregadas do default
     Dim g_a_loaded_destinations_default() As DISCHARGE_API.DEFAULT_DISCAHRGE
+
+    'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA
+    Dim g_a_loaded_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
 
     Private Sub DISCHARGE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -59,6 +61,8 @@ Public Class DISCHARGE
         dr.Dispose()
         dr.Close()
 
+        CheckedListBox1.HorizontalScrollbar = True
+
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
     End Sub
@@ -76,6 +80,9 @@ Public Class DISCHARGE
 
         CheckedListBox1.Items.Clear()
         ReDim g_a_loaded_destinations_default(0)
+
+        CheckedListBox2.Items.Clear()
+        ReDim g_a_loaded_profiles_default(0)
 
         If TextBox1.Text <> "" Then
 
@@ -134,6 +141,9 @@ Public Class DISCHARGE
         CheckedListBox1.Items.Clear()
         ReDim g_a_loaded_destinations_default(0)
 
+        CheckedListBox2.Items.Clear()
+        ReDim g_a_loaded_profiles_default(0)
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -179,6 +189,9 @@ Public Class DISCHARGE
         CheckedListBox1.Items.Clear()
         ReDim g_a_loaded_destinations_default(0)
 
+        CheckedListBox2.Items.Clear()
+        ReDim g_a_loaded_profiles_default(0)
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -193,11 +206,25 @@ Public Class DISCHARGE
 
             While dr.Read()
                 ReDim Preserve g_a_loaded_destinations_default(l_index_destinations_default)
-                g_a_loaded_destinations_default(l_index_destinations_default).id_content = dr.Item(0)
-                g_a_loaded_destinations_default(l_index_destinations_default).desccription = dr.Item(1)
-                l_index_destinations_default = l_index_destinations_default + 1
 
-                CheckedListBox1.Items.Add(dr.Item(1) & "  -  [" & dr.Item(0) & "]")
+                g_a_loaded_destinations_default(l_index_destinations_default).id_disch_reas_dest = dr.Item(0)
+                g_a_loaded_destinations_default(l_index_destinations_default).id_content = dr.Item(1)
+                g_a_loaded_destinations_default(l_index_destinations_default).desccription = dr.Item(2)
+                g_a_loaded_destinations_default(l_index_destinations_default).id_clinical_service = dr.Item(3)
+                g_a_loaded_destinations_default(l_index_destinations_default).type = dr.Item(4)
+
+                'Verificar se Reason/Destintion está assocaido a um clinical service
+                If g_a_loaded_destinations_default(l_index_destinations_default).id_clinical_service = "-1" Then
+
+                    CheckedListBox1.Items.Add(dr.Item(2) & "  -  [" & dr.Item(1) & "]")
+
+                Else
+
+                    CheckedListBox1.Items.Add(dr.Item(2) & "  -  [" & dr.Item(1) & "]   (Clinical Service: " & db_clin_serv.GET_CLIN_SERV_DESC(TextBox1.Text, dr.Item(3)) & ")")
+
+                End If
+
+                l_index_destinations_default = l_index_destinations_default + 1
 
             End While
 
@@ -205,6 +232,33 @@ Public Class DISCHARGE
 
         dr.Dispose()
         dr.Close()
+
+
+        ReDim g_a_loaded_profiles_default(0)
+        Dim l_dimension_profiles As Integer = 0
+        Dim dr_profile As OracleDataReader
+
+
+        If Not db_discharge.GET_DEFAULT_PROFILE_DISCH_REASON(g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content, dr_profile) Then
+
+            MsgBox("ERROR GETTING DISCHARGE PROFILES!", vbCritical)
+
+        Else
+
+            While dr_profile.Read()
+
+                CheckedListBox2.Items.Add(dr_profile.Item(0) & " - " & dr_profile.Item(1))
+                CheckedListBox2.SetItemChecked(l_dimension_profiles, True)
+
+                ReDim Preserve g_a_loaded_profiles_default(l_dimension_profiles)
+                g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_TEMPLATE = dr_profile.Item(0)
+                g_a_loaded_profiles_default(l_dimension_profiles).PROFILE_NAME = dr_profile.Item(1)
+
+                l_dimension_profiles = l_dimension_profiles + 1
+
+            End While
+
+        End If
 
         Cursor = Cursors.Arrow
 
@@ -223,6 +277,9 @@ Public Class DISCHARGE
 
         CheckedListBox1.Items.Clear()
         ReDim g_a_loaded_destinations_default(0)
+
+        CheckedListBox2.Items.Clear()
+        ReDim g_a_loaded_profiles_default(0)
 
         Dim dr As OracleDataReader
 
@@ -257,6 +314,9 @@ Public Class DISCHARGE
 
         CheckedListBox1.Items.Clear()
         ReDim g_a_loaded_destinations_default(0)
+
+        CheckedListBox2.Items.Clear()
+        ReDim g_a_loaded_profiles_default(0)
 
         If ComboBox3.Text <> "" Then
 
@@ -380,19 +440,13 @@ Public Class DISCHARGE
 
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
 
-        Dim l_dep_clin_serv As Int64 = -1
+        If CheckedListBox1.Items.Count() > 0 Then
 
-        If Not db_clin_serv.GET_DEP_CLIN_SERV(470, 11, 47000000022, ComboBox1.Text, l_dep_clin_serv) Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
 
-            MsgBox("ERROR")
+                CheckedListBox1.SetItemChecked(i, False)
 
-        ElseIf l_dep_clin_serv <> -1 Then
-
-            MsgBox(l_dep_clin_serv)
-
-        Else
-
-            MsgBox("DEP_CLIN_SERV not available!")
+            Next
 
         End If
 
@@ -400,25 +454,16 @@ Public Class DISCHARGE
 
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
 
-        Dim a_dep As Int64()
+        If CheckedListBox1.Items.Count() > 0 Then
 
-        If Not db_clin_serv.GET_DEPARTMENTS(470, 11, a_dep) Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
 
-            MsgBox("ERROR")
+                CheckedListBox1.SetItemChecked(i, True)
 
-        End If
-
-        For i As Integer = 1 To a_dep.Count() - 1
-
-            MsgBox(a_dep(i))
-
-        Next
-
-        If Not db_clin_serv.SET_DEP_CLIN_SERV("TMP36.627", a_dep(0)) Then
-
-            MsgBox("ERROR")
+            Next
 
         End If
 
     End Sub
+
 End Class

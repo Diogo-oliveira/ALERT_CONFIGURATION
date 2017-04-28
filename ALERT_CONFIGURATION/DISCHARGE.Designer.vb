@@ -137,7 +137,7 @@ Partial Class DISCHARGE
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.Location = New System.Drawing.Point(18, 34)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(530, 23)
+        Me.ComboBox4.Size = New System.Drawing.Size(488, 23)
         Me.ComboBox4.TabIndex = 38
         '
         'CheckedListBox1
@@ -147,13 +147,13 @@ Partial Class DISCHARGE
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(18, 85)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(530, 324)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(488, 324)
         Me.CheckedListBox1.TabIndex = 40
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(560, 18)
+        Me.Label6.Location = New System.Drawing.Point(512, 18)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(96, 13)
         Me.Label6.TabIndex = 41
@@ -161,12 +161,11 @@ Partial Class DISCHARGE
         '
         'CheckedListBox2
         '
-        Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox2.FormattingEnabled = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(563, 34)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(512, 34)
         Me.CheckedListBox2.Name = "CheckedListBox2"
-        Me.CheckedListBox2.Size = New System.Drawing.Size(233, 378)
+        Me.CheckedListBox2.Size = New System.Drawing.Size(284, 378)
         Me.CheckedListBox2.TabIndex = 42
         '
         'Label7

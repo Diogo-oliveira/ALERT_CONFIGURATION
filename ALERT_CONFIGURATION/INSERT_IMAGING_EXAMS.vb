@@ -76,62 +76,62 @@ Public Class INSERT_IMAGING_EXAMS
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    '    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        Cursor = Cursors.Arrow
+    '        Cursor = Cursors.Arrow
 
-        If TextBox1.Text <> "" Then
+    '        If TextBox1.Text <> "" Then
 
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+    '            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
 
-            ComboBox2.Items.Clear()
-            ComboBox2.Text = ""
+    '            ComboBox2.Items.Clear()
+    '            ComboBox2.Text = ""
 
-            Dim dr As OracleDataReader
+    '            Dim dr As OracleDataReader
 
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+    '#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+    '            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
+    '#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+    '                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
 
-            Else
+    '            Else
 
-                While dr.Read()
+    '                While dr.Read()
 
-                    ComboBox2.Items.Add(dr.Item(1))
+    '                    ComboBox2.Items.Add(dr.Item(1))
 
-                End While
+    '                End While
 
-                ComboBox3.Text = ""
-                ComboBox3.Items.Clear()
+    '                ComboBox3.Text = ""
+    '                ComboBox3.Items.Clear()
 
-                ComboBox4.Text = ""
-                ComboBox4.Items.Clear()
+    '                ComboBox4.Text = ""
+    '                ComboBox4.Items.Clear()
 
-                CheckedListBox2.Items.Clear()
+    '                CheckedListBox2.Items.Clear()
 
-                CheckedListBox1.Items.Clear()
+    '                CheckedListBox1.Items.Clear()
 
-                ComboBox5.Text = ""
-                ComboBox5.Items.Clear()
-                CheckedListBox3.Items.Clear()
+    '                ComboBox5.Text = ""
+    '                ComboBox5.Items.Clear()
+    '                CheckedListBox3.Items.Clear()
 
-                ComboBox6.Text = ""
-                ComboBox6.Items.Clear()
-                CheckedListBox4.Items.Clear()
+    '                ComboBox6.Text = ""
+    '                ComboBox6.Items.Clear()
+    '                CheckedListBox4.Items.Clear()
 
-                g_selected_category = ""
+    '                g_selected_category = ""
 
-            End If
+    '            End If
 
-            dr.Dispose()
-            dr.Close()
+    '            dr.Dispose()
+    '            dr.Close()
 
-        End If
-        Cursor = Cursors.Arrow
+    '        End If
+    '        Cursor = Cursors.Arrow
 
-    End Sub
+    '    End Sub
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
 
@@ -1443,4 +1443,60 @@ Public Class INSERT_IMAGING_EXAMS
 
     End Sub
 
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+        Cursor = Cursors.Arrow
+
+        If TextBox1.Text <> "" Then
+
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+
+            ComboBox2.Items.Clear()
+            ComboBox2.Text = ""
+
+            Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+            Else
+
+                While dr.Read()
+
+                    ComboBox2.Items.Add(dr.Item(1))
+
+                End While
+
+                ComboBox3.Text = ""
+                ComboBox3.Items.Clear()
+
+                ComboBox4.Text = ""
+                ComboBox4.Items.Clear()
+
+                CheckedListBox2.Items.Clear()
+
+                CheckedListBox1.Items.Clear()
+
+                ComboBox5.Text = ""
+                ComboBox5.Items.Clear()
+                CheckedListBox3.Items.Clear()
+
+                ComboBox6.Text = ""
+                ComboBox6.Items.Clear()
+                CheckedListBox4.Items.Clear()
+
+                g_selected_category = ""
+
+            End If
+
+            dr.Dispose()
+            dr.Close()
+
+        End If
+        Cursor = Cursors.Arrow
+
+    End Sub
 End Class
