@@ -247,12 +247,13 @@ Public Class DISCHARGE
 
             While dr_profile.Read()
 
-                CheckedListBox2.Items.Add(dr_profile.Item(0) & " - " & dr_profile.Item(1))
+                CheckedListBox2.Items.Add(dr_profile.Item(1) & " - " & dr_profile.Item(2))
                 CheckedListBox2.SetItemChecked(l_dimension_profiles, True)
 
                 ReDim Preserve g_a_loaded_profiles_default(l_dimension_profiles)
-                g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_TEMPLATE = dr_profile.Item(0)
-                g_a_loaded_profiles_default(l_dimension_profiles).PROFILE_NAME = dr_profile.Item(1)
+                g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_DISCH_REASON = dr_profile.Item(0)
+                g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_TEMPLATE = dr_profile.Item(1)
+                g_a_loaded_profiles_default(l_dimension_profiles).PROFILE_NAME = dr_profile.Item(2)
 
                 l_dimension_profiles = l_dimension_profiles + 1
 
@@ -352,89 +353,91 @@ Public Class DISCHARGE
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
-        Dim l_has_parent As Boolean = False
-        Dim l_id_parent As Int64 = -1
 
-        If Not db_clin_serv.CHECK_CLIN_SERV(ComboBox1.Text) Then
 
-            ''Verificação Parents
-            If db_clin_serv.CHECK_HAS_PARENT(470, ComboBox1.Text) Then
+        'Dim l_has_parent As Boolean = False
+        'Dim l_id_parent As Int64 = -1
 
-                MsgBox("HAS PARENTS")
+        'If Not db_clin_serv.CHECK_CLIN_SERV(ComboBox1.Text) Then
 
-                l_has_parent = True
-                Dim dr As OracleDataReader
+        '    ''Verificação Parents
+        '    If db_clin_serv.CHECK_HAS_PARENT(470, ComboBox1.Text) Then
 
-                If Not db_clin_serv.GET_PARENT(470, ComboBox1.Text, dr) Then
+        '        MsgBox("HAS PARENTS")
 
-                    MsgBox("ERROR 1")
+        '        l_has_parent = True
+        '        Dim dr As OracleDataReader
 
-                Else
+        '        If Not db_clin_serv.GET_PARENT(470, ComboBox1.Text, dr) Then
 
-                    While dr.Read()
+        '            MsgBox("ERROR 1")
 
-                        If Not db_clin_serv.CHECK_CLIN_SERV(dr.Item(0)) Then
+        '        Else
 
-                            If Not db_clin_serv.SET_CLIN_SERV(dr.Item(0)) Then
-                                MsgBox("ERROR 2")
-                            Else
-                                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, dr.Item(0)) Then
-                                    MsgBox("ERROR 3")
-                                End If
-                            End If
+        '            While dr.Read()
 
-                        End If
+        '                If Not db_clin_serv.CHECK_CLIN_SERV(dr.Item(0)) Then
 
-                        If Not db_clin_serv.GET_ID_ALERT(dr.Item(0), l_id_parent) Then
+        '                    If Not db_clin_serv.SET_CLIN_SERV(dr.Item(0)) Then
+        '                        MsgBox("ERROR 2")
+        '                    Else
+        '                        If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, dr.Item(0)) Then
+        '                            MsgBox("ERROR 3")
+        '                        End If
+        '                    End If
 
-                            MsgBox("ERROR 3.1")
+        '                End If
 
-                        Else
+        '                If Not db_clin_serv.GET_ID_ALERT(dr.Item(0), l_id_parent) Then
 
-                            MsgBox(l_id_parent)
+        '                    MsgBox("ERROR 3.1")
 
-                        End If
+        '                Else
 
-                    End While
+        '                    MsgBox(l_id_parent)
 
-                End If
+        '                End If
 
-            End If
+        '            End While
 
-            'Inserção Clinical Services
-            If Not db_clin_serv.SET_CLIN_SERV(ComboBox1.Text) Then
+        '        End If
 
-                MsgBox("ERROR 4")
+        '    End If
 
-            Else
+        '    'Inserção Clinical Services
+        '    If Not db_clin_serv.SET_CLIN_SERV(ComboBox1.Text) Then
 
-                If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+        '        MsgBox("ERROR 4")
 
-                    MsgBox("ERROR 5")
+        '    Else
 
-                End If
+        '        If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
 
-            End If
+        '            MsgBox("ERROR 5")
 
-            If l_has_parent = True Then
+        '        End If
 
-                If Not db_clin_serv.SET_PARENT(ComboBox1.Text, l_id_parent) Then
+        '    End If
 
-                    MsgBox("ERROR 5.1")
+        '    If l_has_parent = True Then
 
-                End If
+        '        If Not db_clin_serv.SET_PARENT(ComboBox1.Text, l_id_parent) Then
 
-            End If
+        '            MsgBox("ERROR 5.1")
 
-        ElseIf Not db_clin_serv.CHECK_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+        '        End If
 
-            If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
+        '    End If
 
-                MsgBox("ERROR 6")
+        'ElseIf Not db_clin_serv.CHECK_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
 
-            End If
+        '    If Not db_clin_serv.SET_CLIN_SERV_TRANSLATION(470, ComboBox1.Text) Then
 
-        End If
+        '        MsgBox("ERROR 6")
+
+        '    End If
+
+        'End If
 
     End Sub
 
@@ -447,6 +450,17 @@ Public Class DISCHARGE
                 CheckedListBox1.SetItemChecked(i, False)
 
             Next
+
+        End If
+
+        MsgBox(g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content)
+        If Not db_discharge.SET_REASON_TRANSLATION(470, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
+
+            MsgBox("NO SUCCE")
+
+        Else
+
+            MsgBox("SUCCE")
 
         End If
 
