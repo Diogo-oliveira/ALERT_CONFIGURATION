@@ -97,7 +97,7 @@ Public Class DISCHARGE_API
                                                 nvl2(d.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", d.code_discharge_dest),
                                                      alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dr.code_discharge_reason)) AS description,
                                                 nvl(dcs.id_content, -1) AS clinical_service,
-                                                nvl2(d.id_content, 'D', 'REASON') AS TYPE
+                                                nvl2(d.id_content, 'D', 'R') AS TYPE
 
                                 FROM alert_default.discharge_reason dr
                                 JOIN alert_default.discharge_reason_mrk_vrs drmv ON drmv.id_discharge_reason = dr.id_discharge_reason
@@ -145,7 +145,7 @@ Public Class DISCHARGE_API
                                 WHERE dr.flg_available = 'Y'
                                 AND dr.id_content = '" & id_disch_reason & "'
                                 AND pdr.flg_available = 'Y'
-                                ORDER BY 1 ASC"
+                                ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
 
@@ -340,86 +340,103 @@ Public Class DISCHARGE_API
 
         Dim sql As String = "DECLARE
 
-                                    l_profile_disch_reason table_number := table_number(5855);      ----------EDITAR!!!!!!!!!!!!!!!
-                                    l_id_profile_template  alert.profile_template.id_profile_template%TYPE;
-                                    l_id_discharge_files   alert.profile_disch_reason.id_discharge_flash_files%TYPE;
-                                    l_flg_access           alert.profile_disch_reason.flg_access%TYPE;
-                                    l_rank                 alert.profile_disch_reason.rank%TYPE;
-                                    l_flg_default          alert.profile_disch_reason.flg_default%TYPE;
+                                l_profile_disch_reason table_number := table_number("
 
-                                    l_id_disch_reason alert.discharge_reason.id_discharge_reason%TYPE;
+        For i As Integer = 0 To a_prof_disch_reason.Count() - 1
 
-                                    FUNCTION check_prof_disch_reason
-                                    (
-                                        i_discharge_reason  IN alert.profile_disch_reason.id_discharge_reason%TYPE,
-                                        id_profile_template IN alert.profile_disch_reason.id_profile_template%TYPE,
-                                        id_institution      IN alert.profile_disch_reason.id_institution%TYPE
-                                    ) RETURN BOOLEAN IS
-    
-                                        l_count NUMBER := 0;
-    
-                                    BEGIN
-    
-                                        SELECT COUNT(1)
-                                        INTO l_count
-                                        FROM alert.profile_disch_reason pdr
-                                        WHERE pdr.id_discharge_reason = i_discharge_reason
-                                        AND pdr.id_profile_template = id_profile_template
-                                        AND pdr.id_institution = id_institution
-                                        AND pdr.flg_available = 'Y';
-    
-                                    dbms_output.put_line(id_institution);
-    
-                                        IF l_count > 0
-                                        THEN
-                                            RETURN TRUE;
-                                        ELSE
-                                            RETURN FALSE;
-                                        END IF;
-    
-                                    END;
+            If (i < a_prof_disch_reason.Count() - 1) Then
 
+                sql = sql & "'" & a_prof_disch_reason(i).ID_PROFILE_DISCH_REASON & "', "
+
+            Else
+
+                sql = sql & "'" & a_prof_disch_reason(i).ID_PROFILE_DISCH_REASON & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "           l_institution institution.id_institution%type := " & i_institution & "; 
+    
+                                l_id_profile_template  alert.profile_template.id_profile_template%TYPE;
+                                l_id_discharge_files   alert.profile_disch_reason.id_discharge_flash_files%TYPE;
+                                l_flg_access           alert.profile_disch_reason.flg_access%TYPE;
+                                l_rank                 alert.profile_disch_reason.rank%TYPE;
+                                l_flg_default          alert.profile_disch_reason.flg_default%TYPE;
+
+                                l_id_disch_reason      alert.profile_disch_reason.id_discharge_reason%TYPE;
+
+                                --#############################################################################################
+                                FUNCTION check_prof_disch_reason
+                                (
+                                    i_discharge_reason  IN alert.profile_disch_reason.id_discharge_reason%TYPE,
+                                    i_id_profile_template IN alert.profile_disch_reason.id_profile_template%TYPE,
+                                    i_id_institution      IN alert.profile_disch_reason.id_institution%TYPE
+                                ) RETURN BOOLEAN IS
+    
+                                    l_count INTEGER := 0;
+    
                                 BEGIN
+        
+                                    SELECT COUNT(*)
+                                    INTO l_count
+                                    FROM alert.profile_disch_reason pdr
+                                    WHERE pdr.id_discharge_reason = i_discharge_reason
+                                    AND pdr.id_profile_template = i_id_profile_template
+                                    AND pdr.id_institution = i_id_institution
+                                    AND pdr.flg_available = 'Y';
 
-                                    FOR i IN 1 .. l_profile_disch_reason.count()
-                                    LOOP
-                                        --1 - OBTER O ID_ALERT DA REASON, E OS DADOS DO PROFILE_DISCH_REASON
-                                        SELECT dr.id_discharge_reason, dpdr.id_profile_template, dpdr.id_discharge_flash_files, dpdr.flg_access, dpdr.rank, dpdr.flg_default
-                                        INTO l_id_disch_reason, l_id_profile_template, l_id_discharge_files, l_flg_access, l_rank, l_flg_default
-                                        FROM alert_default.profile_disch_reason dpdr
-                                        JOIN alert_default.discharge_reason ddr ON ddr.id_discharge_reason = dpdr.id_discharge_reason
-                                        JOIN alert.discharge_reason dr ON dr.id_content = ddr.id_content
-                                                                   AND dr.flg_available = 'Y'
-                                        WHERE dpdr.id_profile_disch_reason = l_profile_disch_reason(i);
-       
-                                        --2 - VERIFICAR SE O REGISTO JÁ EXISTE. SE NÃO EXISTIR, INSERE.
-                                        IF NOT check_prof_disch_reason(l_id_disch_reason, l_id_profile_template, 470) --editar!!!!!!!!!!!!!!!!!!!!!
-                                        THEN
-                                            INSERT INTO alert.profile_disch_reason
-                                                (id_profile_disch_reason,
-                                                 id_discharge_reason,
-                                                 id_profile_template,
-                                                 id_institution,
-                                                 flg_available,
-                                                 id_discharge_flash_files,
-                                                 flg_access,
-                                                 rank,
-                                                 flg_default)
-                                            VALUES
-                                                (alert.seq_profile_disch_reason.nextval,
-                                                 l_id_disch_reason,
-                                                 l_id_profile_template,
-                                                 470,                                                                    --EDITAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                 'Y',
-                                                 l_id_discharge_files,
-                                                 l_flg_access,
-                                                 l_rank,
-                                                 l_flg_default);
-                                        else
-                                          dbms_output.put_line('ja existe');
-                                        END IF;
-                                    END LOOP;
-                                END;"
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_prof_disch_reason;
+                                --#############################################################################################
+
+                            BEGIN
+
+                                FOR i IN 1 .. l_profile_disch_reason.count()
+                                LOOP
+                                    --1 - OBTER O ID_ALERT DA REASON, E OS DADOS DO PROFILE_DISCH_REASON
+                                    SELECT dr.id_discharge_reason, dpdr.id_profile_template, dpdr.id_discharge_flash_files, dpdr.flg_access, dpdr.rank, dpdr.flg_default
+                                    INTO l_id_disch_reason, l_id_profile_template, l_id_discharge_files, l_flg_access, l_rank, l_flg_default
+                                    FROM alert_default.profile_disch_reason dpdr
+                                    JOIN alert_default.discharge_reason ddr ON ddr.id_discharge_reason = dpdr.id_discharge_reason
+                                    JOIN alert.discharge_reason dr ON dr.id_content = ddr.id_content
+                                                               AND dr.flg_available = 'Y'
+                                    WHERE dpdr.id_profile_disch_reason = l_profile_disch_reason(i);
+    
+                                    --2 - VERIFICAR SE O REGISTO JÁ EXISTE. SE NÃO EXISTIR, INSERE.
+                                    IF NOT check_prof_disch_reason(l_id_disch_reason, l_id_profile_template, l_institution)
+                                    THEN
+                                        INSERT INTO alert.profile_disch_reason
+                                            (id_profile_disch_reason,
+                                             id_discharge_reason,
+                                             id_profile_template,
+                                             id_institution,
+                                             flg_available,
+                                             id_discharge_flash_files,
+                                             flg_access,
+                                             rank,
+                                             flg_default)
+                                        VALUES
+                                            (alert.seq_profile_disch_reason.nextval,
+                                             l_id_disch_reason,
+                                             l_id_profile_template,
+                                             l_institution,
+                                             'Y',
+                                             l_id_discharge_files,
+                                             l_flg_access,
+                                             l_rank,
+                                             l_flg_default);
+                                    ELSE
+                                        dbms_output.put_line('Registo já existente!');
+                                    END IF;
+                                END LOOP;
+                            END;"
 
         Dim cmd_insert_profile_disch_reason As New OracleCommand(sql, Connection.conn)
 
@@ -432,6 +449,127 @@ Public Class DISCHARGE_API
         End Try
 
         cmd_insert_profile_disch_reason.Dispose()
+
+        Return True
+
+    End Function
+
+    Function CHECK_DESTINATION(ByVal i_id_destination As String) As Boolean
+
+        Dim sql As String = "SELECT COUNT(*)
+                                FROM alert.discharge_dest dd
+                                WHERE dd.flg_available = 'Y'
+                                AND dd.id_content = '" & i_id_destination & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Dim dr As OracleDataReader
+
+        cmd.CommandType = CommandType.Text
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_record As Integer = 0
+
+        While dr.Read()
+            l_total_record = dr.Item(0)
+        End While
+
+        If l_total_record > 0 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+    Function CHECK_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT COUNT(*)
+                                FROM alert.discharge_dest dd
+                                JOIN TRANSLATION T ON T.CODE_TRANSLATION=dd.code_discharge_dest
+                                WHERE dd.flg_available = 'Y'
+                                AND dd.id_content = '" & i_id_destination & "'
+                                And T.DESC_LANG_" & l_id_language & " Is Not NULL"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Dim dr As OracleDataReader
+
+        cmd.CommandType = CommandType.Text
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_record As Integer = 0
+
+        While dr.Read()
+            l_total_record = dr.Item(0)
+        End While
+
+        If l_total_record > 0 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+    Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        'Modificar o Código PARA ACEITAR ARRAYS
+        Dim sql As String = "DECLARE                                  
+
+                                    l_id_content alert.discharge_reason.id_content%TYPE := '" & i_id_destination & "';
+
+                                    l_flg_type alert.discharge_dest.flg_type%type;
+
+                                    l_default_desc alert_default.translation.desc_lang_6%TYPE;
+
+                                    l_id_alert_destination ALERT.DISCHARGE_DEST.ID_DISCHARGE_DEST%TYPE;
+
+                                BEGIN
+
+                                    SELECT dd.flg_type
+                                    INTO l_flg_type
+                                    FROM alert_default.discharge_dest dd
+                                    WHERE dd.id_content = '" & i_id_destination & "'
+                                    AND dd.flg_available = 'Y';
+
+                                    l_id_alert_destination := alert.seq_discharge_dest.nextval;
+
+                                    insert into ALERT.discharge_dest (ID_DISCHARGE_DEST, CODE_DISCHARGE_DEST, FLG_AVAILABLE, RANK, FLG_TYPE, ID_CONTENT)
+                                    values (l_id_alert_destination, 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, 'Y', 0, l_flg_type, l_id_content);
+                                    
+                                    SELECT t.desc_lang_" & l_id_language & "
+                                    INTO l_default_desc
+                                    FROM alert_default.discharge_dest dd
+                                    JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
+                                    WHERE dd.id_content = l_id_content
+                                    AND dd.flg_available = 'Y';     
+
+                                    pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, l_default_desc);
+
+                                EXCEPTION
+                                    WHEN dup_val_on_index THEN
+                                        dbms_output.put_line('Registo já existente.');
+    
+                                END;"
+
+        Dim cmd_insert_reason As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_reason.CommandType = CommandType.Text
+            cmd_insert_reason.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_reason.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_reason.Dispose()
 
         Return True
 

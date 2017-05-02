@@ -48,6 +48,8 @@ Partial Class DISCHARGE
         Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
         Me.Button6 = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.Button7 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -161,8 +163,10 @@ Partial Class DISCHARGE
         '
         'CheckedListBox2
         '
+        Me.CheckedListBox2.CheckOnClick = True
         Me.CheckedListBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox2.FormattingEnabled = True
+        Me.CheckedListBox2.HorizontalScrollbar = True
         Me.CheckedListBox2.Location = New System.Drawing.Point(512, 34)
         Me.CheckedListBox2.Name = "CheckedListBox2"
         Me.CheckedListBox2.Size = New System.Drawing.Size(284, 378)
@@ -206,6 +210,8 @@ Partial Class DISCHARGE
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.Button1)
+        Me.GroupBox1.Controls.Add(Me.Button7)
         Me.GroupBox1.Controls.Add(Me.Label8)
         Me.GroupBox1.Controls.Add(Me.Label7)
         Me.GroupBox1.Controls.Add(Me.Button2)
@@ -291,6 +297,24 @@ Partial Class DISCHARGE
         Me.PictureBox1.TabIndex = 151
         Me.PictureBox1.TabStop = False
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(696, 418)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(101, 23)
+        Me.Button1.TabIndex = 129
+        Me.Button1.Text = "CLEAR"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'Button7
+        '
+        Me.Button7.Location = New System.Drawing.Point(588, 418)
+        Me.Button7.Name = "Button7"
+        Me.Button7.Size = New System.Drawing.Size(102, 23)
+        Me.Button7.TabIndex = 128
+        Me.Button7.Text = "SELECT ALL"
+        Me.Button7.UseVisualStyleBackColor = True
+        '
         'DISCHARGE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -344,4 +368,6 @@ Partial Class DISCHARGE
     Friend WithEvents CheckedListBox3 As CheckedListBox
     Friend WithEvents Button6 As Button
     Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents Button1 As Button
+    Friend WithEvents Button7 As Button
 End Class

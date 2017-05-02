@@ -25,8 +25,9 @@ Public Class DISCHARGE
     'Array que vai guardar as DESTINATIONS caregadas do default
     Dim g_a_loaded_destinations_default() As DISCHARGE_API.DEFAULT_DISCAHRGE
 
-    'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA
+    'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA VINDOS DO DEFAULT
     Dim g_a_loaded_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
+
 
     Private Sub DISCHARGE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -353,8 +354,77 @@ Public Class DISCHARGE
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
+        'Lista de Reasons
+        If ComboBox4.SelectedIndex > -1 Then
+
+            'Lista de Destinations
+            If CheckedListBox1.CheckedIndices.Count() > 0 Then
+
+                'Lista de Perfis
+                If CheckedListBox2.CheckedItems.Count() > 0 Then
+
+                    '1 - Verificar se existe Reason no ALERT (e respetiva tradução), caso não exista, inserir.
+                    If Not db_discharge.CHECK_REASON(g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
+
+                        If Not db_discharge.SET_REASON(TextBox1.Text, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
+
+                            MsgBox("ERROR INSERTING DISCHARGE REASON!", vbCritical)
+
+                        End If
+
+                    ElseIf Not db_discharge.CHECK_REASON_translation(TextBox1.TEXT, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
+
+                        If Not db_discharge.SET_REASON_TRANSLATION(TextBox1.Text, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
+
+                            MsgBox("ERROR INSERTING DISCHARGE REASON TRANSLATION!", vbCritical)
+
+                        End If
+
+                    End If
+
+                    '2 - Gravar os profiles_discharge selecionados
+                    'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES SELECTIONADOS PELO UTILIZADOR
+                    Dim l_a_selected_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
+
+                    ReDim l_a_selected_profiles_default(0)
+                    Dim l_dim_selected_profiles = 0
+
+                    For Each indexChecked In CheckedListBox2.CheckedIndices
+
+                        ReDim Preserve l_a_selected_profiles_default(l_dim_selected_profiles)
+                        l_a_selected_profiles_default(l_dim_selected_profiles).ID_PROFILE_DISCH_REASON = g_a_loaded_profiles_default(indexChecked).ID_PROFILE_DISCH_REASON
+                        l_a_selected_profiles_default(l_dim_selected_profiles).ID_PROFILE_TEMPLATE = g_a_loaded_profiles_default(indexChecked).ID_PROFILE_TEMPLATE
+                        l_a_selected_profiles_default(l_dim_selected_profiles).PROFILE_NAME = g_a_loaded_profiles_default(indexChecked).PROFILE_NAME
+                        l_dim_selected_profiles = l_dim_selected_profiles + 1
+
+                    Next
+
+                    If Not db_discharge.SET_PROFILE_DISCH_REASON(TextBox1.Text, l_a_selected_profiles_default) Then
+
+                        MsgBox("ERROR INSERTING PROFILE_DISCHARGE_REASON!", vbCritical)
+
+                    End If
+
+                Else
+
+                    MsgBox("Please select, at least, one Profile.")
 
 
+                End If
+
+            Else
+
+                MsgBox("Please select, at least, one Discharge Destination.")
+
+            End If
+
+        Else
+
+            MsgBox("Please select a Discharge Reason.")
+
+        End If
+
+        ''BLOCO PARA TRATAR AS REAONS/DESTINATIONS COM CLINICAL SERVICE
         'Dim l_has_parent As Boolean = False
         'Dim l_id_parent As Int64 = -1
 
@@ -453,17 +523,6 @@ Public Class DISCHARGE
 
         End If
 
-        MsgBox(g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content)
-        If Not db_discharge.SET_REASON_TRANSLATION(470, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content) Then
-
-            MsgBox("NO SUCCE")
-
-        Else
-
-            MsgBox("SUCCE")
-
-        End If
-
     End Sub
 
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
@@ -480,4 +539,59 @@ Public Class DISCHARGE
 
     End Sub
 
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, True)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, False)
+
+            Next
+
+        End If
+
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+
+        If db_discharge.CHECK_DESTINATION(g_a_loaded_destinations_default(0).id_content) Then
+
+            MsgBox("EXISTS")
+
+        ElseIf g_a_loaded_destinations_default(0).type = "D" Then
+
+            MsgBox("DOES NOT EXIST")
+
+        Else
+
+            MsgBox("NOT A DESTINATION")
+
+        End If
+
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        If Not db_discharge.SET_DESTINATION(470, g_a_loaded_destinations_default(0).id_content) Then
+
+            MsgBox("ERROR")
+
+        End If
+
+    End Sub
 End Class
