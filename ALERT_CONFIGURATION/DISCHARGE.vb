@@ -240,7 +240,7 @@ Public Class DISCHARGE
         Dim dr_profile As OracleDataReader
 
 
-        If Not db_discharge.GET_DEFAULT_PROFILE_DISCH_REASON(g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content, dr_profile) Then
+        If Not db_discharge.GET_DEFAULT_PROFILE_DISCH_REASON(g_selected_soft, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content, dr_profile) Then
 
             MsgBox("ERROR GETTING DISCHARGE PROFILES!", vbCritical)
 
@@ -587,11 +587,17 @@ Public Class DISCHARGE
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-        If Not db_discharge.SET_DESTINATION(470, g_a_loaded_destinations_default(0).id_content) Then
+        If Not db_discharge.SET_DESTINATION_TRANSLATION(470, g_a_loaded_destinations_default) Then
 
             MsgBox("ERROR")
 
         End If
+
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+
+        MsgBox("risk")
 
     End Sub
 End Class

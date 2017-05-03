@@ -136,7 +136,7 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function GET_DEFAULT_PROFILE_DISCH_REASON(ByVal id_disch_reason As String, ByRef o_profile_templates As OracleDataReader) As Boolean
+    Function GET_DEFAULT_PROFILE_DISCH_REASON(ByVal i_software As Integer, ByVal id_disch_reason As String, ByRef o_profile_templates As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT PDR.ID_PROFILE_DISCH_REASON, pdr.id_profile_template,PT.INTERN_NAME_TEMPL
                                 FROM alert_default.discharge_reason dr
@@ -145,6 +145,7 @@ Public Class DISCHARGE_API
                                 WHERE dr.flg_available = 'Y'
                                 AND dr.id_content = '" & id_disch_reason & "'
                                 AND pdr.flg_available = 'Y'
+                                AND pt.id_software = " & i_software & "
                                 ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
@@ -516,47 +517,75 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As String) As Boolean
+    Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination() As DEFAULT_DISCAHRGE) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        'Modificar o Código PARA ACEITAR ARRAYS
-        Dim sql As String = "DECLARE                                  
+        Dim sql As String = "DECLARE
 
-                                    l_id_content alert.discharge_reason.id_content%TYPE := '" & i_id_destination & "';
+                                l_id_content table_varchar := table_varchar("
 
-                                    l_flg_type alert.discharge_dest.flg_type%type;
+        For i As Integer = 0 To i_id_destination.Count() - 1
+
+            If (i < i_id_destination.Count() - 1) Then
+
+                sql = sql & "'" & i_id_destination(i).id_content & "', "
+
+            Else
+
+                sql = sql & "'" & i_id_destination(i).id_content & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "
+                                    l_flg_type alert.discharge_dest.flg_type%TYPE;
 
                                     l_default_desc alert_default.translation.desc_lang_6%TYPE;
 
-                                    l_id_alert_destination ALERT.DISCHARGE_DEST.ID_DISCHARGE_DEST%TYPE;
+                                    l_id_alert_destination alert.discharge_dest.id_discharge_dest%TYPE;
 
                                 BEGIN
 
-                                    SELECT dd.flg_type
-                                    INTO l_flg_type
-                                    FROM alert_default.discharge_dest dd
-                                    WHERE dd.id_content = '" & i_id_destination & "'
-                                    AND dd.flg_available = 'Y';
-
-                                    l_id_alert_destination := alert.seq_discharge_dest.nextval;
-
-                                    insert into ALERT.discharge_dest (ID_DISCHARGE_DEST, CODE_DISCHARGE_DEST, FLG_AVAILABLE, RANK, FLG_TYPE, ID_CONTENT)
-                                    values (l_id_alert_destination, 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, 'Y', 0, l_flg_type, l_id_content);
-                                    
-                                    SELECT t.desc_lang_" & l_id_language & "
-                                    INTO l_default_desc
-                                    FROM alert_default.discharge_dest dd
-                                    JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
-                                    WHERE dd.id_content = l_id_content
-                                    AND dd.flg_available = 'Y';     
-
-                                    pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, l_default_desc);
-
-                                EXCEPTION
-                                    WHEN dup_val_on_index THEN
-                                        dbms_output.put_line('Registo já existente.');
+                                    FOR i IN 1 .. l_id_content.count()
+                                    LOOP
     
+                                        BEGIN
+             
+                                        DBMS_OUTPUT.put_line(i);
+        
+                                            SELECT dd.flg_type
+                                            INTO l_flg_type
+                                            FROM alert_default.discharge_dest dd
+                                            WHERE dd.id_content = l_id_content(i)
+                                            AND dd.flg_available = 'Y';
+        
+                                            l_id_alert_destination := alert.seq_discharge_dest.nextval;
+        
+                                            INSERT INTO alert.discharge_dest
+                                                (id_discharge_dest, code_discharge_dest, flg_available, rank, flg_type, id_content)
+                                            VALUES
+                                                (l_id_alert_destination, 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, 'Y', 0, l_flg_type, l_id_content(i));
+        
+                                            SELECT t.desc_lang_" & l_id_language & "
+                                            INTO l_default_desc
+                                            FROM alert_default.discharge_dest dd
+                                            JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
+                                            WHERE dd.id_content = l_id_content(i)
+                                            AND dd.flg_available = 'Y';
+        
+                                            pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination,
+                                                                                   l_default_desc);
+        
+                                        EXCEPTION
+                                            WHEN dup_val_on_index THEN
+                                                continue;
+            
+                                        END;
+    
+                                    END LOOP;
+
                                 END;"
 
         Dim cmd_insert_reason As New OracleCommand(sql, Connection.conn)
@@ -572,6 +601,187 @@ Public Class DISCHARGE_API
         cmd_insert_reason.Dispose()
 
         Return True
+
+    End Function
+
+    Function SET_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination() As DEFAULT_DISCAHRGE) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                l_id_content table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_id_destination.Count() - 1
+
+            If (i < i_id_destination.Count() - 1) Then
+
+                sql = sql & "'" & i_id_destination(i).id_content & "', "
+
+            Else
+
+                sql = sql & "'" & i_id_destination(i).id_content & "');"
+
+            End If
+
+        Next
+
+        sql = sql & " 
+                                l_id_alert_destination alert.discharge_dest.id_discharge_dest%TYPE;
+
+                                l_default_desc alert_default.translation.desc_lang_6%TYPE;
+
+                            BEGIN
+
+                                FOR i IN 1 .. l_id_content.count()
+                                LOOP
+    
+                                    BEGIN
+        
+                                        SELECT t.desc_lang_" & l_id_language & "
+                                        INTO l_default_desc
+                                        FROM alert_default.discharge_dest dd
+                                        JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
+                                        WHERE dd.id_content = l_id_content(i)
+                                        AND dd.flg_available = 'Y';
+        
+                                        SELECT dd.id_discharge_dest
+                                        INTO l_id_alert_destination
+                                        FROM alert.discharge_dest dd
+                                        WHERE dd.id_content = l_id_content(i)
+                                        AND dd.flg_available = 'Y';
+        
+                                        pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, l_default_desc);
+        
+                                    EXCEPTION
+                                        WHEN dup_val_on_index THEN
+                                            continue;
+            
+                                    END;
+    
+                                END LOOP;
+
+                            END;"
+
+        Dim cmd_insert_reason_translation As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_reason_translation.CommandType = CommandType.Text
+            cmd_insert_reason_translation.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_reason_translation.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_reason_translation.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_DISCH_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String, ByVal i_destinations() As DEFAULT_DISCAHRGE, ByVal i_profiles() As DEFAULT_DISCH_PROFILE) As Boolean
+
+        'Adaptar para receber todos os parêmetros
+        'Vão ser passadas todas as Destination, mesmo que sejam do tipo 'R'. A verificação será feita no SQL. (Isto para garantir 
+        'que não se perdem clinical services)
+
+        Dim sql As String = "DECLARE
+
+                                l_id_software alert.disch_reas_dest.id_software_param%TYPE := 1;
+
+                                l_id_institution alert.disch_reas_dest.id_instit_param%TYPE := 1;
+
+                                l_id_content_reason alert.discharge_reason.id_content%TYPE := 1;
+
+                                l_id_content_discharge table_varchar := table_varchar();
+
+                                l_id_profiles table_number := table_number();
+
+                                l_id_clinical_services table_varchar := table_varchar();
+
+                                l_type table_varchar := table_varchar();
+
+                                l_id_alert_reason      alert.disch_reas_dest.id_discharge_reason%TYPE;
+                                l_id_alert_destination alert.disch_reas_dest.id_discharge_dest%TYPE;
+
+                                --#############################################################################################
+                                FUNCTION get_disch_reason(i_id_content_reason IN alert.discharge_reason.id_content%TYPE
+                              
+                                                          ) RETURN alert.discharge_reason.id_discharge_reason%TYPE IS
+    
+                                    l_id_alert alert.discharge_reason.id_discharge_reason%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT dr.id_discharge_reason
+                                    INTO l_id_alert
+                                    FROM alert.discharge_reason dr
+                                    WHERE dr.id_content = i_id_content_reason
+                                    AND dr.flg_available = 'Y';
+    
+                                    RETURN l_id_alert;
+    
+                                END get_disch_reason;
+
+                                --#############################################################################################
+
+                                FUNCTION get_disch_destination(i_id_content_destination IN alert.discharge_reason.id_content%TYPE
+                                   
+                                                               ) RETURN alert.discharge_dest.id_discharge_dest%TYPE IS
+    
+                                    l_id_alert alert.discharge_dest.id_discharge_dest%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT d.id_discharge_dest
+                                    INTO l_id_alert
+                                    FROM alert.discharge_dest d
+                                    WHERE d.id_content = i_id_content_destination
+                                    AND d.flg_available = 'Y';
+    
+                                    RETURN l_id_alert;
+    
+                                END get_disch_destination;
+                                --#############################################################################################
+
+                                FUNCTION check_reas_dest
+                                (
+                                    i_id_reason      IN alert.discharge_reason.id_discharge_reason%TYPE,
+                                    i_id_destination IN alert.discharge_dest.id_discharge_dest%TYPE,
+                                    i_id_software    IN alert.disch_reas_dest.id_software_param%TYPE,
+                                    i_id_institution IN alert.disch_reas_dest.id_instit_param%TYPE
+        
+                                ) RETURN BOOLEAN IS
+    
+                                    l_count INTEGER := 0;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(*)
+                                    INTO l_count
+                                    FROM alert.disch_reas_dest d
+                                    WHERE d.id_software_param = i_id_software
+                                    AND d.id_instit_param = i_id_institution
+                                    AND d.id_discharge_reason = i_id_reason
+                                    AND d.id_discharge_reason = i_id_destination
+                                    AND d.flg_active = 'A';
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_reas_dest;
+                                --#############################################################################################
+
+                            BEGIN
+
+                                dbms_output.put_line('TESTE');
+
+                            END;"
+
 
     End Function
 

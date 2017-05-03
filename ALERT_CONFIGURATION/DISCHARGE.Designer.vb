@@ -50,6 +50,8 @@ Partial Class DISCHARGE
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button7 = New System.Windows.Forms.Button()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.Button8 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -135,27 +137,27 @@ Partial Class DISCHARGE
         'ComboBox4
         '
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
         Me.ComboBox4.Location = New System.Drawing.Point(18, 34)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(488, 23)
+        Me.ComboBox4.Size = New System.Drawing.Size(768, 24)
         Me.ComboBox4.TabIndex = 38
         '
         'CheckedListBox1
         '
         Me.CheckedListBox1.CheckOnClick = True
-        Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(18, 85)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(488, 324)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(462, 310)
         Me.CheckedListBox1.TabIndex = 40
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(512, 18)
+        Me.Label6.Location = New System.Drawing.Point(488, 69)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(96, 13)
         Me.Label6.TabIndex = 41
@@ -167,9 +169,9 @@ Partial Class DISCHARGE
         Me.CheckedListBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox2.FormattingEnabled = True
         Me.CheckedListBox2.HorizontalScrollbar = True
-        Me.CheckedListBox2.Location = New System.Drawing.Point(512, 34)
+        Me.CheckedListBox2.Location = New System.Drawing.Point(491, 85)
         Me.CheckedListBox2.Name = "CheckedListBox2"
-        Me.CheckedListBox2.Size = New System.Drawing.Size(284, 378)
+        Me.CheckedListBox2.Size = New System.Drawing.Size(306, 310)
         Me.CheckedListBox2.TabIndex = 42
         '
         'Label7
@@ -315,11 +317,30 @@ Partial Class DISCHARGE
         Me.Button7.Text = "SELECT ALL"
         Me.Button7.UseVisualStyleBackColor = True
         '
+        'GroupBox2
+        '
+        Me.GroupBox2.Location = New System.Drawing.Point(833, 61)
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.Size = New System.Drawing.Size(739, 732)
+        Me.GroupBox2.TabIndex = 152
+        Me.GroupBox2.TabStop = False
+        Me.GroupBox2.Text = "GroupBox2"
+        '
+        'Button8
+        '
+        Me.Button8.Location = New System.Drawing.Point(1399, 806)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(173, 23)
+        Me.Button8.TabIndex = 153
+        Me.Button8.Text = "MANUAL CONFIGURATION"
+        Me.Button8.UseVisualStyleBackColor = True
+        '
         'DISCHARGE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.Button8)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Button6)
         Me.Controls.Add(Me.Label4)
@@ -331,6 +352,7 @@ Partial Class DISCHARGE
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.ComboBox1)
         Me.Controls.Add(Me.GroupBox1)
+        Me.Controls.Add(Me.GroupBox2)
         Me.MaximumSize = New System.Drawing.Size(1600, 880)
         Me.MinimumSize = New System.Drawing.Size(1598, 858)
         Me.Name = "DISCHARGE"
@@ -370,4 +392,6 @@ Partial Class DISCHARGE
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Button1 As Button
     Friend WithEvents Button7 As Button
+    Friend WithEvents GroupBox2 As GroupBox
+    Friend WithEvents Button8 As Button
 End Class
