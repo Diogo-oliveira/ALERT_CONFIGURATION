@@ -166,26 +166,94 @@ Public Class CLINICAL_SERVICE_API
     End Function
 
     ''inserir no ALERT o Clinical Service
-    Function SET_CLIN_SERV(ByVal i_id_content As String) As Boolean
+    Function SET_CLIN_SERV(ByVal i_id_institution As Int64, ByVal i_id_content As String) As Boolean
 
-        Dim sql As String = "BEGIN
+        Dim l_has_parent As Boolean = False
+        Dim l_id_parent As Int64
+
+        If Not CHECK_CLIN_SERV(i_id_content) Then
+
+            '1 - Verificar se o Clinical Service tem Parent
+            If CHECK_HAS_PARENT(i_id_institution, i_id_content) Then
+
+                l_has_parent = True
+
+                Dim dr_parent As OracleDataReader
+
+                If Not GET_PARENT(i_id_institution, i_id_content, dr_parent) Then
+
+                    Return False
+
+                End If
+
+                While dr_parent.Read()
+
+                    If Not CHECK_CLIN_SERV(dr_parent.Item(0)) Then
+
+                        If Not SET_CLIN_SERV(i_id_institution, dr_parent.Item(0)) Then
+
+                            Return False
+
+                        End If
+
+                    End If
+
+                    If Not GET_ID_ALERT(dr_parent.Item(0), l_id_parent) Then
+
+                        Return False
+
+                    End If
+
+                End While
+
+                dr_parent.Dispose()
+                dr_parent.Close()
+
+            End If
+
+            Dim sql As String
+
+            If l_has_parent = False Then
+
+                sql = "BEGIN
     
                                   insert into alert.clinical_service (ID_CLINICAL_SERVICE,  CODE_CLINICAL_SERVICE, RANK,  FLG_AVAILABLE, ID_CONTENT)
                                   values (alert.seq_clinical_service.nextval, 'CLINICAL_SERVICE.CODE_CLINICAL_SERVICE.' || alert.seq_clinical_service.nextval, 1, 'Y', '" & i_id_content & "');
                             
-                             END;"
+                   END;"
+            Else
 
-        Dim cmd_insert_clin_serv As New OracleCommand(sql, Connection.conn)
+                sql = "BEGIN
+    
+                                  insert into alert.clinical_service (ID_CLINICAL_SERVICE, ID_CLINICAL_SERVICE_PARENT, CODE_CLINICAL_SERVICE, RANK,  FLG_AVAILABLE, ID_CONTENT)
+                                  values (alert.seq_clinical_service.nextval, " & l_id_parent & ", 'CLINICAL_SERVICE.CODE_CLINICAL_SERVICE.' || alert.seq_clinical_service.nextval, 1, 'Y', '" & i_id_content & "');
+                            
+                   END;"
+            End If
 
-        Try
-            cmd_insert_clin_serv.CommandType = CommandType.Text
-            cmd_insert_clin_serv.ExecuteNonQuery()
-        Catch ex As Exception
+            Dim cmd_insert_clin_serv As New OracleCommand(sql, Connection.conn)
+
+            Try
+                cmd_insert_clin_serv.CommandType = CommandType.Text
+                cmd_insert_clin_serv.ExecuteNonQuery()
+            Catch ex As Exception
+                cmd_insert_clin_serv.Dispose()
+                Return False
+            End Try
+
             cmd_insert_clin_serv.Dispose()
-            Return False
-        End Try
 
-        cmd_insert_clin_serv.Dispose()
+            If Not CHECK_CLIN_SERV_TRANSLATION(i_id_institution, i_id_content) Then
+
+                If Not SET_CLIN_SERV_TRANSLATION(i_id_institution, i_id_content) Then
+
+                    Return False
+
+                End If
+
+            End If
+
+        End If
 
         Return True
 

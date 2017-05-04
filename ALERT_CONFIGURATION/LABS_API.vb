@@ -3849,7 +3849,8 @@ Public Class LABS_API
                                 JOIN translation tsr ON tsr.code_translation = sr.code_sample_recipient
                                 WHERE ad.id_software = " & i_software & "
                                 AND ad.id_dep_clin_serv = " & i_dep_clin_serv & "
-                                AND ad.flg_available = 'Y'"
+                                AND ad.flg_available = 'Y'
+                                ORDER BY 2 ASC"
 
 
             Dim cmd As New OracleCommand(sql, Connection.conn)

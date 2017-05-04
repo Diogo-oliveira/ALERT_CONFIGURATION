@@ -206,7 +206,7 @@ Partial Class INSERT_OTHER_EXAM
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(773, 647)
+        Me.Button6.Location = New System.Drawing.Point(773, 627)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(41, 39)
         Me.Button6.TabIndex = 145
@@ -236,10 +236,11 @@ Partial Class INSERT_OTHER_EXAM
         'CheckedListBox4
         '
         Me.CheckedListBox4.CheckOnClick = True
+        Me.CheckedListBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CheckedListBox4.FormattingEnabled = True
         Me.CheckedListBox4.Location = New System.Drawing.Point(836, 502)
         Me.CheckedListBox4.Name = "CheckedListBox4"
-        Me.CheckedListBox4.Size = New System.Drawing.Size(741, 289)
+        Me.CheckedListBox4.Size = New System.Drawing.Size(741, 293)
         Me.CheckedListBox4.TabIndex = 141
         '
         'CheckedListBox3
@@ -249,7 +250,7 @@ Partial Class INSERT_OTHER_EXAM
         Me.CheckedListBox3.FormattingEnabled = True
         Me.CheckedListBox3.Location = New System.Drawing.Point(14, 502)
         Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(740, 289)
+        Me.CheckedListBox3.Size = New System.Drawing.Size(740, 293)
         Me.CheckedListBox3.TabIndex = 140
         '
         'Button5
@@ -308,7 +309,7 @@ Partial Class INSERT_OTHER_EXAM
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(773, 221)
+        Me.Button2.Location = New System.Drawing.Point(773, 239)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(41, 39)
         Me.Button2.TabIndex = 133

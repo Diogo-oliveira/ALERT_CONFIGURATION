@@ -92,109 +92,6 @@ Public Class LAB_TESTS
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        Cursor = Cursors.WaitCursor
-
-        'Limpar arrays
-        g_selected_room = -1
-        ReDim g_a_loaded_rooms(0)
-        g_selected_soft = -1
-        ReDim g_a_dep_clin_serv_inst(0)
-        g_id_dep_clin_serv = 0
-        ReDim g_a_loaded_categories_default(0)
-        g_selected_category = -1
-        ReDim g_a_loaded_analysis_default(0)
-        ReDim g_a_selected_default_analysis(0)
-        g_index_selected_analysis_from_default = 0
-        ReDim g_a_lab_cats_alert(0)
-        ReDim g_a_labs_alert(0)
-        g_dimension_labs_alert = 0
-        ReDim g_a_labs_for_clinical_service(0)
-        g_dimension_labs_cs = 0
-        ReDim g_a_selected_labs_delete_cs(0)
-
-        'Limpar a seleção de quarto
-        g_selected_room = -1
-
-        If TextBox1.Text <> "" Then
-
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
-
-            ComboBox2.Items.Clear()
-            ComboBox2.Text = ""
-
-            Dim dr As OracleDataReader
-
-            ReDim g_a_loaded_rooms(0)
-            Dim i_index_room As Int32 = 0
-
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
-
-            Else
-
-                While dr.Read()
-
-                    ComboBox2.Items.Add(dr.Item(1))
-
-                End While
-
-                ComboBox3.Text = ""
-                ComboBox3.Items.Clear()
-
-                ComboBox4.Text = ""
-                ComboBox4.Items.Clear()
-
-                CheckedListBox2.Items.Clear()
-
-                CheckedListBox1.Items.Clear()
-
-                ComboBox5.Text = ""
-                ComboBox5.Items.Clear()
-                CheckedListBox3.Items.Clear()
-
-                ComboBox6.Text = ""
-                ComboBox6.Items.Clear()
-                CheckedListBox4.Items.Clear()
-
-                g_selected_category = ""
-
-            End If
-
-            If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, dr) Then
-
-                MsgBox("ERROR GETTING LAB ROOMS!", vbCritical)
-
-            Else
-
-                ComboBox7.Items.Clear()
-
-                While dr.Read()
-
-
-                    ReDim Preserve g_a_loaded_rooms(i_index_room)
-                    ComboBox7.Items.Add(dr.Item(0))
-                    g_a_loaded_rooms(i_index_room) = dr.Item(1)
-                    i_index_room = i_index_room + 1
-
-                End While
-
-            End If
-
-            dr.Dispose()
-            dr.Close()
-
-        End If
-
-        Cursor = Cursors.Arrow
-
-    End Sub
-
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
 
         Cursor = Cursors.WaitCursor
@@ -1498,4 +1395,106 @@ Public Class LAB_TESTS
 
     End Sub
 
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        g_selected_room = -1
+        ReDim g_a_loaded_rooms(0)
+        g_selected_soft = -1
+        ReDim g_a_dep_clin_serv_inst(0)
+        g_id_dep_clin_serv = 0
+        ReDim g_a_loaded_categories_default(0)
+        g_selected_category = -1
+        ReDim g_a_loaded_analysis_default(0)
+        ReDim g_a_selected_default_analysis(0)
+        g_index_selected_analysis_from_default = 0
+        ReDim g_a_lab_cats_alert(0)
+        ReDim g_a_labs_alert(0)
+        g_dimension_labs_alert = 0
+        ReDim g_a_labs_for_clinical_service(0)
+        g_dimension_labs_cs = 0
+        ReDim g_a_selected_labs_delete_cs(0)
+
+        'Limpar a seleção de quarto
+        g_selected_room = -1
+
+        If TextBox1.Text <> "" Then
+
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+
+            ComboBox2.Items.Clear()
+            ComboBox2.Text = ""
+
+            Dim dr As OracleDataReader
+
+            ReDim g_a_loaded_rooms(0)
+            Dim i_index_room As Int32 = 0
+
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access_general.GET_SOFT_INST(TextBox1.Text, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+            Else
+
+                While dr.Read()
+
+                    ComboBox2.Items.Add(dr.Item(1))
+
+                End While
+
+                ComboBox3.Text = ""
+                ComboBox3.Items.Clear()
+
+                ComboBox4.Text = ""
+                ComboBox4.Items.Clear()
+
+                CheckedListBox2.Items.Clear()
+
+                CheckedListBox1.Items.Clear()
+
+                ComboBox5.Text = ""
+                ComboBox5.Items.Clear()
+                CheckedListBox3.Items.Clear()
+
+                ComboBox6.Text = ""
+                ComboBox6.Items.Clear()
+                CheckedListBox4.Items.Clear()
+
+                g_selected_category = ""
+
+            End If
+
+            If Not db_access_general.GET_LAB_ROOMS(TextBox1.Text, dr) Then
+
+                MsgBox("ERROR GETTING LAB ROOMS!", vbCritical)
+
+            Else
+
+                ComboBox7.Items.Clear()
+
+                While dr.Read()
+
+
+                    ReDim Preserve g_a_loaded_rooms(i_index_room)
+                    ComboBox7.Items.Add(dr.Item(0))
+                    g_a_loaded_rooms(i_index_room) = dr.Item(1)
+                    i_index_room = i_index_room + 1
+
+                End While
+
+            End If
+
+            dr.Dispose()
+            dr.Close()
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
 End Class
