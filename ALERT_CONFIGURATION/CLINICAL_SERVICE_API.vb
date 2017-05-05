@@ -165,6 +165,32 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
+    Function GET_CLIN_SERV_TRANSLATION(ByVal i_institution As Int64, ByVal i_clin_serv As String) As String
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "Select alert_default.pk_translation_default.get_translation_default(" & l_id_language & ",c.code_clinical_service) 
+                                from alert_default.clinical_service c
+                                where c.flg_available='Y'
+                                and c.id_content='" & i_clin_serv & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+        Dim l_translation As String = ""
+
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        While dr.Read()
+            l_translation = dr.Item(0)
+        End While
+
+        Return l_translation
+
+    End Function
+
     ''inserir no ALERT o Clinical Service
     Function SET_CLIN_SERV(ByVal i_id_institution As Int64, ByVal i_id_content As String) As Boolean
 
@@ -333,7 +359,43 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
-    'Se não existir, não devolve resultados. 
+    'Função para verificar se existe um depl_clin_serv para a inst/soft/clin_Serv
+    Function CHECK_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_clinical_service As String) As Boolean
+
+        Dim sql As String = "SELECT count(*)
+                                FROM alert.dep_clin_serv dps
+                                JOIN alert.department d ON d.id_department = dps.id_department
+                                                    AND d.flg_available = 'Y'
+                                JOIN alert.clinical_service c ON c.id_clinical_service = dps.id_clinical_service
+                                                          AND c.flg_available = 'Y'
+                                WHERE dps.flg_available = 'Y'
+                                AND d.id_software = " & i_software & "
+                                AND d.id_institution = " & i_institution & "
+                                AND c.id_content = '" & i_clinical_service & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_records As Int64
+
+        While dr.Read()
+            l_total_records = dr.Item(0)
+        End While
+
+        If l_total_records > 0 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+    'Pode devolver vários resultados?
     Function GET_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_department As Int64, ByVal id_clinical_service As String, ByRef o_id_dep_clin_serv As Int64) As Boolean
 
         Dim sql As String = "SELECT s.id_dep_clin_serv
@@ -375,7 +437,7 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
-    ''Funcçaõ para devolver todos os departamentos de uma isntituição e software
+    ''Funcçaõ para devolver todos os departamentos de uma instituição e software
     Function GET_DEPARTMENTS(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef o_a_departments As Int64()) As Boolean
 
         Dim sql As String = "SELECT d.id_department

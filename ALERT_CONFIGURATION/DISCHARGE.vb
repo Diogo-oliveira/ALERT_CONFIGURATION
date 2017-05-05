@@ -409,7 +409,6 @@ Public Class DISCHARGE
 
                     MsgBox("Please select, at least, one Profile.")
 
-
                 End If
 
             Else
@@ -517,16 +516,6 @@ Public Class DISCHARGE
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-
-        If Not db_clin_serv.SET_CLIN_SERV(470, "TMP36.104863") Then
-
-            MsgBox("ERROR")
-
-        Else
-
-            MsgBox("SUCCESS")
-
-        End If
 
     End Sub
 End Class

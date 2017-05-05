@@ -733,10 +733,11 @@ Public Class DISCHARGE_API
 
         Next
 
-        'A1 - VER SE CLINICAL SERVICE EXISTE NO ALERT E/OU SE TEM TRADUÇÃO
+        'Tratamento de clinical service
         For i As Integer = 0 To l_a_clin_serv.Count() - 1
 
-            If l_a_clin_serv(i) <> -1 Then
+            'A1 - VER SE CLINICAL SERVICE EXISTE NO ALERT E/OU SE TEM TRADUÇÃO
+            If l_a_clin_serv(i) <> "-1" Then
 
                 If Not db_clin_serv.CHECK_CLIN_SERV(l_a_clin_serv(i)) Then
 
@@ -756,19 +757,103 @@ Public Class DISCHARGE_API
 
                 End If
 
-            End If
+                Dim l_a_departments As Int64() 'Array que vai receber os ids dos departaments da instituição para um determinado software
 
-            ' If db_clin_serv.GET_DEP_CLIN_SERV Then
+                'A2 - Obter/Configurar DEP_CLIN_SERV
+                Dim l_override As Boolean = False 'Determinar se utilizador não quer configurar o clin_serv para o software escolhido
+
+                If Not db_clin_serv.CHECK_DEP_CLIN_SERV(i_institution, i_software, l_a_clin_serv(i)) Then
+
+                    Dim result As Integer = 0
+                    result = MsgBox("Clinical Service " & db_clin_serv.GET_CLIN_SERV_TRANSLATION(i_institution, l_a_clin_serv(i)) &
+                                    " not configrued for the chosen institution and software. Do you wish to configure it?", MessageBoxButtons.YesNo)
+
+                    If result = DialogResult.Yes Then
+
+                        If Not db_clin_serv.GET_DEPARTMENTS(i_institution, i_software, l_a_departments) Then
+
+                            Return False
+
+                        Else
+                            'Insere-se o clinical service para o 1º departamento do array
+                            If Not db_clin_serv.SET_DEP_CLIN_SERV(l_a_clin_serv(i), l_a_departments(0)) Then
+
+                                Return False
+
+                            End If
+                        End If
+                    Else
+                        l_override = True
+                    End If
+                End If
+
+                'A3 - Preencher Array com valor de dep_clin_serv
+                Dim l_a_aux_dep_clin_serv As Int64
+
+                If Not db_clin_serv.GET_DEPARTMENTS(i_institution, i_software, l_a_departments) Then
+
+                    Return False
+
+                End If
+
+                'Vai-se escolher o 1º departamento do array
+                If Not db_clin_serv.GET_DEP_CLIN_SERV(i_institution, i_software, l_a_departments(0), l_a_clin_serv(i), l_a_aux_dep_clin_serv) Then
+
+                    Return False
+
+                End If
+
+                If l_override = False Then
+
+                    l_a_dep_clin_serv(i) = l_a_aux_dep_clin_serv
+
+                Else
+
+                    l_a_dep_clin_serv(i) = -1
+
+                End If
+
+            Else
+                'Preencher array com -1
+                l_a_dep_clin_serv(i) = -1
+
+            End If
 
         Next
 
+        sql = sql & "               l_id_clinical_services   table_varchar := table_varchar("
 
+        For i As Integer = 0 To l_a_dep_clin_serv.Count() - 1
 
+            If (i < l_a_dep_clin_serv.Count() - 1) Then
 
-        sql = sql & "               l_id_clinical_services   table_varchar := table_varchar(-1, -1, -1);
-                                    l_type                   table_varchar := table_varchar('D', 'D', 'D');
+                sql = sql & " '" & l_a_dep_clin_serv(i) & "', "
 
-                                    l_id_alert_reason      alert.disch_reas_dest.id_discharge_reason%TYPE;
+            Else
+
+                sql = sql & "'" & l_a_dep_clin_serv(i) & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "               l_type                   table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_destinations.Count() - 1
+
+            If (i < i_destinations.Count() - 1) Then
+
+                sql = sql & " '" & i_destinations(i).type & "', "
+
+            Else
+
+                sql = sql & "'" & i_destinations(i).type & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "               l_id_alert_reason      alert.disch_reas_dest.id_discharge_reason%TYPE;
                                     l_id_alert_destination alert.disch_reas_dest.id_discharge_dest%TYPE;
 
                                     --Variáveis a inserir no disch_reas_dest
