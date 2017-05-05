@@ -23,6 +23,11 @@ Public Class DISCHARGE_API
         Public PROFILE_NAME As String
     End Structure
 
+    Public Structure DEFAULT_INSTR
+        Public ID_CONTENT As String
+        Public DESCRIPTION As String
+    End Structure
+
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -821,7 +826,7 @@ Public Class DISCHARGE_API
 
         Next
 
-        sql = sql & "               l_id_clinical_services   table_varchar := table_varchar("
+        sql = sql & "               l_id_clinical_services   table_number := table_number("
 
         For i As Integer = 0 To l_a_dep_clin_serv.Count() - 1
 
@@ -957,16 +962,17 @@ Public Class DISCHARGE_API
 
                                     FOR i IN 1 .. l_id_content_discharge.count()
                                     LOOP
-    
-                                        l_id_alert_destination := get_disch_destination(l_id_content_discharge(i));
-    
-                                        dbms_output.put_line(l_id_alert_destination);
-    
-                                        IF NOT check_reas_dest(l_id_alert_reason, l_id_alert_destination, l_id_software, l_id_institution)
+
+                                        IF l_type(i) = 'D'
                                         THEN
         
-                                            dbms_output.put_line('NÃO EXISTE');
+                                            l_id_alert_destination := get_disch_destination(l_id_content_discharge(i));
         
+                                        END IF;
+        
+                                        IF NOT check_reas_dest(l_id_alert_reason, l_id_alert_destination, l_id_software, l_id_institution)
+                                        THEN
+                
                                             --Obter os dados do default
                                             SELECT d.flg_diag,
                                                    d.report_name,
@@ -1130,6 +1136,115 @@ Public Class DISCHARGE_API
 
                                 END;"
 
+        Dim cmd_insert_reas_dest As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_reas_dest.CommandType = CommandType.Text
+            cmd_insert_reas_dest.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_reas_dest.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_reas_dest.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_DISCH_INSTR_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dir.version
+                                FROM alert_default.disch_instructions di
+                                JOIN alert_default.disch_instr_relation dir ON dir.id_disch_instructions = di.id_disch_instructions
+                                JOIN alert_default.disch_instructions_group dig ON dig.id_disch_instructions_group = dir.id_disch_instructions_group
+                                                                            AND dig.flg_available = 'Y'
+                                JOIN institution i ON i.id_market = dir.id_market
+                                WHERE di.flg_available = 'Y'
+                                AND dir.id_software = " & i_software & "
+                                AND i.id_institution = " & i_institution & "
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions_title) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dig.code_disch_instructions_group) IS NOT NULL
+                                ORDER BY 1 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_DEFAULT_INSTR_GROUP(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dig.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dig.code_disch_instructions_group)
+                                FROM alert_default.disch_instructions di
+                                JOIN alert_default.disch_instr_relation dir ON dir.id_disch_instructions = di.id_disch_instructions
+                                JOIN alert_default.disch_instructions_group dig ON dig.id_disch_instructions_group = dir.id_disch_instructions_group
+                                                                            AND dig.flg_available = 'Y'
+                                JOIN institution i ON i.id_market = dir.id_market
+                                WHERE di.flg_available = 'Y'
+                                AND dir.id_software = " & i_software & "
+                                AND i.id_institution = " & i_institution & "
+                                AND dir.version = '" & i_version & "'
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions_title) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dig.code_disch_instructions_group) IS NOT NULL
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_DEFAULT_INSTR_TITLES(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_group As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions_title)
+                                FROM alert_default.disch_instructions di
+                                JOIN alert_default.disch_instr_relation dir ON dir.id_disch_instructions = di.id_disch_instructions
+                                JOIN alert_default.disch_instructions_group dig ON dig.id_disch_instructions_group = dir.id_disch_instructions_group
+                                                                            AND dig.flg_available = 'Y'
+                                JOIN institution i ON i.id_market = dir.id_market
+                                WHERE di.flg_available = 'Y'
+                                AND dir.id_software = " & i_software & "
+                                AND i.id_institution = " & i_institution & "
+                                AND dir.version = '" & i_version & "'
+                                AND dig.id_content = '" & i_group & "'
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions_title) IS NOT NULL
+                                AND alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dig.code_disch_instructions_group) IS NOT NULL
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
 
     End Function
 

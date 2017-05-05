@@ -28,6 +28,11 @@ Public Class DISCHARGE
     'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA VINDOS DO DEFAULT
     Dim g_a_loaded_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
 
+    'Array que vai guardar os id_content dos grupos do default
+    Dim g_a_loaded_instr_group() As DISCHARGE_API.DEFAULT_INSTR
+
+    'Array que vai guardar os id_content DAS ISNTRUCTIONS
+    Dim g_a_loaded_instr() As DISCHARGE_API.DEFAULT_INSTR
 
     Private Sub DISCHARGE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -75,6 +80,9 @@ Public Class DISCHARGE
         ComboBox2.Items.Clear()
         g_selected_soft = -1
         ComboBox3.Items.Clear()
+        ComboBox5.Items.Clear()
+        ComboBox6.Items.Clear()
+        ReDim g_a_loaded_instr_group(0)
 
         ComboBox4.Items.Clear()
         ReDim g_a_loaded_reasons_default(0)
@@ -135,6 +143,9 @@ Public Class DISCHARGE
         g_selected_soft = -1
 
         ComboBox3.Items.Clear()
+        ComboBox5.Items.Clear()
+        ComboBox6.Items.Clear()
+        ReDim g_a_loaded_instr_group(0)
 
         ComboBox4.Items.Clear()
         ReDim g_a_loaded_reasons_default(0)
@@ -283,6 +294,10 @@ Public Class DISCHARGE
         CheckedListBox2.Items.Clear()
         ReDim g_a_loaded_profiles_default(0)
 
+        ComboBox5.Items.Clear()
+        ComboBox6.Items.Clear()
+        ReDim g_a_loaded_instr_group(0)
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -296,6 +311,22 @@ Public Class DISCHARGE
             While dr.Read()
 
                 ComboBox3.Items.Add(dr.Item(0))
+
+            End While
+
+        End If
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_DISCH_INSTR_VERSIONS(TextBox1.Text, g_selected_soft, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+
+        Else
+
+            While dr.Read()
+
+                ComboBox5.Items.Add(dr.Item(0))
 
             End While
 
@@ -402,6 +433,36 @@ Public Class DISCHARGE
                     If Not db_discharge.SET_PROFILE_DISCH_REASON(TextBox1.Text, l_a_selected_profiles_default) Then
 
                         MsgBox("ERROR INSERTING PROFILE_DISCHARGE_REASON!", vbCritical)
+
+                    End If
+
+                    '3 - Gravar os DISCH_REAS_DEST
+                    Dim l_a_selected_reas_dest() As DISCHARGE_API.DEFAULT_DISCAHRGE
+
+                    ReDim l_a_selected_reas_dest(0)
+                    Dim l_dim_selected_reas_dest = 0
+
+                    For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                        ReDim Preserve l_a_selected_reas_dest(l_dim_selected_reas_dest)
+
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).id_disch_reas_dest = g_a_loaded_destinations_default(indexChecked).id_disch_reas_dest
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).id_content = g_a_loaded_destinations_default(indexChecked).id_content
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).desccription = g_a_loaded_destinations_default(indexChecked).desccription
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).id_clinical_service = g_a_loaded_destinations_default(indexChecked).id_clinical_service
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).type = g_a_loaded_destinations_default(indexChecked).type
+
+                        l_dim_selected_reas_dest = l_dim_selected_reas_dest + 1
+
+                    Next
+
+                    If Not db_discharge.SET_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content, l_a_selected_reas_dest) Then
+
+                        MsgBox("ERROR INSERTING DISCH_REAS_DEST!", vbCritical)
+
+                    Else
+
+                        MsgBox("Records correctly inserted.", vbInformation)
 
                     End If
 
@@ -516,6 +577,81 @@ Public Class DISCHARGE
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+
+    End Sub
+
+    Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
+
+        Cursor = Cursors.WaitCursor
+
+        ComboBox6.Items.Clear()
+        ReDim g_a_loaded_instr_group(0)
+
+        CheckedListBox3.Items.Clear()
+
+        If ComboBox5.Text <> "" Then
+
+            Dim dr_new As OracleDataReader
+
+            If Not db_discharge.GET_DEFAULT_INSTR_GROUP(TextBox1.Text, g_selected_soft, ComboBox5.Text, dr_new) Then
+
+                MsgBox("ERROR GETING DEFAULT DISCHARGE INSTRUCTIONS GROUPS.", vbCritical)
+
+            Else
+
+                Dim l_index_groups As Integer = 0
+                ReDim g_a_loaded_instr_group(0)
+
+                While dr_new.Read()
+
+                    ReDim Preserve g_a_loaded_instr_group(l_index_groups)
+                    g_a_loaded_instr_group(l_index_groups).ID_CONTENT = dr_new.Item(0)
+                    g_a_loaded_instr_group(l_index_groups).DESCRIPTION = dr_new.Item(1)
+                    l_index_groups = l_index_groups + 1
+
+                    ComboBox6.Items.Add(dr_new.Item(1) & "  -  [" & dr_new.Item(0) & "]")
+
+                End While
+
+            End If
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
+
+        'Cursor = Cursors.WaitCursor
+
+        'ReDim g_a_loaded_instr(0)
+        'Dim l_dimension_instr As Integer = 0
+        'Dim dr_instr As OracleDataReader
+
+        'If Not db_discharge.GET_DEFAULT_INSTR_TITLES(TextBox1.Text, g_selected_soft, ComboBox5.Text, g_a_loaded_instr_group().ID_CONTENT, dr_instr) Then
+
+        '    MsgBox("ERROR GETTING DISCHARGE PROFILES!", vbCritical)
+
+        'Else
+
+        '    While dr_profile.Read()
+
+        '        CheckedListBox2.Items.Add(dr_profile.Item(1) & " - " & dr_profile.Item(2))
+        '        CheckedListBox2.SetItemChecked(l_dimension_profiles, True)
+
+        '        ReDim Preserve g_a_loaded_profiles_default(l_dimension_profiles)
+        '        g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_DISCH_REASON = dr_profile.Item(0)
+        '        g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_TEMPLATE = dr_profile.Item(1)
+        '        g_a_loaded_profiles_default(l_dimension_profiles).PROFILE_NAME = dr_profile.Item(2)
+
+        '        l_dimension_profiles = l_dimension_profiles + 1
+
+        '    End While
+
+        'End If
+
+        'Cursor = Cursors.Arrow
 
     End Sub
 End Class
