@@ -178,6 +178,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -202,6 +203,12 @@
   <ItemGroup>
     <Compile Include="CLINICAL_SERVICE_API.vb" />
     <Compile Include="Connection.vb" />
+    <Compile Include="CONTENT_DISPLAY.Designer.vb">
+      <DependentUpon>CONTENT_DISPLAY.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CONTENT_DISPLAY.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DISCHARGE.Designer.vb">
       <DependentUpon>DISCHARGE.vb</DependentUpon>
     </Compile>
@@ -298,6 +305,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CONTENT_DISPLAY.resx">
+      <DependentUpon>CONTENT_DISPLAY.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DISCHARGE.resx">
       <DependentUpon>DISCHARGE.vb</DependentUpon>
     </EmbeddedResource>

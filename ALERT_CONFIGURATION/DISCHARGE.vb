@@ -31,7 +31,7 @@ Public Class DISCHARGE
     'Array que vai guardar os id_content dos grupos do default
     Dim g_a_loaded_instr_group() As DISCHARGE_API.DEFAULT_INSTR
 
-    'Array que vai guardar os id_content DAS ISNTRUCTIONS
+    'Array que vai guardar os id_content DAS INSTRUCTIONS
     Dim g_a_loaded_instr() As DISCHARGE_API.DEFAULT_INSTR
 
     Private Sub DISCHARGE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -92,6 +92,9 @@ Public Class DISCHARGE
 
         CheckedListBox2.Items.Clear()
         ReDim g_a_loaded_profiles_default(0)
+
+        ReDim g_a_loaded_instr(0)
+        CheckedListBox3.Items.Clear()
 
         If TextBox1.Text <> "" Then
 
@@ -155,6 +158,9 @@ Public Class DISCHARGE
 
         CheckedListBox2.Items.Clear()
         ReDim g_a_loaded_profiles_default(0)
+
+        ReDim g_a_loaded_instr(0)
+        CheckedListBox3.Items.Clear()
 
         Dim dr As OracleDataReader
 
@@ -297,6 +303,9 @@ Public Class DISCHARGE
         ComboBox5.Items.Clear()
         ComboBox6.Items.Clear()
         ReDim g_a_loaded_instr_group(0)
+
+        ReDim g_a_loaded_instr(0)
+        CheckedListBox3.Items.Clear()
 
         Dim dr As OracleDataReader
 
@@ -544,17 +553,13 @@ Public Class DISCHARGE
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        If db_discharge.CHECK_DESTINATION(g_a_loaded_destinations_default(0).id_content) Then
+        If Not db_discharge.SET_DISCH_INSTRUCTION(470, 11, g_a_loaded_instr_group(ComboBox6.SelectedIndex).ID_CONTENT, g_a_loaded_instr) Then
 
-            MsgBox("EXISTS")
-
-        ElseIf g_a_loaded_destinations_default(0).type = "D" Then
-
-            MsgBox("DOES NOT EXIST")
+            MsgBox("ERROR")
 
         Else
 
-            MsgBox("NOT A DESTINATION")
+            MsgBox("Discharge instructions correctly inserted.", vbInformation)
 
         End If
 
@@ -562,9 +567,13 @@ Public Class DISCHARGE
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-        If Not db_discharge.SET_DESTINATION_TRANSLATION(470, g_a_loaded_destinations_default) Then
+        If CheckedListBox3.Items.Count() > 0 Then
 
-            MsgBox("ERROR")
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, False)
+
+            Next
 
         End If
 
@@ -578,6 +587,16 @@ Public Class DISCHARGE
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
 
+        If CheckedListBox3.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox3.Items.Count - 1
+
+                CheckedListBox3.SetItemChecked(i, True)
+
+            Next
+
+        End If
+
     End Sub
 
     Private Sub ComboBox5_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox5.SelectedIndexChanged
@@ -586,6 +605,8 @@ Public Class DISCHARGE
 
         ComboBox6.Items.Clear()
         ReDim g_a_loaded_instr_group(0)
+        ReDim g_a_loaded_instr(0)
+        CheckedListBox3.Items.Clear()
 
         CheckedListBox3.Items.Clear()
 
@@ -595,7 +616,7 @@ Public Class DISCHARGE
 
             If Not db_discharge.GET_DEFAULT_INSTR_GROUP(TextBox1.Text, g_selected_soft, ComboBox5.Text, dr_new) Then
 
-                MsgBox("ERROR GETING DEFAULT DISCHARGE INSTRUCTIONS GROUPS.", vbCritical)
+                MsgBox("ERROR GETING DEFAULT DISCHARGE INSTRUCTIONS GROUPS!", vbCritical)
 
             Else
 
@@ -623,35 +644,54 @@ Public Class DISCHARGE
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
 
-        'Cursor = Cursors.WaitCursor
+        Cursor = Cursors.WaitCursor
 
-        'ReDim g_a_loaded_instr(0)
-        'Dim l_dimension_instr As Integer = 0
-        'Dim dr_instr As OracleDataReader
+        ReDim g_a_loaded_instr(0)
+        CheckedListBox3.Items.Clear()
+        Dim l_dimension_instr As Integer = 0
+        Dim dr_instr As OracleDataReader
 
-        'If Not db_discharge.GET_DEFAULT_INSTR_TITLES(TextBox1.Text, g_selected_soft, ComboBox5.Text, g_a_loaded_instr_group().ID_CONTENT, dr_instr) Then
+        If Not db_discharge.GET_DEFAULT_INSTR_TITLES(TextBox1.Text, g_selected_soft, ComboBox5.Text, g_a_loaded_instr_group(ComboBox6.SelectedIndex).ID_CONTENT, dr_instr) Then
 
-        '    MsgBox("ERROR GETTING DISCHARGE PROFILES!", vbCritical)
+            MsgBox("ERROR GETTING DISCHARGE INSTRUCTIONS!", vbCritical)
 
-        'Else
+        Else
 
-        '    While dr_profile.Read()
+            While dr_instr.Read()
 
-        '        CheckedListBox2.Items.Add(dr_profile.Item(1) & " - " & dr_profile.Item(2))
-        '        CheckedListBox2.SetItemChecked(l_dimension_profiles, True)
+                CheckedListBox3.Items.Add(dr_instr.Item(1) & " - " & dr_instr.Item(0))
+                CheckedListBox3.SetItemChecked(l_dimension_instr, True)
 
-        '        ReDim Preserve g_a_loaded_profiles_default(l_dimension_profiles)
-        '        g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_DISCH_REASON = dr_profile.Item(0)
-        '        g_a_loaded_profiles_default(l_dimension_profiles).ID_PROFILE_TEMPLATE = dr_profile.Item(1)
-        '        g_a_loaded_profiles_default(l_dimension_profiles).PROFILE_NAME = dr_profile.Item(2)
+                ReDim Preserve g_a_loaded_instr(l_dimension_instr)
+                g_a_loaded_instr(l_dimension_instr).ID_CONTENT = dr_instr.Item(0)
+                g_a_loaded_instr(l_dimension_instr).DESCRIPTION = dr_instr.Item(1)
 
-        '        l_dimension_profiles = l_dimension_profiles + 1
+                l_dimension_instr = l_dimension_instr + 1
 
-        '    End While
+            End While
 
-        'End If
+        End If
 
-        'Cursor = Cursors.Arrow
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub CheckedListBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox3.DoubleClick
+
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
+        Dim l_instr_description As String
+
+        If Not db_discharge.GET_DEFAULT_INSTR(TextBox1.Text, g_a_loaded_instr(CheckedListBox3.SelectedIndex).ID_CONTENT, l_instr_description) Then
+
+            MsgBox("ERROR GETTING DISCHARGE INSTRUCTIONS!", vbCritical)
+
+        End If
+
+        Dim show_instr As New CONTENT_DISPLAY(g_a_loaded_instr(CheckedListBox3.SelectedIndex).DESCRIPTION, l_instr_description)
+
+        show_instr.ShowDialog()
 
     End Sub
 End Class

@@ -23,7 +23,7 @@ Public Class DISCHARGE_API
         Public PROFILE_NAME As String
     End Structure
 
-    Public Structure DEFAULT_INSTR
+    Public Structure DEFAULT_INSTR '(Esta estrutura vai ser usada pelo Grupo e pelas instruções)
         Public ID_CONTENT As String
         Public DESCRIPTION As String
     End Structure
@@ -1245,6 +1245,463 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return False
         End Try
+
+    End Function
+
+    Function GET_DEFAULT_INSTR(ByVal i_institution As Int64, ByVal i_instr As String, ByRef o_desc As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT di.id_content, alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", di.code_disch_instructions)
+                                FROM alert_default.disch_instructions di
+                                WHERE di.flg_available = 'Y'
+                                AND di.id_content = '" & i_instr & "'
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Dim dr As OracleDataReader
+        Try
+            cmd.CommandType = CommandType.Text
+            dr = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                o_desc = dr.Item(1)
+
+            End While
+
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function SET_DISCH_INSTRUCTION(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_disch_group As String, ByVal i_instructions() As DEFAULT_INSTR) As Boolean
+
+        'A FUNÇÃO SERÁ RESPONSÁVEL POR VERIFICAR SE GRUPO E INSTRUÇÃO JÁ EXISTEM NO ALERT
+        'SÓ INSERE SE REGISTO OU TRADUÇÃO NÃO EXISTIREM
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                g_id_language alert.language.id_language%TYPE := " & l_id_language & ";
+
+                                g_id_disch_group alert.disch_instructions_group.id_content%TYPE := '" & i_disch_group & "'; 
+
+                                g_a_disch_instr table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_instructions.Count() - 1
+
+            If (i < i_instructions.Count() - 1) Then
+
+                sql = sql & " '" & i_instructions(i).ID_CONTENT & "', "
+
+            Else
+
+                sql = sql & "'" & i_instructions(i).ID_CONTENT & "');"
+
+            End If
+
+        Next
+
+        sql = sql & "            g_id_software software.id_software%TYPE := " & i_software & ";
+
+                                g_institution institution.id_institution%TYPE := " & i_institution & "; 
+
+                                --#############################################################################################
+                                FUNCTION check_instr_group(i_id_content_group IN alert.disch_instructions_group.id_content%TYPE
+                               
+                                                           ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instructions_group dg
+                                    WHERE dg.id_content = i_id_content_group
+                                    AND dg.flg_available = 'Y';
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_instr_group;
+
+                                --#############################################################################################
+                                FUNCTION check_instr_group_translation
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_group IN alert.disch_instructions_group.id_content%TYPE
+        
+                                ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instructions_group dg
+                                    WHERE dg.id_content = i_id_content_group
+                                    AND dg.flg_available = 'Y'
+                                    AND pk_translation.get_translation(i_id_lang, dg.code_disch_instructions_group) IS NOT NULL;
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_instr_group_translation;
+
+                                --#############################################################################################   
+                                FUNCTION get_instr_group(i_id_content_group IN alert.disch_instructions_group.id_content%TYPE)
+                                    RETURN alert.disch_instructions_group.id_disch_instructions_group%TYPE IS
+    
+                                    l_f_disch_group alert.disch_instructions_group.id_disch_instructions_group%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT dg.id_disch_instructions_group
+                                    INTO l_f_disch_group
+                                    FROM alert.disch_instructions_group dg
+                                    WHERE dg.id_content = i_id_content_group
+                                    AND dg.flg_available = 'Y';
+    
+                                    RETURN l_f_disch_group;
+    
+                                END get_instr_group;
+
+                                --############################################################################################# 
+                                PROCEDURE set_disch_instr_group(i_id_content_group IN alert.disch_instructions_group.id_content%TYPE) IS
+                                BEGIN
+                                    INSERT INTO alert.disch_instructions_group
+                                        (id_disch_instructions_group, code_disch_instructions_group, flg_available, id_content)
+                                    VALUES
+                                        (alert.seq_disch_instructions_group.nextval,
+                                         'DISCH_INSTRUCTIONS_GROUP.CODE_DISCH_INSTRUCTIONS_GROUP.' || alert.seq_disch_instructions_group.nextval,
+                                         'Y',
+                                         i_id_content_group);
+                                END set_disch_instr_group;
+
+                                --#############################################################################################     
+                                PROCEDURE set_disch_instr_group_trans
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_group IN alert.disch_instructions_group.id_content%TYPE
+                                ) IS
+    
+                                    l_f_group_desc       translation.desc_lang_6%TYPE;
+                                    l_f_code_translation translation.code_translation%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT alert_default.pk_translation_default.get_translation_default(i_id_lang, dg.code_disch_instructions_group)
+                                    INTO l_f_group_desc
+                                    FROM alert_default.disch_instructions_group dg
+                                    WHERE dg.flg_available = 'Y'
+                                    AND dg.id_content = i_id_content_group;
+    
+                                    SELECT dg.code_disch_instructions_group
+                                    INTO l_f_code_translation
+                                    FROM alert.disch_instructions_group dg
+                                    WHERE dg.id_content = i_id_content_group
+                                    AND dg.flg_available = 'Y';
+    
+                                    pk_translation.insert_into_translation(i_id_lang, l_f_code_translation, l_f_group_desc);
+    
+                                END set_disch_instr_group_trans;
+
+                                --#############################################################################################
+                                FUNCTION check_disch_instr(i_id_content_disch IN alert.disch_instructions.id_content%TYPE
+                               
+                                                           ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_disch
+                                    AND di.flg_available = 'Y';
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_disch_instr;
+
+                                --#############################################################################################    
+                                FUNCTION check_disch_instr_trans
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE
+        
+                                ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND di.flg_available = 'Y'
+                                    AND pk_translation.get_translation(i_id_lang, di.code_disch_instructions) IS NOT NULL;
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_disch_instr_trans;
+
+                                --#############################################################################################    
+                                FUNCTION check_disch_instr_title_trans
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE
+        
+                                ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND di.flg_available = 'Y'
+                                    AND pk_translation.get_translation(i_id_lang, di.code_disch_instructions_title) IS NOT NULL;
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_disch_instr_title_trans;
+
+                                --############################################################################################# 
+                                PROCEDURE set_disch_instr(i_id_content_instr IN alert.disch_instructions.id_content%TYPE) IS
+                                BEGIN
+    
+                                    INSERT INTO alert.disch_instructions
+                                        (id_disch_instructions, code_disch_instructions, code_disch_instructions_title, flg_available, id_content)
+                                    VALUES
+                                        (alert.seq_disch_instructions.nextval,
+                                         'DISCH_INSTRUCTIONS.CODE_DISCH_INSTRUCTIONS.' || alert.seq_disch_instructions.nextval,
+                                         'DISCH_INSTRUCTIONS.CODE_DISCH_INSTRUCTIONS_TITLE.' || alert.seq_disch_instructions.nextval,
+                                         'Y',
+                                         i_id_content_instr);
+    
+                                END set_disch_instr;
+
+                                --#############################################################################################     
+                                PROCEDURE set_disch_instr_trans
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE
+                                ) IS
+    
+                                    l_f_instr_desc       translation.desc_lang_6%TYPE;
+                                    l_f_code_translation translation.code_translation%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT alert_default.pk_translation_default.get_translation_default(i_id_lang, di.code_disch_instructions)
+                                    INTO l_f_instr_desc
+                                    FROM alert_default.disch_instructions di
+                                    WHERE di.flg_available = 'Y'
+                                    AND di.id_content = i_id_content_instr;
+    
+                                    SELECT di.code_disch_instructions
+                                    INTO l_f_code_translation
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND di.flg_available = 'Y';
+    
+                                    pk_translation.insert_into_translation(i_id_lang, l_f_code_translation, l_f_instr_desc);
+    
+                                END set_disch_instr_trans;
+
+                                --#############################################################################################     
+                                PROCEDURE set_disch_instr_title_trans
+                                (
+                                    i_id_lang          IN alert.language.id_language%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE
+                                ) IS
+    
+                                    l_f_instr_desc       translation.desc_lang_6%TYPE;
+                                    l_f_code_translation translation.code_translation%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT alert_default.pk_translation_default.get_translation_default(i_id_lang, di.code_disch_instructions_title)
+                                    INTO l_f_instr_desc
+                                    FROM alert_default.disch_instructions di
+                                    WHERE di.flg_available = 'Y'
+                                    AND di.id_content = i_id_content_instr;
+    
+                                    SELECT di.code_disch_instructions_title
+                                    INTO l_f_code_translation
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND di.flg_available = 'Y';
+    
+                                    pk_translation.insert_into_translation(i_id_lang, l_f_code_translation, l_f_instr_desc);
+    
+                                END set_disch_instr_title_trans;
+
+                                --#############################################################################################  
+                                FUNCTION check_disch_instr_rel
+                                (
+                                    i_id_content_group IN alert.disch_instructions_group.id_content%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE,
+                                    i_id_institution   IN alert.disch_instr_relation.id_institution%TYPE,
+                                    i_id_software      IN alert.disch_instr_relation.id_software%TYPE
+                                ) RETURN BOOLEAN IS
+                                    l_count INTEGER;
+    
+                                BEGIN
+    
+                                    SELECT COUNT(1)
+                                    INTO l_count
+                                    FROM alert.disch_instr_relation dr
+                                    JOIN alert.disch_instructions di ON di.id_disch_instructions = dr.id_disch_instructions
+                                                                 AND di.flg_available = 'Y'
+                                    JOIN alert.disch_instructions_group dg ON dg.id_disch_instructions_group = dr.id_disch_instructions_group
+                                                                       AND dg.flg_available = 'Y'
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND dg.id_content = i_id_content_group;
+    
+                                    IF l_count > 0
+                                    THEN
+                                        RETURN TRUE;
+                                    ELSE
+                                        RETURN FALSE;
+                                    END IF;
+    
+                                END check_disch_instr_rel;
+                                --############################################################################################# 
+                                PROCEDURE set_disch_instr_rel
+                                (
+                                    i_id_content_group IN alert.disch_instructions_group.id_content%TYPE,
+                                    i_id_content_instr IN alert.disch_instructions.id_content%TYPE,
+                                    i_id_institution   IN alert.disch_instr_relation.id_institution%TYPE,
+                                    i_id_software      IN alert.disch_instr_relation.id_software%TYPE
+                                ) IS
+    
+                                    l_id_disch_group alert.disch_instructions_group.id_disch_instructions_group%TYPE;
+                                    l_id_disch_instr alert.disch_instructions.id_disch_instructions%TYPE;
+    
+                                BEGIN
+    
+                                    SELECT dg.id_disch_instructions_group
+                                    INTO l_id_disch_group
+                                    FROM alert.disch_instructions_group dg
+                                    WHERE dg.id_content = i_id_content_group
+                                    AND dg.flg_available = 'Y';
+    
+                                    SELECT di.id_disch_instructions
+                                    INTO l_id_disch_instr
+                                    FROM alert.disch_instructions di
+                                    WHERE di.id_content = i_id_content_instr
+                                    AND di.flg_available = 'Y';
+    
+                                    INSERT INTO alert.disch_instr_relation
+                                        (id_disch_instr_relation, id_disch_instructions, id_disch_instructions_group, id_institution, id_software)
+                                    VALUES
+                                        (alert.seq_disch_instr_relation.nextval, l_id_disch_instr, l_id_disch_group, i_id_institution, i_id_software);
+    
+                                END set_disch_instr_rel;
+
+                                --#############################################################################################     
+                            BEGIN
+
+                                --1 - Verificar/Inserir Grupo
+                                IF NOT check_instr_group(g_id_disch_group)
+                                THEN
+    
+                                    set_disch_instr_group(g_id_disch_group);
+                                    set_disch_instr_group_trans(g_id_language, g_id_disch_group);
+    
+                                ELSIF NOT check_instr_group_translation(g_id_language, g_id_disch_group)
+                                THEN
+    
+                                    set_disch_instr_group_trans(g_id_language, g_id_disch_group);
+    
+                                END IF;
+
+                                --2.Instruções
+                                FOR i IN 1 .. g_a_disch_instr.count()
+                                LOOP
+                                    --2.1 - Verificar/Inserir Instruções
+                                    IF NOT check_disch_instr(g_a_disch_instr(i))
+                                    THEN
+        
+                                        set_disch_instr(g_a_disch_instr(i));
+                                        set_disch_instr_title_trans(g_id_language, g_a_disch_instr(i));
+                                        set_disch_instr_trans(g_id_language, g_a_disch_instr(i));
+        
+                                    ELSIF NOT check_disch_instr_title_trans(g_id_language, g_a_disch_instr(i)) AND NOT check_disch_instr_trans(g_id_language, g_a_disch_instr(i))
+                                    THEN
+        
+                                        set_disch_instr_title_trans(g_id_language, g_a_disch_instr(i));
+                                        set_disch_instr_trans(g_id_language, g_a_disch_instr(i));
+        
+                                    ELSIF NOT check_disch_instr_title_trans(g_id_language, g_a_disch_instr(i))
+                                    THEN
+        
+                                        set_disch_instr_title_trans(g_id_language, g_a_disch_instr(i));
+        
+                                    ELSIF NOT check_disch_instr_trans(g_id_language, g_a_disch_instr(i))
+                                    THEN
+        
+                                        set_disch_instr_trans(g_id_language, g_a_disch_instr(i));
+        
+                                    END IF;
+    
+                                    --2.2 - Verificar/Inserir Relação
+    
+                                    IF NOT check_disch_instr_rel(g_id_disch_group, g_a_disch_instr(i), g_institution, g_id_software)
+                                    THEN
+        
+                                        set_disch_instr_rel(g_id_disch_group, g_a_disch_instr(i), g_institution, g_id_software);
+        
+                                    END IF;
+    
+                                END LOOP;
+                            END;"
+
+        Dim cmd_insert_disch_instr As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_disch_instr.CommandType = CommandType.Text
+            cmd_insert_disch_instr.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_disch_instr.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_disch_instr.Dispose()
+
+        Return True
 
     End Function
 
