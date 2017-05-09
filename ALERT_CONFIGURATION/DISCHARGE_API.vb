@@ -771,7 +771,7 @@ Public Class DISCHARGE_API
 
                     Dim result As Integer = 0
                     result = MsgBox("Clinical Service " & db_clin_serv.GET_CLIN_SERV_TRANSLATION(i_institution, l_a_clin_serv(i)) &
-                                    " not configrued for the chosen institution and software. Do you wish to configure it?", MessageBoxButtons.YesNo)
+                                    " not configured for the chosen institution and software. Do you wish to configure it?", MessageBoxButtons.YesNo)
 
                     If result = DialogResult.Yes Then
 
@@ -1142,8 +1142,361 @@ Public Class DISCHARGE_API
             cmd_insert_reas_dest.CommandType = CommandType.Text
             cmd_insert_reas_dest.ExecuteNonQuery()
         Catch ex As Exception
-            cmd_insert_reas_dest.Dispose()
-            Return False
+
+            Try
+                ''Versões antigas sem flg auto_presc_cancel
+                sql = "DECLARE
+                                    l_id_software       alert.disch_reas_dest.id_software_param%TYPE := " & i_software & ";
+                                    l_id_institution    alert.disch_reas_dest.id_instit_param%TYPE := " & i_institution & ";
+                                    l_id_content_reason alert.discharge_reason.id_content%TYPE := '" & i_reason & "';
+
+                                    l_id_def_disch_reas_dest table_number := table_number("
+
+                For i As Integer = 0 To i_destinations.Count() - 1
+
+                    If (i < i_destinations.Count() - 1) Then
+
+                        sql = sql & i_destinations(i).id_disch_reas_dest & ", "
+
+                    Else
+
+                        sql = sql & i_destinations(i).id_disch_reas_dest & ");"
+
+                    End If
+
+                Next
+
+                sql = sql & "  l_id_content_discharge   table_varchar := table_varchar("
+
+
+                For i As Integer = 0 To i_destinations.Count() - 1
+
+                    If (i < i_destinations.Count() - 1) Then
+
+                        sql = sql & " '" & i_destinations(i).id_content & "', "
+
+                    Else
+
+                        sql = sql & "'" & i_destinations(i).id_content & "');"
+
+                    End If
+
+                Next
+
+                sql = sql & "               l_id_clinical_services   table_number := table_number("
+
+                For i As Integer = 0 To l_a_dep_clin_serv.Count() - 1
+
+                    If (i < l_a_dep_clin_serv.Count() - 1) Then
+
+                        sql = sql & " '" & l_a_dep_clin_serv(i) & "', "
+
+                    Else
+
+                        sql = sql & "'" & l_a_dep_clin_serv(i) & "');"
+
+                    End If
+
+                Next
+
+                sql = sql & "               l_type                   table_varchar := table_varchar("
+
+                For i As Integer = 0 To i_destinations.Count() - 1
+
+                    If (i < i_destinations.Count() - 1) Then
+
+                        sql = sql & " '" & i_destinations(i).type & "', "
+
+                    Else
+
+                        sql = sql & "'" & i_destinations(i).type & "');"
+
+                    End If
+
+                Next
+
+                sql = sql & "       l_id_alert_reason      alert.disch_reas_dest.id_discharge_reason%TYPE;
+                                    l_id_alert_destination alert.disch_reas_dest.id_discharge_dest%TYPE;
+
+                                    --Variáveis a inserir no disch_reas_dest
+                                    l_flg_diag               alert_default.disch_reas_dest.flg_diag%TYPE;
+                                    l_report_name            alert_default.disch_reas_dest.report_name%TYPE;
+                                    l_id_edis_type           alert_default.disch_reas_dest.id_epis_type%TYPE;
+                                    l_type_screen            alert_default.disch_reas_dest.type_screen%TYPE;
+                                    l_id_reports             alert_default.disch_reas_dest.id_reports%TYPE;
+                                    l_flg_mcdt               alert_default.disch_reas_dest.flg_mcdt%TYPE;
+                                    l_flg_care_stage         alert_default.disch_reas_dest.flg_care_stage%TYPE;
+                                    l_flg_default            alert_default.disch_reas_dest.flg_default%TYPE;
+                                    l_rank                   alert_default.disch_reas_dest.rank%TYPE;
+                                    l_flg_secify_dest        alert_default.disch_reas_dest.flg_specify_dest%TYPE;
+                                    l_flg_rep_notes          alert_default.disch_reas_dest.flg_rep_notes%TYPE;
+                                    l_flg_def_disch_status   alert_default.disch_reas_dest.flg_def_disch_status%TYPE;
+                                    l_id_def_disch_status    alert_default.disch_reas_dest.id_def_disch_status%TYPE;
+                                    l_flg_needs_overall_resp alert_default.disch_reas_dest.flg_needs_overall_resp%TYPE;
+
+                                    l_id_dep_clin_serv alert.disch_reas_dest.id_dep_clin_serv%TYPE;
+
+                                    --#############################################################################################
+                                    FUNCTION get_disch_reason(i_id_content_reason IN alert.discharge_reason.id_content%TYPE
+                              
+                                                              ) RETURN alert.discharge_reason.id_discharge_reason%TYPE IS
+    
+                                        l_id_alert alert.discharge_reason.id_discharge_reason%TYPE;
+    
+                                    BEGIN
+    
+                                        SELECT dr.id_discharge_reason
+                                        INTO l_id_alert
+                                        FROM alert.discharge_reason dr
+                                        WHERE dr.id_content = i_id_content_reason
+                                        AND dr.flg_available = 'Y';
+    
+                                        RETURN l_id_alert;
+    
+                                    END get_disch_reason;
+
+                                    --#############################################################################################
+
+                                    FUNCTION get_disch_destination(i_id_content_destination IN alert.discharge_reason.id_content%TYPE
+                                   
+                                                                   ) RETURN alert.discharge_dest.id_discharge_dest%TYPE IS
+    
+                                        l_id_alert alert.discharge_dest.id_discharge_dest%TYPE;
+    
+                                    BEGIN
+    
+                                        SELECT d.id_discharge_dest
+                                        INTO l_id_alert
+                                        FROM alert.discharge_dest d
+                                        WHERE d.id_content = i_id_content_destination
+                                        AND d.flg_available = 'Y';
+    
+                                        RETURN l_id_alert;
+    
+                                    END get_disch_destination;
+                                    --#############################################################################################
+
+                                    FUNCTION check_reas_dest
+                                    (
+                                        i_id_reason      IN alert.discharge_reason.id_discharge_reason%TYPE,
+                                        i_id_destination IN alert.discharge_dest.id_discharge_dest%TYPE,
+                                        i_id_software    IN alert.disch_reas_dest.id_software_param%TYPE,
+                                        i_id_institution IN alert.disch_reas_dest.id_instit_param%TYPE
+        
+                                    ) RETURN BOOLEAN IS
+    
+                                        l_count INTEGER := 0;
+    
+                                    BEGIN
+    
+                                        SELECT COUNT(*)
+                                        INTO l_count
+                                        FROM alert.disch_reas_dest d
+                                        WHERE d.id_software_param = i_id_software
+                                        AND d.id_instit_param = i_id_institution
+                                        AND d.id_discharge_reason = i_id_reason
+                                        AND d.id_discharge_dest = i_id_destination
+                                        AND d.flg_active = 'A';
+    
+                                        dbms_output.put_line('COUNT: ' || l_count);
+                                        dbms_output.put_line(i_id_reason);
+                                        dbms_output.put_line(i_id_destination);
+    
+                                        IF l_count > 0
+                                        THEN
+                                            RETURN TRUE;
+                                        ELSE
+                                            RETURN FALSE;
+                                        END IF;
+    
+                                    END check_reas_dest;
+                                    --#############################################################################################
+
+                                BEGIN
+
+                                    l_id_alert_reason := get_disch_reason(l_id_content_reason);
+
+                                    FOR i IN 1 .. l_id_content_discharge.count()
+                                    LOOP
+
+                                        IF l_type(i) = 'D'
+                                        THEN
+        
+                                            l_id_alert_destination := get_disch_destination(l_id_content_discharge(i));
+        
+                                        END IF;
+        
+                                        IF NOT check_reas_dest(l_id_alert_reason, l_id_alert_destination, l_id_software, l_id_institution)
+                                        THEN
+                
+                                            --Obter os dados do default
+                                            SELECT d.flg_diag,
+                                                   d.report_name,
+                                                   d.id_epis_type,
+                                                   d.type_screen,
+                                                   d.id_reports,
+                                                   d.flg_mcdt,
+                                                   d.flg_care_stage,
+                                                   d.flg_default,
+                                                   d.rank,
+                                                   d.flg_specify_dest,
+                                                   d.flg_rep_notes,
+                                                   d.flg_def_disch_status,
+                                                   d.id_def_disch_status,
+                                                   d.flg_needs_overall_resp
+                                            INTO l_flg_diag,
+                                                 l_report_name,
+                                                 l_id_edis_type,
+                                                 l_type_screen,
+                                                 l_id_reports,
+                                                 l_flg_mcdt,
+                                                 l_flg_care_stage,
+                                                 l_flg_default,
+                                                 l_rank,
+                                                 l_flg_secify_dest,
+                                                 l_flg_rep_notes,
+                                                 l_flg_def_disch_status,
+                                                 l_id_def_disch_status,
+                                                 l_flg_needs_overall_resp
+                                            FROM alert_default.disch_reas_dest d
+                                            WHERE d.id_disch_reas_dest = l_id_def_disch_reas_dest(i);
+        
+                                            IF l_type(i) = 'D'
+                                            THEN
+            
+                                                IF l_id_clinical_services(i) = -1
+                                                THEN
+                                                    l_id_dep_clin_serv := NULL;
+                                                ELSE
+                                                    l_id_dep_clin_serv := l_id_clinical_services(i);
+                                                END IF;
+            
+                                                INSERT INTO alert.disch_reas_dest
+                                                    (id_disch_reas_dest,
+                                                     id_discharge_reason,
+                                                     id_discharge_dest,
+                                                     id_dep_clin_serv,
+                                                     flg_active,
+                                                     flg_diag,
+                                                     id_institution,
+                                                     id_instit_param,
+                                                     id_software_param,
+                                                     report_name,
+                                                     id_epis_type,
+                                                     type_screen,
+                                                     id_department,
+                                                     id_reports,
+                                                     flg_mcdt,
+                                                     rank,
+                                                     flg_specify_dest,
+                                                     flg_care_stage,
+                                                     flg_default,
+                                                     flg_rep_notes,
+                                                     flg_def_disch_status,
+                                                     id_def_disch_status,
+                                                     flg_needs_overall_resp)
+                                                VALUES
+                                                    (alert.seq_disch_reas_dest.nextval,
+                                                     l_id_alert_reason,
+                                                     l_id_alert_destination,
+                                                     l_id_dep_clin_serv,
+                                                     'A',
+                                                     l_flg_diag,
+                                                     NULL,
+                                                     l_id_institution,
+                                                     l_id_software,
+                                                     l_report_name,
+                                                     l_id_edis_type,
+                                                     l_type_screen,
+                                                     NULL,
+                                                     l_id_reports,
+                                                     l_flg_mcdt,
+                                                     l_rank,
+                                                     l_flg_secify_dest,
+                                                     l_flg_care_stage,
+                                                     l_flg_default,
+                                                     l_flg_rep_notes,
+                                                     l_flg_def_disch_status,
+                                                     l_id_def_disch_status,
+                                                     l_flg_needs_overall_resp);
+            
+                                            ELSE
+            
+                                                IF l_id_clinical_services(i) = -1
+                                                THEN
+                                                    l_id_dep_clin_serv := NULL;
+                                                ELSE
+                                                    l_id_dep_clin_serv := l_id_clinical_services(i);
+                                                END IF;
+            
+                                                INSERT INTO alert.disch_reas_dest
+                                                    (id_disch_reas_dest,
+                                                     id_discharge_reason,
+                                                     id_discharge_dest,
+                                                     id_dep_clin_serv,
+                                                     flg_active,
+                                                     flg_diag,
+                                                     id_institution,
+                                                     id_instit_param,
+                                                     id_software_param,
+                                                     report_name,
+                                                     id_epis_type,
+                                                     type_screen,
+                                                     id_department,
+                                                     id_reports,
+                                                     flg_mcdt,
+                                                     rank,
+                                                     flg_specify_dest,
+                                                     flg_care_stage,
+                                                     flg_default,
+                                                     flg_rep_notes,
+                                                     flg_def_disch_status,
+                                                     id_def_disch_status,
+                                                     flg_needs_overall_resp)
+                                                VALUES
+                                                    (alert.seq_disch_reas_dest.nextval,
+                                                     l_id_alert_reason,
+                                                     NULL,
+                                                     l_id_dep_clin_serv,
+                                                     'A',
+                                                     l_flg_diag,
+                                                     NULL,
+                                                     l_id_institution,
+                                                     l_id_software,
+                                                     l_report_name,
+                                                     l_id_edis_type,
+                                                     l_type_screen,
+                                                     NULL,
+                                                     l_id_reports,
+                                                     l_flg_mcdt,
+                                                     l_rank,
+                                                     l_flg_secify_dest,
+                                                     l_flg_care_stage,
+                                                     l_flg_default,
+                                                     l_flg_rep_notes,
+                                                     l_flg_def_disch_status,
+                                                     l_id_def_disch_status,
+                                                     l_flg_needs_overall_resp);
+            
+                                            END IF;
+        
+                                        END IF;
+    
+                                    END LOOP;
+
+                                END;"
+
+                cmd_insert_reas_dest = New OracleCommand(sql, Connection.conn)
+                cmd_insert_reas_dest.CommandType = CommandType.Text
+                cmd_insert_reas_dest.ExecuteNonQuery()
+
+            Catch ex2 As Exception
+
+                cmd_insert_reas_dest.Dispose()
+                Return False
+
+            End Try
+
         End Try
 
         cmd_insert_reas_dest.Dispose()
