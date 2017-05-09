@@ -22,11 +22,20 @@ Public Class DISCHARGE
     'Array que vai guardar as REASONS caregadas do default
     Dim g_a_loaded_reasons_default() As DISCHARGE_API.DEFAULT_REASONS
 
+    'Array que vai guardar as REASONS caregadas do ALERT
+    Dim g_a_loaded_reasons_alert() As DISCHARGE_API.DEFAULT_REASONS
+
     'Array que vai guardar as DESTINATIONS caregadas do default
     Dim g_a_loaded_destinations_default() As DISCHARGE_API.DEFAULT_DISCAHRGE
 
+    'Array que vai guardar as DESTINATIONS caregadas do ALERT
+    Dim g_a_loaded_destinations_alert() As DISCHARGE_API.DEFAULT_DISCAHRGE
+
     'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA VINDOS DO DEFAULT
     Dim g_a_loaded_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
+
+    'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES DA REASON SELECIONADA DO ALERT
+    Dim g_a_loaded_profiles_alert() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
 
     'Array que vai guardar os id_content dos grupos do default
     Dim g_a_loaded_instr_group() As DISCHARGE_API.DEFAULT_INSTR
@@ -45,6 +54,9 @@ Public Class DISCHARGE
         CheckedListBox2.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox1.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox5.BackColor = Color.FromArgb(195, 195, 165)
+        CheckedListBox6.BackColor = Color.FromArgb(195, 195, 165)
 
         Dim dr As OracleDataReader
 
@@ -95,6 +107,15 @@ Public Class DISCHARGE
 
         ReDim g_a_loaded_instr(0)
         CheckedListBox3.Items.Clear()
+
+        ReDim g_a_loaded_reasons_alert(0)
+        ComboBox7.Items.Clear()
+
+        ReDim g_a_loaded_destinations_alert(0)
+        CheckedListBox4.Items.Clear()
+
+        ReDim g_a_loaded_profiles_alert(0)
+        CheckedListBox5.Items.Clear()
 
         If TextBox1.Text <> "" Then
 
@@ -162,6 +183,15 @@ Public Class DISCHARGE
         ReDim g_a_loaded_instr(0)
         CheckedListBox3.Items.Clear()
 
+        ReDim g_a_loaded_reasons_alert(0)
+        ComboBox7.Items.Clear()
+
+        ReDim g_a_loaded_destinations_alert(0)
+        CheckedListBox4.Items.Clear()
+
+        ReDim g_a_loaded_profiles_alert(0)
+        CheckedListBox5.Items.Clear()
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -227,7 +257,7 @@ Public Class DISCHARGE
 
                 g_a_loaded_destinations_default(l_index_destinations_default).id_disch_reas_dest = dr.Item(0)
                 g_a_loaded_destinations_default(l_index_destinations_default).id_content = dr.Item(1)
-                g_a_loaded_destinations_default(l_index_destinations_default).desccription = dr.Item(2)
+                g_a_loaded_destinations_default(l_index_destinations_default).description = dr.Item(2)
                 g_a_loaded_destinations_default(l_index_destinations_default).id_clinical_service = dr.Item(3)
                 g_a_loaded_destinations_default(l_index_destinations_default).type = dr.Item(4)
 
@@ -259,7 +289,7 @@ Public Class DISCHARGE
 
         If Not db_discharge.GET_DEFAULT_PROFILE_DISCH_REASON(g_selected_soft, g_a_loaded_reasons_default(ComboBox4.SelectedIndex).id_content, dr_profile) Then
 
-            MsgBox("ERROR GETTING DISCHARGE PROFILES!", vbCritical)
+            MsgBox("ERROR GETTING DEFAULT DISCHARGE PROFILES!", vbCritical)
 
         Else
 
@@ -307,13 +337,22 @@ Public Class DISCHARGE
         ReDim g_a_loaded_instr(0)
         CheckedListBox3.Items.Clear()
 
+        ReDim g_a_loaded_reasons_alert(0)
+        ComboBox7.Items.Clear()
+
+        ReDim g_a_loaded_destinations_alert(0)
+        CheckedListBox4.Items.Clear()
+
+        ReDim g_a_loaded_profiles_alert(0)
+        CheckedListBox5.Items.Clear()
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
         If Not db_discharge.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+            MsgBox("ERROR GETTING DEFAULT DISCHARGE VERSIONS!", vbCritical)
 
         Else
 
@@ -329,7 +368,7 @@ Public Class DISCHARGE
         If Not db_discharge.GET_DISCH_INSTR_VERSIONS(TextBox1.Text, g_selected_soft, dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
+            MsgBox("ERROR GETTING DEFAULT DISCHARGE INSTRUCTIONS VERSIONS!", vbCritical)
 
         Else
 
@@ -341,10 +380,39 @@ Public Class DISCHARGE
 
         End If
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_REASONS(TextBox1.Text, g_selected_soft, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING DISCHARGE REASONS FROM ALERT!", vbCritical)
+
+        Else
+
+            Dim l_dim_reas_alert As Integer = 0
+            While dr.Read()
+
+                ComboBox7.Items.Add(dr.Item(1) & "  -  [" & dr.Item(0) & "]")
+                ReDim Preserve g_a_loaded_reasons_alert(l_dim_reas_alert)
+
+                g_a_loaded_reasons_alert(l_dim_reas_alert).id_content = dr.Item(0)
+
+                Try
+                    g_a_loaded_reasons_alert(l_dim_reas_alert).desccription = dr.Item(1)
+                Catch ex As Exception
+                    g_a_loaded_reasons_alert(l_dim_reas_alert).desccription = ""
+                End Try
+
+                l_dim_reas_alert = l_dim_reas_alert + 1
+
+            End While
+
+        End If
+
         dr.Dispose()
         dr.Close()
 
         Cursor = Cursors.Arrow
+
     End Sub
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
@@ -394,6 +462,8 @@ Public Class DISCHARGE
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
 
+        Cursor = Cursors.WaitCursor
+
         'Lista de Reasons
         If ComboBox4.SelectedIndex > -1 Then
 
@@ -422,7 +492,53 @@ Public Class DISCHARGE
 
                     End If
 
-                    '2 - Gravar os profiles_discharge selecionados
+                    '2 - Verificar se existe Destination no ALERT (e respetiva tradução), caso não exista, inserir.
+
+                    Dim l_a_checked_destinations(0) As DISCHARGE_API.DEFAULT_DISCAHRGE
+                    Dim l_dimension_check_dest As Integer = 0
+
+                    For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                        ReDim Preserve l_a_checked_destinations(l_dimension_check_dest)
+
+                        l_a_checked_destinations(l_dimension_check_dest).id_disch_reas_dest = g_a_loaded_destinations_default(indexChecked).id_disch_reas_dest
+                        l_a_checked_destinations(l_dimension_check_dest).id_content = g_a_loaded_destinations_default(indexChecked).id_content
+                        l_a_checked_destinations(l_dimension_check_dest).description = g_a_loaded_destinations_default(indexChecked).description
+                        l_a_checked_destinations(l_dimension_check_dest).id_clinical_service = g_a_loaded_destinations_default(indexChecked).id_clinical_service
+                        l_a_checked_destinations(l_dimension_check_dest).type = g_a_loaded_destinations_default(indexChecked).type
+
+                        l_dimension_check_dest = l_dimension_check_dest + 1
+
+                    Next
+
+                    For i As Integer = 0 To l_a_checked_destinations.Count() - 1
+
+                        If (l_a_checked_destinations(i).type = "D") Then
+
+                            If Not db_discharge.CHECK_DESTINATION(l_a_checked_destinations(i).id_content) Then
+
+                                If Not db_discharge.SET_DESTINATION(TextBox1.Text, l_a_checked_destinations(i)) Then
+
+                                    MsgBox("ERROR INSERTING DISCHARGE DESTINATION!", vbCritical)
+
+                                End If
+
+                            ElseIf Not db_discharge.CHECK_DESTINATION_TRANSLATION(TextBox1.Text, L_a_checked_destinations(i).id_content) Then
+
+                                If Not db_discharge.SET_DESTINATION_TRANSLATION(TextBox1.Text, l_a_checked_destinations(i)) Then
+
+                                    MsgBox("ERROR INSERTING DISCHARGE DESTINATION TRANSLATION!", vbCritical)
+
+                                End If
+
+                            End If
+
+                        End If
+
+                    Next
+
+
+                    '3 - Gravar os profiles_discharge selecionados
                     'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES SELECTIONADOS PELO UTILIZADOR
                     Dim l_a_selected_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
 
@@ -445,7 +561,7 @@ Public Class DISCHARGE
 
                     End If
 
-                    '3 - Gravar os DISCH_REAS_DEST
+                    '4 - Gravar os DISCH_REAS_DEST
                     Dim l_a_selected_reas_dest() As DISCHARGE_API.DEFAULT_DISCAHRGE
 
                     ReDim l_a_selected_reas_dest(0)
@@ -457,7 +573,7 @@ Public Class DISCHARGE
 
                         l_a_selected_reas_dest(l_dim_selected_reas_dest).id_disch_reas_dest = g_a_loaded_destinations_default(indexChecked).id_disch_reas_dest
                         l_a_selected_reas_dest(l_dim_selected_reas_dest).id_content = g_a_loaded_destinations_default(indexChecked).id_content
-                        l_a_selected_reas_dest(l_dim_selected_reas_dest).desccription = g_a_loaded_destinations_default(indexChecked).desccription
+                        l_a_selected_reas_dest(l_dim_selected_reas_dest).description = g_a_loaded_destinations_default(indexChecked).description
                         l_a_selected_reas_dest(l_dim_selected_reas_dest).id_clinical_service = g_a_loaded_destinations_default(indexChecked).id_clinical_service
                         l_a_selected_reas_dest(l_dim_selected_reas_dest).type = g_a_loaded_destinations_default(indexChecked).type
 
@@ -492,6 +608,8 @@ Public Class DISCHARGE
             MsgBox("Please select a Discharge Reason.")
 
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -553,15 +671,38 @@ Public Class DISCHARGE
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        If Not db_discharge.SET_DISCH_INSTRUCTION(470, 11, g_a_loaded_instr_group(ComboBox6.SelectedIndex).ID_CONTENT, g_a_loaded_instr) Then
+        Cursor = Cursors.WaitCursor
 
-            MsgBox("ERROR")
+        If CheckedListBox3.CheckedItems.Count() > 0 Then
 
-        Else
+            Dim l_a_selected_instr() As DISCHARGE_API.DEFAULT_INSTR
 
-            MsgBox("Discharge instructions correctly inserted.", vbInformation)
+            ReDim l_a_selected_instr(0)
+            Dim l_dim_selected_instr = 0
+
+            For Each indexChecked In CheckedListBox3.CheckedIndices
+
+                ReDim Preserve l_a_selected_instr(l_dim_selected_instr)
+                l_a_selected_instr(l_dim_selected_instr).ID_CONTENT = g_a_loaded_instr(indexChecked).ID_CONTENT
+                l_a_selected_instr(l_dim_selected_instr).DESCRIPTION = g_a_loaded_instr(indexChecked).DESCRIPTION
+
+                l_dim_selected_instr = l_dim_selected_instr + 1
+
+            Next
+
+            If Not db_discharge.SET_DISCH_INSTRUCTION(TextBox1.Text, g_selected_soft, g_a_loaded_instr_group(ComboBox6.SelectedIndex).ID_CONTENT, l_a_selected_instr) Then
+
+                MsgBox("ERROR SETTING DISCHARGE INSTRUCTION!", vbCritical)
+
+            Else
+
+                MsgBox("Discharge instructions correctly inserted.", vbInformation)
+
+            End If
 
         End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 
@@ -678,20 +819,266 @@ Public Class DISCHARGE
 
     Private Sub CheckedListBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox3.DoubleClick
 
-        Form_location.x_position = Me.Location.X
-        Form_location.y_position = Me.Location.Y
+        If CheckedListBox3.Items.Count() > 0 And CheckedListBox3.SelectedIndex > -1 Then
 
-        Dim l_instr_description As String
+            Form_location.x_position = Me.Location.X
+            Form_location.y_position = Me.Location.Y
 
-        If Not db_discharge.GET_DEFAULT_INSTR(TextBox1.Text, g_a_loaded_instr(CheckedListBox3.SelectedIndex).ID_CONTENT, l_instr_description) Then
+            Dim l_instr_description As String
 
-            MsgBox("ERROR GETTING DISCHARGE INSTRUCTIONS!", vbCritical)
+            If Not db_discharge.GET_DEFAULT_INSTR(TextBox1.Text, g_a_loaded_instr(CheckedListBox3.SelectedIndex).ID_CONTENT, l_instr_description) Then
+
+                MsgBox("ERROR GETTING DISCHARGE INSTRUCTIONS!", vbCritical)
+
+            End If
+
+            Dim show_instr As New CONTENT_DISPLAY(g_a_loaded_instr(CheckedListBox3.SelectedIndex).DESCRIPTION, l_instr_description)
+
+            show_instr.ShowDialog()
 
         End If
 
-        Dim show_instr As New CONTENT_DISPLAY(g_a_loaded_instr(CheckedListBox3.SelectedIndex).DESCRIPTION, l_instr_description)
+    End Sub
 
-        show_instr.ShowDialog()
+    Private Sub GroupBox2_Enter(sender As Object, e As EventArgs) Handles GroupBox2.Enter
+
+    End Sub
+
+    Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
+
+        ReDim g_a_loaded_destinations_alert(0)
+        CheckedListBox4.Items.Clear()
+
+        ReDim g_a_loaded_profiles_alert(0)
+        CheckedListBox5.Items.Clear()
+
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_DESTINATIONS(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox7.SelectedIndex).id_content, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING DISCHARGE DESTINATIONS FROM ALERT!", vbCritical)
+
+        Else
+
+            Dim l_dim_dest_alert As Integer = 0
+            While dr.Read()
+
+                'Só populo os 3 primeiros campos
+                CheckedListBox4.Items.Add(dr.Item(2) & "  -  [" & dr.Item(1) & "]")
+
+                ReDim Preserve g_a_loaded_destinations_alert(l_dim_dest_alert)
+
+                g_a_loaded_destinations_alert(l_dim_dest_alert).id_disch_reas_dest = dr.Item(0)
+                g_a_loaded_destinations_alert(l_dim_dest_alert).id_content = dr.Item(1)
+
+                Try
+                    g_a_loaded_destinations_alert(l_dim_dest_alert).description = dr.Item(2)
+                Catch ex As Exception
+                    g_a_loaded_destinations_alert(l_dim_dest_alert).description = ""
+                End Try
+
+
+                l_dim_dest_alert = l_dim_dest_alert + 1
+
+            End While
+
+        End If
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_PROFILE_DISCH_REASON(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox7.SelectedIndex).id_content, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING DISCHARGE PROFILES FROM ALERT!", vbCritical)
+
+        Else
+
+            Dim l_dim_prof_alert As Integer = 0
+            While dr.Read()
+
+                'Só populo os 3 primeiros campos
+                CheckedListBox5.Items.Add(dr.Item(1) & " - " & dr.Item(2))
+
+                ReDim Preserve g_a_loaded_profiles_alert(l_dim_prof_alert)
+
+                g_a_loaded_profiles_alert(l_dim_prof_alert).ID_PROFILE_DISCH_REASON = dr.Item(0)
+                g_a_loaded_profiles_alert(l_dim_prof_alert).ID_PROFILE_TEMPLATE = dr.Item(1)
+                g_a_loaded_profiles_alert(l_dim_prof_alert).PROFILE_NAME = dr.Item(1)
+
+                l_dim_prof_alert = l_dim_prof_alert + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
+
+    End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+        'Lista de Destinations preenchida
+        If CheckedListBox4.Items.Count() > 0 Then
+
+            If CheckedListBox4.CheckedItems.Count() > 0 Then
+
+                Dim l_a_check_disch(0) As DISCHARGE_API.DEFAULT_DISCAHRGE
+
+                Dim l_dim_check_disch As Integer = 0
+
+                For Each indexChecked In CheckedListBox4.CheckedIndices
+
+                    ReDim Preserve l_a_check_disch(l_dim_check_disch)
+                    l_a_check_disch(l_dim_check_disch).id_disch_reas_dest = g_a_loaded_destinations_alert(indexChecked).id_disch_reas_dest
+
+                    l_dim_check_disch = l_dim_check_disch + 1
+
+                Next
+
+                For i As Integer = 0 To l_a_check_disch.Count() - 1
+
+                    If Not db_discharge.DELETE_DISCH_REAS_DEST(l_a_check_disch(i).id_disch_reas_dest) Then
+
+                        MsgBox("ERROR DELETING FROM DISCH_REAS_DEST!", vbCritical)
+
+                    End If
+
+                Next
+
+                Dim dr As OracleDataReader
+
+                'A - Limpar Arrays e boxes
+                'A.1 Se a lista total de Destination foi apagada => Limpar as duas boxes. Atualizar a box de Reasons
+                If CheckedListBox4.CheckedItems.Count() = g_a_loaded_destinations_alert.Count() Then
+
+                    ReDim g_a_loaded_reasons_alert(0)
+                    ComboBox7.Items.Clear()
+
+                    ReDim g_a_loaded_destinations_alert(0)
+                    CheckedListBox4.Items.Clear()
+
+                    ReDim g_a_loaded_profiles_alert(0)
+                    CheckedListBox5.Items.Clear()
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_discharge.GET_REASONS(TextBox1.Text, g_selected_soft, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR GETTING DISCHARGE REASONS FROM ALERT!", vbCritical)
+
+                    Else
+
+                        Dim l_dim_reas_alert As Integer = 0
+                        While dr.Read()
+
+                            ComboBox7.Items.Add(dr.Item(1) & "  -  [" & dr.Item(0) & "]")
+                            ReDim Preserve g_a_loaded_reasons_alert(l_dim_reas_alert)
+
+                            g_a_loaded_reasons_alert(l_dim_reas_alert).id_content = dr.Item(0)
+
+                            Try
+                                g_a_loaded_reasons_alert(l_dim_reas_alert).desccription = dr.Item(1)
+                            Catch ex As Exception
+                                g_a_loaded_reasons_alert(l_dim_reas_alert).desccription = ""
+                            End Try
+
+                            l_dim_reas_alert = l_dim_reas_alert + 1
+
+                        End While
+
+                    End If
+
+                    'A2 - Atualizar apenas a box de destiantions
+                Else
+                    ReDim g_a_loaded_destinations_alert(0)
+                    CheckedListBox4.Items.Clear()
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                    If Not db_discharge.GET_DESTINATIONS(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox7.SelectedIndex).id_content, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                        MsgBox("ERROR GETTING DISCHARGE DESTINATIONS FROM ALERT!", vbCritical)
+
+                    Else
+
+                        Dim l_dim_dest_alert As Integer = 0
+                        While dr.Read()
+
+                            'Só populo os 3 primeiros campos
+                            CheckedListBox4.Items.Add(dr.Item(2) & "  -  [" & dr.Item(1) & "]")
+
+                            ReDim Preserve g_a_loaded_destinations_alert(l_dim_dest_alert)
+
+                            g_a_loaded_destinations_alert(l_dim_dest_alert).id_disch_reas_dest = dr.Item(0)
+                            g_a_loaded_destinations_alert(l_dim_dest_alert).id_content = dr.Item(1)
+
+                            Try
+                                g_a_loaded_destinations_alert(l_dim_dest_alert).description = dr.Item(2)
+                            Catch ex As Exception
+                                g_a_loaded_destinations_alert(l_dim_dest_alert).description = ""
+                            End Try
+
+
+                            l_dim_dest_alert = l_dim_dest_alert + 1
+
+                        End While
+
+                    End If
+
+                End If
+
+                dr.Dispose()
+                dr.Close()
+
+            Else
+
+                MsgBox("No records selected to be deleted.")
+
+            End If
+
+        Else
+
+            MsgBox("No records selected to be deleted.")
+
+        End If
+
+    End Sub
+
+    Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
+
+        'Lista de Profiles preenchida
+        If CheckedListBox5.Items.Count() > 0 Then
+
+            Dim l_a_check_prof_disch_reas(0) As DISCHARGE_API.DEFAULT_DISCH_PROFILE
+
+            Dim l_dim_check_prof As Integer = 0
+
+            For Each indexChecked In CheckedListBox5.CheckedIndices
+
+                ReDim Preserve l_a_check_prof_disch_reas(l_dim_check_prof)
+                l_a_check_prof_disch_reas(l_dim_check_prof).ID_PROFILE_DISCH_REASON = g_a_loaded_profiles_alert(indexChecked).ID_PROFILE_DISCH_REASON
+
+                l_dim_check_prof = l_dim_check_prof + 1
+            Next
+
+
+            For i As Integer = 0 To l_a_check_prof_disch_reas.Count() - 1
+
+                If Not db_discharge.DELETE_PROF_DISCH_REAS(l_a_check_prof_disch_reas(i).ID_PROFILE_DISCH_REASON) Then
+
+                    MsgBox("ERROR DELETING FROM PROFILE_DISCH_REASON!", vbCritical)
+
+                End If
+
+            Next
+        Else
+
+                    MsgBox("No records selected to be deleted.")
+
+        End If
 
     End Sub
 End Class

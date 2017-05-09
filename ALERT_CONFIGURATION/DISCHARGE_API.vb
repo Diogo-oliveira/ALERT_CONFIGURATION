@@ -7,7 +7,7 @@ Public Class DISCHARGE_API
     Public Structure DEFAULT_DISCAHRGE
         Public id_disch_reas_dest As Int64
         Public id_content As String
-        Public desccription As String
+        Public description As String
         Public id_clinical_service As String
         Public type As String
     End Structure
@@ -151,6 +151,7 @@ Public Class DISCHARGE_API
                                 AND dr.id_content = '" & id_disch_reason & "'
                                 AND pdr.flg_available = 'Y'
                                 AND pt.id_software = " & i_software & "
+                                AND PT.FLG_AVAILABLE='Y'
                                 ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
@@ -522,27 +523,13 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination() As DEFAULT_DISCAHRGE) As Boolean
+    Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As DEFAULT_DISCAHRGE) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "DECLARE
 
-                                l_id_content table_varchar := table_varchar("
-
-        For i As Integer = 0 To i_id_destination.Count() - 1
-
-            If (i < i_id_destination.Count() - 1) Then
-
-                sql = sql & "'" & i_id_destination(i).id_content & "', "
-
-            Else
-
-                sql = sql & "'" & i_id_destination(i).id_content & "');"
-
-            End If
-
-        Next
+                                l_id_content table_varchar := table_varchar('" & i_id_destination.id_content & "');"
 
         sql = sql & "
                                     l_flg_type alert.discharge_dest.flg_type%TYPE;
@@ -609,27 +596,13 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function SET_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination() As DEFAULT_DISCAHRGE) As Boolean
+    Function SET_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination As DEFAULT_DISCAHRGE) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "DECLARE
 
-                                l_id_content table_varchar := table_varchar("
-
-        For i As Integer = 0 To i_id_destination.Count() - 1
-
-            If (i < i_id_destination.Count() - 1) Then
-
-                sql = sql & "'" & i_id_destination(i).id_content & "', "
-
-            Else
-
-                sql = sql & "'" & i_id_destination(i).id_content & "');"
-
-            End If
-
-        Next
+                                l_id_content table_varchar := table_varchar('" & i_id_destination.id_content & "');"
 
         sql = sql & " 
                                 l_id_alert_destination alert.discharge_dest.id_discharge_dest%TYPE;
@@ -2053,6 +2026,142 @@ Public Class DISCHARGE_API
         End Try
 
         cmd_insert_disch_instr.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_REASONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dr.id_content, pk_translation.get_translation(" & l_id_language & ", dr.code_discharge_reason)
+                                FROM alert.discharge_reason dr
+                                JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
+                                JOIN alert.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason and pdr.id_institution=drd.id_instit_param
+                                JOIN alert.profile_template pt ON pt.id_profile_template = pdr.id_profile_template and pt.id_software=drd.id_software_param
+                                WHERE drd.flg_active = 'A'
+                                AND dr.flg_available = 'Y'
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param = " & i_software & "
+                                AND pdr.flg_available = 'Y'
+                                AND pt.flg_available = 'Y'
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT pdr.id_profile_disch_reason, pdr.id_profile_template, pt.intern_name_templ
+                                FROM alert.discharge_reason dr
+                                JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
+                                JOIN alert.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason and pdr.id_institution=drd.id_instit_param
+                                JOIN alert.profile_template pt ON pt.id_profile_template = pdr.id_profile_template
+                                                           AND pt.id_software = drd.id_software_param
+                                WHERE drd.flg_active = 'A'
+                                AND dr.flg_available = 'Y'
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param = " & i_software & "
+                                AND pdr.flg_available = 'Y'
+                                AND pt.flg_available = 'Y'
+                                AND dr.id_content = '" & i_id_content_reason & "'
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_DESTINATIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT drd.id_disch_reas_dest, DD.id_content, pk_translation.get_translation(" & l_id_language & ", DD.CODE_DISCHARGE_DEST)
+                                FROM alert.discharge_reason dr
+                                JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
+                                JOIN alert.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason and pdr.id_institution=drd.id_instit_param
+                                JOIN alert.profile_template pt ON pt.id_profile_template = pdr.id_profile_template  and pt.id_software=drd.id_software_param
+                                JOIN ALERT.DISCHARGE_DEST DD ON DD.ID_DISCHARGE_DEST=DRD.ID_DISCHARGE_DEST
+                                WHERE drd.flg_active = 'A'
+                                AND dr.flg_available = 'Y'
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param = " & i_software & "
+                                AND pdr.flg_available = 'Y'
+                                AND pt.flg_available = 'Y'
+                                AND DD.FLG_AVAILABLE='Y'
+                                AND DR.ID_CONTENT='" & i_id_content_reason & "'
+                                ORDER BY 3 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function DELETE_DISCH_REAS_DEST(ByVal i_id_disch_reas_isnt As Int64) As Boolean
+
+        Dim sql As String = "UPDATE ALERT.DISCH_REAS_DEST DRD
+                                SET DRD.FLG_ACTIVE='N'
+                                WHERE DRD.ID_DISCH_REAS_DEST=" & i_id_disch_reas_isnt
+
+        Dim cmd_delete_disch_reas_inst As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_disch_reas_inst.CommandType = CommandType.Text
+            cmd_delete_disch_reas_inst.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_disch_reas_inst.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_disch_reas_inst.Dispose()
+
+        Return True
+
+    End Function
+
+    Function DELETE_PROF_DISCH_REAS(ByVal i_id_prof_disch_reas As Int64) As Boolean
+
+        Dim sql As String = "UPDATE ALERT.PROFILE_DISCH_REASON PDR
+                                SET PDR.FLG_AVAILABLE='N'
+                                WHERE PDR.ID_PROFILE_DISCH_REASON=" & i_id_prof_disch_reas
+
+        Dim cmd_delete_prof_disch_reas As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_prof_disch_reas.CommandType = CommandType.Text
+            cmd_delete_prof_disch_reas.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_prof_disch_reas.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_prof_disch_reas.Dispose()
 
         Return True
 
