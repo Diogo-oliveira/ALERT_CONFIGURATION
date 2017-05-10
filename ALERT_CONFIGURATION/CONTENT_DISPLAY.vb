@@ -25,7 +25,7 @@
 
         TextBox1.ReadOnly = True
         TextBox1.Multiline = True
-        TextBox1.BorderStyle = BorderStyle.None
+        ' TextBox1.BorderStyle = BorderStyle.None
         TextBox1.ScrollBars = ScrollBars.Vertical
         TextBox1.Height = 280
 

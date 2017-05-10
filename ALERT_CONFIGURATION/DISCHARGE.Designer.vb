@@ -55,26 +55,26 @@ Partial Class DISCHARGE
         Me.Button6 = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.Button8 = New System.Windows.Forms.Button()
-        Me.Label11 = New System.Windows.Forms.Label()
-        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
+        Me.Button19 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
+        Me.Button17 = New System.Windows.Forms.Button()
+        Me.Button18 = New System.Windows.Forms.Button()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.CheckedListBox6 = New System.Windows.Forms.CheckedListBox()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.ComboBox8 = New System.Windows.Forms.ComboBox()
+        Me.Button12 = New System.Windows.Forms.Button()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button9 = New System.Windows.Forms.Button()
+        Me.Button10 = New System.Windows.Forms.Button()
+        Me.Button11 = New System.Windows.Forms.Button()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
         Me.Label13 = New System.Windows.Forms.Label()
         Me.CheckedListBox5 = New System.Windows.Forms.CheckedListBox()
-        Me.Button9 = New System.Windows.Forms.Button()
-        Me.Button10 = New System.Windows.Forms.Button()
-        Me.Button11 = New System.Windows.Forms.Button()
-        Me.Button12 = New System.Windows.Forms.Button()
-        Me.Button13 = New System.Windows.Forms.Button()
-        Me.Label14 = New System.Windows.Forms.Label()
-        Me.ComboBox8 = New System.Windows.Forms.ComboBox()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.CheckedListBox6 = New System.Windows.Forms.CheckedListBox()
-        Me.Button14 = New System.Windows.Forms.Button()
-        Me.Button17 = New System.Windows.Forms.Button()
-        Me.Button18 = New System.Windows.Forms.Button()
-        Me.Button19 = New System.Windows.Forms.Button()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
+        Me.Button8 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox2.SuspendLayout()
@@ -414,33 +414,124 @@ Partial Class DISCHARGE
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "ALERT"
         '
-        'Button8
+        'Button19
         '
-        Me.Button8.Location = New System.Drawing.Point(1399, 806)
-        Me.Button8.Name = "Button8"
-        Me.Button8.Size = New System.Drawing.Size(173, 26)
-        Me.Button8.TabIndex = 153
-        Me.Button8.Text = "MANUAL CONFIGURATION"
-        Me.Button8.UseVisualStyleBackColor = True
+        Me.Button19.Location = New System.Drawing.Point(649, 393)
+        Me.Button19.Name = "Button19"
+        Me.Button19.Size = New System.Drawing.Size(72, 23)
+        Me.Button19.TabIndex = 141
+        Me.Button19.Text = "DELETE"
+        Me.Button19.UseVisualStyleBackColor = True
         '
-        'Label11
+        'Button14
         '
-        Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(11, 16)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(118, 13)
-        Me.Label11.TabIndex = 41
-        Me.Label11.Text = "DISCHARGE REASON"
+        Me.Button14.Location = New System.Drawing.Point(122, 709)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(101, 23)
+        Me.Button14.TabIndex = 140
+        Me.Button14.Text = "CLEAR"
+        Me.Button14.UseVisualStyleBackColor = True
         '
-        'ComboBox7
+        'Button17
         '
-        Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(15, 32)
-        Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(745, 24)
-        Me.ComboBox7.TabIndex = 40
+        Me.Button17.Location = New System.Drawing.Point(229, 709)
+        Me.Button17.Name = "Button17"
+        Me.Button17.Size = New System.Drawing.Size(102, 23)
+        Me.Button17.TabIndex = 138
+        Me.Button17.Text = "DELETE"
+        Me.Button17.UseVisualStyleBackColor = True
+        '
+        'Button18
+        '
+        Me.Button18.Location = New System.Drawing.Point(14, 709)
+        Me.Button18.Name = "Button18"
+        Me.Button18.Size = New System.Drawing.Size(102, 23)
+        Me.Button18.TabIndex = 139
+        Me.Button18.Text = "SELECT ALL"
+        Me.Button18.UseVisualStyleBackColor = True
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(11, 479)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(391, 13)
+        Me.Label15.TabIndex = 137
+        Me.Label15.Text = "DISCHARGE INSTRUCTIONS (Double click on an instruction to read its content)"
+        '
+        'CheckedListBox6
+        '
+        Me.CheckedListBox6.CheckOnClick = True
+        Me.CheckedListBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox6.FormattingEnabled = True
+        Me.CheckedListBox6.Location = New System.Drawing.Point(15, 495)
+        Me.CheckedListBox6.Name = "CheckedListBox6"
+        Me.CheckedListBox6.Size = New System.Drawing.Size(749, 208)
+        Me.CheckedListBox6.TabIndex = 136
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(11, 434)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(189, 13)
+        Me.Label14.TabIndex = 135
+        Me.Label14.Text = "DISCHARGE INSTRUCTION GROUP"
+        '
+        'ComboBox8
+        '
+        Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox8.FormattingEnabled = True
+        Me.ComboBox8.Location = New System.Drawing.Point(15, 452)
+        Me.ComboBox8.Name = "ComboBox8"
+        Me.ComboBox8.Size = New System.Drawing.Size(749, 24)
+        Me.ComboBox8.TabIndex = 134
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(571, 393)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(72, 23)
+        Me.Button12.TabIndex = 131
+        Me.Button12.Text = "CLEAR"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(493, 393)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(72, 23)
+        Me.Button13.TabIndex = 130
+        Me.Button13.Text = "ALL"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(122, 393)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(101, 23)
+        Me.Button9.TabIndex = 126
+        Me.Button9.Text = "CLEAR"
+        Me.Button9.UseVisualStyleBackColor = True
+        '
+        'Button10
+        '
+        Me.Button10.Location = New System.Drawing.Point(229, 393)
+        Me.Button10.Name = "Button10"
+        Me.Button10.Size = New System.Drawing.Size(102, 23)
+        Me.Button10.TabIndex = 124
+        Me.Button10.Text = "DELETE"
+        Me.Button10.UseVisualStyleBackColor = True
+        '
+        'Button11
+        '
+        Me.Button11.Location = New System.Drawing.Point(14, 393)
+        Me.Button11.Name = "Button11"
+        Me.Button11.Size = New System.Drawing.Size(102, 23)
+        Me.Button11.TabIndex = 125
+        Me.Button11.Text = "SELECT ALL"
+        Me.Button11.UseVisualStyleBackColor = True
         '
         'Label12
         '
@@ -481,124 +572,33 @@ Partial Class DISCHARGE
         Me.CheckedListBox5.Size = New System.Drawing.Size(267, 310)
         Me.CheckedListBox5.TabIndex = 46
         '
-        'Button9
+        'Label11
         '
-        Me.Button9.Location = New System.Drawing.Point(122, 393)
-        Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(101, 23)
-        Me.Button9.TabIndex = 126
-        Me.Button9.Text = "CLEAR"
-        Me.Button9.UseVisualStyleBackColor = True
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(11, 16)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(118, 13)
+        Me.Label11.TabIndex = 41
+        Me.Label11.Text = "DISCHARGE REASON"
         '
-        'Button10
+        'ComboBox7
         '
-        Me.Button10.Location = New System.Drawing.Point(229, 393)
-        Me.Button10.Name = "Button10"
-        Me.Button10.Size = New System.Drawing.Size(102, 23)
-        Me.Button10.TabIndex = 124
-        Me.Button10.Text = "DELETE"
-        Me.Button10.UseVisualStyleBackColor = True
+        Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox7.FormattingEnabled = True
+        Me.ComboBox7.Location = New System.Drawing.Point(15, 32)
+        Me.ComboBox7.Name = "ComboBox7"
+        Me.ComboBox7.Size = New System.Drawing.Size(745, 24)
+        Me.ComboBox7.TabIndex = 40
         '
-        'Button11
+        'Button8
         '
-        Me.Button11.Location = New System.Drawing.Point(14, 393)
-        Me.Button11.Name = "Button11"
-        Me.Button11.Size = New System.Drawing.Size(102, 23)
-        Me.Button11.TabIndex = 125
-        Me.Button11.Text = "SELECT ALL"
-        Me.Button11.UseVisualStyleBackColor = True
-        '
-        'Button12
-        '
-        Me.Button12.Location = New System.Drawing.Point(571, 393)
-        Me.Button12.Name = "Button12"
-        Me.Button12.Size = New System.Drawing.Size(72, 23)
-        Me.Button12.TabIndex = 131
-        Me.Button12.Text = "CLEAR"
-        Me.Button12.UseVisualStyleBackColor = True
-        '
-        'Button13
-        '
-        Me.Button13.Location = New System.Drawing.Point(493, 393)
-        Me.Button13.Name = "Button13"
-        Me.Button13.Size = New System.Drawing.Size(72, 23)
-        Me.Button13.TabIndex = 130
-        Me.Button13.Text = "ALL"
-        Me.Button13.UseVisualStyleBackColor = True
-        '
-        'Label14
-        '
-        Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(11, 434)
-        Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(189, 13)
-        Me.Label14.TabIndex = 135
-        Me.Label14.Text = "DISCHARGE INSTRUCTION GROUP"
-        '
-        'ComboBox8
-        '
-        Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox8.FormattingEnabled = True
-        Me.ComboBox8.Location = New System.Drawing.Point(15, 452)
-        Me.ComboBox8.Name = "ComboBox8"
-        Me.ComboBox8.Size = New System.Drawing.Size(749, 24)
-        Me.ComboBox8.TabIndex = 134
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(11, 479)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(154, 13)
-        Me.Label15.TabIndex = 137
-        Me.Label15.Text = "DISCHARGE INSTRUCTIONS"
-        '
-        'CheckedListBox6
-        '
-        Me.CheckedListBox6.CheckOnClick = True
-        Me.CheckedListBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckedListBox6.FormattingEnabled = True
-        Me.CheckedListBox6.Location = New System.Drawing.Point(15, 495)
-        Me.CheckedListBox6.Name = "CheckedListBox6"
-        Me.CheckedListBox6.Size = New System.Drawing.Size(749, 208)
-        Me.CheckedListBox6.TabIndex = 136
-        '
-        'Button14
-        '
-        Me.Button14.Location = New System.Drawing.Point(122, 709)
-        Me.Button14.Name = "Button14"
-        Me.Button14.Size = New System.Drawing.Size(101, 23)
-        Me.Button14.TabIndex = 140
-        Me.Button14.Text = "CLEAR"
-        Me.Button14.UseVisualStyleBackColor = True
-        '
-        'Button17
-        '
-        Me.Button17.Location = New System.Drawing.Point(229, 709)
-        Me.Button17.Name = "Button17"
-        Me.Button17.Size = New System.Drawing.Size(102, 23)
-        Me.Button17.TabIndex = 138
-        Me.Button17.Text = "DELETE"
-        Me.Button17.UseVisualStyleBackColor = True
-        '
-        'Button18
-        '
-        Me.Button18.Location = New System.Drawing.Point(14, 709)
-        Me.Button18.Name = "Button18"
-        Me.Button18.Size = New System.Drawing.Size(102, 23)
-        Me.Button18.TabIndex = 139
-        Me.Button18.Text = "SELECT ALL"
-        Me.Button18.UseVisualStyleBackColor = True
-        '
-        'Button19
-        '
-        Me.Button19.Location = New System.Drawing.Point(649, 393)
-        Me.Button19.Name = "Button19"
-        Me.Button19.Size = New System.Drawing.Size(72, 23)
-        Me.Button19.TabIndex = 141
-        Me.Button19.Text = "DELETE"
-        Me.Button19.UseVisualStyleBackColor = True
+        Me.Button8.Location = New System.Drawing.Point(1399, 806)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(173, 26)
+        Me.Button8.TabIndex = 153
+        Me.Button8.Text = "ADVANCED CONFIGURATION"
+        Me.Button8.UseVisualStyleBackColor = True
         '
         'DISCHARGE
         '

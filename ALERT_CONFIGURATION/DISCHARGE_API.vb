@@ -39,6 +39,7 @@ Public Class DISCHARGE_API
                                                                    AND drd.id_market = drmv.id_market
                                                                    AND drd.version = drmv.version
                                 JOIN alert_default.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason
+                                JOIN ALERT.PROFILE_TEMPLATE PT ON PT.ID_PROFILE_TEMPLATE=PDR.ID_PROFILE_TEMPLATE AND PT.ID_SOFTWARE=DRD.ID_SOFTWARE_PARAM AND PT.FLG_AVAILABLE='Y'                                
                                 JOIN institution i ON i.id_market = drmv.id_market
                                 WHERE dr.flg_available = 'Y'
                                 AND i.id_institution = " & i_institution & "
@@ -72,6 +73,7 @@ Public Class DISCHARGE_API
                                                                    AND drd.id_market = drmv.id_market
                                                                    AND drd.version = drmv.version
                                 JOIN alert_default.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason
+                                JOIN ALERT.PROFILE_TEMPLATE PT ON PT.ID_PROFILE_TEMPLATE=PDR.ID_PROFILE_TEMPLATE AND PT.ID_SOFTWARE=DRD.ID_SOFTWARE_PARAM AND PT.FLG_AVAILABLE='Y'
                                 JOIN INSTITUTION I ON I.id_market=DRMV.ID_MARKET
                                 WHERE dr.flg_available = 'Y'
                                 AND I.id_institution=" & i_institution & "
@@ -117,7 +119,7 @@ Public Class DISCHARGE_API
                                                                               AND dv.id_market = i.id_market
                                                                               AND dv.version = drd.version
                                 LEFT JOIN alert_default.clinical_service dcs ON dcs.id_clinical_service = drd.id_clinical_service
-
+                                JOIN ALERT.PROFILE_TEMPLATE PT ON PT.ID_PROFILE_TEMPLATE=PDR.ID_PROFILE_TEMPLATE AND PT.ID_SOFTWARE=DRD.ID_SOFTWARE_PARAM AND PT.FLG_AVAILABLE='Y'
                                 WHERE dr.flg_available = 'Y'
                                 AND i.id_institution = " & i_institution & "
                                 AND drmv.version = '" & i_version & "'
@@ -1605,6 +1607,37 @@ Public Class DISCHARGE_API
 
     End Function
 
+    Function GET_ALERT_INSTR(ByVal i_institution As Int64, ByVal i_instr As String, ByRef o_desc As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT di.id_content, PK_TRANSLATION.get_translation(" & l_id_language & ", di.code_disch_instructions)
+                                FROM ALERT.disch_instructions di
+                                WHERE di.flg_available = 'Y'
+                                AND di.id_content = '" & i_instr & "'
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Dim dr As OracleDataReader
+        Try
+            cmd.CommandType = CommandType.Text
+            dr = cmd.ExecuteReader()
+
+            While dr.Read()
+
+                o_desc = dr.Item(1)
+
+            End While
+
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
     Function SET_DISCH_INSTRUCTION(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_disch_group As String, ByVal i_instructions() As DEFAULT_INSTR) As Boolean
 
         'A FUNÇÃO SERÁ RESPONSÁVEL POR VERIFICAR SE GRUPO E INSTRUÇÃO JÁ EXISTEM NO ALERT
@@ -1615,6 +1648,8 @@ Public Class DISCHARGE_API
         Dim sql As String = "DECLARE
 
                                 g_id_language alert.language.id_language%TYPE := " & l_id_language & ";
+
+                                g_id_institution institution.id_institution%type := " & i_institution & ";
 
                                 g_id_disch_group alert.disch_instructions_group.id_content%TYPE := '" & i_disch_group & "'; 
 
@@ -1914,7 +1949,9 @@ Public Class DISCHARGE_API
                                     JOIN alert.disch_instructions_group dg ON dg.id_disch_instructions_group = dr.id_disch_instructions_group
                                                                        AND dg.flg_available = 'Y'
                                     WHERE di.id_content = i_id_content_instr
-                                    AND dg.id_content = i_id_content_group;
+                                    AND dg.id_content = i_id_content_group
+                                    AND DR.ID_INSTITUTION=g_id_institution
+                                    AND DR.ID_SOFTWARE=g_id_software;
     
                                     IF l_count > 0
                                     THEN
@@ -2095,19 +2132,23 @@ Public Class DISCHARGE_API
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        Dim sql As String = "SELECT DISTINCT drd.id_disch_reas_dest, DD.id_content, pk_translation.get_translation(" & l_id_language & ", DD.CODE_DISCHARGE_DEST)
+        Dim sql As String = "SELECT DISTINCT drd.id_disch_reas_dest, 
+                                             NVL(DD.id_content,DR.id_content),
+                                             NVL2(DD.id_content,
+                                                  pk_translation.get_translation(" & l_id_language & ", DD.CODE_DISCHARGE_DEST),
+                                                  pk_translation.get_translation(" & l_id_language & ", DR.CODE_DISCHARGE_REASON))
+
                                 FROM alert.discharge_reason dr
                                 JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
                                 JOIN alert.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason and pdr.id_institution=drd.id_instit_param
                                 JOIN alert.profile_template pt ON pt.id_profile_template = pdr.id_profile_template  and pt.id_software=drd.id_software_param
-                                JOIN ALERT.DISCHARGE_DEST DD ON DD.ID_DISCHARGE_DEST=DRD.ID_DISCHARGE_DEST
+                                LEFT JOIN ALERT.DISCHARGE_DEST DD ON DD.ID_DISCHARGE_DEST=DRD.ID_DISCHARGE_DEST AND DD.FLG_AVAILABLE='Y'
                                 WHERE drd.flg_active = 'A'
                                 AND dr.flg_available = 'Y'
                                 AND drd.id_instit_param = " & i_institution & "
                                 AND drd.id_software_param = " & i_software & "
                                 AND pdr.flg_available = 'Y'
-                                AND pt.flg_available = 'Y'
-                                AND DD.FLG_AVAILABLE='Y'
+                                AND pt.flg_available = 'Y'                               
                                 AND DR.ID_CONTENT='" & i_id_content_reason & "'
                                 ORDER BY 3 ASC"
 
@@ -2162,6 +2203,91 @@ Public Class DISCHARGE_API
         End Try
 
         cmd_delete_prof_disch_reas.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_ALERT_INSTR_GROUP(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dg.id_content, pk_translation.get_translation(" & l_id_language & ", dg.code_disch_instructions_group)
+                                FROM alert.disch_instructions_group dg
+                                JOIN alert.disch_instr_relation dir ON dir.id_disch_instructions_group = dg.id_disch_instructions_group
+                                JOIN alert.disch_instructions di ON di.id_disch_instructions = dir.id_disch_instructions
+                                WHERE dg.flg_available = 'Y'
+                                AND di.flg_available = 'Y'
+                                AND dir.id_institution = " & i_institution & "
+                                AND dir.id_software = " & i_software & "
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_ALERT_INSTR(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_group As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT di.id_content, pk_translation.get_translation(" & l_id_language & ", di.code_disch_instructions_title)
+                                FROM alert.disch_instructions_group dg
+                                JOIN alert.disch_instr_relation dir ON dir.id_disch_instructions_group = dg.id_disch_instructions_group
+                                JOIN alert.disch_instructions di ON di.id_disch_instructions = dir.id_disch_instructions
+                                WHERE dg.flg_available = 'Y'
+                                AND di.flg_available = 'Y'
+                                AND dir.id_institution = " & i_institution & "
+                                AND dir.id_software = " & i_software & "
+                                and dg.id_content='" & i_id_group & "'
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function DELETE_DISCH_INSTR_REL(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_group As String, ByVal i_id_instruction As String) As Boolean
+
+        Dim sql As String = "DELETE FROM alert.disch_instr_relation dir
+                                WHERE dir.id_disch_instructions_group IN (SELECT DIG.ID_DISCH_INSTRUCTIONS_GROUP
+                                                                          FROM alert.disch_instructions_group dig
+                                                                          WHERE dig.id_content = '" & i_id_group & "'
+                                                                          AND dig.flg_available = 'Y')
+                                AND dir.id_disch_instructions IN (SELECT di.id_disch_instructions
+                                                                 FROM alert.disch_instructions di
+                                                                 WHERE di.id_content = '" & i_id_instruction & "'
+                                                                 AND di.flg_available = 'Y')
+                                AND dir.id_institution = " & i_institution & "
+                                AND dir.id_software = " & i_software
+
+        Dim cmd_delete_disch_instr_rel As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_disch_instr_rel.CommandType = CommandType.Text
+            cmd_delete_disch_instr_rel.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_disch_instr_rel.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_disch_instr_rel.Dispose()
 
         Return True
 
