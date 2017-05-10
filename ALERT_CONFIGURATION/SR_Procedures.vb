@@ -24,160 +24,6 @@ Public Class SR_Procedures
     Dim g_a_intervs_for_clinical_service() As SR_PROCEDURES_API.sr_interventions_alert_flg 'Array que vai guardar os procedimentos do ALERT e os procediments que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
     Dim g_a_selected_intervs_delete_cs() As SR_PROCEDURES_API.sr_interventions_default ' Array para remover procedimentos do alert
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        Cursor = Cursors.WaitCursor
-
-        'Limpar arrays
-        ReDim g_a_dep_clin_serv_inst(0)
-        g_id_dep_clin_serv = 0
-        ReDim g_a_loaded_interventions_default(0)
-        ReDim g_a_selected_default_interventions(0)
-        g_index_selected_intervention_from_default = 0
-        g_dimension_intervs_alert = 0
-        ReDim g_a_intervs_for_clinical_service(0)
-        g_dimension_intervs_cs = 0
-        ReDim g_a_selected_intervs_delete_cs(0)
-
-        g_codification = ""
-
-
-        If TextBox1.Text <> "" Then
-
-            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
-
-            ComboBox3.Text = ""
-            ComboBox3.Items.Clear()
-
-            CheckedListBox2.Items.Clear()
-
-            CheckedListBox1.Items.Clear()
-
-            CheckedListBox3.Items.Clear()
-
-            ComboBox6.Text = ""
-            ComboBox6.Items.Clear()
-            CheckedListBox4.Items.Clear()
-
-            ComboBox2.Items.Clear()
-            ComboBox2.Text = ""
-
-            '1 - Fill Version combobox
-
-            Dim dr_def_versions As OracleDataReader
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_sr_procedure.GET_DEFAULT_VERSIONS(TextBox1.Text, dr_def_versions) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
-
-            Else
-
-                While dr_def_versions.Read()
-
-                    ComboBox3.Items.Add(dr_def_versions.Item(0))
-
-                End While
-
-            End If
-
-            dr_def_versions.Dispose()
-            dr_def_versions.Close()
-
-            '2 - Preencher os Clinical Services (Aqui será sempre o software ORIS)
-
-            Dim dr_clin_serv As OracleDataReader
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, 2, dr_clin_serv) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                MsgBox("ERROR GETTING CLINICAL SERVICES!")
-
-            Else
-
-                Dim i As Integer = 0
-
-                Dim l_index_dep_clin_serv As Integer = 0
-                ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-
-                While dr_clin_serv.Read()
-
-                    ComboBox6.Items.Add(dr_clin_serv.Item(0))
-
-                    ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
-                    g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
-                    l_index_dep_clin_serv = l_index_dep_clin_serv + 1
-
-                End While
-
-            End If
-
-            dr_clin_serv.Dispose()
-            dr_clin_serv.Close()
-
-            '''''''''''''''''''''''''''''''''''''''''''
-            Dim dr_intervs As OracleDataReader
-
-            g_dimension_intervs_alert = 0
-            ReDim g_a_intervs_alert(g_dimension_intervs_alert)
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_sr_procedure.GET_INTERVS_DEP_CLIN_SERV(TextBox1.Text, 0, dr_intervs) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                MsgBox("ERROR GETTING SR_INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
-
-            Else
-
-                While dr_intervs.Read()
-
-                    g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(0)
-                    g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(1)
-
-                    g_dimension_intervs_alert = g_dimension_intervs_alert + 1
-                    ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
-
-                    CheckedListBox3.Items.Add((dr_intervs.Item(1)))
-
-                End While
-
-            End If
-
-            dr_intervs.Dispose()
-            dr_intervs.Close()
-
-
-            '' GET SYS_CONFIG SURGICAL_PROCEDURES_CODING
-
-            Dim dr_sysconfig As OracleDataReader
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_access_general.GET_SYSCONFIG(TextBox1.Text, 0, "SURGICAL_PROCEDURES_CODING", dr_sysconfig) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                MsgBox("ERROR GETTING CODIFICATION FROM INSTITUTION!", vbCritical)
-
-            Else
-
-                While dr_sysconfig.Read()
-
-                    TextBox2.Text = dr_sysconfig.Item(0)
-
-                End While
-
-            End If
-
-            dr_sysconfig.Dispose()
-            dr_sysconfig.Close()
-
-        End If
-
-        Cursor = Cursors.Arrow
-
-    End Sub
-
     Private Sub SR_Procedures_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.Text = "SURGICAL PROCEDURES  ::::  Connected to " & Connection.db
@@ -1171,6 +1017,160 @@ Public Class SR_Procedures
     End Sub
 
     Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+        Cursor = Cursors.WaitCursor
+
+        'Limpar arrays
+        ReDim g_a_dep_clin_serv_inst(0)
+        g_id_dep_clin_serv = 0
+        ReDim g_a_loaded_interventions_default(0)
+        ReDim g_a_selected_default_interventions(0)
+        g_index_selected_intervention_from_default = 0
+        g_dimension_intervs_alert = 0
+        ReDim g_a_intervs_for_clinical_service(0)
+        g_dimension_intervs_cs = 0
+        ReDim g_a_selected_intervs_delete_cs(0)
+
+        g_codification = ""
+
+
+        If TextBox1.Text <> "" Then
+
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+
+            ComboBox3.Text = ""
+            ComboBox3.Items.Clear()
+
+            CheckedListBox2.Items.Clear()
+
+            CheckedListBox1.Items.Clear()
+
+            CheckedListBox3.Items.Clear()
+
+            ComboBox6.Text = ""
+            ComboBox6.Items.Clear()
+            CheckedListBox4.Items.Clear()
+
+            ComboBox2.Items.Clear()
+            ComboBox2.Text = ""
+
+            '1 - Fill Version combobox
+
+            Dim dr_def_versions As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_sr_procedure.GET_DEFAULT_VERSIONS(TextBox1.Text, dr_def_versions) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+            Else
+
+                While dr_def_versions.Read()
+
+                    ComboBox3.Items.Add(dr_def_versions.Item(0))
+
+                End While
+
+            End If
+
+            dr_def_versions.Dispose()
+            dr_def_versions.Close()
+
+            '2 - Preencher os Clinical Services (Aqui será sempre o software ORIS)
+
+            Dim dr_clin_serv As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access_general.GET_CLIN_SERV(TextBox1.Text, 2, dr_clin_serv) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING CLINICAL SERVICES!")
+
+            Else
+
+                Dim i As Integer = 0
+
+                Dim l_index_dep_clin_serv As Integer = 0
+                ReDim g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+
+                While dr_clin_serv.Read()
+
+                    ComboBox6.Items.Add(dr_clin_serv.Item(0))
+
+                    ReDim Preserve g_a_dep_clin_serv_inst(l_index_dep_clin_serv)
+                    g_a_dep_clin_serv_inst(l_index_dep_clin_serv) = dr_clin_serv.Item(1)
+                    l_index_dep_clin_serv = l_index_dep_clin_serv + 1
+
+                End While
+
+            End If
+
+            dr_clin_serv.Dispose()
+            dr_clin_serv.Close()
+
+            '''''''''''''''''''''''''''''''''''''''''''
+            Dim dr_intervs As OracleDataReader
+
+            g_dimension_intervs_alert = 0
+            ReDim g_a_intervs_alert(g_dimension_intervs_alert)
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_sr_procedure.GET_INTERVS_DEP_CLIN_SERV(TextBox1.Text, 0, dr_intervs) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING SR_INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
+
+            Else
+
+                While dr_intervs.Read()
+
+                    g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(0)
+                    g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(1)
+
+                    g_dimension_intervs_alert = g_dimension_intervs_alert + 1
+                    ReDim Preserve g_a_intervs_alert(g_dimension_intervs_alert)
+
+                    CheckedListBox3.Items.Add((dr_intervs.Item(1)))
+
+                End While
+
+            End If
+
+            dr_intervs.Dispose()
+            dr_intervs.Close()
+
+
+            '' GET SYS_CONFIG SURGICAL_PROCEDURES_CODING
+
+            Dim dr_sysconfig As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not db_access_general.GET_SYSCONFIG(TextBox1.Text, 0, "SURGICAL_PROCEDURES_CODING", dr_sysconfig) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING CODIFICATION FROM INSTITUTION!", vbCritical)
+
+            Else
+
+                While dr_sysconfig.Read()
+
+                    TextBox2.Text = dr_sysconfig.Item(0)
+
+                End While
+
+            End If
+
+            dr_sysconfig.Dispose()
+            dr_sysconfig.Close()
+
+        End If
+
+        Cursor = Cursors.Arrow
 
     End Sub
 End Class

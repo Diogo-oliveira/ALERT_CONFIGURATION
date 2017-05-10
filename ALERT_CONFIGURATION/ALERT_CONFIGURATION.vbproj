@@ -215,6 +215,12 @@
     <Compile Include="DISCHARGE.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DISCHARGE_ADVANCED.Designer.vb">
+      <DependentUpon>DISCHARGE_ADVANCED.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DISCHARGE_ADVANCED.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DISCHARGE_API.vb" />
     <Compile Include="EXAMS_API.vb" />
     <Compile Include="Form1.vb">
@@ -310,6 +316,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DISCHARGE.resx">
       <DependentUpon>DISCHARGE.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DISCHARGE_ADVANCED.resx">
+      <DependentUpon>DISCHARGE_ADVANCED.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>

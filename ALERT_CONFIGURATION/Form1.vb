@@ -109,6 +109,8 @@ Public Class Form1
 
         End If
 
+        Me.CenterToScreen()
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click

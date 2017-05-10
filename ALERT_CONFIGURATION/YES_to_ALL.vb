@@ -17,6 +17,8 @@
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 
+        Me.CenterToScreen()
+
         Me.BackColor = Color.FromArgb(215, 215, 180)
 
         Label1.Text = g_desc_interv
