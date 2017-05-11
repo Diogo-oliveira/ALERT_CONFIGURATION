@@ -242,7 +242,6 @@ Public Class DISCHARGE
 
     End Function
 
-
     Private Sub DISCHARGE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.Text = "DISCHARGE  ::::  Connected to " & Connection.db
@@ -928,7 +927,13 @@ Public Class DISCHARGE
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
-        MsgBox("risk")
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
+        Me.Hide()
+        Dim FORM_ADV_DISCH As New DISCHARGE_ADVANCED
+        FORM_ADV_DISCH.ShowDialog()
+
 
     End Sub
 
@@ -1043,10 +1048,6 @@ Public Class DISCHARGE
             show_instr.ShowDialog()
 
         End If
-
-    End Sub
-
-    Private Sub GroupBox2_Enter(sender As Object, e As EventArgs) Handles GroupBox2.Enter
 
     End Sub
 

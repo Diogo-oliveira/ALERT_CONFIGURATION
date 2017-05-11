@@ -981,4 +981,48 @@ Public Class General
 
     End Function
 
+    Function GET_PROFILES(ByVal i_software As Integer, ByVal i_type As String, ByRef o_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT pt.id_profile_template, pt.intern_name_templ, pt.flg_type
+                                FROM alert.profile_template pt
+                                WHERE pt.flg_available = 'Y'
+                                and pt.id_software=" & i_software & "
+                                and pt.flg_type is not null "
+
+        If i_type = "-1" Then
+
+            sql = sql & "order by 1 asc"
+
+        ElseIf i_type = "-2" Then
+
+            sql = sql & "   and pt.flg_type not in ('D','N','A')
+                            order by 1 asc"
+
+        Else
+
+            sql = sql & "   and pt.flg_type ='" & i_type & "'
+                            order by 1 asc"
+
+        End If
+
+
+        '  Try
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+            cmd.CommandType = CommandType.Text
+
+            o_dr = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            Return True
+
+        '  Catch ex As Exception
+
+        'Return False
+
+        ' End Try
+
+    End Function
+
 End Class

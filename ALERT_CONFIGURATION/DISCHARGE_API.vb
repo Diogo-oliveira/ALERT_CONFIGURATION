@@ -95,6 +95,31 @@ Public Class DISCHARGE_API
         End Try
     End Function
 
+    'Obter todas as reasons do default, mesmo as que não estão disponíveisl
+    Function GET_ALL_DEFAULT_REASONS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dr.id_content,
+                                             alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dr.code_discharge_reason)
+                                               
+                                FROM alert_default.discharge_reason dr
+ 
+                                WHERE alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dr.code_discharge_reason) IS NOT NULL
+                                order by 2 asc"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
     Function GET_DEFAULT_DESTINATIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String, ByVal i_version As String, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -141,6 +166,31 @@ Public Class DISCHARGE_API
             Return False
         End Try
 
+    End Function
+
+    'Obter todas as destinations do default, mesmo as que não estão disponíveis
+    Function GET_ALL_DEFAULT_DESTINATIONS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dd.id_content,
+                                             alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dd.code_discharge_dest)
+                                               
+                                FROM alert_default.discharge_dest dd
+ 
+                                WHERE alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dd.code_discharge_dest) IS NOT NULL
+                                order by 2 asc"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
     End Function
 
     Function GET_DEFAULT_PROFILE_DISCH_REASON(ByVal i_software As Integer, ByVal id_disch_reason As String, ByRef o_profile_templates As OracleDataReader) As Boolean
