@@ -549,5 +549,41 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
+    'Pode devolver vários resultados?
+    Function GET_ALL_CLIN_SERV_INST(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef o_id_dep_clin_serv As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT c.id_content, pk_translation.get_translation(" & l_id_language & ", c.code_clinical_service)
+                                FROM alert.dep_clin_serv s
+                                JOIN alert.department d ON d.id_department = s.id_department
+                                JOIN alert.clinical_service c ON c.id_clinical_service = s.id_clinical_service
+                                WHERE s.flg_available = 'Y'
+                                AND d.flg_available = 'Y'
+                                AND d.id_institution = " & i_institution & "
+                                AND d.id_software = " & i_software & "
+                                AND c.flg_available = 'Y'
+                                ORDER BY 2 ASC"
+
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Try
+
+            o_id_dep_clin_serv = cmd.ExecuteReader()
+            cmd.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            cmd.Dispose()
+
+            Return False
+
+        End Try
+
+    End Function
 
 End Class

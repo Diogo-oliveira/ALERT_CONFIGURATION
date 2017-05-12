@@ -27,6 +27,12 @@ Public Class DISCHARGE_ADVANCED
 
     Dim g_a_profile_templates() As PROFILE_TEMPLATE
 
+    'Array que vai guardar os ecrãs possíveis para configurar uma reason
+    Dim g_a_screens() As String
+
+    'Array com os clinical services da instituiçã/software
+    Dim g_a_clin_serv_inst() As String
+
     Function reset_default_reasons()
 
         ReDim g_a_loaded_reasons_default(0)
@@ -88,6 +94,40 @@ Public Class DISCHARGE_ADVANCED
         End If
 
     End Function
+
+    Function reset_clin_serv()
+
+        ReDim g_a_clin_serv_inst(0)
+        ComboBox6.Items.Clear()
+
+        Dim dr_new As OracleDataReader
+
+        If Not db_clin_serv.GET_ALL_CLIN_SERV_INST(TextBox1.Text, g_selected_soft, dr_new) Then
+
+            MsgBox("ERROR GETING CLINICAL SERVICES FROM INSTITUTION.", vbCritical)
+
+        Else
+
+            Dim l_index As Integer = 0
+            ReDim g_a_clin_serv_inst(0)
+
+            ComboBox6.Items.Add("None")
+
+            While dr_new.Read()
+
+                ReDim Preserve g_a_clin_serv_inst(l_index)
+                g_a_clin_serv_inst(l_index) = dr_new.Item(0)
+                l_index = l_index + 1
+
+                ComboBox6.Items.Add(dr_new.Item(1) & "  -  [" & dr_new.Item(0) & "]")
+
+            End While
+
+        End If
+
+
+    End Function
+
 
     Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
 
@@ -153,13 +193,11 @@ Public Class DISCHARGE_ADVANCED
             While dr.Read()
 
                 ComboBox1.Items.Add(dr.Item(0))
+                ComboBox7.Items.Add(dr.Item(0))
 
             End While
 
         End If
-
-        dr.Dispose()
-        dr.Close()
 
         'Tipos de profissionais
         'All
@@ -180,6 +218,31 @@ Public Class DISCHARGE_ADVANCED
         ComboBox4.Items.Add("Administrative")
         ComboBox4.Items.Add("Other")
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_REASON_SCREENS(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING REASON SCREENS!")
+
+        Else
+
+            Dim l_dim_screens As Integer = 0
+            ReDim g_a_screens(l_dim_screens)
+
+            While dr.Read()
+
+                ComboBox5.Items.Add(dr.Item(0))
+                ReDim Preserve g_a_screens(l_dim_screens)
+                g_a_screens(l_dim_screens) = dr.Item(0)
+                l_dim_screens = l_dim_screens + 1
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
+
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
     End Sub
@@ -196,6 +259,8 @@ Public Class DISCHARGE_ADVANCED
         ComboBox4.SelectedIndex = -1
         CheckedListBox2.Items.Clear()
 
+        reset_clin_serv()
+
         Cursor = Cursors.Arrow
 
     End Sub
@@ -203,6 +268,27 @@ Public Class DISCHARGE_ADVANCED
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
 
         reset_default_destinations()
+
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_DEFAULT_SCREEN(g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING DEFAULT REASON SCREEN!")
+
+        Else
+
+            While dr.Read()
+
+                TextBox3.Text = dr.Item(0)
+
+            End While
+
+        End If
+
+        dr.Dispose()
+        dr.Close()
 
     End Sub
 
@@ -294,7 +380,7 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
 
-        'Código para ver se rank introduzido está correto
+        'Código para ver se rank introduzido está correto (adaptar o local onde vai ser utilizado)
         Dim l_correct_rank As Boolean = True
         If TextBox2.Text <> "" Then
 
@@ -314,6 +400,45 @@ Public Class DISCHARGE_ADVANCED
         If l_correct_rank = False Then
 
             MsgBox("INCORRECT RANK")
+
+        End If
+
+    End Sub
+
+    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.MouseMove
+
+    End Sub
+
+    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
+
+        Cursor = Cursors.Arrow
+
+        If TextBox4.Text <> "" Then
+
+            ComboBox7.Text = db_access_general.GET_INSTITUTION(TextBox4.Text)
+
+        Else
+
+            ComboBox7.Text = ""
+
+        End If
+
+        Cursor = Cursors.Arrow
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        Dim l_string(3) As String
+
+        l_string(0) = "D"
+        l_string(1) = "A"
+        l_string(2) = "S"
+        l_string(3) = "M"
+
+        If Not db_discharge.UPDATE_REASON("TMP39.259", l_string, 1, "DispositionCreateStep2LWBS.swf") Then
+
+            MsgBox("EROO")
 
         End If
 

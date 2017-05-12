@@ -282,6 +282,37 @@ Public Class DISCHARGE_API
 
     End Function
 
+    Function UPDATE_REASON(ByVal i_reason As String, i_profile_template() As String, ByVal i_rank As Integer, ByVal i_file_to_exeecute As String) As Boolean
+
+        Dim l_profiles As String
+
+        For i As Integer = 0 To i_profile_template.Count() - 1
+
+            l_profiles = l_profiles & i_profile_template(i)
+
+        Next
+
+        Dim Sql As String = "UPDATE alert.discharge_reason dr
+                                SET dr.flg_admin_medic = '" & l_profiles & "', dr.rank = " & i_rank & ", dr.file_to_execute = '" & i_file_to_exeecute & "'
+                                WHERE dr.id_content = '" & i_reason & "'
+                                AND dr.flg_available = 'Y'"
+
+        Dim cmd_update_reason As New OracleCommand(Sql, Connection.conn)
+
+        Try
+            cmd_update_reason.CommandType = CommandType.Text
+            cmd_update_reason.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_reason.Dispose()
+            Return False
+        End Try
+
+        cmd_update_reason.Dispose()
+
+        Return True
+
+    End Function
+
     Function SET_REASON(ByVal i_institution As Int64, ByVal i_id_reason As String) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -303,8 +334,8 @@ Public Class DISCHARGE_API
                                     SELECT dr.flg_admin_medic, dr.file_to_execute
                                     INTO l_flg_admin, l_file_execute
                                     FROM alert_default.discharge_reason dr
-                                    WHERE dr.id_content = l_id_content
-                                    AND dr.flg_available = 'Y';
+                                    WHERE dr.id_content = l_id_content;
+                                    --AND dr.flg_available = 'Y';
 
                                     l_id_alert_reason := alert.seq_discharge_reason.nextval;
 
@@ -317,8 +348,8 @@ Public Class DISCHARGE_API
                                     INTO l_default_desc
                                     FROM alert_default.discharge_reason dr
                                     JOIN alert_default.translation t ON t.code_translation = dr.code_discharge_reason
-                                    WHERE dr.id_content = l_id_content
-                                    AND dr.flg_available = 'Y';
+                                    WHERE dr.id_content = l_id_content;
+                                    --AND dr.flg_available = 'Y';
 
                                     pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_REASON.CODE_DISCHARGE_REASON.' || l_id_alert_reason, l_default_desc);
 
@@ -2340,6 +2371,48 @@ Public Class DISCHARGE_API
         cmd_delete_disch_instr_rel.Dispose()
 
         Return True
+
+    End Function
+
+    Function GET_REASON_SCREENS(ByRef o_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT DISTINCT dr.file_to_execute
+                                FROM alert_default.discharge_reason dr
+                                WHERE dr.file_to_execute IS NOT NULL
+                                AND UPPER(dr.file_to_execute) LIKE '%SWF'
+                                ORDER BY 1 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            o_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_DEFAULT_SCREEN(ByVal i_reason As String, ByRef o_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT DISTINCT dr.file_to_execute
+                                FROM alert_default.discharge_reason dr
+                                WHERE dr.file_to_execute IS NOT NULL
+                                and dr.id_content='" & i_reason & "'
+                                ORDER BY 1 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            o_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
 
     End Function
 
