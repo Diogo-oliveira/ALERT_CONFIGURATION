@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class DISCHARGE_ADVANCED
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class DISCHARGE_ADVANCED
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DISCHARGE_ADVANCED))
@@ -32,6 +32,15 @@ Partial Class DISCHARGE_ADVANCED
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.ComboBox8 = New System.Windows.Forms.ComboBox()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.TextBox4 = New System.Windows.Forms.TextBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
+        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button7 = New System.Windows.Forms.Button()
@@ -49,11 +58,8 @@ Partial Class DISCHARGE_ADVANCED
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Reason_Screen_Tip = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ComboBox6 = New System.Windows.Forms.ComboBox()
-        Me.Label9 = New System.Windows.Forms.Label()
-        Me.TextBox4 = New System.Windows.Forms.TextBox()
-        Me.ComboBox7 = New System.Windows.Forms.ComboBox()
-        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Button3 = New System.Windows.Forms.Button()
+        Me.Button4 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -121,6 +127,12 @@ Partial Class DISCHARGE_ADVANCED
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.Button3)
+        Me.GroupBox1.Controls.Add(Me.Button4)
+        Me.GroupBox1.Controls.Add(Me.CheckedListBox3)
+        Me.GroupBox1.Controls.Add(Me.Label12)
+        Me.GroupBox1.Controls.Add(Me.Label11)
+        Me.GroupBox1.Controls.Add(Me.ComboBox8)
         Me.GroupBox1.Controls.Add(Me.Label10)
         Me.GroupBox1.Controls.Add(Me.TextBox4)
         Me.GroupBox1.Controls.Add(Me.Label9)
@@ -143,6 +155,88 @@ Partial Class DISCHARGE_ADVANCED
         Me.GroupBox1.TabIndex = 159
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "GroupBox1"
+        '
+        'CheckedListBox3
+        '
+        Me.CheckedListBox3.CheckOnClick = True
+        Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox3.FormattingEnabled = True
+        Me.CheckedListBox3.HorizontalScrollbar = True
+        Me.CheckedListBox3.Location = New System.Drawing.Point(786, 299)
+        Me.CheckedListBox3.Name = "CheckedListBox3"
+        Me.CheckedListBox3.Size = New System.Drawing.Size(143, 55)
+        Me.CheckedListBox3.TabIndex = 180
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(783, 283)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(43, 13)
+        Me.Label12.TabIndex = 179
+        Me.Label12.Text = "MCDTs"
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(783, 231)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(210, 13)
+        Me.Label11.TabIndex = 178
+        Me.Label11.Text = "DISCHARGE DIAGNOSIS MANDATORY?"
+        '
+        'ComboBox8
+        '
+        Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox8.FormattingEnabled = True
+        Me.ComboBox8.Location = New System.Drawing.Point(786, 247)
+        Me.ComboBox8.Name = "ComboBox8"
+        Me.ComboBox8.Size = New System.Drawing.Size(207, 24)
+        Me.ComboBox8.TabIndex = 177
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(783, 182)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(215, 13)
+        Me.Label10.TabIndex = 176
+        Me.Label10.Text = "INSTITUTION OF DESTINATION (optional)"
+        '
+        'TextBox4
+        '
+        Me.TextBox4.Location = New System.Drawing.Point(786, 198)
+        Me.TextBox4.Name = "TextBox4"
+        Me.TextBox4.Size = New System.Drawing.Size(65, 20)
+        Me.TextBox4.TabIndex = 161
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(783, 134)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(149, 13)
+        Me.Label9.TabIndex = 175
+        Me.Label9.Text = "CLINICAL SERVICE (optional)"
+        '
+        'ComboBox7
+        '
+        Me.ComboBox7.FormattingEnabled = True
+        Me.ComboBox7.Location = New System.Drawing.Point(857, 198)
+        Me.ComboBox7.Name = "ComboBox7"
+        Me.ComboBox7.Size = New System.Drawing.Size(236, 21)
+        Me.ComboBox7.TabIndex = 160
+        '
+        'ComboBox6
+        '
+        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox6.FormattingEnabled = True
+        Me.ComboBox6.Location = New System.Drawing.Point(786, 150)
+        Me.ComboBox6.Name = "ComboBox6"
+        Me.ComboBox6.Size = New System.Drawing.Size(307, 24)
+        Me.ComboBox6.TabIndex = 174
         '
         'ComboBox4
         '
@@ -194,11 +288,11 @@ Partial Class DISCHARGE_ADVANCED
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(17, 398)
+        Me.Button1.Location = New System.Drawing.Point(232, 398)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
+        Me.Button1.Size = New System.Drawing.Size(101, 23)
         Me.Button1.TabIndex = 160
-        Me.Button1.Text = "Button1"
+        Me.Button1.Text = "SAVE"
         Me.Button1.UseVisualStyleBackColor = True
         '
         'Label7
@@ -302,48 +396,23 @@ Partial Class DISCHARGE_ADVANCED
         Me.Label4.TabIndex = 169
         Me.Label4.Text = "RANK"
         '
-        'ComboBox6
+        'Button3
         '
-        Me.ComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox6.FormattingEnabled = True
-        Me.ComboBox6.Location = New System.Drawing.Point(786, 203)
-        Me.ComboBox6.Name = "ComboBox6"
-        Me.ComboBox6.Size = New System.Drawing.Size(307, 24)
-        Me.ComboBox6.TabIndex = 174
+        Me.Button3.Location = New System.Drawing.Point(125, 398)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(101, 23)
+        Me.Button3.TabIndex = 182
+        Me.Button3.Text = "CLEAR"
+        Me.Button3.UseVisualStyleBackColor = True
         '
-        'Label9
+        'Button4
         '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(783, 187)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(149, 13)
-        Me.Label9.TabIndex = 175
-        Me.Label9.Text = "CLINICAL SERVICE (optional)"
-        '
-        'TextBox4
-        '
-        Me.TextBox4.Location = New System.Drawing.Point(786, 251)
-        Me.TextBox4.Name = "TextBox4"
-        Me.TextBox4.Size = New System.Drawing.Size(65, 20)
-        Me.TextBox4.TabIndex = 161
-        '
-        'ComboBox7
-        '
-        Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(857, 251)
-        Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(236, 21)
-        Me.ComboBox7.TabIndex = 160
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(783, 235)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(215, 13)
-        Me.Label10.TabIndex = 176
-        Me.Label10.Text = "INSTITUTION OF DESTINATION (optional)"
+        Me.Button4.Location = New System.Drawing.Point(17, 398)
+        Me.Button4.Name = "Button4"
+        Me.Button4.Size = New System.Drawing.Size(102, 23)
+        Me.Button4.TabIndex = 181
+        Me.Button4.Text = "SELECT ALL"
+        Me.Button4.UseVisualStyleBackColor = True
         '
         'DISCHARGE_ADVANCED
         '
@@ -402,4 +471,10 @@ Partial Class DISCHARGE_ADVANCED
     Friend WithEvents TextBox4 As TextBox
     Friend WithEvents ComboBox7 As ComboBox
     Friend WithEvents Label10 As Label
+    Friend WithEvents Label11 As Label
+    Friend WithEvents ComboBox8 As ComboBox
+    Friend WithEvents CheckedListBox3 As CheckedListBox
+    Friend WithEvents Label12 As Label
+    Friend WithEvents Button3 As Button
+    Friend WithEvents Button4 As Button
 End Class

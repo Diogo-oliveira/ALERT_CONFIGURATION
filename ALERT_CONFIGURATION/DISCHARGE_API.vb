@@ -282,18 +282,11 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function UPDATE_REASON(ByVal i_reason As String, i_profile_template() As String, ByVal i_rank As Integer, ByVal i_file_to_exeecute As String) As Boolean
+    Function UPDATE_REASON(ByVal i_reason As String, ByVal i_profile_template As String, ByVal i_rank As Integer, ByVal i_file_to_exeecute As String) As Boolean
 
-        Dim l_profiles As String
-
-        For i As Integer = 0 To i_profile_template.Count() - 1
-
-            l_profiles = l_profiles & i_profile_template(i)
-
-        Next
 
         Dim Sql As String = "UPDATE alert.discharge_reason dr
-                                SET dr.flg_admin_medic = '" & l_profiles & "', dr.rank = " & i_rank & ", dr.file_to_execute = '" & i_file_to_exeecute & "'
+                                SET dr.flg_admin_medic = '" & i_profile_template & "', dr.rank = " & i_rank & ", dr.file_to_execute = '" & i_file_to_exeecute & "'
                                 WHERE dr.id_content = '" & i_reason & "'
                                 AND dr.flg_available = 'Y'"
 
@@ -334,8 +327,8 @@ Public Class DISCHARGE_API
                                     SELECT dr.flg_admin_medic, dr.file_to_execute
                                     INTO l_flg_admin, l_file_execute
                                     FROM alert_default.discharge_reason dr
-                                    WHERE dr.id_content = l_id_content;
-                                    --AND dr.flg_available = 'Y';
+                                    WHERE dr.id_content = l_id_content
+                                    AND dr.flg_available = 'Y';
 
                                     l_id_alert_reason := alert.seq_discharge_reason.nextval;
 
@@ -348,8 +341,8 @@ Public Class DISCHARGE_API
                                     INTO l_default_desc
                                     FROM alert_default.discharge_reason dr
                                     JOIN alert_default.translation t ON t.code_translation = dr.code_discharge_reason
-                                    WHERE dr.id_content = l_id_content;
-                                    --AND dr.flg_available = 'Y';
+                                    WHERE dr.id_content = l_id_content
+                                    AND dr.flg_available = 'Y';
 
                                     pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_REASON.CODE_DISCHARGE_REASON.' || l_id_alert_reason, l_default_desc);
 
@@ -364,6 +357,63 @@ Public Class DISCHARGE_API
         Try
             cmd_insert_reason.CommandType = CommandType.Text
             cmd_insert_reason.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_reason.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_reason.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_MANUAL_REASON(ByVal i_institution As Int64, ByVal i_id_reason As String, ByVal flg_admin_medic As String, ByVal rank As Integer, ByVal i_file_execute As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                                    l_flg_admin alert.discharge_reason.flg_admin_medic%TYPE := '" & flg_admin_medic & "';
+
+                                    l_file_execute alert.discharge_reason.file_to_execute%TYPE := '" & i_file_execute & "';
+
+                                    l_id_content alert.discharge_reason.id_content%TYPE := '" & i_id_reason & "';
+
+                                    l_id_alert_reason alert.discharge_reason.id_discharge_reason%TYPE;
+
+                                    l_default_desc alert_default.translation.desc_lang_6%TYPE;
+
+                                BEGIN
+
+                                    l_id_alert_reason := alert.seq_discharge_reason.nextval;
+
+                                    INSERT INTO alert.discharge_reason
+                                        (id_discharge_reason, code_discharge_reason, flg_admin_medic, flg_available, rank, file_to_execute, id_content)
+                                    VALUES
+                                        (l_id_alert_reason, 'DISCHARGE_REASON.CODE_DISCHARGE_REASON.' || l_id_alert_reason, l_flg_admin, 'Y', " & rank & ", l_file_execute, l_id_content);
+
+                                    SELECT t.desc_lang_" & l_id_language & "
+                                    INTO l_default_desc
+                                    FROM alert_default.discharge_reason dr
+                                    JOIN alert_default.translation t ON t.code_translation = dr.code_discharge_reason
+                                    WHERE dr.id_content = l_id_content;
+
+                                    pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_REASON.CODE_DISCHARGE_REASON.' || l_id_alert_reason, l_default_desc);
+
+                                EXCEPTION
+                                    WHEN dup_val_on_index THEN
+                                        dbms_output.put_line('Registo já existente.');
+    
+                                END;"
+
+        Dim cmd_insert_reason As New OracleCommand(sql, Connection.conn)
+
+        Try
+
+            cmd_insert_reason.CommandType = CommandType.Text
+            cmd_insert_reason.ExecuteNonQuery()
+
         Catch ex As Exception
             cmd_insert_reason.Dispose()
             Return False

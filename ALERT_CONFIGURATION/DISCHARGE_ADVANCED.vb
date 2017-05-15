@@ -15,9 +15,6 @@ Public Class DISCHARGE_ADVANCED
     'Array que vai guardar as DESTINATIONS caregadas do default
     Dim g_a_loaded_destinations_default() As DISCHARGE_API.DEFAULT_REASONS
 
-    'Array com as flags dos tipos de profissionais
-    Dim g_a_prof_types(5) As String
-
     'Array de profile templates disponíveis 
     Public Structure PROFILE_TEMPLATE
         Public ID_PROFILE_TEMPLATE As Integer
@@ -32,6 +29,20 @@ Public Class DISCHARGE_ADVANCED
 
     'Array com os clinical services da instituiçã/software
     Dim g_a_clin_serv_inst() As String
+
+    'Array que guarda o tipo de profissionais a apresentar na lista
+    Dim g_a_prof_types(5) As String
+
+    'Estrutura que vai guardar as flags possíveis para perfis, e guardar se já existem perfis selecionados desse tipo
+    Public Structure PROFILE_TEMPLATE_TYPE
+        Public TYPE As String
+        Public IS_TYPE_SELECTED As Boolean
+    End Structure
+
+    Dim g_a_profile_types() As PROFILE_TEMPLATE_TYPE
+
+    'Array que vai concatenar os tipos de perfis distintos selecionados
+    Dim g_a_prof_types_concat() As String
 
     Function reset_default_reasons()
 
@@ -125,9 +136,79 @@ Public Class DISCHARGE_ADVANCED
 
         End If
 
+    End Function
+
+    Function reset_profile_types()
+
+        For i As Integer = 0 To g_a_profile_types.Count() - 1
+
+            g_a_profile_types(i).IS_TYPE_SELECTED = False
+
+        Next
 
     End Function
 
+    'Obter a lista de tipos de perfis selecionada
+    Function check_profile_types(ByVal i_checked_profiles() As PROFILE_TEMPLATE, ByRef i_profile_types() As PROFILE_TEMPLATE_TYPE)
+
+        Dim l_profile_type As String = ""
+
+        For i As Integer = 0 To i_checked_profiles.Count() - 1
+
+            l_profile_type = db_access_general.GET_PROFILE_TYPE(i_checked_profiles(i).ID_PROFILE_TEMPLATE)
+
+            For j As Integer = 0 To i_profile_types.Count() - 1
+
+                If i_profile_types(j).TYPE = l_profile_type Then
+
+                    i_profile_types(j).IS_TYPE_SELECTED = True
+
+                End If
+
+            Next
+        Next
+
+    End Function
+
+    'Concatenar os tipos numa só string para introduzir na discharge_reason
+    Function concatentate_profiles(ByVal i_profiles() As PROFILE_TEMPLATE_TYPE, ByRef o_concatenated As String)
+
+        o_concatenated = ""
+
+        For i As Integer = 0 To i_profiles.Count() - 1
+
+            If i_profiles(i).IS_TYPE_SELECTED = True Then
+
+                o_concatenated = o_concatenated & i_profiles(i).TYPE
+
+            End If
+
+        Next
+
+    End Function
+
+    Function check_rank_integrity(ByVal i_rank As String) As Boolean
+
+        'Código para ver se rank introduzido está correto
+        Dim l_correct_rank As Boolean = True
+        If i_rank <> "" Then
+
+            '48 - 57  = Ascii codes for numbers
+            For i As Integer = 0 To TextBox2.Text.Length() - 1
+
+                If Asc(TextBox2.Text.Chars(i)) < 48 Or Asc(TextBox2.Text.Chars(i)) > 57 Then
+
+                    l_correct_rank = False
+
+                End If
+
+            Next
+
+        End If
+
+        Return l_correct_rank
+
+    End Function
 
     Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
 
@@ -240,6 +321,28 @@ Public Class DISCHARGE_ADVANCED
 
         End If
 
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_access_general.GET_PROFILE_TYPES(dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING PROFILE TYPES!")
+
+        Else
+
+            Dim l_dim_prof_types As Integer = 0
+            ReDim g_a_profile_types(l_dim_prof_types)
+
+            While dr.Read()
+
+                ReDim Preserve g_a_profile_types(l_dim_prof_types)
+                g_a_profile_types(l_dim_prof_types).TYPE = dr.Item(0)
+                g_a_profile_types(l_dim_prof_types).IS_TYPE_SELECTED = False
+                l_dim_prof_types = l_dim_prof_types + 1
+
+            End While
+
+        End If
+
         dr.Dispose()
         dr.Close()
 
@@ -253,6 +356,7 @@ Public Class DISCHARGE_ADVANCED
 
         g_selected_soft = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, TextBox1.Text)
 
+        'Obter as Reasons que existem no default (Mesmo as que estão not available)
         reset_default_reasons()
 
         ReDim g_a_profile_templates(0)
@@ -374,34 +478,19 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
+        If CheckedListBox2.Items.Count() > 0 Then
 
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
 
-    End Sub
-
-    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
-
-        'Código para ver se rank introduzido está correto (adaptar o local onde vai ser utilizado)
-        Dim l_correct_rank As Boolean = True
-        If TextBox2.Text <> "" Then
-
-            '48 - 57  = Ascii codes for numbers
-            For i As Integer = 0 To TextBox2.Text.Length() - 1
-
-                If Asc(TextBox2.Text.Chars(i)) < 48 Or Asc(TextBox2.Text.Chars(i)) > 57 Then
-
-                    l_correct_rank = False
-
-                End If
+                CheckedListBox2.SetItemChecked(i, False)
 
             Next
 
         End If
 
-        If l_correct_rank = False Then
+    End Sub
 
-            MsgBox("INCORRECT RANK")
-
-        End If
+    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
 
     End Sub
 
@@ -429,18 +518,122 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        Dim l_string(3) As String
+        'Lista de Reasons
+        If ComboBox3.SelectedIndex > -1 Then
 
-        l_string(0) = "D"
-        l_string(1) = "A"
-        l_string(2) = "S"
-        l_string(3) = "M"
+            ''Lista de profissionais
+            If CheckedListBox2.CheckedItems.Count() > 0 Then
 
-        If Not db_discharge.UPDATE_REASON("TMP39.259", l_string, 1, "DispositionCreateStep2LWBS.swf") Then
+                'Verificar se foi inserido rank para a Reason
+                If TextBox2.Text <> "" Then
 
-            MsgBox("EROO")
+                    'Verificar integridade do rank inserido
+                    If check_rank_integrity(TextBox2.Text) Then
+
+                        'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES SELECTIONADOS PELO UTILIZADOR
+                        Dim l_a_selected_profiles_default() As PROFILE_TEMPLATE
+
+                        ReDim l_a_selected_profiles_default(0)
+                        Dim l_dim_selected_profiles = 0
+
+                        For Each indexChecked In CheckedListBox2.CheckedIndices
+
+                            ReDim Preserve l_a_selected_profiles_default(l_dim_selected_profiles)
+                            l_a_selected_profiles_default(l_dim_selected_profiles).ID_PROFILE_TEMPLATE = g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE
+                            l_a_selected_profiles_default(l_dim_selected_profiles).PROFILE_NAME = g_a_profile_templates(indexChecked).PROFILE_NAME
+                            l_a_selected_profiles_default(l_dim_selected_profiles).FLG_TYPE = g_a_profile_templates(indexChecked).FLG_TYPE
+                            l_dim_selected_profiles = l_dim_selected_profiles + 1
+
+                        Next
+
+                        reset_profile_types()
+
+                        check_profile_types(l_a_selected_profiles_default, g_a_profile_types)
+
+                        Dim l_concatenated_distinct_profiles As String = ""
+
+                        concatentate_profiles(g_a_profile_types, l_concatenated_distinct_profiles)
+                        '-------------------------------------------------------------------------------
+
+                        '2 - Verificar se existe Reason no ALERT (e respetiva tradução), caso não exista, inserir.
+                        If Not db_discharge.CHECK_REASON(g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content) Then
+
+                            MsgBox("Não Existe")
+
+                            If Not db_discharge.SET_MANUAL_REASON(TextBox1.Text, g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content, l_concatenated_distinct_profiles, TextBox2.Text, ComboBox5.Text) Then
+
+                                MsgBox("ERROR INSERTING DISCHARGE REASON!", vbCritical)
+
+                            End If
+
+                        ElseIf Not db_discharge.CHECK_REASON_translation(TextBox1.Text, g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content) Then
+
+                            If Not db_discharge.SET_REASON_TRANSLATION(TextBox1.Text, g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content) Then
+
+                                MsgBox("ERROR INSERTING DISCHARGE REASON TRANSLATION!", vbCritical)
+
+                            End If
+
+                            'Fazer Update()
+                            If Not db_discharge.UPDATE_REASON(g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content, l_concatenated_distinct_profiles, TextBox2.Text, ComboBox5.Text) Then
+
+                                MsgBox("ERROR UPDATING DISCHARGE REASON!", vbCritical)
+
+                            End If
+
+                        Else
+
+                            'FAZER  UPDATE
+                            If Not db_discharge.UPDATE_REASON(g_a_loaded_reasons_default(ComboBox3.SelectedIndex).id_content, l_concatenated_distinct_profiles, TextBox2.Text, ComboBox5.Text) Then
+
+                                MsgBox("ERROR UPDATING DISCHARGE REASON!", vbCritical)
+
+                            End If
+
+                        End If
+
+                    Else
+                        MsgBox("Please select a valid rank for the discharge reason.")
+                    End If
+                Else
+                        MsgBox("Please set a rank for the discharge reason.")
+                End If
+            Else
+                MsgBox("Please select, at least, one Profile.")
+            End If
+        Else
+            MsgBox("Please select a discharge reason.")
+        End If
+
+
+        ''APAGAR (TESTE À UPDATE REASON)
+        'Dim l_string(3) As String
+
+        'l_string(0) = "D"
+        'l_string(1) = "A"
+        'l_string(2) = "S"
+        'l_string(3) = "M"
+
+        'If Not db_discharge.UPDATE_REASON("TMP39.259", l_string, 1, "DispositionCreateStep2LWBS.swf") Then
+
+        'MsgBox("EROO")
+
+        'End If
+
+    End Sub
+
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+
+        If CheckedListBox2.Items.Count() > 0 Then
+
+            For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                CheckedListBox2.SetItemChecked(i, True)
+
+            Next
 
         End If
 
     End Sub
+
 End Class

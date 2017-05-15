@@ -399,7 +399,6 @@ Public Class General
 
             End Try
 
-
             Return False
 
         End Try
@@ -1005,10 +1004,9 @@ Public Class General
 
         End If
 
+        Try
 
-        '  Try
-
-        Dim cmd As New OracleCommand(sql, Connection.conn)
+            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             o_dr = cmd.ExecuteReader()
@@ -1017,11 +1015,69 @@ Public Class General
 
             Return True
 
-        '  Catch ex As Exception
+        Catch ex As Exception
 
-        'Return False
+            Return False
 
-        ' End Try
+        End Try
+
+    End Function
+
+    Function GET_PROFILE_TYPES(ByRef o_dr_pt As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT DISTINCT pt.flg_type
+                                FROM alert.profile_template pt
+                                WHERE pt.flg_type IS NOT NULL
+                                ORDER BY 1 ASC "
+
+        Dim dr As OracleDataReader
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, Connection.conn)
+            cmd.CommandType = CommandType.Text
+
+            o_dr_pt = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            Return True
+
+        Catch ex As Exception
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Function GET_PROFILE_TYPE(ByVal i_id_profile_template As Int64) As String
+
+        Dim sql As String = "SELECT pt.flg_type
+                                FROM alert.profile_template pt
+                                WHERE pt.flg_type IS NOT NULL
+                                AND PT.ID_PROFILE_TEMPLATE=" & i_id_profile_template
+
+        Dim dr As OracleDataReader
+        Dim l_pt_type As String
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+            cmd.CommandType = CommandType.Text
+
+        dr = cmd.ExecuteReader()
+
+        cmd.Dispose()
+
+        While dr.Read()
+
+            l_pt_type = dr.Item(0)
+
+        End While
+
+        dr.Dispose()
+        dr.Close()
+
+        Return l_pt_type
 
     End Function
 
