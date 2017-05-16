@@ -443,8 +443,8 @@ Public Class DISCHARGE_API
                                     INTO l_default_desc
                                     FROM alert_default.discharge_reason dr
                                     JOIN alert_default.translation t ON t.code_translation = dr.code_discharge_reason
-                                    WHERE dr.id_content = l_id_content
-                                    AND dr.flg_available = 'Y';
+                                    WHERE dr.id_content = l_id_content;
+                                    --AND dr.flg_available = 'Y'; Para garantir que mesmo que a reason não esteja available no default a sua tradução seja inserida no alert (config manual)
 
                                     SELECT dr.id_discharge_reason
                                     INTO  l_id_alert_reason
@@ -729,6 +729,84 @@ Public Class DISCHARGE_API
 
     End Function
 
+    Function SET_MANUAL_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As String, ByVal i_rank As Integer, ByVal i_flg_type As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+
+                               l_id_content alert.discharge_reason.id_content%TYPE := '" & i_id_destination & "';"
+
+        sql = sql & "
+                                    l_flg_type alert.discharge_dest.flg_type%TYPE := '" & i_flg_type & "';
+
+                                    l_default_desc alert_default.translation.desc_lang_6%TYPE;
+
+                                    l_id_alert_destination alert.discharge_dest.id_discharge_dest%TYPE;
+
+                             BEGIN
+                            
+                                            l_id_alert_destination := alert.seq_discharge_dest.nextval;
+        
+                                            INSERT INTO alert.discharge_dest
+                                                (id_discharge_dest, code_discharge_dest, flg_available, rank, flg_type, id_content)
+                                            VALUES
+                                                (l_id_alert_destination, 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination, 'Y', " & i_rank & ", l_flg_type, l_id_content);
+        
+                                            SELECT t.desc_lang_" & l_id_language & "
+                                            INTO l_default_desc
+                                            FROM alert_default.discharge_dest dd
+                                            JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
+                                            WHERE dd.id_content = l_id_content;
+        
+                                            pk_translation.insert_into_translation(" & l_id_language & ", 'DISCHARGE_DEST.CODE_DISCHARGE_DEST.' || l_id_alert_destination,
+                                                                                   l_default_desc);
+        
+                                        EXCEPTION
+                                            WHEN dup_val_on_index THEN
+                                                DBMS_OUTPUT.PUT_LINE('REPEATED RECORD');
+
+                                END;"
+
+        Dim cmd_insert_reason As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_reason.CommandType = CommandType.Text
+            cmd_insert_reason.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_reason.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_reason.Dispose()
+
+        Return True
+
+    End Function
+
+    Function UPDATE_DESTINATION(ByVal i_id_destination As String, ByVal i_rank As Integer, ByVal i_flg_type As String) As Boolean
+
+        Dim Sql As String = "UPDATE alert.discharge_dest dd
+                                SET dd.flg_type='" & i_flg_type & "', dd.rank=" & i_rank & "
+                                WHERE dd.id_content = '" & i_id_destination & "'
+                                AND dd.flg_available = 'Y'"
+
+        Dim cmd_update_destination As New OracleCommand(Sql, Connection.conn)
+
+        Try
+            cmd_update_destination.CommandType = CommandType.Text
+            cmd_update_destination.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_destination.Dispose()
+            Return False
+        End Try
+
+        cmd_update_destination.Dispose()
+
+        Return True
+
+    End Function
+
     Function SET_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination As DEFAULT_DISCAHRGE) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -753,8 +831,8 @@ Public Class DISCHARGE_API
                                         INTO l_default_desc
                                         FROM alert_default.discharge_dest dd
                                         JOIN alert_default.translation t ON t.code_translation = dd.code_discharge_dest
-                                        WHERE dd.id_content = l_id_content(i)
-                                        AND dd.flg_available = 'Y';
+                                        WHERE dd.id_content = l_id_content(i);
+                                        --AND dd.flg_available = 'Y'; Por causa de configuração manual
         
                                         SELECT dd.id_discharge_dest
                                         INTO l_id_alert_destination
@@ -2424,7 +2502,7 @@ Public Class DISCHARGE_API
 
     End Function
 
-    Function GET_REASON_SCREENS(ByRef o_dr As OracleDataReader) As Boolean
+    Function GET_ALL_REASON_SCREENS(ByRef o_dr As OracleDataReader) As Boolean
 
         Dim sql As String = "SELECT DISTINCT dr.file_to_execute
                                 FROM alert_default.discharge_reason dr
@@ -2465,5 +2543,26 @@ Public Class DISCHARGE_API
         End Try
 
     End Function
+
+    'Function GET_SREEN_NAME(ByVal i_reason As String, ByRef o_dr As OracleDataReader) As Boolean
+
+    '    Dim sql As String = "SELECT DISTINCT dr.file_to_execute
+    '                            FROM alert_default.discharge_reason dr
+    '                            WHERE dr.file_to_execute IS NOT NULL
+    '                            and dr.id_content='" & i_reason & "'
+    '                            ORDER BY 1 ASC"
+
+    '    Dim cmd As New OracleCommand(sql, Connection.conn)
+    '    Try
+    '        cmd.CommandType = CommandType.Text
+    '        o_dr = cmd.ExecuteReader()
+    '        cmd.Dispose()
+    '        Return True
+    '    Catch ex As Exception
+    '        cmd.Dispose()
+    '        Return False
+    '    End Try
+
+    'End Function
 
 End Class

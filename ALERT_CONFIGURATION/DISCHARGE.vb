@@ -728,7 +728,6 @@ Public Class DISCHARGE
 
                     Next
 
-
                     '3 - Gravar os profiles_discharge selecionados
                     'ARRAY QUE VAI GUARDAR OS PROFILE TEMPLATES SELECTIONADOS PELO UTILIZADOR
                     Dim l_a_selected_profiles_default() As DISCHARGE_API.DEFAULT_DISCH_PROFILE
