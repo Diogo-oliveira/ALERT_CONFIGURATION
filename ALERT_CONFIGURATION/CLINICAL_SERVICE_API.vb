@@ -395,7 +395,7 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
-    'Pode devolver vários resultados?
+    'aTENÇÃO, ESTA FUNÇÃO SÓ ENVIA O 1º RESULTADO ENCONTRADO
     Function GET_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_department As Int64, ByVal id_clinical_service As String, ByRef o_id_dep_clin_serv As Int64) As Boolean
 
         Dim sql As String = "SELECT s.id_dep_clin_serv
@@ -406,10 +406,18 @@ Public Class CLINICAL_SERVICE_API
                                 AND d.flg_available = 'Y'
                                 AND d.id_institution = " & i_institution & "
                                 AND d.id_software = " & i_software & "
-                                AND c.flg_available = 'Y'
-                                and s.id_department=" & i_id_department & "
+                                AND c.flg_available = 'Y'"
+
+        If i_id_department > 0 Then
+
+            sql = sql & "       AND s.id_department=" & i_id_department & "
                                 AND c.id_content = '" & id_clinical_service & "'"
 
+        Else
+
+            sql = sql & "       AND c.id_content = '" & id_clinical_service & "'"
+
+        End If
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -423,6 +431,7 @@ Public Class CLINICAL_SERVICE_API
 
             While dr.Read()
                 o_id_dep_clin_serv = dr.Item(0)
+                Exit While
             End While
 
             Return True

@@ -1062,7 +1062,7 @@ Public Class General
         Dim l_pt_type As String
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
-            cmd.CommandType = CommandType.Text
+        cmd.CommandType = CommandType.Text
 
         dr = cmd.ExecuteReader()
 
@@ -1078,6 +1078,27 @@ Public Class General
         dr.Close()
 
         Return l_pt_type
+
+    End Function
+
+    Function GET_EPIS_TYPES(ByRef o_dr As OracleDataReader) As Boolean
+
+        Dim sql As String = "SELECT et.id_epis_type, t.desc_lang_2  --É para devolver em inglês
+                                FROM alert.epis_type et
+                                JOIN translation t ON t.code_translation = et.code_epis_type
+                                               AND et.flg_available = 'Y'
+                                ORDER BY 1 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd.CommandType = CommandType.Text
+            o_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
 
     End Function
 

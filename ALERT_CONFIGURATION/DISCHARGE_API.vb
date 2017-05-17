@@ -95,7 +95,7 @@ Public Class DISCHARGE_API
         End Try
     End Function
 
-    'Obter todas as reasons do default, mesmo as que não estão disponíveisl
+    'Obter todas as reasons do default, mesmo as que não estão disponíveis
     Function GET_ALL_DEFAULT_REASONS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -476,6 +476,7 @@ Public Class DISCHARGE_API
 
     End Function
 
+    ''Configuração automática de PROFILE_DISCH_REASON (Carregar do default)
     Function SET_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal a_prof_disch_reason As DEFAULT_DISCH_PROFILE()) As Boolean
 
         Dim sql As String = "DECLARE
@@ -593,6 +594,131 @@ Public Class DISCHARGE_API
         Return True
 
     End Function
+
+    ''Configuração manual de PROFILE_DISCH_REASON
+    Function CHECK_PROF_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64) As Boolean
+
+        Dim sql As String = "SELECT COUNT(*)
+                                FROM alert.profile_disch_reason pdr
+                                JOIN alert.discharge_reason dr ON dr.id_discharge_reason = pdr.id_discharge_reason
+                                WHERE pdr.id_institution = " & i_institution & "
+                                AND pdr.id_profile_template = " & i_profile_template & "
+                                AND dr.id_content = '" & i_reason & "'
+                                AND pdr.flg_available = 'Y'
+                                AND dr.flg_available = 'Y'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Dim dr As OracleDataReader
+
+        cmd.CommandType = CommandType.Text
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_record As Integer = 0
+
+        While dr.Read()
+            l_total_record = dr.Item(0)
+        End While
+
+        If l_total_record > 0 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+    Function UPDATE_PROF_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64, ByVal i_id_disch_file As Integer, ByVal i_flg_access As String, ByVal i_rank As Integer, ByVal i_flg_default As String) As Boolean
+
+        Dim Sql As String = "UPDATE alert.profile_disch_reason pdr
+                                SET pdr.id_discharge_flash_files = " & i_id_disch_file & ", pdr.flg_access = '" & i_flg_access & "', pdr.rank=" & i_rank & ", pdr.flg_default='" & i_flg_default & "'
+                                WHERE pdr.id_institution = " & i_institution & "
+                                AND pdr.id_profile_template = " & i_profile_template & "
+                                AND pdr.flg_available = 'Y'
+                                AND pdr.id_discharge_reason IN (SELECT dr.id_discharge_reason
+                                                               FROM alert.discharge_reason dr
+                                                               WHERE dr.flg_available = 'Y'
+                                                               AND dr.id_content = '" & i_reason & "')"
+
+        Dim cmd_update_prof_disch_reas As New OracleCommand(Sql, Connection.conn)
+
+        Try
+            cmd_update_prof_disch_reas.CommandType = CommandType.Text
+            cmd_update_prof_disch_reas.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_prof_disch_reas.Dispose()
+            Return False
+        End Try
+
+        cmd_update_prof_disch_reas.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_MANUAL_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64, ByVal i_id_disch_file As Integer, ByVal i_flg_access As String, ByVal i_rank As Integer, ByVal i_flg_default As String) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                l_id_disch_reason alert.discharge_reason.id_discharge_reason%TYPE;
+
+                                l_id_content_dr  alert.discharge_reason.id_content%TYPE := '" & i_reason & "';
+                                l_id_template    alert.profile_disch_reason.id_profile_template%TYPE := " & i_profile_template & ";
+                                l_id_institution institution.id_institution%TYPE := " & i_institution & ";
+                                l_id_disch_files alert.profile_disch_reason.id_discharge_flash_files%TYPE := " & i_id_disch_file & ";
+                                l_flg_access     alert.profile_disch_reason.flg_access%TYPE := '" & i_flg_access & "';
+                                l_flg_default    alert.profile_disch_reason.flg_default%TYPE := '" & i_flg_default & "';
+                                l_rank           alert.profile_disch_reason.rank%TYPE := " & i_rank & ";
+
+                            BEGIN
+
+                                SELECT r.id_discharge_reason
+                                INTO l_id_disch_reason
+                                FROM alert.discharge_reason r
+                                WHERE r.id_content = l_id_content_dr
+                                AND r.flg_available = 'Y';
+
+                                INSERT INTO alert.profile_disch_reason
+                                    (id_profile_disch_reason,
+                                     id_discharge_reason,
+                                     id_profile_template,
+                                     id_institution,
+                                     flg_available,
+                                     id_discharge_flash_files,
+                                     flg_access,
+                                     rank,
+                                     flg_default)
+                                VALUES
+                                    (alert.seq_profile_disch_reason.nextval,
+                                     l_id_disch_reason,
+                                     l_id_template,
+                                     l_id_institution,
+                                     'Y',
+                                     l_id_disch_files,
+                                     l_flg_access,
+                                     l_rank,
+                                     l_flg_default);
+
+                            END;"
+
+        Dim cmd_insert_profile_disch_reason As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_profile_disch_reason.CommandType = CommandType.Text
+            cmd_insert_profile_disch_reason.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_profile_disch_reason.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_profile_disch_reason.Dispose()
+
+        Return True
+
+    End Function
+    ''' ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 
     Function CHECK_DESTINATION(ByVal i_id_destination As String) As Boolean
 
@@ -2306,6 +2432,53 @@ Public Class DISCHARGE_API
         End Try
     End Function
 
+    'Funcção que devolve todaas as reasons maracadas como available no alert. (Não significa que vão estar a aparecer porque podem não ter ooutras associações (prof_disch_reas, disch_reas_dest, etc.)))
+    Function GET_REASONS_ALERT(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dr.id_content, pk_translation.get_translation(" & l_id_language & ", dr.code_discharge_reason)
+                                FROM alert.discharge_reason dr
+                                WHERE dr.flg_available = 'Y'     
+                                AND pk_translation.get_translation(" & l_id_language & ", dr.code_discharge_reason) IS NOT NULL
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    'Função que devolve todaas as destinations maracadas como available no alert. (Não significa que vão estar a aparecer porque podem não ter outras associações (prof_disch_reas, disch_reas_dest, etc.)))
+    Function GET_DESTINATIONS_ALERT(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT dd.id_content, pk_translation.get_translation(" & l_id_language & ", dd.code_discharge_dest)
+                                FROM alert.discharge_dest dd
+                                WHERE dd.flg_available = 'Y'     
+                                AND pk_translation.get_translation(" & l_id_language & ", dd.code_discharge_dest) IS NOT NULL
+                                and dd.id_content is not null  --EXITEM REGISTOS SEM ID_CONTENT
+                                ORDER BY 2 ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
     Function GET_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -2544,25 +2717,23 @@ Public Class DISCHARGE_API
 
     End Function
 
-    'Function GET_SREEN_NAME(ByVal i_reason As String, ByRef o_dr As OracleDataReader) As Boolean
+    Function GET_DISCH_FLASH_FILES(ByRef o_dr As OracleDataReader) As Boolean
 
-    '    Dim sql As String = "SELECT DISTINCT dr.file_to_execute
-    '                            FROM alert_default.discharge_reason dr
-    '                            WHERE dr.file_to_execute IS NOT NULL
-    '                            and dr.id_content='" & i_reason & "'
-    '                            ORDER BY 1 ASC"
+        Dim sql As String = "SELECT dff.id_discharge_flash_files, dff.intern_name
+                                FROM alert.discharge_flash_files dff
+                                ORDER BY 2 ASC"
 
-    '    Dim cmd As New OracleCommand(sql, Connection.conn)
-    '    Try
-    '        cmd.CommandType = CommandType.Text
-    '        o_dr = cmd.ExecuteReader()
-    '        cmd.Dispose()
-    '        Return True
-    '    Catch ex As Exception
-    '        cmd.Dispose()
-    '        Return False
-    '    End Try
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            o_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            cmd.Dispose()
+            Return False
+        End Try
 
-    'End Function
+    End Function
 
 End Class
