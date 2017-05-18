@@ -573,6 +573,8 @@ Public Class DISCHARGE_ADVANCED
             Dim l_dim_epis_types As Integer = 0
             ReDim g_a_loaded_eips_types(l_dim_epis_types)
 
+            ComboBox16.Items.Add("None")
+
             While dr.Read()
 
                 ReDim Preserve g_a_loaded_eips_types(l_dim_epis_types)
@@ -801,19 +803,115 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-
+        'Verificar se discharge Reason foi escolhida
         If ComboBox13.SelectedIndex > -1 Then
+            'Verificar se foi definida a flg_default
             If ComboBox15.SelectedIndex > -1 Then
-                'Verificar se foi inserido rank para a Reason
+                'Verificar se foi inserido rank para a Reason_Destination
                 If TextBox7.Text <> "" Then
                     'Verificar integridade do rank inserido
                     If check_rank_integrity(TextBox7.Text) Then
+                        'Verificar se foi definido a flag discharge diagnosis
+                        If ComboBox8.SelectedIndex > -1 Then
+                            'verificar se foi definido se as prescrições devem ser automaticamente canceladas
+                            If ComboBox18.SelectedIndex > -1 Then
+                                'Determinar se é necessário um médico responsável pelo episódio para que seja possível fazer discharge 
+                                If ComboBox17.SelectedIndex > -1 Then
 
-                        'TESTE DA FUNÇÃO COM DEP A -1
-                        Dim O_DR As Int64
-                        MsgBox(db_clin_serv.GET_DEP_CLIN_SERV(470, 11, -1, "TMP31.34", O_DR))
-                        'FIM TESTE
+                                    '1 - Determinar se foi escolhida uma destination
+                                    '(Se não foi, o seu valor é enviado a vazio)
+                                    Dim l_destination As String
+                                    If ComboBox14.SelectedIndex > -1 Then
+                                        l_destination = g_a_loaded_destinations_alert(ComboBox14.SelectedIndex).id_content
+                                    Else
+                                        l_destination = ""
+                                    End If
 
+                                    '2 - Determinar se foi inserida uma instituição de destino (e se esta é válida)
+                                    '(Se não foi, o seu valor é enviado a -1)
+                                    Dim l_inst_dest As Int64
+                                    If TextBox4.Text <> "" And ComboBox7.Text <> "" Then
+                                        l_inst_dest = TextBox4.Text
+                                    Else
+                                        l_inst_dest = -1
+                                    End If
+
+                                    '3 - Obter o id_dep_clin_serv se foi selecionado um clinical service
+                                    '(Se não foi, o seu valor é enviado a -1)
+                                    'Nota: É necessário desfasar o array em uma posição por causo do primeiro elemento None
+                                    Dim l_dep_clin_serv As Int64 = -1
+                                    If ComboBox6.SelectedIndex > 0 Then
+                                        If Not db_clin_serv.GET_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, -1, g_a_clin_serv_inst(ComboBox6.SelectedIndex - 1), l_dep_clin_serv) Then
+                                            MsgBox("ERROR GETTING DEP_CLIN_SERV!", vbCritical)
+                                        End If
+                                    End If
+
+                                    '4 - Determinar se foi inserido um valor para o tipo de episódio de discharge
+                                    '(Snão foi, o seu valor é enviado a -1)
+                                    'Nota: É necessário desfasar o array em uma posição por causo do primeiro elemento None
+                                    Dim l_disch_episode As Integer
+                                    If ComboBox16.SelectedIndex > 0 Then
+                                        l_disch_episode = g_a_loaded_eips_types(ComboBox16.SelectedIndex - 1)
+                                    Else
+                                        l_disch_episode = -1
+                                    End If
+
+                                    '5 - Determinar se foram inseridos MCDTs que têm que ser concluidos antes de discharge
+                                    '(Se não foram selecionados, valor é enviado a vazio)
+                                    Dim l_mcdts As String = ""
+                                    If CheckedListBox1.CheckedItems.Count() > 0 Then
+
+                                        For Each indexChecked In CheckedListBox1.CheckedIndices
+
+                                            If indexChecked = 0 Then
+                                                l_mcdts = l_mcdts & "A|"
+                                            ElseIf indexChecked = 1 Then
+                                                l_mcdts = l_mcdts & "D|"
+                                            ElseIf indexChecked = 2 Then
+                                                l_mcdts = l_mcdts & "I|"
+                                            ElseIf indexChecked = 3 Then
+                                                l_mcdts = l_mcdts & "E|"
+                                            Else
+                                                l_mcdts = l_mcdts & "C"
+                                            End If
+
+                                        Next
+
+                                    End If
+
+                                    'fazer check se registo já existe
+                                    '----- se existe => update
+                                    '----- se não exsite => inserir novo
+
+                                    If Not db_discharge.CHECK_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content, l_destination, l_dep_clin_serv) Then
+
+                                        MsgBox("não existe")
+
+                                    Else
+
+                                        MsgBox("existe")
+
+                                        If Not db_discharge.UPDATE_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content,
+                                                                                   l_destination, l_dep_clin_serv, ComboBox8.Text,
+                                                                                   l_inst_dest, l_disch_episode, ComboBox15.Text,
+                                                                                    TextBox7.Text, ComboBox18.Text, ComboBox17.Text, l_mcdts) Then
+
+
+                                            MsgBox("ERROR UPDATING DISCH_REAS_DEST!", vbCritical)
+
+                                        End If
+
+                                    End If
+
+                                Else
+                                    MsgBox("Please state if it is necessary to have an Overall responsible assigned to the patient when documenting a discharge.")
+                                End If
+                            Else
+                                    MsgBox("Please state if prescriptions should be automatically canceled with discharge.")
+                            End If
+                        Else
+                            MsgBox("Please state if a discharge diagnosis should be mandatory.")
+                        End If
                     Else
                         MsgBox("Please set a valid rank for this record.")
                     End If
@@ -1053,50 +1151,55 @@ Public Class DISCHARGE_ADVANCED
             If ComboBox11.SelectedIndex > -1 Then
                 'Verificar se exstem profile templates selecionados
                 If CheckedListBox2.CheckedItems.Count() > 0 Then
-                    'Verificar integridade do rank inserido
-                    If check_rank_integrity(TextBox6.Text) Then
-                        If ComboBox12.SelectedIndex > -1 Then
+                    'Verificar se foi inserido um rank
+                    If TextBox6.Text <> "" Then
+                        'Verificar integridade do rank inserido
+                        If check_rank_integrity(TextBox6.Text) Then
+                            If ComboBox12.SelectedIndex > -1 Then
 
-                            '1 - TRATAR DO TIPO DE DISCHARGE
-                            Dim l_selected_discharge_file As Integer = g_a_discharge_flash_files(ComboBox11.SelectedIndex)
-                            ''-------------------------------------------------------------------------------
+                                '1 - TRATAR DO TIPO DE DISCHARGE
+                                Dim l_selected_discharge_file As Integer = g_a_discharge_flash_files(ComboBox11.SelectedIndex)
+                                ''-------------------------------------------------------------------------------
 
-                            '2 - CORRER CADA PROFILE TEMLATE, OBTER A SUA FLAG_ACCESS E INSERIR NA PROFILE_DISCH_REASON
-                            For Each indexChecked In CheckedListBox2.CheckedIndices
+                                '2 - CORRER CADA PROFILE TEMLATE, OBTER A SUA FLAG_ACCESS E INSERIR NA PROFILE_DISCH_REASON
+                                For Each indexChecked In CheckedListBox2.CheckedIndices
 
-                                Dim l_flg_acces As String
+                                    Dim l_flg_acces As String
 
-                                l_flg_acces = db_access_general.GET_PROFILE_TYPE(g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE)
+                                    l_flg_acces = db_access_general.GET_PROFILE_TYPE(g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE)
 
-                                If Not db_discharge.CHECK_PROF_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE) Then
+                                    If Not db_discharge.CHECK_PROF_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE) Then
 
-                                    ''INSERT()
-                                    If Not db_discharge.SET_MANUAL_PROFILE_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE, l_selected_discharge_file, l_flg_acces, TextBox6.Text, ComboBox12.Text) Then
+                                        ''INSERT()
+                                        If Not db_discharge.SET_MANUAL_PROFILE_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE, l_selected_discharge_file, l_flg_acces, TextBox6.Text, ComboBox12.Text) Then
 
-                                        MsgBox("ERROR INSERTING PROFILE_DISCHARGE_REASON!", vbCritical)
+                                            MsgBox("ERROR INSERTING PROFILE_DISCHARGE_REASON!", vbCritical)
+
+                                        End If
+
+                                    Else
+                                        'UPDATE()
+                                        If Not db_discharge.UPDATE_PROF_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE, l_selected_discharge_file, l_flg_acces, TextBox6.Text, ComboBox12.Text) Then
+
+                                            MsgBox("ERROR UPDATING PROFILE_DISCHARGE_REASON!", vbCritical)
+
+                                        End If
 
                                     End If
 
-                                Else
-                                    'UPDATE()
-                                    If Not db_discharge.UPDATE_PROF_DISCH_REASON(TextBox1.Text, g_a_loaded_reasons_alert(ComboBox10.SelectedIndex).id_content, g_a_profile_templates(indexChecked).ID_PROFILE_TEMPLATE, l_selected_discharge_file, l_flg_acces, TextBox6.Text, ComboBox12.Text) Then
+                                Next
 
-                                        MsgBox("ERROR UPDATING PROFILE_DISCHARGE_REASON!", vbCritical)
+                                MsgBox("Record correctly inserted.", vbInformation)
 
-                                    End If
-
-                                End If
-
-                            Next
-
-                            MsgBox("Record correctly inserted.", vbInformation)
-
-                            ''-------------------------------------------------------------------------------
+                                ''-------------------------------------------------------------------------------
+                            Else
+                                MsgBox("Please select a default status.")
+                            End If
                         Else
-                            MsgBox("Please select a default status.")
+                            MsgBox("Please select a valid rank.")
                         End If
                     Else
-                            MsgBox("Please select a valid rank for the discharge reason.")
+                        MsgBox("Please set a rank.")
                     End If
                 Else
                         MsgBox("Please select, at least, one profile template.")
@@ -1116,6 +1219,8 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
 
+
+
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1125,4 +1230,7 @@ Public Class DISCHARGE_ADVANCED
 
     End Sub
 
+    Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
+        TextBox4.Text = db_access_general.GET_INSTITUTION_ID(ComboBox7.SelectedIndex)
+    End Sub
 End Class

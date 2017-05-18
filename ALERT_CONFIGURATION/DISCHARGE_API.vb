@@ -1815,6 +1815,165 @@ Public Class DISCHARGE_API
 
     End Function
 
+    'Conjunto de função para a inserção manual na REAS_DEST
+    Function CHECK_DISCH_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String, ByVal i_destination As String, ByVal i_dep_clin_serv As Int64) As Boolean
+
+
+
+        Dim sql As String = "SELECT COUNT(*)
+                                FROM alert.disch_reas_dest drd
+                                WHERE drd.id_discharge_reason IN (SELECT dr.id_discharge_reason
+                                                                  FROM alert.discharge_reason dr
+                                                                  WHERE dr.id_content = '" & i_reason & "'
+                                                                  AND dr.flg_available = 'Y') "
+        If i_destination = "" Then
+
+            sql = sql & "And drd.id_discharge_dest is null "
+
+        Else
+
+            sql = sql & "And drd.id_discharge_dest IN (SELECT dd.id_discharge_dest
+                                                             FROM alert.discharge_dest dd
+                                                             WHERE dd.id_content = '" & i_destination & "'
+                                                             AND dd.flg_available = 'Y') "
+
+        End If
+
+
+        If i_dep_clin_serv = -1 Then
+
+            sql = sql & "AND drd.id_dep_clin_serv is null "
+
+        Else
+
+            sql = sql & "AND drd.id_dep_clin_serv = " & i_dep_clin_serv
+
+        End If
+
+        sql = sql & "
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param = " & i_software & "
+                                AND drd.flg_active = 'A'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Dim dr As OracleDataReader
+
+        cmd.CommandType = CommandType.Text
+        dr = cmd.ExecuteReader()
+        cmd.Dispose()
+
+        Dim l_total_record As Integer = 0
+
+        While dr.Read()
+            l_total_record = dr.Item(0)
+        End While
+
+        If l_total_record > 0 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+    Function UPDATE_DISCH_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String,
+                                    ByVal i_destination As String, ByVal i_dep_clin_serv As Int64, ByVal i_diagnosis As String,
+                                    ByVal i_inst_dest As Int64, ByVal i_epis_type As Integer, ByVal i_flg_default As String,
+                                    ByVal i_rank As Integer, ByVal i_presc_cancel As String, ByVal i_over_resp As String,
+                                    ByVal i_mcdts As String) As Boolean
+
+        Dim sql As String = "UPDATE alert.disch_reas_dest drd
+                                SET drd.flg_diag               ='" & i_diagnosis & "', "
+
+        If i_inst_dest > -1 Then
+
+            sql = sql & "drd.id_institution = " & i_inst_dest & ", "
+
+        Else
+
+            sql = sql & "drd.id_institution = null, "
+
+        End If
+
+        If i_epis_type > -1 Then
+
+            sql = sql & "drd.id_epis_type = " & i_epis_type & ", "
+
+        Else
+
+            sql = sql & "drd.id_epis_type = null, "
+
+        End If
+
+        If i_mcdts <> "" Then
+
+            sql = sql & " drd.flg_mcdt = '" & i_mcdts & "', "
+
+        Else
+
+            sql = sql & " drd.flg_mcdt = null, "
+
+        End If
+
+        sql = sql & "
+                                   
+                                    drd.rank                   = " & i_rank & ",
+                                    drd.flg_default            = '" & i_flg_default & "',
+                                    drd.flg_needs_overall_resp = '" & i_over_resp & "',
+                                    drd.flg_auto_presc_cancel  = '" & i_presc_cancel & "'
+                                WHERE drd.id_discharge_reason IN (SELECT dr.id_discharge_reason
+                                                                  FROM alert.discharge_reason dr
+                                                                  WHERE dr.id_content = '" & i_reason & "'
+                                                                  AND dr.flg_available = 'Y') "
+        If i_destination = "" Then
+
+            sql = sql & " And drd.id_discharge_dest is null "
+
+        Else
+
+            sql = sql & " And drd.id_discharge_dest IN (SELECT dd.id_discharge_dest
+                                                             FROM alert.discharge_dest dd
+                                                             WHERE dd.id_content = '" & i_destination & "'
+                                                             AND dd.flg_available = 'Y') "
+
+        End If
+
+        sql = sql & " 
+                                AND drd.flg_active = 'A'
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param =" & i_software
+
+        If i_dep_clin_serv = -1 Then
+
+            sql = sql & " And drd.id_dep_clin_serv is null "
+
+        Else
+
+            sql = sql & " And drd.id_dep_clin_serv = " & i_dep_clin_serv
+
+        End If
+
+        MsgBox(sql)
+
+        Dim CMD_UPDATE_DISCH_REAS_DEST As New OracleCommand(sql, Connection.conn)
+
+        'Try
+        CMD_UPDATE_DISCH_REAS_DEST.CommandType = CommandType.Text
+            CMD_UPDATE_DISCH_REAS_DEST.ExecuteNonQuery()
+            'Catch ex As Exception
+            '   CMD_UPDATE_DISCH_REAS_DEST.Dispose()
+            '  Return False
+            'End Try
+
+            CMD_UPDATE_DISCH_REAS_DEST.Dispose()
+
+        Return True
+
+    End Function
+
+    ''' '''''''''''''''''''''''''''''''''''''''''''''''''''
+
     Function GET_DISCH_INSTR_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)

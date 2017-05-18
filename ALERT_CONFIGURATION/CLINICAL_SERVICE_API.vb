@@ -395,7 +395,7 @@ Public Class CLINICAL_SERVICE_API
 
     End Function
 
-    'aTENÇÃO, ESTA FUNÇÃO SÓ ENVIA O 1º RESULTADO ENCONTRADO
+    'ATENÇÃO, ESTA FUNÇÃO SÓ ENVIA O 1º RESULTADO ENCONTRADO
     Function GET_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_department As Int64, ByVal id_clinical_service As String, ByRef o_id_dep_clin_serv As Int64) As Boolean
 
         Dim sql As String = "SELECT s.id_dep_clin_serv
