@@ -39,6 +39,9 @@ Public Class INSERT_IMAGING_EXAMS
 
         Me.Text = "IMAGING EXAMS  ::::  Connected to " & Connection.db
 
+        DEBUGGER.SET_DEBUG_NEW_FORM()
+        DEBUGGER.SET_DEBUG("Form INSERT_IMAGING_EXAMS loaded.")
+
         Me.BackColor = Color.FromArgb(215, 215, 180)
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 
@@ -53,7 +56,11 @@ Public Class INSERT_IMAGING_EXAMS
         If Not db_access_general.GET_ALL_INSTITUTIONS(dr) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR GETTING ALL INSTITUTIONS!")
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INSERT_IMAGING_EXAMS")
+            DEBUGGER.SET_DEBUG("ERROR GETTING ALL INSTITUTIONS!")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            MsgBox("ERROR GETTING ALL INSTITUTIONS!", vbCritical)
 
         Else
 

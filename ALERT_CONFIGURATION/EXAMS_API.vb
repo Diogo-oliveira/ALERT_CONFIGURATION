@@ -37,6 +37,8 @@ Public Class EXAMS_API
 
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64) As Int64
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_INSTITUTION_ID(" & i_id_selected_item & ")")
+
         Dim sql As String = "select decode(i.id_market,
                       1,
                       T.desc_lang_1,
@@ -217,6 +219,8 @@ Public Class EXAMS_API
 
     Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_INSTITUTION(" & i_ID_INST & ")")
+
         Dim l_inst As String = ""
 
         Dim sql As String = "select decode(i.id_market,
@@ -383,7 +387,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Public Function GET_ALL_INSTITUTIONS() As OracleDataReader
 
-        Dim sql As String = "select decode(i.id_market,
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_ALL_INSTITUTIONS")
+
+        Dim sql As String = "Select decode(i.id_market,
               1,
               T.desc_lang_1,
               2,
@@ -539,6 +545,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64) As OracleDataReader
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_SOFT_INST(" & i_ID_INST & ")")
+
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
                             where i.id_ab_institution=" & i_ID_INST & "
@@ -555,6 +563,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16) As OracleDataReader
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_CLIN_SERV(" & i_ID_INST & ", " & i_ID_SOFT & ")")
 
         Dim sql As String = "   Select (decode(i.id_market,
               1,
@@ -724,6 +734,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64) As Int16
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_SELECTED_SOFT(" & i_index & ", " & i_inst & ")")
+
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
                             where i.id_ab_institution=" & i_inst & "
@@ -756,6 +768,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function GET_FREQ_EXAM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_id_dep_clin_serv As Int64, ByVal i_id_exam_type As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_FREQ_EXAM(" & i_institution & ", " & i_software & "," & i_flg_type & ", " & i_id_dep_clin_serv & ", " & i_id_exam_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -807,8 +821,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-
     Function GET_SELECTED_DEP_CLIN_SERV(ByVal i_ID_INST As Int16, ByVal i_ID_SOFT As Int16, ByVal i_index As Int16) As Int64
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_SELECTED_DEP_CLIN_SERV(" & i_ID_INST & ", " & i_ID_SOFT & "," & i_index & ")")
 
         Dim l_dep_clin_serv As Int64 = -1
 
@@ -844,6 +859,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                              And S.FLG_TYPE='M'
                              And S.ID_DEP_CLIN_SERV= " & i_dep_clin_serv
 
+                DEBUGGER.SET_DEBUG("EXAMS_API :: DELETE_EXAMS_DEP_CLIN_SERV(" & i_exam(i) & ", " & i_dep_clin_serv & ")")
+
                 Dim cmd As New OracleCommand(sql, Connection.conn)
                 cmd.CommandType = CommandType.Text
 
@@ -865,7 +882,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst)
 
-        Dim sql As String = "SELECT DISTINCT ec.id_content, tec.desc_lang_" & l_id_language & "
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_EXAMS_CAT(" & i_id_inst & ", " & i_id_soft & ", " & i_exam_type & ", " & i_flg_type & ")")
+
+        Dim sql As String = "Select DISTINCT ec.id_content, tec.desc_lang_" & l_id_language & "
                             FROM alert.exam_dep_clin_serv d
                             JOIN alert.exam e ON e.id_exam = d.id_exam
                             JOIN alert.exam_cat ec ON ec.id_exam_cat = e.id_exam_cat
@@ -907,6 +926,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function GET_EXAMS(ByVal i_id_inst As Int64, ByVal i_id_soft As Integer, ByVal i_id_content_exam_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_EXAMS(" & i_id_inst & ", " & i_id_soft & ", " & i_id_content_exam_cat & ", " & i_exam_type & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_inst)
 
@@ -970,6 +991,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function DELETE_EXAMS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_exam As exams_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: DELETE_EXAMS(" & i_institution & ", " & i_software & ", " & i_exam.id_content_exam & ", " & i_most_freq & ", " & i_flg_type & ")")
 
         Dim sql As String = "   DELETE from alert.exam_dep_clin_serv dps
                                         where dps.id_exam = (select e.id_exam from alert.exam e where e.id_content='" & i_exam.id_content_exam & "' and e.flg_available='Y')
@@ -1031,6 +1053,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_EXAMS_CAT_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_EXAMS_CAT_DEFAULT(" & i_version & ", " & i_institution & ", " & i_software & ", " & i_exam_type & ", " & i_flg_type & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "Select distinct ec.id_content, 
@@ -1080,6 +1104,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_DEFAULT_VERSIONS(" & i_institution & ", " & i_software & ", " & i_exam_type & ", " & i_flg_type & ")")
+
         Dim sql As String = "Select distinct v.version
                               From alert_default.exam e
                               join alert_default.exam_mrk_vrs v
@@ -1122,6 +1148,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
 
     Function GET_EXAMS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_exam_type As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_EXAMS_DEFAULT_BY_CAT(" & i_institution & ", " & i_software & ", " & i_version & ", " & i_id_cat & ", " & i_exam_type & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -1191,10 +1219,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function CHECK_CATEGORY_EXISTANCE(ByVal i_id_content_cat, ByVal i_id_institution) As Boolean
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: CHECK_CATEGORY_EXISTANCE(" & i_id_content_cat & ", " & i_id_institution & ")")
+
         Dim sql As String = "Select count(*)
-  from alert.exam_cat ec
- where ec.id_content = '" & i_id_content_cat & "'
-   and ec.flg_available = 'Y'"
+                              from alert.exam_cat ec
+                             where ec.id_content = '" & i_id_content_cat & "'
+                               and ec.flg_available = 'Y'"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -1230,6 +1260,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function CHECK_EXAM_TRANSLATION_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: CHECK_EXAM_TRANSLATION_EXISTANCE(" & i_id_institution & ", " & i_id_content_exam & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_id_institution)
 
@@ -1289,6 +1321,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_TRANSLATION(" & i_id_lang & ", " & i_code_translation & ", " & i_desc & ")")
+
         Try
 
             Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
@@ -1309,6 +1343,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function CHECK_EXAM_EXISTANCE(ByVal i_id_institution As Int64, ByVal i_id_content_exam As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: CHECK_EXAM_EXISTANCE(" & i_id_institution & ", " & i_id_content_exam & ")")
 
         Dim sql As String = "Select count(*)
                              from alert.exam e
@@ -1349,6 +1385,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function UPDATE_EXAM_CAT(ByVal i_id_content_exam As String, ByVal i_id_content_cat As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: UPDATE_EXAM_CAT(" & i_id_content_exam & ", " & i_id_content_cat & ")")
 
         Dim Sql = "declare
 

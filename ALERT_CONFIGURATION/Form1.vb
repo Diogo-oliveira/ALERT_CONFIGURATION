@@ -113,20 +113,21 @@ Public Class Form1
 
         Me.CenterToScreen()
 
-        'Criar diretório e ficheiro para o debugger       
+        'INICIAR DEBUGGER     
         debug.CREATE_DEBUG_FOLDER()
         debug.CLEAN_DEBUG()
         debug.CREATE_DEBUG_FILE()
-
-
+        debug.INIT_DEBUG()
 
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
+        debug.SET_DEBUG("Disconnecting from " & Connection.db)
         Connection.conn.Dispose()
         Connection.conn.Close()
 
+        debug.SET_DEBUG("Exiting application.")
         Application.Exit()
 
     End Sub
@@ -137,6 +138,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim FORM_ADD_IMAGING As New INSERT_IMAGING_EXAMS
+
+        debug.SET_DEBUG("Loading INSERT_IMAGING_EXAMS form.")
 
         Me.Hide()
 
@@ -150,6 +153,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim Form_SYS_CONFIG As New SYS_CONFIGS
+
+        debug.SET_DEBUG("Loading SYS_CONFIGS form.")
 
         Me.Hide()
 
@@ -169,6 +174,8 @@ Public Class Form1
 
         Dim form_insert_other As New INSERT_OTHER_EXAM
 
+        debug.SET_DEBUG("Loading INSERT_OTHER_EXAM form.")
+
         Me.Hide()
 
         form_insert_other.ShowDialog()
@@ -182,6 +189,8 @@ Public Class Form1
 
         Dim FORM_LAB_TESTS As New LAB_TESTS
 
+        debug.SET_DEBUG("Loading LAB_TESTS form.")
+
         Me.Hide()
 
         FORM_LAB_TESTS.ShowDialog()
@@ -194,6 +203,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim FORM_PROCEDURES As New Procedures
+
+        debug.SET_DEBUG("Loading Procedures form.")
 
         Me.Hide()
 
@@ -264,9 +275,16 @@ Public Class Form1
 
                 Me.Text = "ALERT(R) ENVIRONMENTS CONFIGURATION  ::::  Connected to " & Connection.db
 
+                debug.SET_DEBUG("Connection to " & Connection.db & " (user: " & TextBox1.Text & ")")
+
             Catch ex As Exception
 
                 MsgBox("Error connecting to Database. Please check credentials.", vbCritical)
+                debug.SET_DEBUG_ERROR_INIT("FORM1")
+                debug.SET_DEBUG("ERROR CONNECTING TO DATABASE.")
+                debug.SET_DEBUG("User: " & TextBox1.Text)
+                debug.SET_DEBUG("BD: " & ComboBox1.Text)
+                debug.SET_DEBUG_ERROR_CLOSE()
 
             End Try
 
@@ -276,6 +294,7 @@ Public Class Form1
 
     Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
 
+        debug.SET_DEBUG("Disconnecting from " & Connection.db)
         Connection.conn.Dispose()
         Connection.conn.Close()
 
@@ -344,6 +363,8 @@ Public Class Form1
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
+        debug.SET_DEBUG("Exiting application.")
+
         Application.Exit()
 
     End Sub
@@ -354,6 +375,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim FORM_SR_PROCEDURES As New SR_Procedures()
+
+        debug.SET_DEBUG("Loading SR_Procedures form.")
 
         Me.Hide()
 
@@ -368,6 +391,8 @@ Public Class Form1
 
         Dim FORM_SUPPLIES As New Supplies
 
+        debug.SET_DEBUG("Loading Supplies form.")
+
         Me.Hide()
 
         FORM_SUPPLIES.ShowDialog()
@@ -380,6 +405,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim FORM_TRANSLATION As New Translation_Updates
+
+        debug.SET_DEBUG("Loading Translation_Updates form.")
 
         Me.Hide()
 
@@ -395,6 +422,8 @@ Public Class Form1
         Form_location.y_position = Me.Location.Y
 
         Dim FORM_DISCHARGE As New DISCHARGE
+
+        debug.SET_DEBUG("Loading DISCHARGE form.")
 
         Me.Hide()
 

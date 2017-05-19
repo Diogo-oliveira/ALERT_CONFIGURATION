@@ -16,6 +16,8 @@ Public Class General
 
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64) As Int64
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION_ID (" & i_id_selected_item & ")")
+
         Dim sql As String = "select decode(i.id_market,
                       1,
                       T.desc_lang_1,
@@ -195,6 +197,8 @@ Public Class General
 
     Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION(" & i_ID_INST & ")")
+
         Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST)
 
         Dim l_inst As String = ""
@@ -239,6 +243,8 @@ Public Class General
 
 
     Public Function GET_ALL_INSTITUTIONS(ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
 
         Dim sql As String = "select decode(i.id_market,
                                                           1,
@@ -407,6 +413,8 @@ Public Class General
 
     Public Function GET_SOFT_INST(ByVal i_ID_INST As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_SOFT_INST(" & i_ID_INST & ")")
+
         Dim sql As String = ""
 
         If i_ID_INST = 0 Then
@@ -446,6 +454,8 @@ Public Class General
 
     Public Function GET_CLIN_SERV(ByVal i_ID_INST As Int64, ByVal i_ID_SOFT As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_CLIN_SERV(" & i_ID_INST & ", " & i_ID_SOFT & ")")
+
         Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST)
 
         Dim sql As String = "   Select pk_translation.get_translation(" & l_id_language & ",dep.code_department) || ' - ' ||  pk_translation.get_translation(" & l_id_language & ",c.code_clinical_service),
@@ -483,6 +493,8 @@ Public Class General
     End Function
 
     Function GET_SELECTED_SOFT(ByVal i_index As Int16, ByVal i_inst As Int64) As Int16
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_SELECTED_SOFT(" & i_index & ", " & i_inst & ")")
 
         Dim sql As String = "Select s.id_software, s.id_software || ' - ' ||s.name from alert_core_data.ab_software_institution i
                             join software s on s.id_software=i.id_ab_software
@@ -523,6 +535,8 @@ Public Class General
 
         'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation - SET TRANSLATION faz isso
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_DEFAULT_TRANSLATION(" & i_lang & ", " & i_code_translation & ")")
+
         Dim sql As String = "select alert_default.pk_translation_default.get_translation_default(" & i_lang & ",'" & i_code_translation & "') from dual"
 
         Dim translation As String = ""
@@ -560,6 +574,7 @@ Public Class General
     Function GET_ALERT_TRANSLATION(ByVal i_lang As Int16, ByVal i_code_translation As String) As String
 
         'IMPORTANTE: Quando se chama esta função é necessário comparar SEMPRE o resultado com a varável g_notranslation - SET TRANSLATION faz isso
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_ALERT_TRANSLATION(" & i_lang & ", " & i_code_translation & ")")
 
         Dim sql As String = "select pk_translation.get_translation(" & i_lang & ",'" & i_code_translation & "') from dual"
 
@@ -596,6 +611,8 @@ Public Class General
     End Function
 
     Function GET_ID_LANG(ByVal i_id_institution As Int64) As Int16
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_ID_LANG(" & i_id_institution & ")")
 
         Dim l_id_market As Int16 = 0
 
@@ -686,6 +703,8 @@ Public Class General
 
     Function SET_TRANSLATION(ByVal i_id_lang As Integer, ByVal i_code_translation As String, ByVal i_desc As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: SET_TRANSLATION(" & i_id_lang & ", " & i_code_translation & ", " & i_desc & ")")
+
         If i_desc = g_notranslation Then
 
             Return False
@@ -742,6 +761,8 @@ Public Class General
 
     Function CHECK_TRANSLATIONS(ByVal i_id_lang As Integer, ByVal i_code_translation_default As String, ByVal i_code_translation_alert As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: CHECK_TRANSLATIONS(" & i_id_lang & ", " & i_code_translation_default & ", " & i_code_translation_alert & ")")
+
         Dim l_desc_default As String = GET_DEFAULT_TRANSLATION(i_id_lang, i_code_translation_default)
         Dim l_desc_alert As String = GET_ALERT_TRANSLATION(i_id_lang, i_code_translation_alert)
 
@@ -758,6 +779,8 @@ Public Class General
     End Function
 
     Function GET_LAB_ROOMS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_LAB_ROOMS(" & i_institution & ")")
 
         Dim sql As String = "SELECT pk_translation.get_translation(" & GET_ID_LANG(i_institution) & ", r.code_room), r.id_room
                                 FROM alert.department d
@@ -789,6 +812,8 @@ Public Class General
 
     Function GET_SYSCONFIG(ByVal i_institution As Int64, ByVal i_id_software As Integer, ByVal i_sysconfig As String, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_SYSCONFIG(" & i_institution & ", " & i_id_software & ", " & i_sysconfig & ")")
+
         Dim sql As String = "SELECT alert.pk_sysconfig.get_config('" & i_sysconfig & "', profissional(0, " & i_institution & ", " & i_id_software & "))
                                          FROM dual"
 
@@ -812,6 +837,8 @@ Public Class General
     End Function
 
     Function GET_MARKETS(ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_MARKETS")
 
         Dim sql As String = "SELECT m.id_market, (m.id_market || ' - ' || decode(t.desc_lang_2, 'None', 'ALL', t.desc_lang_2))
                             FROM market m
@@ -838,6 +865,8 @@ Public Class General
     End Function
 
     Function SET_SYSCONFIG(ByVal i_id_sysconfig As String, ByVal i_value As String, ByVal i_institution As Int64, ByVal i_sofware As Integer, ByVal i_market As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("GENERAL :: SET_SYSCONFIG(" & i_id_sysconfig & ", " & i_value & ", " & i_institution & ", " & i_market & ")")
 
         Dim Sql As String = "DECLARE
 
@@ -982,6 +1011,8 @@ Public Class General
 
     Function GET_PROFILES(ByVal i_software As Integer, ByVal i_type As String, ByRef o_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_PROFILES(" & i_software & ", " & i_type & ")")
+
         Dim sql As String = "SELECT pt.id_profile_template, pt.intern_name_templ, pt.flg_type
                                 FROM alert.profile_template pt
                                 WHERE pt.flg_available = 'Y'
@@ -1025,6 +1056,8 @@ Public Class General
 
     Function GET_PROFILE_TYPES(ByRef o_dr_pt As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_PROFILE_TYPES")
+
         Dim sql As String = "SELECT DISTINCT pt.flg_type
                                 FROM alert.profile_template pt
                                 WHERE pt.flg_type IS NOT NULL
@@ -1052,6 +1085,8 @@ Public Class General
     End Function
 
     Function GET_PROFILE_TYPE(ByVal i_id_profile_template As Int64) As String
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_PROFILE_TYPE")
 
         Dim sql As String = "SELECT pt.flg_type
                                 FROM alert.profile_template pt
@@ -1082,6 +1117,8 @@ Public Class General
     End Function
 
     Function GET_EPIS_TYPES(ByRef o_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_EPIS_TYPES")
 
         Dim sql As String = "SELECT et.id_epis_type, t.desc_lang_2  --É para devolver em inglês
                                 FROM alert.epis_type et
