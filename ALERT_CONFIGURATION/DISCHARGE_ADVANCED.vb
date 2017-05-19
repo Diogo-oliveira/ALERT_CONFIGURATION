@@ -237,6 +237,27 @@ Public Class DISCHARGE_ADVANCED
 
     End Function
 
+    Function reset_disch_reas_dest()
+
+        ComboBox13.SelectedIndex = -1
+        ComboBox15.SelectedIndex = -1
+        TextBox7.Text = ""
+        ComboBox8.SelectedIndex = -1
+        ComboBox18.SelectedIndex = -1
+        ComboBox17.SelectedIndex = -1
+        ComboBox14.SelectedIndex = -1
+        TextBox4.Text = ""
+        ComboBox6.SelectedIndex = -1
+        ComboBox16.SelectedIndex = -1
+
+        For i As Integer = 0 To CheckedListBox1.Items.Count() - 1
+
+            CheckedListBox1.SetItemChecked(i, False)
+
+        Next
+
+    End Function
+
     'Obter a lista de tipos de perfis selecionada
     Function check_profile_types(ByVal i_checked_profiles() As PROFILE_TEMPLATE, ByRef i_profile_types() As PROFILE_TEMPLATE_TYPE)
 
@@ -411,6 +432,8 @@ Public Class DISCHARGE_ADVANCED
             ComboBox2.Text = ""
 
         End If
+
+        reset_disch_reas_dest()
 
         Cursor = Cursors.Arrow
     End Sub
@@ -606,7 +629,9 @@ Public Class DISCHARGE_ADVANCED
         dr.Dispose()
         dr.Close()
 
-        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+        'Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+
+        Me.CenterToScreen()
 
     End Sub
 
@@ -637,6 +662,8 @@ Public Class DISCHARGE_ADVANCED
         CheckedListBox2.Items.Clear()
 
         reset_clin_serv()
+
+        reset_disch_reas_dest()
 
         Cursor = Cursors.Arrow
 
@@ -753,6 +780,8 @@ Public Class DISCHARGE_ADVANCED
             End While
 
         End If
+
+        reset_disch_reas_dest()
 
         dr.Dispose()
         dr.Close()
@@ -879,13 +908,21 @@ Public Class DISCHARGE_ADVANCED
 
                                     End If
 
-                                    'fazer check se registo já existe
-                                    '----- se existe => update
-                                    '----- se não exsite => inserir novo
-
+                                    '6 - Verificar se registo existe.
+                                    'Se não existir, insere. Caso contrário, faz update.
                                     If Not db_discharge.CHECK_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content, l_destination, l_dep_clin_serv) Then
 
                                         MsgBox("não existe")
+
+                                        If Not db_discharge.SET_MANUAL_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content,
+                                                                                  l_destination, l_dep_clin_serv, ComboBox8.Text,
+                                                                                  l_inst_dest, l_disch_episode, ComboBox15.Text,
+                                                                                   TextBox7.Text, ComboBox18.Text, ComboBox17.Text, l_mcdts) Then
+
+
+                                            MsgBox("ERROR INSERTING IN DISCH_REAS_DEST!", vbCritical)
+
+                                        End If
 
                                     Else
 
@@ -902,6 +939,8 @@ Public Class DISCHARGE_ADVANCED
                                         End If
 
                                     End If
+
+                                    MsgBox("Record correctly inserted.", vbInformation)
 
                                 Else
                                     MsgBox("Please state if it is necessary to have an Overall responsible assigned to the patient when documenting a discharge.")
@@ -1225,12 +1264,45 @@ Public Class DISCHARGE_ADVANCED
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        DISCHARGE.Show()
         Me.Close()
 
     End Sub
 
     Private Sub ComboBox7_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox7.SelectedIndexChanged
         TextBox4.Text = db_access_general.GET_INSTITUTION_ID(ComboBox7.SelectedIndex)
+    End Sub
+
+    Private Sub ComboBox16_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox16.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Label24_Click(sender As Object, e As EventArgs) Handles Label24.Click
+
+    End Sub
+
+    Private Sub CheckedListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox1.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Label10_Click(sender As Object, e As EventArgs) Handles Label10.Click
+
+    End Sub
+
+    Private Sub Label12_Click(sender As Object, e As EventArgs) Handles Label12.Click
+
+    End Sub
+
+    Private Sub Label22_Click(sender As Object, e As EventArgs) Handles Label22.Click
+
+    End Sub
+
+    Private Sub ComboBox14_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox14.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Button4_Click_1(sender As Object, e As EventArgs) Handles Button4.Click
+
+        reset_disch_reas_dest()
+
     End Sub
 End Class

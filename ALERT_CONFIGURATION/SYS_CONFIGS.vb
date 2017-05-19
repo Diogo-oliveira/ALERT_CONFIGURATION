@@ -184,11 +184,9 @@ Public Class SYS_CONFIGS
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim form1 As New Form1
-
-        form1.Show()
-
-        Me.Close()
+        Me.Enabled = False
+        Me.Dispose()
+        Form1.Show()
 
     End Sub
 

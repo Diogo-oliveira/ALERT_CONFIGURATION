@@ -2,6 +2,8 @@
 
 Public Class Form1
 
+    Dim debug As New DEBUGGER
+
     Public g_oradb As String = ""
 
     Dim g_a_databases() As String
@@ -110,6 +112,13 @@ Public Class Form1
         End If
 
         Me.CenterToScreen()
+
+        'Criar diretório e ficheiro para o debugger       
+        debug.CREATE_DEBUG_FOLDER()
+        debug.CLEAN_DEBUG()
+        debug.CREATE_DEBUG_FILE()
+
+
 
     End Sub
 
@@ -344,12 +353,11 @@ Public Class Form1
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim FOMR_SR_PROCEDURES As New SR_Procedures
+        Dim FORM_SR_PROCEDURES As New SR_Procedures()
 
         Me.Hide()
 
-        FOMR_SR_PROCEDURES.ShowDialog()
-
+        FORM_SR_PROCEDURES.Show()
 
     End Sub
 

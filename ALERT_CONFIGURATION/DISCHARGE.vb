@@ -433,11 +433,9 @@ Public Class DISCHARGE
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim form1 As New Form1
-
-        form1.Show()
-
-        Me.Close()
+        Me.Enabled = False
+        Me.Dispose()
+        Form1.Show()
 
     End Sub
 
@@ -926,13 +924,13 @@ Public Class DISCHARGE
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
+        MsgBox("Attention: You are about to perform changes that may not have been conceptualized to work with ALERT® systems. These changes may cause the malfunction of the system. Please proceed carefully. ", vbExclamation)
+
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Me.Hide()
         Dim FORM_ADV_DISCH As New DISCHARGE_ADVANCED
         FORM_ADV_DISCH.ShowDialog()
-
 
     End Sub
 

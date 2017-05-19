@@ -209,6 +209,7 @@
     <Compile Include="CONTENT_DISPLAY.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DEBUGGER.vb" />
     <Compile Include="DISCHARGE.Designer.vb">
       <DependentUpon>DISCHARGE.vb</DependentUpon>
     </Compile>

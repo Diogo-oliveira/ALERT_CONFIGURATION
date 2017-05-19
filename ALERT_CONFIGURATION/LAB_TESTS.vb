@@ -85,10 +85,9 @@ Public Class LAB_TESTS
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim form1 As New Form1
         Me.Enabled = False
         Me.Dispose()
-        form1.Show()
+        Form1.Show()
 
     End Sub
 

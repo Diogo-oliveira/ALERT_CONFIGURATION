@@ -1958,15 +1958,106 @@ Public Class DISCHARGE_API
 
         Dim CMD_UPDATE_DISCH_REAS_DEST As New OracleCommand(sql, Connection.conn)
 
-        'Try
-        CMD_UPDATE_DISCH_REAS_DEST.CommandType = CommandType.Text
+        Try
+            CMD_UPDATE_DISCH_REAS_DEST.CommandType = CommandType.Text
             CMD_UPDATE_DISCH_REAS_DEST.ExecuteNonQuery()
-            'Catch ex As Exception
-            '   CMD_UPDATE_DISCH_REAS_DEST.Dispose()
-            '  Return False
-            'End Try
-
+        Catch ex As Exception
             CMD_UPDATE_DISCH_REAS_DEST.Dispose()
+            Return False
+        End Try
+
+        CMD_UPDATE_DISCH_REAS_DEST.Dispose()
+
+        Return True
+
+    End Function
+
+    Function SET_MANUAL_DISCH_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String,
+                                    ByVal i_destination As String, ByVal i_dep_clin_serv As Int64, ByVal i_diagnosis As String,
+                                    ByVal i_inst_dest As Int64, ByVal i_epis_type As Integer, ByVal i_flg_default As String,
+                                    ByVal i_rank As Integer, ByVal i_presc_cancel As String, ByVal i_over_resp As String,
+                                    ByVal i_mcdts As String) As Boolean
+
+        Dim sql As String = "DECLARE
+
+                                l_id_content_reason alert.discharge_reason.id_content%TYPE := '" & i_reason & "';
+                                l_id_reason         alert.discharge_reason.id_discharge_reason%TYPE;
+
+                                l_id_content_dest alert.discharge_dest.id_content%TYPE := '" & i_destination & "';
+                                l_id_dest         alert.discharge_dest.id_discharge_dest%TYPE;
+
+                                l_id_dep_clin_serv alert.dep_clin_serv.id_dep_clin_serv%TYPE := " & i_dep_clin_serv & ";
+                                l_flg_diagnosis    alert.disch_reas_dest.flg_diag%TYPE := '" & i_diagnosis & "';
+                                l_inst_dest        alert.disch_reas_dest.id_institution%TYPE := '" & i_inst_dest & "';
+                                l_epis_type        alert.disch_reas_dest.id_epis_type%TYPE := '" & i_epis_type & "';
+                                l_flg_default      alert.disch_reas_dest.flg_default%TYPE := '" & i_flg_default & "';
+                                l_rank             alert.disch_reas_dest.rank%TYPE := " & i_rank & ";
+                                l_presc_cancel     alert.disch_reas_dest.flg_auto_presc_cancel%TYPE := '" & i_presc_cancel & "';
+                                l_over_resp        alert.disch_reas_dest.flg_needs_overall_resp%TYPE := '" & i_over_resp & "';
+                                l_mcdt             alert.disch_reas_dest.flg_mcdt%TYPE := '" & i_mcdts & "';
+
+                            BEGIN
+
+                                SELECT dr.id_discharge_reason
+                                INTO l_id_reason
+                                FROM alert.discharge_reason dr
+                                WHERE dr.id_content = l_id_content_reason
+                                AND dr.flg_available = 'Y';
+
+                                IF l_id_content_dest IS NOT NULL
+                                THEN
+                                    SELECT dd.id_discharge_dest
+                                    INTO l_id_dest
+                                    FROM alert.discharge_dest dd
+                                    WHERE dd.id_content = l_id_content_dest
+                                    AND dd.flg_available = 'Y';
+                                END IF;
+
+                                IF l_id_dep_clin_serv =-1
+                                THEN
+                                     l_id_dep_clin_serv:=NULL;
+                                END IF;
+
+                                INSERT INTO alert.disch_reas_dest
+                                    (id_disch_reas_dest,
+                                     id_discharge_reason,
+                                     id_discharge_dest,
+                                     id_dep_clin_serv,
+                                     flg_active,
+                                     flg_diag,
+                                     id_institution,
+                                     id_instit_param,
+                                     id_software_param,
+                                     id_epis_type,
+                                     flg_mcdt,
+                                     rank,
+                                     flg_default,
+                                     flg_needs_overall_resp,
+                                     flg_auto_presc_cancel)
+                                VALUES
+                                    (alert.seq_disch_reas_dest.nextval,
+                                     l_id_reason,
+                                     l_id_dest,
+                                     l_id_dep_clin_serv,
+                                     'A',
+                                     l_flg_diagnosis,
+                                     l_inst_dest,
+                                     " & i_institution & ",
+                                     " & i_software & ",
+                                     l_epis_type,
+                                     l_mcdt,
+                                     l_rank,
+                                     l_flg_default,
+                                     l_over_resp,
+                                     l_presc_cancel);
+
+                            END;"
+
+        Dim cmd_insert_reas_dest As New OracleCommand(sql, Connection.conn)
+
+        cmd_insert_reas_dest.CommandType = CommandType.Text
+        cmd_insert_reas_dest.ExecuteNonQuery()
+        cmd_insert_reas_dest.Dispose()
 
         Return True
 

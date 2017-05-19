@@ -37,13 +37,12 @@ Public Class Procedures
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
-        Dim form1 As New Form1()
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
 
         Me.Enabled = False
-
         Me.Dispose()
-
-        form1.Show()
+        Form1.Show()
 
     End Sub
 
