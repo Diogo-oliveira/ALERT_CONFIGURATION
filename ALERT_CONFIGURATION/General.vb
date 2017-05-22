@@ -93,6 +93,12 @@ Public Class General
             dr = cmd.ExecuteReader()
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION_ID")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             sql = "select decode(i.id_market,
                       1,
                       T.desc_lang_1,
@@ -159,10 +165,18 @@ Public Class General
                        T.desc_lang_1)) is not null
          order by 1 asc"
 
-            Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
-            cmd_Old_version.CommandType = CommandType.Text
-            dr = cmd_Old_version.ExecuteReader()
-            cmd_Old_version.Dispose()
+            Try
+                Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
+                cmd_Old_version.CommandType = CommandType.Text
+                dr = cmd_Old_version.ExecuteReader()
+                cmd_Old_version.Dispose()
+
+            Catch ex2 As Exception
+                DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION_ID")
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            End Try
+
         End Try
 
         Dim l_id_inst As Int64 = 0
@@ -231,6 +245,11 @@ Public Class General
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -240,7 +259,6 @@ Public Class General
         Return l_inst
 
     End Function
-
 
     Public Function GET_ALL_INSTITUTIONS(ByRef i_dr As OracleDataReader) As Boolean
 
@@ -323,6 +341,12 @@ Public Class General
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_ALL_INSTITUTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Try
 
                 sql = "select decode(i.id_market,
@@ -401,6 +425,11 @@ Public Class General
 
             Catch ex_2 As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_ALL_INSTITUTIONS")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 Return False
 
             End Try
@@ -446,6 +475,11 @@ Public Class General
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_SOFT_INST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -485,6 +519,11 @@ Public Class General
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -596,6 +635,11 @@ Public Class General
             cmd.Dispose()
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_ALERT_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             cmd.Dispose()
             dr.Dispose()
@@ -723,6 +767,11 @@ Public Class General
 
             Catch ex As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: SET_TRANSLATION")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(Sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 'Se a inserção falhar, certamente é por causa da existência do caractér '
 
                 Dim l_desc_aux As String = ""
@@ -804,6 +853,11 @@ Public Class General
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_LAB_ROOMS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -829,6 +883,11 @@ Public Class General
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_SYSCONFIG")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -857,6 +916,11 @@ Public Class General
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_MARKETS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -934,6 +998,12 @@ Public Class General
 
         Catch ex As Exception 'Dá exceção nas versões antigas. Não existe m_value
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: SET_SYSCONFIG")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Dim Sql_versao_antiga As String = "DECLARE
 
                                 l_desc            sys_config.id_sys_config%TYPE;
@@ -996,6 +1066,11 @@ Public Class General
 
             Catch ex_2 As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: SET_SYSCONFIG")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(Sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 cmd_insert_SC_v_antiga.Dispose()
                 Return False
 
@@ -1048,6 +1123,11 @@ Public Class General
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_PROFILES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -1077,6 +1157,11 @@ Public Class General
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_PROFILE_TYPES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -1134,7 +1219,52 @@ Public Class General
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_EPIS_TYPES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
+        End Try
+
+    End Function
+
+    Function GET_INSTITUTION_MARKET(ByVal i_institution As Int64) As Integer
+
+        DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION_MARKET (" & i_institution & ")")
+
+        Dim sql As String = "SELECT i.id_ab_market
+                                FROM alert_core_data.ab_institution i
+                                WHERE i.id_ab_institution = " & i_institution
+
+        Dim dr As OracleDataReader
+        Dim l_id_market As Integer = -1
+
+        Try
+
+            Dim cmd As New OracleCommand(sql, Connection.conn)
+            cmd.CommandType = CommandType.Text
+
+            dr = cmd.ExecuteReader()
+
+            cmd.Dispose()
+
+            While dr.Read()
+
+                l_id_market = dr.Item(0)
+
+            End While
+
+            Return l_id_market
+
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION_MARKET")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
         End Try
 
     End Function

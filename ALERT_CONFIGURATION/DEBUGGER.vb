@@ -87,7 +87,7 @@ Public Class DEBUGGER
         Dim sw As StreamWriter
 
         sw = File.AppendText(l_debug_file)
-        sw.WriteLine("###############################################################")
+        sw.WriteLine("###########################################################################################")
         sw.Close()
 
     End Function

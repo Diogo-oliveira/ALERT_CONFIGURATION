@@ -119,6 +119,10 @@ Public Class Form1
         debug.CREATE_DEBUG_FILE()
         debug.INIT_DEBUG()
 
+
+        DEBUGGER.SET_DEBUG_NEW_FORM()
+        DEBUGGER.SET_DEBUG("Form MAIN loaded.")
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click

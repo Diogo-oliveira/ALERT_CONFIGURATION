@@ -116,6 +116,12 @@ Public Class EXAMS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_INSTITUTION_ID")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             sql = "select decode(i.id_market,
                       1,
                       T.desc_lang_1,
@@ -300,6 +306,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_INSTITUTION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             sql = "select decode(i.id_market,
               1,
               T.desc_lang_1,
@@ -462,6 +474,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
         Try
             dr = cmd.ExecuteReader()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_ALL_INSTITUTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             sql = "select decode(i.id_market,
               1,
@@ -648,6 +666,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             sql = "   Select (decode(i.id_market,
               1,
               tdep.desc_lang_1,
@@ -815,6 +839,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_FREQ_EXAM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -850,11 +880,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Int64(), ByVal i_dep_clin_serv As Int64) As Boolean
 
+        Dim sql As String = ""
+
         Try
 
             For i As Integer = 0 To i_exam.Count() - 1
 
-                Dim sql As String = "delete from ALERT.EXAM_DEP_CLIN_SERV S
+                Sql = "delete from ALERT.EXAM_DEP_CLIN_SERV S
                              WHERE S.ID_EXAM = " & i_exam(i) & "                           
                              And S.FLG_TYPE='M'
                              And S.ID_DEP_CLIN_SERV= " & i_dep_clin_serv
@@ -871,6 +903,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: DELETE_EXAMS_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -919,6 +956,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_EXAMS_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -982,6 +1025,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_EXAMS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1042,6 +1090,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd_delete_dep_clin_serv.CommandType = CommandType.Text
             cmd_delete_dep_clin_serv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: DELETE_EXAMS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_dep_clin_serv.Dispose()
             Return False
         End Try
@@ -1096,6 +1150,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_EXAMS_CAT_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -1140,6 +1200,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_DEFAULT_VERSIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -1211,6 +1277,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_EXAMS_DEFAULT_BY_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -1252,6 +1324,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: CHECK_CATEGORY_EXISTANCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -1308,6 +1385,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: CHECK_EXAM_TRANSLATION_EXISTANCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
             dr.Dispose()
@@ -1323,9 +1405,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         DEBUGGER.SET_DEBUG("EXAMS_API :: SET_TRANSLATION(" & i_id_lang & ", " & i_code_translation & ", " & i_desc & ")")
 
+        Dim sql As String = ""
+
         Try
 
-            Dim Sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
+            sql = "begin pk_translation.insert_into_translation( " & i_id_lang & " , '" & i_code_translation & "' , '" & i_desc & "' ); end;"
 
             Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
             cmd_insert_trans.CommandType = CommandType.Text
@@ -1335,6 +1419,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -1366,6 +1455,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             End While
 
+            dr.Dispose()
+            dr.Close()
+
             If l_exam_exists > 0 Then
 
                 Return True
@@ -1377,6 +1469,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: CHECK_EXAM_EXISTANCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
@@ -1419,6 +1516,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: UPDATE_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_trans.Dispose()
             Return False
 
@@ -1430,9 +1532,13 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                    ByVal i_id_soft As Int64, ByVal i_flg_first_result As String, ByVal flg_execute As String, ByVal flg_timeout As String,
                                    ByVal flg_result_notes As String, ByVal flg_first_execute As String) As Boolean
 
-        Try
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_EXAM_DEP_CLIN_SERV(" & i_id_exam & ", " & i_id_dep_clin_serv & ", " & i_flg_type &
+                           ", " & i_id_institution & ", " & i_id_soft & ", " & i_flg_first_result & ", " & flg_execute &
+                           ", " & flg_timeout & ", " & flg_result_notes & ", " & flg_first_execute & ")")
 
-            Dim Sql As String = ""
+        Dim Sql As String = ""
+
+        Try
 
             If i_id_dep_clin_serv < 0 Then
 
@@ -1488,6 +1594,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -1495,6 +1606,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function SET_DEFAULT_EXAM_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_exams() As exams_default, ByVal i_exam_type As String, ByVal i_flg_type As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_DEFAULT_EXAM_DEP_CLIN_SERV(" & i_institution & ", " & i_software & ", exams_default(), " & i_exam_type & ", " & i_flg_type & ")")
 
         Dim sql As String = "DECLARE
 
@@ -1998,7 +2111,6 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                         END;"
 
-
         Dim cmd_insert_edps As New OracleCommand(sql, Connection.conn)
 
         Try
@@ -2011,6 +2123,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_DEFAULT_EXAM_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_edps.Dispose()
             Return False
 
@@ -2020,6 +2137,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
 
     Function SET_EXAM_ALERT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_set_exams() As exams_default, ByVal i_exam_type As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_EXAM_ALERT(" & i_institution & ", " & i_software & ", exams_default(), " & i_exam_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2099,6 +2218,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 Catch ex As Exception
 
+                    DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_ALERT")
+                    DEBUGGER.SET_DEBUG(ex.Message)
+                    DEBUGGER.SET_DEBUG(sql)
+                    DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                     cmd.Dispose()
                     Return False
 
@@ -2128,6 +2252,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     End While
 
                 Catch ex As Exception
+
+                    DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_ALERT")
+                    DEBUGGER.SET_DEBUG(ex.Message)
+                    DEBUGGER.SET_DEBUG(sql)
+                    DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
 
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
                     dr.Dispose()
@@ -2172,18 +2302,21 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                 Try
 
-
                     cmd_insert_trans.CommandType = CommandType.Text
                     cmd_insert_trans.ExecuteNonQuery()
                     cmd.Dispose()
 
                 Catch ex As Exception
 
+                    DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_ALERT")
+                    DEBUGGER.SET_DEBUG(ex.Message)
+                    DEBUGGER.SET_DEBUG(sql)
+                    DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                     cmd.Dispose()
                     Return False
 
                 End Try
-
 
                 'Existe na tabela de exames. Verificar se tem tradução para a língua da instituição
             ElseIf Not CHECK_EXAM_TRANSLATION_EXISTANCE(i_institution, i_set_exams(i).id_content_exam) Then
@@ -2238,9 +2371,20 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                         end;"
 
                 Dim cmd_insert_trans As New OracleCommand(Sql, Connection.conn)
-                cmd_insert_trans.CommandType = CommandType.Text
-                cmd_insert_trans.ExecuteNonQuery()
-                cmd_insert_trans.Dispose()
+                Try
+
+                    cmd_insert_trans.CommandType = CommandType.Text
+                    cmd_insert_trans.ExecuteNonQuery()
+                    cmd_insert_trans.Dispose()
+
+                Catch ex As Exception
+
+                    DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_ALERT")
+                    DEBUGGER.SET_DEBUG(ex.Message)
+                    DEBUGGER.SET_DEBUG(Sql)
+                    DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+                End Try
 
                 'Exame existe e tem tradução. É necessário garantir que está na categoria correta.
             Else
@@ -2272,6 +2416,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function SET_EXAM_CAT_TRANSLATION(ByVal i_institution As Int64, ByVal i_exams As exams_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_EXAM_CAT_TRANSLATION(" & i_institution & ", exams_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
@@ -2329,6 +2475,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd_insert_exam_cat.CommandType = CommandType.Text
             cmd_insert_exam_cat.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_exam_cat.Dispose()
             Return False
         End Try
@@ -2338,8 +2490,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-
     Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As exams_default, ByRef i_Dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_DISTINCT_CATEGORIES(exams_default())")
 
         Dim sql As String = "Select distinct ec.id_content from alert_default.exam_cat ec
                                     where ec.flg_available = 'Y'
@@ -2371,6 +2524,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: GET_DISTINCT_CATEGORIES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -2379,6 +2537,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: CHECK_RECORD_EXISTENCE(exams_default())")
 
         Dim l_total_records As Int16 = 0
 
@@ -2416,6 +2576,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: CHECK_RECORD_EXISTENCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -2426,6 +2591,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: CHECK_RECORD_TRANSLATION_EXISTENCE(" & i_institution & ", " & id_content_record & ", '" & i_sql & "')")
 
         Dim l_translation As String = ""
 
@@ -2452,6 +2619,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: CHECK_RECORD_TRANSLATION_EXISTENCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -2465,6 +2637,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String) As String
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_CODE_EXAM_CAT_ALERT(" & i_id_content_exam_cat & ")")
 
         Dim sql As String = "Select ec.code_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2493,6 +2667,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String) As String
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_CODE_EXAM_CAT_DEFAULT(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.code_exam_cat from alert_default.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
                              and ec.flg_available='Y'"
@@ -2520,6 +2696,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_ID_CAT_ALERT(ByVal i_id_content_exam_cat As String) As Int64
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_ID_CAT_ALERT(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.id_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
                              and ec.flg_available='Y'"
@@ -2545,6 +2723,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function GET_CAT_RANK(ByVal i_id_content_exam_cat As String) As Int64
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_CAT_RANK(" & i_id_content_exam_cat & ")")
 
         Dim sql As String = "Select ec.rank from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -2572,6 +2752,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     Function GET_CAT_FLG_INTERFACE(ByVal i_id_content_exam_cat As String) As Char
 
+        DEBUGGER.SET_DEBUG("EXAMS_API :: GET_CAT_FLG_INTERFACE(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.flg_interface from alert_DEFAULT.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'"
 
@@ -2596,6 +2778,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_a_exams() As exams_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_EXAM_CAT(" & i_institution & ",exams_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2631,6 +2815,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             dr_distinct_ec.Dispose()
             dr_distinct_ec.Close()
@@ -2770,6 +2958,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
                     Catch ex As Exception
 
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT")
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                         Return False
 
                     End Try
@@ -2826,6 +3018,11 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                     Try
                         cmd_insert_cat.ExecuteNonQuery()
                     Catch ex As Exception
+
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT")
+                        DEBUGGER.SET_DEBUG(sql_insert_cat)
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
                         cmd_insert_cat.Dispose()
                         Return False
@@ -2891,6 +3088,10 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -2900,6 +3101,8 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
     End Function
 
     Function SET_EXAMS_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_a_exams As exams_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("EXAMS_API :: SET_EXAMS_DEP_CLIN_SERV_FREQ(" & i_institution & ", " & i_software & ",exams_alert_flg(), " & i_dep_clin_serv & ", " & i_flg_type & " )")
 
         Dim sql As String = ""
 
@@ -2960,6 +3163,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
             cmd_insert_exam_dep_clin_serv.CommandType = CommandType.Text
             cmd_insert_exam_dep_clin_serv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("EXAMS_API :: SET_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_exam_dep_clin_serv.Dispose()
             Return False
         End Try

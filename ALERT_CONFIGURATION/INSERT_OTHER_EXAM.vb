@@ -48,6 +48,9 @@ Public Class INSERT_OTHER_EXAM
         CheckedListBox3.BackColor = Color.FromArgb(195, 195, 165)
         CheckedListBox4.BackColor = Color.FromArgb(195, 195, 165)
 
+        DEBUGGER.SET_DEBUG_NEW_FORM()
+        DEBUGGER.SET_DEBUG("Form INSERT_OTHER_EXAMS loaded.")
+
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value

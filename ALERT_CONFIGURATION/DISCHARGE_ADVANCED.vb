@@ -54,6 +54,12 @@ Public Class DISCHARGE_ADVANCED
     'Array que vai guardar os discharge_flash_files disponíveis
     Dim g_a_discharge_flash_files() As Integer
 
+    'Array que vai guardar as REASONS caregadas do ALERT (as que aparecem na aplicação)
+    Dim g_a_reasons_soft_inst() As DISCHARGE_API.DEFAULT_REASONS
+
+    'Array que vai guardar as DESTINATIONS caregadas do ALERT (as que aparecem na aplicação)
+    Dim g_a_dest_soft_inst() As DISCHARGE_API.DEFAULT_DISCAHRGE
+
     Function reset_default_reasons()
 
         ReDim g_a_loaded_reasons_default(0)
@@ -125,6 +131,96 @@ Public Class DISCHARGE_ADVANCED
 
         dr_new.Dispose()
         dr_new.Close()
+
+    End Function
+
+    Function reset_reasons_soft_inst()
+
+        ReDim g_a_reasons_soft_inst(0)
+
+        ComboBox19.SelectedIndex = -1
+        ComboBox19.Items.Clear()
+
+        Dim dr_new As OracleDataReader
+
+        If Not db_discharge.GET_REASONS(TextBox1.Text, g_selected_soft, dr_new) Then
+
+            MsgBox("ERROR GETING DISCHARGE REASONS FOR SOFT INST.", vbCritical)
+
+        Else
+
+            Dim l_index_reason As Integer = 0
+            ReDim g_a_reasons_soft_inst(0)
+
+            'Nota: Esta box vai ter o componente ALL. Atenção ao desfasamento.
+            ComboBox19.Items.Add("ALL")
+
+            While dr_new.Read()
+
+                ReDim Preserve g_a_reasons_soft_inst(l_index_reason)
+                g_a_reasons_soft_inst(l_index_reason).id_content = dr_new.Item(0)
+                g_a_reasons_soft_inst(l_index_reason).desccription = dr_new.Item(1)
+                l_index_reason = l_index_reason + 1
+
+                ComboBox19.Items.Add(dr_new.Item(1) & "  -  [" & dr_new.Item(0) & "]")
+
+            End While
+
+        End If
+
+        dr_new.Dispose()
+        dr_new.Close()
+
+    End Function
+
+    Function reset_dest_soft_inst()
+
+        ReDim g_a_dest_soft_inst(0)
+        ComboBox20.Items.Clear()
+        ComboBox20.SelectedIndex = -1
+
+        Dim dr As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not db_discharge.GET_DESTINATIONS(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, dr) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING DISCHARGE DESTINATIONS FROM ALERT!", vbCritical)
+
+        Else
+
+            Dim l_dim_dest_alert As Integer = 0
+            While dr.Read()
+
+                'Só populo os 3 primeiros campos
+                ComboBox20.Items.Add(dr.Item(2) & "  -  [" & dr.Item(1) & "]")
+
+                ReDim Preserve g_a_dest_soft_inst(l_dim_dest_alert)
+
+                g_a_dest_soft_inst(l_dim_dest_alert).id_disch_reas_dest = dr.Item(0)
+
+                Try
+                    g_a_dest_soft_inst(l_dim_dest_alert).id_content = dr.Item(1)
+
+                Catch ex As Exception
+
+                    g_a_dest_soft_inst(l_dim_dest_alert).id_content = ""
+
+                End Try
+
+                Try
+                    g_a_dest_soft_inst(l_dim_dest_alert).description = dr.Item(2)
+                Catch ex As Exception
+                    g_a_dest_soft_inst(l_dim_dest_alert).description = ""
+                End Try
+
+                g_a_dest_soft_inst(l_dim_dest_alert).type = dr.Item(3)
+
+                l_dim_dest_alert = l_dim_dest_alert + 1
+
+            End While
+
+        End If
 
     End Function
 
@@ -626,10 +722,16 @@ Public Class DISCHARGE_ADVANCED
         ComboBox18.Items.Add("Y")
         ComboBox18.Items.Add("N")
 
+        'DISCHARGE STATUS NA BOX DE MISC CONFIGURATIONS
+        ComboBox21.Items.Add("Final")
+        ComboBox21.Items.Add("Pending")
+
+        'FLG_DEFAULT NA BOX DE MISC CONFIGURATIONS
+        ComboBox22.Items.Add("Y")
+        ComboBox22.Items.Add("N")
+
         dr.Dispose()
         dr.Close()
-
-        'Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
 
         Me.CenterToScreen()
 
@@ -664,6 +766,9 @@ Public Class DISCHARGE_ADVANCED
         reset_clin_serv()
 
         reset_disch_reas_dest()
+
+        'Obter as reasons disponíveis para a Instituição e Software
+        reset_reasons_soft_inst()
 
         Cursor = Cursors.Arrow
 
@@ -1303,6 +1408,109 @@ Public Class DISCHARGE_ADVANCED
     Private Sub Button4_Click_1(sender As Object, e As EventArgs) Handles Button4.Click
 
         reset_disch_reas_dest()
+
+    End Sub
+
+    Private Sub ComboBox19_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox19.SelectedIndexChanged
+
+        'DETERMINAR SE É SELECIONADO O ALL. (SE FOR, É NECESSÁRIO INATIVAR AS DESTINATIONS)
+        If ComboBox19.SelectedIndex = 0 Then
+
+            ComboBox20.SelectedIndex = -1
+            ComboBox20.Enabled = False
+
+        Else
+
+            ComboBox20.Enabled = True
+
+            reset_dest_soft_inst()
+
+        End If
+
+    End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        If ComboBox19.SelectedIndex > -1 Then
+
+            If ComboBox21.SelectedIndex > -1 Then
+
+                If ComboBox22.SelectedIndex > -1 Then
+
+                    'Verificar se foi escolhida uma reason que não a ALL
+                    If ComboBox19.SelectedIndex > 0 Then
+
+                        Dim dr As OracleDataReader
+
+                        'Se não for selecionada uma destination (Enviar parâmtero a -1)
+                        If ComboBox20.SelectedIndex < 0 Then
+
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, -1, dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
+
+                            'Se for selecioanda uma destination que é na verdade uma reason (Enviar parâmtero a  vazio)
+                        ElseIf g_a_dest_soft_inst(ComboBox20.SelectedIndex).type = "R" Then
+
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, "", dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
+
+                        Else
+
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, g_a_dest_soft_inst(ComboBox20.SelectedIndex).id_content, dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
+
+                        End If
+
+                        Dim l_disch_status As Integer = -1
+                        If ComboBox21.SelectedIndex = 0 Then
+                            l_disch_status = 1 'Final
+                        Else
+                            l_disch_status = 7 'Pendind
+                        End If
+
+                        While dr.Read()
+
+                            MsgBox(dr.Item(0))
+
+                            If Not db_discharge.SET_DISCH_STATUS(TextBox1.Text, g_selected_soft, l_disch_status, ComboBox22.Text, dr.Item(0)) Then
+
+                                MsgBox("ERROR SETTING DISCAHRGE STATUS.", vbCritical)
+
+                            End If
+
+                        End While
+
+                        'Se foi selecionada a reason ALL
+                    ElseIf ComboBox19.SelectedIndex = 0 Then
+
+                        Dim l_disch_status As Integer = -1
+                        If ComboBox21.SelectedIndex = 0 Then
+                            l_disch_status = 1 'Final
+                        Else
+                            l_disch_status = 7 'Pendind
+                        End If
+
+                        If Not db_discharge.SET_DISCH_STATUS(TextBox1.Text, g_selected_soft, l_disch_status, ComboBox22.Text, -1) Then
+
+                            MsgBox("ERROR")
+
+                        End If
+
+                    End If
+                Else
+                    MsgBox("Please define the flag default.")
+                End If
+
+            Else
+                MsgBox("Please select a discharge status.")
+            End If
+
+        Else
+            MsgBox("Please select a discharge reason.")
+        End If
 
     End Sub
 End Class

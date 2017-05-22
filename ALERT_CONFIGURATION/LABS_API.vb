@@ -59,6 +59,8 @@ Public Class LABS_API
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DEFAULT_VERSIONS(" & i_institution & ", " & i_software & ")")
+
         Dim sql As String = "Select distinct dastv.version
                               from alert_default.analysis da
                               join alert_default.analysis_sample_type dast
@@ -125,6 +127,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DEFAULT_VERSIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -133,6 +140,8 @@ Public Class LABS_API
     End Function
 
     Function GET_LAB_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_institution & ", " & i_software & ")")
 
         Dim sql As String = "Select distinct dec.id_content, 
                                  nvl2(dec.parent_id,
@@ -208,6 +217,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_LAB_CATS_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -216,6 +230,8 @@ Public Class LABS_API
     End Function
 
     Function GET_LAB_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Integer = db_access_general.GET_ID_LANG(i_institution)
 
@@ -268,6 +284,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_LAB_CATS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -276,6 +297,8 @@ Public Class LABS_API
     End Function
 
     Function GET_LABS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_exam_cat As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LABS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_id_content_exam_cat & ")")
 
         Dim sql As String = "SELECT distinct ast.id_content,
                                         pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", ast.code_analysis_sample_type),
@@ -333,6 +356,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_LABS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -341,6 +369,8 @@ Public Class LABS_API
     End Function
 
     Function GET_LABS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LABS_DEFAULT_BY_CAT(" & i_institution & ", " & i_software & ", " & i_version & ", " & i_id_cat & ")")
 
         Dim sql As String = "Select distinct dast.id_content, 
                                              alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", dast.code_analysis_sample_type), 
@@ -426,6 +456,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_LABS_DEFAULT_BY_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -434,6 +469,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_EXAM_CAT_ALERT(ByVal i_id_content_exam_cat As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_EXAM_CAT_ALERT(" & i_id_content_exam_cat & ")")
 
         Dim sql As String = "Select ec.code_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -462,6 +499,8 @@ Public Class LABS_API
 
     Function GET_CODE_EXAM_CAT_DEFAULT(ByVal i_id_content_exam_cat As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_EXAM_CAT_DEFAULT(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.code_exam_cat from alert_default.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
                              and ec.flg_available='Y'"
@@ -488,6 +527,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_SAMPLE_TYPE_ALERT(ByVal i_id_content_st As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_SAMPLE_TYPE_ALERT(" & i_id_content_st & ")")
 
         Dim sql As String = "Select st.code_sample_type from alert.sample_type st
                              where st.id_content='" & i_id_content_st & "'
@@ -516,6 +557,8 @@ Public Class LABS_API
 
     Function GET_CODE_SAMPLE_TYPE_DEFAULT(ByVal i_id_content_st As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_SAMPLE_TYPE_DEFAULT(" & i_id_content_st & ")")
+
         Dim sql As String = "Select st.code_sample_type from alert_default.sample_type st
                              where st.id_content='" & i_id_content_st & "'
                              and st.flg_available='Y'"
@@ -543,6 +586,8 @@ Public Class LABS_API
 
     Function GET_ID_CAT_ALERT(ByVal i_id_content_exam_cat As String) As Int64
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ID_CAT_ALERT(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.id_exam_cat from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
                              and ec.flg_available='Y'"
@@ -568,6 +613,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CAT_RANK(ByVal i_id_content_exam_cat As String) As Int64
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CAT_RANK(" & i_id_content_exam_cat & ")")
 
         Dim sql As String = "Select ec.rank from alert.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'
@@ -595,6 +642,8 @@ Public Class LABS_API
 
     Function GET_CAT_FLG_INTERFACE(ByVal i_id_content_exam_cat As String) As Char
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CAT_FLG_INTERFACE(" & i_id_content_exam_cat & ")")
+
         Dim sql As String = "Select ec.flg_interface from alert_DEFAULT.exam_cat ec
                              where ec.id_content='" & i_id_content_exam_cat & "'"
 
@@ -620,6 +669,8 @@ Public Class LABS_API
 
     Function GET_DEFAULT_ST_PARAMETERS(ByVal i_id_content_sample_type As String, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DEFAULT_ST_PARAMETERS(" & i_id_content_sample_type & ")")
+
         Dim sql As String = "Select dst.gender, dst.age_min, dst.age_max from alert_default.sample_type dst
                              where dst.id_content='" & i_id_content_sample_type & "'
                              and dst.flg_available='Y'"
@@ -635,6 +686,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DEFAULT_ST_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -643,6 +699,8 @@ Public Class LABS_API
     End Function
 
     Function GET_DEFAULT_ANALYSIS_PARAMETERS(ByVal i_id_content_analysis As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DEFAULT_ANALYSIS_PARAMETERS(" & i_id_content_analysis & ")")
 
         Dim sql As String = "SELECT a.cpt_code, a.gender, a.age_min, a.age_max, a.mdm_coding, a.ref_form_code, st.id_content, a.barcode
                                 FROM alert_default.analysis a
@@ -661,6 +719,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DEFAULT_ANALYSIS_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -669,6 +732,8 @@ Public Class LABS_API
     End Function
 
     Function GET_ID_SAMPLE_TYPE_ALERT(ByVal i_id_content_st As String) As Int64
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ID_SAMPLE_TYPE_ALERT(" & i_id_content_st & ")")
 
         Dim sql As String = "Select st.id_sample_type from alert.sample_type st
                             where st.id_content='" & i_id_content_st & "'
@@ -697,6 +762,8 @@ Public Class LABS_API
 
     Function GET_ID_ANALYSIS_ALERT(ByVal i_id_content_a As String) As Int64
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ID_ANALYSIS_ALERT(" & i_id_content_a & ")")
+
         Dim sql As String = "Select a.id_analysis from alert.ANALYSIS a
                             where a.id_content='" & i_id_content_a & "'
                             and a.flg_available='Y'"
@@ -723,6 +790,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_ANALYSIS_ALERT(ByVal i_id_content_a As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_ANALYSIS_ALERT(" & i_id_content_a & ")")
 
         Dim sql As String = "Select a.code_analysis from alert.analysis a
                              where a.id_content='" & i_id_content_a & "'
@@ -751,6 +820,8 @@ Public Class LABS_API
 
     Function GET_CODE_ANALYSIS_DEFAULT(ByVal i_id_content_a As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_ANALYSIS_DEFAULT(" & i_id_content_a & ")")
+
         Dim sql As String = "Select a.code_analysis from alert_default.analysis a
                              where a.id_content='" & i_id_content_a & "'"
 
@@ -776,6 +847,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_ANALYSIS_ST_ALERT(ByVal i_id_content_ast As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_ANALYSIS_ST_ALERT(" & i_id_content_ast & ")")
 
         Dim sql As String = "Select ast.code_analysis_sample_type from alert.analysis_sample_type ast
                              where ast.id_content='" & i_id_content_ast & "'
@@ -804,6 +877,8 @@ Public Class LABS_API
 
     Function GET_CODE_SAMPLE_RECIPIENT_ALERT(ByVal i_id_content_sr As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_SAMPLE_RECIPIENT_ALERT(" & i_id_content_sr & ")")
+
         Dim sql As String = "Select sr.code_sample_recipient from alert.sample_recipient sr
                              where sr.id_content='" & i_id_content_sr & "'
                              and sr.flg_available='Y'"
@@ -830,6 +905,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_PARAMETER_ALERT(ByVal i_id_content_parameter As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_PARAMETER_ALERT(" & i_id_content_parameter & ")")
 
         Dim sql As String = "Select ap.code_analysis_parameter from alert.analysis_parameter ap
                              where ap.id_content='" & i_id_content_parameter & "'
@@ -858,6 +935,8 @@ Public Class LABS_API
 
     Function GET_CODE_ANALYSIS_ST_DEFAULT(ByVal i_id_content_ast As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_ANALYSIS_ST_DEFAULT(" & i_id_content_ast & ")")
+
         Dim sql As String = "Select ast.code_analysis_sample_type from alert_default.analysis_sample_type ast
                              where ast.id_content='" & i_id_content_ast & "'
                              and ast.flg_available='Y'"
@@ -884,6 +963,8 @@ Public Class LABS_API
     End Function
 
     Function GET_CODE_SAMPLE_RECIPIENT_DEFAULT(ByVal i_id_content_sr As String) As String
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_SAMPLE_RECIPIENT_DEFAULT(" & i_id_content_sr & ")")
 
         Dim sql As String = "Select sr.code_sample_recipient from alert_default.sample_recipient sr
                              where sr.id_content='" & i_id_content_sr & "'
@@ -912,6 +993,8 @@ Public Class LABS_API
 
     Function GET_CODE_PARAMETER_DEFAULT(ByVal i_id_content_parameter As String) As String
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_CODE_PARAMETER_DEFAULT(" & i_id_content_parameter & ")")
+
         Dim sql As String = "Select ap.code_analysis_parameter from alert_default.analysis_parameter ap
                                 where ap.id_content='" & i_id_content_parameter & "'
                                 and ap.flg_available='Y'"
@@ -939,6 +1022,8 @@ Public Class LABS_API
 
     Function GET_DEFAULT_ANALYSIS_ST_PARAMETERS(ByVal i_id_content_analysis_st As String, ByRef i_Dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DEFAULT_ANALYSIS_ST_PARAMETERS(" & i_id_content_analysis_st & ")")
+
         Dim sql As String = "Select ast.gender, ast.age_min, ast.age_max from alert_default.analysis_sample_type ast
                                 where ast.id_content='" & i_id_content_analysis_st & "'
                                 and ast.flg_available='Y'"
@@ -955,6 +1040,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DEFAULT_ANALYSIS_ST_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -963,6 +1053,8 @@ Public Class LABS_API
     End Function
 
     Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT(" & i_id_software & ", analysis_default())")
 
         Dim sql As String = "SELECT DISTINCT aparam.id_content
                                     FROM alert_default.analysis_sample_type ast
@@ -1003,6 +1095,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1011,6 +1108,8 @@ Public Class LABS_API
     End Function
 
     Function GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION(ByVal i_id_language As Int16, ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION(" & i_id_language & ", " & i_id_software & ",analysis_default())")
 
         Dim sql As String = "SELECT DISTINCT aparam.id_content
                                     FROM alert_default.analysis_sample_type ast
@@ -1050,6 +1149,11 @@ Public Class LABS_API
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_ANALYSIS_PARAMETERS_ID_CONTENT_DEFAULT_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             cmd.Dispose()
             Return False

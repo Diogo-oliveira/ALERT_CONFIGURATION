@@ -2768,7 +2768,10 @@ Public Class DISCHARGE_API
                                              NVL(DD.id_content,DR.id_content),
                                              NVL2(DD.id_content,
                                                   pk_translation.get_translation(" & l_id_language & ", DD.CODE_DISCHARGE_DEST),
-                                                  pk_translation.get_translation(" & l_id_language & ", DR.CODE_DISCHARGE_REASON))
+                                                  pk_translation.get_translation(" & l_id_language & ", DR.CODE_DISCHARGE_REASON)),
+                                              NVL2(DD.id_content,
+                                                   'D',
+                                                   'R')
 
                                 FROM alert.discharge_reason dr
                                 JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
@@ -2983,6 +2986,117 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return False
         End Try
+
+    End Function
+
+    Function GET_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByVal i_id_content_dest As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_id_content_reason & ", " & i_id_content_dest & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT DISTINCT drd.id_disch_reas_dest
+                                FROM alert.discharge_reason dr
+                                JOIN alert.disch_reas_dest drd ON drd.id_discharge_reason = dr.id_discharge_reason
+                                JOIN alert.profile_disch_reason pdr ON pdr.id_discharge_reason = dr.id_discharge_reason and pdr.id_institution=drd.id_instit_param
+                                JOIN alert.profile_template pt ON pt.id_profile_template = pdr.id_profile_template  and pt.id_software=drd.id_software_param
+                                LEFT JOIN ALERT.DISCHARGE_DEST DD ON DD.ID_DISCHARGE_DEST=DRD.ID_DISCHARGE_DEST AND DD.FLG_AVAILABLE='Y'
+                                WHERE drd.flg_active = 'A'
+                                AND dr.flg_available = 'Y'
+                                AND drd.id_instit_param = " & i_institution & "
+                                AND drd.id_software_param = " & i_software & "
+                                AND pdr.flg_available = 'Y'
+                                AND pt.flg_available = 'Y'                               
+                                AND DR.ID_CONTENT='" & i_id_content_reason & "' "
+
+        'Verificar se é enviado uma destination. Se não for são devolvidos todos os ids da disch_reas_dest da reason selecionada.
+        'A DEST pode ser enviada a null => É um registo sem id_destination da disch_reas_dest
+        'A DEST pode ser enviada a -1 => Deve-se configurar todas as destinations da reason selecionada
+
+
+        If i_id_content_dest <> "-1" And i_id_content_dest <> "" Then
+
+            sql = sql & "and dd.id_content='" & i_id_content_dest & "'"
+
+
+        ElseIf i_id_content_dest = "-1" Then
+
+            sql = sql & "and drd.id_discharge_dest is not null"
+
+        ElseIf i_id_content_dest = "" Then
+
+            sql = sql & "and drd.id_discharge_dest is null"
+
+        End If
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_REAS_DEST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function SET_DISCH_STATUS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_status As Integer, ByVal flg_default As String, ByVal i_id_disch_reas_dest As String) As Boolean
+
+        Dim l_market As Integer = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DISCH_STATUS(" & i_institution & ", " & i_software & ", " & i_status & ", " & flg_default & ", " & i_id_disch_reas_dest & ")")
+
+        'FIX POR CAUSA DE BUG NA APLICAÇÃO (O GERAL (SEM DISCH_REAS_DEST) SOBREPÔEM-SE AO ESPECÍFICO)
+        If i_id_disch_reas_dest = -1 Then
+            i_institution = 0
+        End If
+
+        Dim Sql As String = "BEGIN
+
+                                INSERT INTO alert.disch_status_soft_inst
+                                    (id_discharge_status, id_software, id_institution, id_market, flg_default, rank, id_disch_reas_dest)
+                                VALUES
+                                    (" & i_status & ", " & i_software & ", " & i_institution & ", " & l_market & ", '" & flg_default & "', 1, " & i_id_disch_reas_dest & ");
+
+                            EXCEPTION
+                              WHEN DUP_VAL_ON_INDEX THEN
+                                UPDATE alert.disch_status_soft_inst i
+                                set i.flg_default='" & flg_default & "'
+                                where i.id_discharge_status=" & i_status & "
+                                and i.id_software= " & i_software & "
+                                and i.id_institution=" & i_institution & "
+                                and i.id_market= " & l_market & "
+                                and i.id_disch_reas_dest= " & i_id_disch_reas_dest & ";
+
+                            END;"
+
+        Dim cmd_insert_status As New OracleCommand(Sql, Connection.conn)
+
+        Try
+            cmd_insert_status.CommandType = CommandType.Text
+            cmd_insert_status.ExecuteNonQuery()
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DISCH_STATUS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd_insert_status.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_status.Dispose()
+
+        Return True
 
     End Function
 
