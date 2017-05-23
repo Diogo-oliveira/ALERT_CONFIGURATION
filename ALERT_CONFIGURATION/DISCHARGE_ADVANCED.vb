@@ -1513,4 +1513,20 @@ Public Class DISCHARGE_ADVANCED
         End If
 
     End Sub
+
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+
+
+
+        MsgBox(1800 Mod 900)
+
+        MsgBox(900 Mod 900)
+
+        MsgBox(800 Mod 900)
+
+        MsgBox(899 Mod 900)
+
+        MsgBox(901 Mod 900)
+
+    End Sub
 End Class

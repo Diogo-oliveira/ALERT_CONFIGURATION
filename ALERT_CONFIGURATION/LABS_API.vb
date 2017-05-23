@@ -141,7 +141,7 @@ Public Class LABS_API
 
     Function GET_LAB_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_institution & ", " & i_software & ")")
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_version & ", " & i_institution & ", " & i_software & ")")
 
         Dim sql As String = "Select distinct dec.id_content, 
                                  nvl2(dec.parent_id,
@@ -231,7 +231,7 @@ Public Class LABS_API
 
     Function GET_LAB_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_institution & ", " & i_software & ")")
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_INST_SOFT(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Integer = db_access_general.GET_ID_LANG(i_institution)
 
@@ -1072,6 +1072,25 @@ Public Class LABS_API
         'Nota: O Left Join da query garante que só vai fazer fetch do default dos registos que não existem no ALERT
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                             SELECT DISTINCT aparam.id_content
+                                    FROM alert_default.analysis_sample_type ast
+                                    JOIN alert_default.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                                     AND ap.id_sample_type = ast.id_sample_type
+                                                                     AND ap.id_software = " & i_id_software & "
+                                    JOIN alert_default.analysis_parameter aparam ON aparam.id_analysis_parameter = ap.id_analysis_parameter
+                                                                             AND aparam.flg_available = 'Y'
+                                    left join alert.analysis_parameter aap on aap.id_content=aparam.id_content and aap.flg_available='Y'
+                                    WHERE ast.flg_available = 'Y'
+                                    AND ap.flg_available = 'Y'
+                                    and aap.id_content is null
+                                    AND ast.id_content in ( "
+
+            End If
+
             If (i < i_selected_default_analysis.Count() - 1) Then
 
                 sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
@@ -1127,6 +1146,25 @@ Public Class LABS_API
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                             SELECT DISTINCT aparam.id_content
+                                    FROM alert_default.analysis_sample_type ast
+                                    JOIN alert_default.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                                     AND ap.id_sample_type = ast.id_sample_type
+                                                                     AND ap.id_software = " & i_id_software & "
+                                    JOIN alert_default.analysis_parameter aparam ON aparam.id_analysis_parameter = ap.id_analysis_parameter
+                                                                             AND aparam.flg_available = 'Y'
+                                    join alert.analysis_parameter aap on aap.id_content=aparam.id_content and aap.flg_available='Y'
+                                    WHERE ast.flg_available = 'Y'
+                                    AND ap.flg_available = 'Y'
+                                    and pk_translation.get_translation(" & i_id_language & ",aap.code_analysis_parameter) is null
+                                    AND ast.id_content in ( "
+
+            End If
+
             If (i < i_selected_default_analysis.Count() - 1) Then
 
                 sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
@@ -1164,6 +1202,8 @@ Public Class LABS_API
 
     Function GET_DEFAULT_PARAMETERS(ByVal i_id_content_analysis_st() As String, ByVal i_software As Int16, ByVal i_institution As Int64, ByRef i_Dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DEFAULT_PARAMETERS(String(), " & i_software & ", " & i_institution & ")")
+
         Dim sql As String = "Select dp.id_content, dap.color_graph, dap.flg_fill_type, dap.rank, dast.id_content
                                 From alert_default.analysis_param dap
                                 JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dap.id_analysis
@@ -1178,10 +1218,44 @@ Public Class LABS_API
                                                               AND ap.id_institution = " & i_institution & "
                                                               AND ap.id_software = " & i_software & "                                
 
-                                WHERE dast.id_content in ('"
+                                where dap.id_software = " & i_software & "
+                                                                AND dap.flg_available = 'Y'
+                                                                AND dp.flg_available = 'Y'
+                                                                AND ast.flg_available = 'Y'
+                                                                AND aparameter.flg_available = 'Y'
+                                                                AND ap.id_analysis_param IS NULL                                
+                                AND dast.id_content in ('"
 
 
         For i As Integer = 0 To i_id_content_analysis_st.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "')                                 
+                             UNION
+                             Select dp.id_content, dap.color_graph, dap.flg_fill_type, dap.rank, dast.id_content
+                                From alert_default.analysis_param dap
+                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dap.id_analysis
+                                                                         AND dap.id_sample_type = dast.id_sample_type
+                                JOIN alert_default.analysis_parameter dp ON dp.id_analysis_parameter = dap.id_analysis_parameter
+                                LEFT JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
+                                LEFT JOIN alert.analysis_parameter aparameter ON aparameter.id_content = dp.id_content
+                                LEFT JOIN alert.analysis_param ap ON ap.id_analysis = ast.id_analysis
+                                                              AND ap.id_sample_type = ast.id_sample_type
+                                                              AND ap.id_analysis_parameter = aparameter.id_analysis_parameter
+                                                              AND ap.flg_available = 'Y'
+                                                              AND ap.id_institution = " & i_institution & "
+                                                              AND ap.id_software = " & i_software & "                                
+
+                                where dap.id_software = " & i_software & "
+                                                                AND dap.flg_available = 'Y'
+                                                                AND dp.flg_available = 'Y'
+                                                                AND ast.flg_available = 'Y'
+                                                                AND aparameter.flg_available = 'Y'
+                                                                AND ap.id_analysis_param IS NULL                                
+                                AND dast.id_content in (' "
+
+            End If
 
             If i < i_id_content_analysis_st.Count() - 1 Then
 
@@ -1189,13 +1263,7 @@ Public Class LABS_API
 
             Else
 
-                sql = sql & i_id_content_analysis_st(i) & "')
-                     AND dap.id_software = " & i_software & "
-                                AND dap.flg_available = 'Y'
-                                AND dp.flg_available = 'Y'
-                                AND ast.flg_available = 'Y'
-                                AND aparameter.flg_available = 'Y'
-                                AND ap.id_analysis_param IS NULL
+                sql = sql & i_id_content_analysis_st(i) & "')                    
                      order by 4 asc"
 
             End If
@@ -1213,6 +1281,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DEFAULT_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1221,6 +1294,8 @@ Public Class LABS_API
     End Function
 
     Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: CHECK_RECORD_EXISTENCE(String(), " & i_id_content_record & ", '" & i_sql & "')")
 
         Dim l_total_records As Int16 = 0
 
@@ -1258,6 +1333,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: CHECK_RECORD_EXISTENCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -1268,6 +1348,8 @@ Public Class LABS_API
     End Function
 
     Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: CHECK_RECORD_TRANSLATION_EXISTENCE(" & i_institution & ", " & id_content_record & ", '" & i_sql & "')")
 
         Dim l_translation As String = ""
 
@@ -1308,12 +1390,24 @@ Public Class LABS_API
 
     Function GET_DISTINCT_CATEGORIES(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DISTINCT_CATEGORIES(analysis_default())")
+
         Dim sql As String = "Select distinct ec.id_content from alert_default.exam_cat ec
                                 where ec.flg_available = 'Y'
                                 and ec.id_content in ("
 
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                             Select distinct ec.id_content from alert_default.exam_cat ec
+                                where ec.flg_available = 'Y'
+                                and ec.id_content in ( "
+
+            End If
 
             If i < i_selected_default_analysis.Count() - 1 Then
 
@@ -1338,6 +1432,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DISTINCT_CATEGORIES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1346,6 +1445,8 @@ Public Class LABS_API
     End Function
 
     Function SET_EXAM_CAT(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_EXAM_CAT(" & i_institution & ", analysis_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -1381,6 +1482,10 @@ Public Class LABS_API
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             dr_distinct_ec.Dispose()
             dr_distinct_ec.Close()
@@ -1523,6 +1628,10 @@ Public Class LABS_API
 
                     Catch ex As Exception
 
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_EXAM_CAT")
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                         MsgBox("ERROR GETTING ID_EXAM_CATEGORY FROM ALERT - LABS_API >>  GET_ID_CAT_ALERT")
                         Return False
 
@@ -1580,6 +1689,11 @@ Public Class LABS_API
                     Try
                         cmd_insert_cat.ExecuteNonQuery()
                     Catch ex As Exception
+
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_EXAM_CAT")
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG(sql_insert_cat)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
                         MsgBox("ERROR INSERTING EXAM CATEGORY")
                         cmd_insert_cat.Dispose()
@@ -1646,6 +1760,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_EXAM_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -1656,12 +1774,24 @@ Public Class LABS_API
 
     Function GET_DISTINCT_SAMPLE_TYPES(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DISTINCT_SAMPLE_TYPES(analysis_default())")
+
         Dim sql As String = "Select distinct st.id_content from alert_default.sample_type st
                                 where st.flg_available = 'Y'
                                 and st.id_content in ("
 
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                            Select distinct st.id_content from alert_default.sample_type st
+                                where st.flg_available = 'Y'
+                                and st.id_content in ( "
+
+            End If
 
             If i < i_selected_default_analysis.Count() - 1 Then
 
@@ -1686,6 +1816,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DISTINCT_SAMPLE_TYPES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1694,6 +1829,8 @@ Public Class LABS_API
     End Function
 
     Function SET_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_SAMPLE_TYPE(" & i_institution & ", analysis_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -1729,6 +1866,10 @@ Public Class LABS_API
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_SAMPLE_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             dr_distinct_st.Dispose()
             dr_distinct_st.Close()
@@ -1896,6 +2037,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_SAMPLE_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -1906,12 +2051,24 @@ Public Class LABS_API
 
     Function GET_DISTINCT_ANALYSIS(ByVal i_selected_default_analysis() As analysis_default, ByRef i_Dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_DISTINCT_ANALYSIS(analysis_default())")
+
         Dim sql As String = "Select distinct a.id_content from alert_default.analysis a
                                 where a.flg_available = 'Y'
                                 and a.id_content in ("
 
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                            Select distinct a.id_content from alert_default.analysis a
+                                where a.flg_available = 'Y'
+                                and a.id_content in ( "
+
+            End If
 
             If i < i_selected_default_analysis.Count() - 1 Then
 
@@ -1936,6 +2093,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_DISTINCT_ANALYSIS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -1944,6 +2106,8 @@ Public Class LABS_API
     End Function
 
     Function SET_ANALYSIS(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS(" & i_institution & ", analysis_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -1979,6 +2143,10 @@ Public Class LABS_API
             End If
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             dr_distinct_analysis.Dispose()
             dr_distinct_analysis.Close()
@@ -2226,6 +2394,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -2235,6 +2407,8 @@ Public Class LABS_API
     End Function
 
     Function SET_ANALYSIS_SAMPLE_TYPE(ByVal i_institution As Int64, ByVal i_selected_default_analysis() As analysis_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS_SAMPLE_TYPE(" & i_institution & ", analysis_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2420,6 +2594,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS_SAMPLE_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -2430,7 +2608,10 @@ Public Class LABS_API
 
     Function SET_PARAMETER(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_PARAMETER(" & i_institution & ", " & i_software & ", analysis_default())")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
         Dim dr_distinct_parameters As OracleDataReader
         Dim l_array_parameters() As String ''Array que vai guardar o id_content dos parameters
         Dim l_index As Int64 = 0
@@ -2470,7 +2651,7 @@ Public Class LABS_API
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                     '2.1 - Inserir registo na alert.analysis_parameter
-                    Dim sql_parameter As String = "declare
+                    Dim sql_parameter As String = "Declare
 
                                                        l_index alert.analysis_parameter.id_analysis_parameter%type;
 
@@ -2570,6 +2751,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_PARAMETER")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr_distinct_parameters.Dispose()
             dr_distinct_parameters.Close()
             dr_distinct_parameters_translation.Dispose()
@@ -2589,6 +2774,8 @@ Public Class LABS_API
 
     'Esta função deixa de ser necessária
     Function UPDATE_PARAMETER_AVAILABILITY(ByVal i_id_software As Integer, ByVal i_id_ast_content As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: UPDATE_PARAMETER_AVAILABILITY(" & i_id_software & ", " & i_id_ast_content & ")")
 
         Dim sql_parameter As String = "begin
                                                 UPDATE alert.analysis_parameter app
@@ -2616,6 +2803,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: UPDATE_PARAMETER_AVAILABILITY")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_parameter)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_update_parameter.Dispose()
             Return False
 
@@ -2625,8 +2817,12 @@ Public Class LABS_API
 
     Function SET_PARAM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_selected_default_analysis() As analysis_default) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_PARAM(" & i_institution & ", " & i_software & ", analysis_default())")
+
         Dim dr As OracleDataReader
         Dim l_a_ast() As String
+
+        Dim sql_param_insert As String = ""
 
         Try
             'Obter lista tota de analysis_sample_type
@@ -2687,7 +2883,7 @@ Public Class LABS_API
                 If l_dr_size > 0 Then
 
                     'Colocar os AST no sql
-                    Dim sql_param_insert As String = "DECLARE
+                    sql_param_insert = "DECLARE
 
                                                         l_a_ast          table_varchar := table_varchar('"
 
@@ -2887,6 +3083,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_PARAM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_param_insert)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
 
@@ -2902,6 +3103,8 @@ Public Class LABS_API
     End Function
 
     Function GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT(ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT(" & i_id_software & ", analysis_default())")
 
         Dim sql As String = "SELECT DISTINCT dsr.id_content
                                 FROM alert_default.sample_recipient dsr
@@ -2921,6 +3124,28 @@ Public Class LABS_API
 
         'Nota: O Left Join da query garante que só vai fazer fetch do default dos registos que não existem no ALERT
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                            SELECT DISTINCT dsr.id_content
+                                FROM alert_default.sample_recipient dsr
+                                JOIN alert_default.analysis_instit_recipient dair ON dair.id_sample_recipient = dsr.id_sample_recipient
+                                JOIN alert_default.analysis_instit_soft dais ON dais.id_analysis_instit_soft = dair.id_analysis_instit_soft
+                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                         AND dast.id_sample_type = dais.id_sample_type
+
+                                LEFT JOIN alert.sample_recipient sr ON sr.id_content = dsr.id_content
+                                                                AND sr.flg_available = 'Y'
+                                WHERE dsr.flg_available = 'Y'
+                                AND dais.flg_available = 'Y'
+                                AND dais.id_software = " & i_id_software & "
+                                AND dast.flg_available = 'Y'
+                                AND sr.id_content IS NULL
+                                AND dast.id_content in ( "
+
+            End If
 
             If (i < i_selected_default_analysis.Count() - 1) Then
 
@@ -2945,6 +3170,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_SAMPLE_RECIPIENT_ID_CONTENT_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -2954,6 +3184,8 @@ Public Class LABS_API
 
     'fUNÇÃO QUE VERIFICA OS SAMPLE_RECIPIENTS QUE EXISTEM NO ALERT, E QUE NÃO TÊM A MESMA TRADUÇÃO DO DEFAULT
     Function GET_SAMPLE_RECIPIENT_NO_TRANSLATION(ByVal i_id_software As Int16, ByVal i_id_language As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_SAMPLE_RECIPIENT_NO_TRANSLATION(" & i_id_software & ", " & i_id_language & ", analysis_default())")
 
         Dim sql As String = "SELECT DISTINCT (dsr.id_content)
                                 FROM alert_default.sample_recipient dsr
@@ -2978,6 +3210,33 @@ Public Class LABS_API
         'O FULL JOIN garante que só vão ser devolvidos os id_contents dos SRs que existem no ALERT e não têm tradução.
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql = sql & "'') 
+                             UNION
+                            SELECT DISTINCT (dsr.id_content)
+                                FROM alert_default.sample_recipient dsr
+                                JOIN alert_default.analysis_instit_recipient dair ON dair.id_sample_recipient = dsr.id_sample_recipient
+                                JOIN alert_default.analysis_instit_soft dais ON dais.id_analysis_instit_soft = dair.id_analysis_instit_soft
+                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                         AND dast.id_sample_type = dais.id_sample_type
+
+                                JOIN alert.sample_recipient sr ON sr.id_content = dsr.id_content
+                                                           AND sr.flg_available = 'Y'
+                                JOIN alert_default.translation dt ON dt.code_translation = dsr.code_sample_recipient
+                                JOIN translation t ON t.code_translation = sr.code_sample_recipient
+                                WHERE dsr.flg_available = 'Y'
+                                AND dais.flg_available = 'Y'
+                                AND dais.id_software = " & i_id_software & "
+                                AND dast.flg_available = 'Y'
+                                AND (pk_translation.get_translation(" & i_id_language & ", sr.code_sample_recipient) <>
+                                      alert_default.pk_translation_default.get_translation_default(" & i_id_language & ", dsr.code_sample_recipient) OR
+                                      pk_translation.get_translation(" & i_id_language & ", sr.code_sample_recipient) IS NULL)
+                                AND dast.id_content in ( "
+
+            End If
+
             If (i < i_selected_default_analysis.Count() - 1) Then
 
                 sql = sql & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
@@ -3001,6 +3260,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_SAMPLE_RECIPIENT_NO_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -3009,6 +3273,8 @@ Public Class LABS_API
     End Function
 
     Function SET_SAMPLE_RECIPIENT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_SAMPLE_RECIPIENT(" & i_institution & ", " & i_software & ", analysis_default())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim l_dr As OracleDataReader
@@ -3092,7 +3358,6 @@ Public Class LABS_API
             'Verificar para os registos que existem no alert se têm uma tradução diferente do default 
             If Not GET_SAMPLE_RECIPIENT_NO_TRANSLATION(i_software, l_id_language, i_selected_default_analysis, l_dr_translation) Then
 
-
                 MsgBox("ERROR GETTING SAMPLE_RECIPIENTS WITHOUT TRANSLATION!", vbCritical)
                 l_dr.Dispose()
                 l_dr.Close()
@@ -3123,6 +3388,10 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_SAMPLE_RECIPIENT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             l_dr.Dispose()
             l_dr.Close()
             l_dr_translation.Dispose()
@@ -3140,6 +3409,9 @@ Public Class LABS_API
     End Function
 
     Function GET_ANALYSIS_INST_SOFT(ByVal i_id_institution As Int64, ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ANALYSIS_INST_SOFT(" & i_id_institution & ", " & i_id_software & ", analysis_default())")
+
         ''Função que vai devlover os ASTs que ainda não têm entrada na tabela analysis_inst_soft do lado do ALERT
         Dim l_sql_insert_ais As String = "SELECT distinct dast.id_content
                                                 FROM alert_default.analysis_instit_soft dais
@@ -3159,6 +3431,28 @@ Public Class LABS_API
 
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                l_sql_insert_ais = l_sql_insert_ais & "'') 
+                             UNION
+                             SELECT distinct dast.id_content
+                                                FROM alert_default.analysis_instit_soft dais
+
+                                                JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                                         AND dast.id_sample_type = dais.id_sample_type
+                                                JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
+                                                                                AND ast.flg_available = 'Y'
+                                                LEFT JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
+                                                                                     AND ais.id_sample_type = ast.id_sample_type
+                                                                                     AND ais.id_software = dais.id_software
+                                                                                     AND ais.id_institution = " & i_id_institution & "
+                                                                                     AND ais.flg_available = 'Y'
+                                                WHERE dais.id_software = " & i_id_software & "
+                                                AND ais.id_analysis_instit_soft IS NULL
+                                                AND dast.id_content in ( "
+
+            End If
 
             If (i < i_selected_default_analysis.Count() - 1) Then
 
@@ -3184,6 +3478,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_ANALYSIS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(l_sql_insert_ais)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -3193,8 +3492,12 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS_INST_SOFT(" & i_institution & ", " & i_software & ", analysis_default())")
+
         'Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, Connection.conn)
         Dim l_dr As OracleDataReader
+
+        Dim sql_insert_ais As String = ""
 
         Try
             'Array de strings que vai guardar os id_contents das AST. (AST que ainda não existem na ANALYSIS_INST_SOFT do ALERT)
@@ -3233,7 +3536,7 @@ Public Class LABS_API
 
             End If
 
-            Dim sql_insert_ais As String = "DECLARE
+            sql_insert_ais = "DECLARE
                                                         l_a_id_content_ast    table_varchar := table_varchar("
 
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
@@ -3409,6 +3712,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_insert_ais)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             l_dr.Dispose()
             l_dr.Close()
             Return False
@@ -3422,6 +3730,9 @@ Public Class LABS_API
     End Function
 
     Function GET_ANALYSIS_INST_RECIPIENT(ByVal i_id_institution As Int64, ByVal i_id_software As Int16, ByVal i_selected_default_analysis() As analysis_default, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ANALYSIS_INST_RECIPIENT(" & i_id_institution & ", " & i_id_software & ", analysis_default())")
+
         ''Função que vai devlover os ASTs (e os seus Sample_Recipients) que ainda não têm entrada na tabela analysis_inst_soft do lado do ALERT
         Dim l_sql_insert_air As String = "SELECT dast.id_content, dsr.id_content
                                             FROM alert_default.analysis_instit_recipient dair
@@ -3447,6 +3758,34 @@ Public Class LABS_API
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
 
+            If i > 0 And (i Mod 900) = 0 Then
+
+                l_sql_insert_air = l_sql_insert_air & "'') 
+                             UNION
+                             SELECT dast.id_content, dsr.id_content
+                                            FROM alert_default.analysis_instit_recipient dair
+                                            JOIN alert_default.analysis_instit_soft dais ON dais.id_analysis_instit_soft = dair.id_analysis_instit_soft
+                                            JOIN alert_default.analysis_sample_type dast ON dast.id_analysis = dais.id_analysis
+                                                                                     AND dast.id_sample_type = dais.id_sample_type
+                                            JOIN alert_default.sample_recipient dsr ON dsr.id_sample_recipient = dair.id_sample_recipient
+                                            LEFT JOIN alert.analysis_sample_type ast ON ast.id_content = dast.id_content
+                                            LEFT JOIN alert.analysis_instit_soft ais ON ais.id_analysis = ast.id_analysis
+                                                                                 AND ais.id_sample_type = ast.id_sample_type
+                                                                                 AND ais.id_institution = " & i_id_institution & "
+                                                                                 AND ais.id_software = " & i_id_software & "
+                                            LEFT JOIN alert.analysis_instit_recipient air ON air.id_analysis_instit_soft = ais.id_analysis_instit_soft
+                                            LEFT JOIN alert.sample_recipient sr ON sr.id_sample_recipient = air.id_sample_recipient
+                                                                            AND sr.flg_available = 'Y'
+                                            WHERE dais.flg_available = 'Y'
+                                            AND dast.flg_available = 'Y'
+                                            AND dais.id_software = " & i_id_software & "
+                                            AND dsr.flg_available = 'Y'
+                                            AND ast.flg_available = 'Y'
+                                            AND air.id_analysis_instit_recipient IS NULL
+                                            AND dast.id_content IN ( "
+
+            End If
+
             If (i < i_selected_default_analysis.Count() - 1) Then
 
                 l_sql_insert_air = l_sql_insert_air & "'" & i_selected_default_analysis(i).id_content_analysis_sample_type & "', "
@@ -3470,6 +3809,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_ANALYSIS_INST_RECIPIENT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(l_sql_insert_air)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -3479,8 +3823,9 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_INST_RECIPIENT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_selected_default_analysis() As analysis_default) As Boolean
 
-        'Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, Connection.conn)
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS_INST_RECIPIENT(" & i_institution & ", " & i_software & ", analysis_default())")
 
+        'Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution, Connection.conn)
         Dim l_dr As OracleDataReader
 
         Try
@@ -3631,6 +3976,11 @@ Public Class LABS_API
 
             Catch ex As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS_INST_RECIPIENT")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql_insert_air)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 l_dr.Dispose()
                 l_dr.Close()
                 Return False
@@ -3651,6 +4001,8 @@ Public Class LABS_API
 
     Function SET_ANALYSIS_ROOM(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_room As Int64, ByVal i_selected_default_analysis() As analysis_default) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS_ROOM(" & i_institution & ", " & i_software & ", " & i_id_room & ", analysis_default())")
+
         Dim sql_insert_analysis_room As String = "DECLARE
 
                                               CURSOR c_new_analysis IS
@@ -3665,6 +4017,21 @@ Public Class LABS_API
 
 
         For i As Integer = 0 To i_selected_default_analysis.Count() - 1
+
+            If i > 0 And (i Mod 900) = 0 Then
+
+                sql_insert_analysis_room = sql_insert_analysis_room & "'') 
+                             UNION
+                              SELECT Ast.ID_ANALYSIS, ast.id_sample_type
+                                                  FROM alert.analysis_sample_type ast
+                                                 INNER JOIN alert.analysis_instit_soft ais
+                                                    on ais.id_analysis = ast.id_analysis
+                                                   and ais.id_sample_type = ast.id_sample_type
+                                                   and ais.id_software = " & i_software & "
+                                                   and ais.flg_available = 'Y'
+                                                 WHERE Ast.ID_CONTENT IN ("
+
+            End If
 
             If (i < i_selected_default_analysis.Count() - 1) Then
 
@@ -3844,6 +4211,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS_ROOM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_insert_analysis_room)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_analysis_room.Dispose()
             Return False
 
@@ -3855,6 +4227,7 @@ Public Class LABS_API
 
     Function DELETE_ANALYSIS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_ast As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("LABS_API :: DELETE_ANALYSIS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_id_content_ast & ")")
 
         Dim sql_delete_ais = "update alert.analysis_instit_soft ais
                               set ais.flg_available='N'
@@ -3874,6 +4247,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: DELETE_ANALYSIS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_delete_ais)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -3883,6 +4261,8 @@ Public Class LABS_API
     End Function
 
     Function SET_ANALYSIS_DEP_CLIN_SERV(ByVal i_software As Integer, ByVal i_dep_clin_serv As Int64, ByVal i_id_content_ast As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: SET_ANALYSIS_DEP_CLIN_SERV(" & i_software & ", " & i_dep_clin_serv & ", " & i_id_content_ast & ")")
 
         Dim sql_insert_adps = "DECLARE
 
@@ -3923,6 +4303,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: SET_ANALYSIS_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_insert_adps)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -3932,9 +4317,14 @@ Public Class LABS_API
     End Function
 
     Function GET_ANALYSIS_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_dep_clin_serv As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: GET_ANALYSIS_DEP_CLIN_SERV(" & i_institution & ", " & i_software & ", " & i_dep_clin_serv & ")")
+
+        Dim sql As String = ""
+
         Try
 
-            Dim sql As String = "SELECT ast.id_content,
+            sql = "SELECT ast.id_content,
                                     pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", ast.code_analysis_sample_type),
                                     pk_translation.get_translation(" & db_access_general.GET_ID_LANG(i_institution) & ", sr.code_sample_recipient)     
                                 FROM alert.analysis_dep_clin_serv ad
@@ -3966,6 +4356,11 @@ Public Class LABS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: GET_ANALYSIS_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -3973,6 +4368,8 @@ Public Class LABS_API
     End Function
 
     Function DELETE_ANALYSIS_DEP_CLIN_SERV(ByVal i_software As Integer, ByVal i_dep_clin_serv As Int64, ByVal i_id_content_ast As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("LABS_API :: DELETE_ANALYSIS_DEP_CLIN_SERV(" & i_software & ", " & i_dep_clin_serv & ", " & i_id_content_ast & ")")
 
         Dim sql_delete_adps = "DECLARE
 
@@ -4015,6 +4412,11 @@ Public Class LABS_API
             cmd_delete_adps.Dispose()
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("LABS_API :: DELETE_ANALYSIS_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql_delete_adps)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             Return False
 
