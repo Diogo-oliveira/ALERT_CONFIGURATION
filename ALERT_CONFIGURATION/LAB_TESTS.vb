@@ -32,7 +32,7 @@ Public Class LAB_TESTS
     ' Dim g_index_selected_labs_from_alert As Integer = 0 ''Variavel utilizada no botão de adicionar à box da direita (CHECKBOX 4 - do alert para o clinical service)
 
 
-    Dim g_a_labs_for_clinical_service() As LABS_API.analysis_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
+    Dim g_a_labs_for_clinical_service(0) As LABS_API.analysis_alert_flg 'Array que vai guardar os exames do ALERT e os exames que existem no clinical service. A flag irá indicar se é oou não para introduzir na categoria
 
     ''Array que vai guardar os dep_clin_serv da instituição
     Dim g_a_dep_clin_serv_inst() As Int64
@@ -719,6 +719,15 @@ Public Class LAB_TESTS
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
+        Dim l_dimension As Integer
+
+        'Se não existirem registos no array, a dimension tem que ser zero, mas o count é 1.
+        If g_a_labs_for_clinical_service.Count() = 1 And g_a_labs_for_clinical_service(0).id_content_analysis_sample_type = "" Then
+            l_dimension = 0
+        Else
+            l_dimension = g_a_labs_for_clinical_service.Count()
+        End If
+
         'Ciclo para correr todos os exames selecionados na caixa da esquerda (Por Categoria)
         For Each indexChecked In CheckedListBox3.CheckedIndices
 
@@ -728,7 +737,7 @@ Public Class LAB_TESTS
 
             Dim j As Integer = 0
 
-            For j = 0 To CheckedListBox4.Items.Count() - 1
+            For j = 0 To g_a_labs_for_clinical_service.Count() - 1
                 If (g_a_labs_alert(indexChecked).id_content_analysis_sample_type = g_a_labs_for_clinical_service(j).id_content_analysis_sample_type) Then
 
                     l_record_already_selected = True
@@ -739,10 +748,6 @@ Public Class LAB_TESTS
 
             If l_record_already_selected = False Then
 
-                MsgBox(g_a_labs_for_clinical_service.Count())
-
-                Dim l_dimension As Integer = g_a_labs_for_clinical_service.Count()
-
                 ReDim Preserve g_a_labs_for_clinical_service(l_dimension)
 
                 g_a_labs_for_clinical_service(l_dimension).id_content_analysis_sample_type = g_a_labs_alert(indexChecked).id_content_analysis_sample_type
@@ -751,9 +756,9 @@ Public Class LAB_TESTS
                 g_a_labs_for_clinical_service(l_dimension).flg_new = "Y"
 
                 CheckedListBox4.Items.Add(g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type & " - [" & g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient & "]")
+                CheckedListBox4.SetItemChecked((CheckedListBox4.Items.Count() - 1), True)
 
-                MsgBox(g_a_labs_for_clinical_service.Count())
-
+                l_dimension = l_dimension + 1
 
             End If
 
@@ -1055,8 +1060,7 @@ Public Class LAB_TESTS
         If (l_first_time = False) Then
 
             '4 - Limpar a box e os arrays
-            ReDim Preserve g_a_labs_for_clinical_service(0)
-
+            ReDim g_a_labs_for_clinical_service(0)
             CheckedListBox4.Items.Clear()
 
         End If
@@ -1076,7 +1080,8 @@ Public Class LAB_TESTS
 
             Dim i As Integer = 0
 
-            Dim l_dimension As Integer = g_a_labs_for_clinical_service.Count()
+            Dim l_dimension As Integer = 0
+            ReDim g_a_labs_for_clinical_service(0)
 
             '6 - Ler cursor e popular o campo
             While dr.Read()
@@ -1218,6 +1223,7 @@ Public Class LAB_TESTS
 
                 For Each indexChecked In CheckedListBox4.CheckedIndices
                     If (g_a_labs_for_clinical_service(indexChecked).flg_new = "Y") Then
+
                         If Not db_labs.SET_ANALYSIS_DEP_CLIN_SERV(g_selected_soft, g_id_dep_clin_serv, g_a_labs_for_clinical_service(indexChecked).id_content_analysis_sample_type) Then
 
                             l_sucess = False
@@ -1252,9 +1258,9 @@ Public Class LAB_TESTS
 
             Else
 
-                Dim i As Integer = 0
+                Dim l_dimension As Integer = 0
 
-                Dim l_dimension As Integer = g_a_labs_for_clinical_service.Count()
+                ReDim g_a_labs_for_clinical_service(0)
 
                 While dr.Read()
 
@@ -1262,7 +1268,7 @@ Public Class LAB_TESTS
 
                     ReDim Preserve g_a_labs_for_clinical_service(l_dimension)
                     g_a_labs_for_clinical_service(l_dimension).id_content_analysis_sample_type = dr.Item(0)
-                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(1)
+                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = dr.Item(1)
                     g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
                     g_a_labs_for_clinical_service(l_dimension).flg_new = "N"
 
