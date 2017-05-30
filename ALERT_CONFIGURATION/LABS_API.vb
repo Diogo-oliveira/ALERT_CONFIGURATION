@@ -143,11 +143,13 @@ Public Class LABS_API
 
         DEBUGGER.SET_DEBUG("LABS_API :: GET_LAB_CATS_DEFAULT(" & i_version & ", " & i_institution & ", " & i_software & ")")
 
+        Dim l_id_language As Integer = db_access_general.GET_ID_LANG(i_institution)
+
         Dim sql As String = "Select distinct dec.id_content, 
                                  nvl2(dec.parent_id,
-                                 (alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", decp.code_exam_cat) || ' - ' ||
-                                 alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", dec.code_exam_cat)),
-                                 (alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", dec.code_exam_cat)))              
+                                 (alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", decp.code_exam_cat) || ' - ' ||
+                                 alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dec.code_exam_cat)),
+                                 (alert_default.pk_translation_default.get_translation_default(" & l_id_language & ", dec.code_exam_cat)))              
                               from alert_default.analysis da
                               join alert_default.analysis_sample_type dast
                                 on dast.id_analysis = da.id_analysis
@@ -372,10 +374,12 @@ Public Class LABS_API
 
         DEBUGGER.SET_DEBUG("LABS_API :: GET_LABS_DEFAULT_BY_CAT(" & i_institution & ", " & i_software & ", " & i_version & ", " & i_id_cat & ")")
 
+        Dim l_id_lang As Integer = db_access_general.GET_ID_LANG(i_institution)
+
         Dim sql As String = "Select distinct dast.id_content, 
-                                             alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", dast.code_analysis_sample_type), 
+                                             alert_default.pk_translation_default.get_translation_default(" & l_id_lang & ", dast.code_analysis_sample_type), 
                                              dsr.id_content,              
-                                             alert_default.pk_translation_default.get_translation_default(" & db_access_general.GET_ID_LANG(i_institution) & ", dsr.code_sample_recipient), 
+                                             alert_default.pk_translation_default.get_translation_default(" & l_id_lang & ", dsr.code_sample_recipient), 
                                              da.id_content, 
                                              dst.id_content,
                                              dec.id_content
@@ -4231,8 +4235,8 @@ Public Class LABS_API
 
         Dim sql_delete_ais = "update alert.analysis_instit_soft ais
                               set ais.flg_available='N'
-                              where ais.id_analysis = (Select asta.id_analysis from alert.analysis_sample_type asta where asta.id_content='" & i_id_content_ast & "')
-                              and ais.id_sample_type = (Select astst.id_sample_type from alert.analysis_sample_type astst where astst.id_content='" & i_id_content_ast & "')
+                              where ais.id_analysis in (Select asta.id_analysis from alert.analysis_sample_type asta where asta.id_content='" & i_id_content_ast & "')
+                              and ais.id_sample_type in (Select astst.id_sample_type from alert.analysis_sample_type astst where astst.id_content='" & i_id_content_ast & "')
                               and ais.id_software = " & i_software & "
                               and ais.id_institution = " & i_institution
 

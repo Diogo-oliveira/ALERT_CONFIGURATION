@@ -167,7 +167,7 @@ Partial Class LAB_TESTS
         Me.CheckedListBox2.FormattingEnabled = True
         Me.CheckedListBox2.Location = New System.Drawing.Point(12, 102)
         Me.CheckedListBox2.Name = "CheckedListBox2"
-        Me.CheckedListBox2.Size = New System.Drawing.Size(740, 304)
+        Me.CheckedListBox2.Size = New System.Drawing.Size(740, 293)
         Me.CheckedListBox2.TabIndex = 43
         '
         'Button4
@@ -204,7 +204,7 @@ Partial Class LAB_TESTS
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(830, 102)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 304)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 293)
         Me.CheckedListBox1.TabIndex = 48
         '
         'Button5
@@ -310,7 +310,7 @@ Partial Class LAB_TESTS
         Me.CheckedListBox3.FormattingEnabled = True
         Me.CheckedListBox3.Location = New System.Drawing.Point(12, 483)
         Me.CheckedListBox3.Name = "CheckedListBox3"
-        Me.CheckedListBox3.Size = New System.Drawing.Size(740, 304)
+        Me.CheckedListBox3.Size = New System.Drawing.Size(740, 293)
         Me.CheckedListBox3.TabIndex = 56
         '
         'Button13
@@ -365,13 +365,13 @@ Partial Class LAB_TESTS
         Me.CheckedListBox4.FormattingEnabled = True
         Me.CheckedListBox4.Location = New System.Drawing.Point(831, 483)
         Me.CheckedListBox4.Name = "CheckedListBox4"
-        Me.CheckedListBox4.Size = New System.Drawing.Size(741, 304)
+        Me.CheckedListBox4.Size = New System.Drawing.Size(741, 293)
         Me.CheckedListBox4.TabIndex = 61
         '
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(1379, 8)
+        Me.PictureBox1.Location = New System.Drawing.Point(1379, 4)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(199, 100)
         Me.PictureBox1.TabIndex = 67
@@ -400,6 +400,7 @@ Partial Class LAB_TESTS
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.CheckedListBox1)
         Me.Controls.Add(Me.Button15)
         Me.Controls.Add(Me.Button16)
         Me.Controls.Add(Me.PictureBox1)
@@ -420,7 +421,6 @@ Partial Class LAB_TESTS
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.ComboBox5)
         Me.Controls.Add(Me.Button5)
-        Me.Controls.Add(Me.CheckedListBox1)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)

@@ -1092,7 +1092,12 @@ Public Class LAB_TESTS
 
                 g_a_labs_for_clinical_service(l_dimension).id_content_analysis_sample_type = dr.Item(0)
                 g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = dr.Item(1)
-                g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
+                Try
+                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
+                Catch ex As Exception
+                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = ""
+                End Try
+
                 g_a_labs_for_clinical_service(l_dimension).flg_new = "N"
 
                 l_dimension = l_dimension + 1
@@ -1269,7 +1274,12 @@ Public Class LAB_TESTS
                     ReDim Preserve g_a_labs_for_clinical_service(l_dimension)
                     g_a_labs_for_clinical_service(l_dimension).id_content_analysis_sample_type = dr.Item(0)
                     g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = dr.Item(1)
-                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
+                    Try
+                        g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
+                    Catch ex As Exception
+                        g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = ""
+                    End Try
+
                     g_a_labs_for_clinical_service(l_dimension).flg_new = "N"
 
                     l_dimension = l_dimension + 1

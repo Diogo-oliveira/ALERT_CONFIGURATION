@@ -30,6 +30,8 @@ Public Class DISCHARGE_API
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_VERSIONS(" & i_institution & ", " & i_software & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "SELECT DISTINCT drd.version
@@ -55,12 +57,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_VERSIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_DEFAULT_REASONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_REASONS(" & i_institution & ", " & i_software & ", " & i_version & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -90,6 +100,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_REASONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -97,6 +113,8 @@ Public Class DISCHARGE_API
 
     'Obter todas as reasons do default, mesmo as que não estão disponíveis
     Function GET_ALL_DEFAULT_REASONS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALL_DEFAULT_REASONS(" & i_institution & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -115,12 +133,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALL_DEFAULT_REASONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_DEFAULT_DESTINATIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String, ByVal i_version As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_DESTINATIONS(" & i_institution & ", " & i_software & ", " & i_reason & ", " & i_version & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -162,6 +188,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_DESTINATIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -170,6 +202,8 @@ Public Class DISCHARGE_API
 
     'Obter todas as destinations do default, mesmo as que não estão disponíveis
     Function GET_ALL_DEFAULT_DESTINATIONS(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALL_DEFAULT_DESTINATIONS(" & i_institution & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -188,12 +222,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALL_DEFAULT_DESTINATIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_DEFAULT_PROFILE_DISCH_REASON(ByVal i_software As Integer, ByVal id_disch_reason As String, ByRef o_profile_templates As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_PROFILE_DISCH_REASON(" & i_software & ", " & id_disch_reason & ")")
 
         Dim sql As String = "SELECT PDR.ID_PROFILE_DISCH_REASON, pdr.id_profile_template,PT.INTERN_NAME_TEMPL
                                 FROM alert_default.discharge_reason dr
@@ -214,6 +256,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_PROFILE_DISCH_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -221,6 +269,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function CHECK_REASON(ByVal i_id_reason As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_REASON(" & i_id_reason & ")")
 
         Dim sql As String = "SELECT COUNT(*)
                                 FROM alert.discharge_reason dr
@@ -250,6 +300,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function CHECK_REASON_translation(ByVal i_institution As Int64, ByVal i_id_reason As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_REASON_translation(" & i_institution & ", " & i_id_reason & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -284,6 +336,7 @@ Public Class DISCHARGE_API
 
     Function UPDATE_REASON(ByVal i_reason As String, ByVal i_profile_template As String, ByVal i_rank As Integer, ByVal i_file_to_exeecute As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: UPDATE_REASON(" & i_reason & ", " & i_profile_template & ", " & i_rank & ", " & i_file_to_exeecute & ")")
 
         Dim Sql As String = "UPDATE alert.discharge_reason dr
                                 SET dr.flg_admin_medic = '" & i_profile_template & "', dr.rank = " & i_rank & ", dr.file_to_execute = '" & i_file_to_exeecute & "'
@@ -296,6 +349,12 @@ Public Class DISCHARGE_API
             cmd_update_reason.CommandType = CommandType.Text
             cmd_update_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: UPDATE_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_update_reason.Dispose()
             Return False
         End Try
@@ -307,6 +366,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_REASON(ByVal i_institution As Int64, ByVal i_id_reason As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_REASON(" & i_institution & ", " & i_id_reason & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -358,6 +419,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason.CommandType = CommandType.Text
             cmd_insert_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason.Dispose()
             Return False
         End Try
@@ -369,6 +436,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_MANUAL_REASON(ByVal i_institution As Int64, ByVal i_id_reason As String, ByVal flg_admin_medic As String, ByVal rank As Integer, ByVal i_file_execute As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_REASON(" & i_institution & ", " & i_id_reason & ", " & flg_admin_medic & ", " & rank & ", " & i_file_execute & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -415,6 +484,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason.ExecuteNonQuery()
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_MANUAL_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason.Dispose()
             Return False
         End Try
@@ -426,6 +501,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_REASON_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_reason As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_REASON_TRANSLATION(" & i_institution & ", " & i_id_reason & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -466,6 +543,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason_translation.CommandType = CommandType.Text
             cmd_insert_reason_translation.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_REASON_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason_translation.Dispose()
             Return False
         End Try
@@ -478,6 +561,8 @@ Public Class DISCHARGE_API
 
     ''Configuração automática de PROFILE_DISCH_REASON (Carregar do default)
     Function SET_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal a_prof_disch_reason As DEFAULT_DISCH_PROFILE()) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_PROFILE_DISCH_REASON(" & i_institution & ", DEFAULT_DISCH_PROFILE())")
 
         Dim sql As String = "DECLARE
 
@@ -585,6 +670,12 @@ Public Class DISCHARGE_API
             cmd_insert_profile_disch_reason.CommandType = CommandType.Text
             cmd_insert_profile_disch_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_PROFILE_DISCH_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_profile_disch_reason.Dispose()
             Return False
         End Try
@@ -597,6 +688,8 @@ Public Class DISCHARGE_API
 
     ''Configuração manual de PROFILE_DISCH_REASON
     Function CHECK_PROF_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_PROF_DISCH_REASON(" & i_institution & ", " & i_reason & ", " & i_profile_template & ")")
 
         Dim sql As String = "SELECT COUNT(*)
                                 FROM alert.profile_disch_reason pdr
@@ -631,6 +724,8 @@ Public Class DISCHARGE_API
 
     Function UPDATE_PROF_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64, ByVal i_id_disch_file As Integer, ByVal i_flg_access As String, ByVal i_rank As Integer, ByVal i_flg_default As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: UPDATE_PROF_DISCH_REASON(" & i_institution & ", " & i_reason & ", " & i_profile_template & ", " & i_id_disch_file & ", " & i_flg_access & ", " & i_rank & ", " & i_flg_default & ")")
+
         Dim Sql As String = "UPDATE alert.profile_disch_reason pdr
                                 SET pdr.id_discharge_flash_files = " & i_id_disch_file & ", pdr.flg_access = '" & i_flg_access & "', pdr.rank=" & i_rank & ", pdr.flg_default='" & i_flg_default & "'
                                 WHERE pdr.id_institution = " & i_institution & "
@@ -647,6 +742,12 @@ Public Class DISCHARGE_API
             cmd_update_prof_disch_reas.CommandType = CommandType.Text
             cmd_update_prof_disch_reas.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: UPDATE_PROF_DISCH_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_update_prof_disch_reas.Dispose()
             Return False
         End Try
@@ -658,6 +759,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_MANUAL_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal i_reason As String, ByVal i_profile_template As Int64, ByVal i_id_disch_file As Integer, ByVal i_flg_access As String, ByVal i_rank As Integer, ByVal i_flg_default As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_PROFILE_DISCH_REASON(" & i_institution & ", " & i_reason & ", " & i_profile_template & ", " & i_id_disch_file & ", " & i_flg_access & ", " & i_rank & ", " & i_flg_default & ")")
 
         Dim sql As String = "DECLARE
 
@@ -708,6 +811,12 @@ Public Class DISCHARGE_API
             cmd_insert_profile_disch_reason.CommandType = CommandType.Text
             cmd_insert_profile_disch_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_MANUAL_PROFILE_DISCH_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_profile_disch_reason.Dispose()
             Return False
         End Try
@@ -717,10 +826,10 @@ Public Class DISCHARGE_API
         Return True
 
     End Function
-    ''' ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 
     Function CHECK_DESTINATION(ByVal i_id_destination As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_DESTINATION(" & i_id_destination & ")")
 
         Dim sql As String = "SELECT COUNT(*)
                                 FROM alert.discharge_dest dd
@@ -750,6 +859,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function CHECK_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_DESTINATION_TRANSLATION(" & i_institution & ", " & i_id_destination & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -783,6 +894,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As DEFAULT_DISCAHRGE) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DESTINATION(" & i_institution & ", DEFAULT_DISCAHRGE )")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -845,6 +958,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason.CommandType = CommandType.Text
             cmd_insert_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DESTINATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason.Dispose()
             Return False
         End Try
@@ -856,6 +975,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_MANUAL_DESTINATION(ByVal i_institution As Int64, ByVal i_id_destination As String, ByVal i_rank As Integer, ByVal i_flg_type As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_DESTINATION(" & i_institution & ", " & i_id_destination & ", " & i_rank & ", " & i_flg_type & " )")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -900,6 +1021,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason.CommandType = CommandType.Text
             cmd_insert_reason.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_MANUAL_DESTINATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason.Dispose()
             Return False
         End Try
@@ -912,6 +1039,8 @@ Public Class DISCHARGE_API
 
     Function UPDATE_DESTINATION(ByVal i_id_destination As String, ByVal i_rank As Integer, ByVal i_flg_type As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: UPDATE_DESTINATION(" & i_id_destination & ", " & i_rank & ", " & i_flg_type & " )")
+
         Dim Sql As String = "UPDATE alert.discharge_dest dd
                                 SET dd.flg_type='" & i_flg_type & "', dd.rank=" & i_rank & "
                                 WHERE dd.id_content = '" & i_id_destination & "'
@@ -923,6 +1052,12 @@ Public Class DISCHARGE_API
             cmd_update_destination.CommandType = CommandType.Text
             cmd_update_destination.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: UPDATE_DESTINATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_update_destination.Dispose()
             Return False
         End Try
@@ -934,6 +1069,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function SET_DESTINATION_TRANSLATION(ByVal i_institution As Int64, ByVal i_id_destination As DEFAULT_DISCAHRGE) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DESTINATION_TRANSLATION(" & i_institution & ", " & i_id_destination.id_content & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -984,6 +1121,12 @@ Public Class DISCHARGE_API
             cmd_insert_reason_translation.CommandType = CommandType.Text
             cmd_insert_reason_translation.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DESTINATION_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_reason_translation.Dispose()
             Return False
         End Try
@@ -999,6 +1142,8 @@ Public Class DISCHARGE_API
         'Adaptar para receber todos os parêmetros
         'Vão ser passadas todas as Destination, mesmo que sejam do tipo 'R'. A verificação será feita no SQL. (Isto para garantir 
         'que não se perdem clinical services)
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason & ", " & " DEFAULT_DISCAHRGE())")
 
         Dim sql As String = "DECLARE
                                     l_id_software       alert.disch_reas_dest.id_software_param%TYPE := " & i_software & ";
@@ -1453,6 +1598,12 @@ Public Class DISCHARGE_API
             cmd_insert_reas_dest.ExecuteNonQuery()
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DISCH_REAS_DEST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG("Old version of ALERT(R)? Trying new query")
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Try
                 ''Versões antigas sem flg auto_presc_cancel
                 sql = "DECLARE
@@ -1799,8 +1950,14 @@ Public Class DISCHARGE_API
                 cmd_insert_reas_dest = New OracleCommand(sql, Connection.conn)
                 cmd_insert_reas_dest.CommandType = CommandType.Text
                 cmd_insert_reas_dest.ExecuteNonQuery()
+                DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DISCH_REAS_DEST - New query succeeded!")
 
             Catch ex2 As Exception
+
+                DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DISCH_REAS_DEST")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
                 cmd_insert_reas_dest.Dispose()
                 Return False
@@ -1818,7 +1975,7 @@ Public Class DISCHARGE_API
     'Conjunto de função para a inserção manual na REAS_DEST
     Function CHECK_DISCH_REAS_DEST(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_reason As String, ByVal i_destination As String, ByVal i_dep_clin_serv As Int64) As Boolean
 
-
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: CHECK_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason & ", " & ", " & i_destination & ", " & i_dep_clin_serv & ")")
 
         Dim sql As String = "SELECT COUNT(*)
                                 FROM alert.disch_reas_dest drd
@@ -1838,7 +1995,6 @@ Public Class DISCHARGE_API
                                                              AND dd.flg_available = 'Y') "
 
         End If
-
 
         If i_dep_clin_serv = -1 Then
 
@@ -1869,6 +2025,9 @@ Public Class DISCHARGE_API
             l_total_record = dr.Item(0)
         End While
 
+        dr.Dispose()
+        dr.Close()
+
         If l_total_record > 0 Then
             Return True
         Else
@@ -1882,6 +2041,12 @@ Public Class DISCHARGE_API
                                     ByVal i_inst_dest As Int64, ByVal i_epis_type As Integer, ByVal i_flg_default As String,
                                     ByVal i_rank As Integer, ByVal i_presc_cancel As String, ByVal i_over_resp As String,
                                     ByVal i_mcdts As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: UPDATE_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason & ", " &
+                            ", " & i_destination & ", " & i_dep_clin_serv & ", " & i_diagnosis &
+                            ", " & i_inst_dest & ", " & i_epis_type & ", " & i_flg_default &
+                             ", " & i_rank & ", " & i_presc_cancel & ", " & i_over_resp &
+                            ", " & i_mcdts & ")")
 
         Dim sql As String = "UPDATE alert.disch_reas_dest drd
                                 SET drd.flg_diag               ='" & i_diagnosis & "', "
@@ -1962,6 +2127,12 @@ Public Class DISCHARGE_API
             CMD_UPDATE_DISCH_REAS_DEST.CommandType = CommandType.Text
             CMD_UPDATE_DISCH_REAS_DEST.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: UPDATE_DISCH_REAS_DEST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             CMD_UPDATE_DISCH_REAS_DEST.Dispose()
             Return False
         End Try
@@ -1977,6 +2148,12 @@ Public Class DISCHARGE_API
                                     ByVal i_inst_dest As Int64, ByVal i_epis_type As Integer, ByVal i_flg_default As String,
                                     ByVal i_rank As Integer, ByVal i_presc_cancel As String, ByVal i_over_resp As String,
                                     ByVal i_mcdts As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason & ", " &
+                            ", " & i_destination & ", " & i_dep_clin_serv & ", " & i_diagnosis &
+                            ", " & i_inst_dest & ", " & i_epis_type & ", " & i_flg_default &
+                             ", " & i_rank & ", " & i_presc_cancel & ", " & i_over_resp &
+                            ", " & i_mcdts & ")")
 
         Dim sql As String = "DECLARE
 
@@ -2055,17 +2232,29 @@ Public Class DISCHARGE_API
 
         Dim cmd_insert_reas_dest As New OracleCommand(sql, Connection.conn)
 
-        cmd_insert_reas_dest.CommandType = CommandType.Text
-        cmd_insert_reas_dest.ExecuteNonQuery()
-        cmd_insert_reas_dest.Dispose()
+        Try
+            cmd_insert_reas_dest.CommandType = CommandType.Text
+            cmd_insert_reas_dest.ExecuteNonQuery()
+            cmd_insert_reas_dest.Dispose()
 
-        Return True
+            Return True
+
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_MANUAL_DISCH_REAS_DEST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            Return False
+
+        End Try
 
     End Function
 
-    ''' '''''''''''''''''''''''''''''''''''''''''''''''''''
-
     Function GET_DISCH_INSTR_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DISCH_INSTR_VERSIONS(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2090,6 +2279,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DISCH_INSTR_VERSIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2097,6 +2292,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_DEFAULT_INSTR_GROUP(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_INSTR_GROUP(" & i_institution & ", " & i_software & ", " & i_version & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2122,6 +2319,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_INSTR_GROUP")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2129,6 +2332,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_DEFAULT_INSTR_TITLES(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_group As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_INSTR_TITLES(" & i_institution & ", " & i_software & ", " & i_version & ", " & i_group & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2155,6 +2360,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_INSTR_TITLES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2162,6 +2373,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_DEFAULT_INSTR(ByVal i_institution As Int64, ByVal i_instr As String, ByRef o_desc As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_INSTR(" & i_institution & ", " & i_instr & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2186,6 +2399,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_INSTR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2193,6 +2412,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_ALERT_INSTR(ByVal i_institution As Int64, ByVal i_instr As String, ByRef o_desc As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALERT_INSTR(" & i_institution & ", " & i_instr & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2217,6 +2438,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALERT_INSTR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2227,6 +2454,8 @@ Public Class DISCHARGE_API
 
         'A FUNÇÃO SERÁ RESPONSÁVEL POR VERIFICAR SE GRUPO E INSTRUÇÃO JÁ EXISTEM NO ALERT
         'SÓ INSERE SE REGISTO OU TRADUÇÃO NÃO EXISTIREM
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DISCH_INSTRUCTION(" & i_institution & ", " & i_software & ", " & i_disch_group & ", " & "DEFAULT_INSTR()" & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2643,6 +2872,12 @@ Public Class DISCHARGE_API
             cmd_insert_disch_instr.CommandType = CommandType.Text
             cmd_insert_disch_instr.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DISCH_INSTRUCTION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_disch_instr.Dispose()
             Return False
         End Try
@@ -2654,6 +2889,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_REASONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_REASONS(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2677,6 +2914,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_REASONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2684,6 +2927,8 @@ Public Class DISCHARGE_API
 
     'Funcção que devolve todaas as reasons maracadas como available no alert. (Não significa que vão estar a aparecer porque podem não ter ooutras associações (prof_disch_reas, disch_reas_dest, etc.)))
     Function GET_REASONS_ALERT(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_REASONS_ALERT(" & i_institution & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2700,6 +2945,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_REASONS_ALERT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2707,6 +2958,8 @@ Public Class DISCHARGE_API
 
     'Função que devolve todaas as destinations maracadas como available no alert. (Não significa que vão estar a aparecer porque podem não ter outras associações (prof_disch_reas, disch_reas_dest, etc.)))
     Function GET_DESTINATIONS_ALERT(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DESTINATIONS_ALERT(" & i_institution & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2724,12 +2977,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DESTINATIONS_ALERT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_PROFILE_DISCH_REASON(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_PROFILE_DISCH_REASON(" & i_institution & ", " & i_software & ", " & i_id_content_reason & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2755,12 +3016,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_PROFILE_DISCH_REASON")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_DESTINATIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_reason As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DESTINATIONS(" & i_institution & ", " & i_software & ", " & i_id_content_reason & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2794,12 +3063,20 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DESTINATIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function DELETE_DISCH_REAS_DEST(ByVal i_id_disch_reas_isnt As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: DELETE_DISCH_REAS_DEST(" & i_id_disch_reas_isnt & ")")
 
         Dim sql As String = "UPDATE ALERT.DISCH_REAS_DEST DRD
                                 SET DRD.FLG_ACTIVE='N'
@@ -2811,6 +3088,12 @@ Public Class DISCHARGE_API
             cmd_delete_disch_reas_inst.CommandType = CommandType.Text
             cmd_delete_disch_reas_inst.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: DELETE_DISCH_REAS_DEST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_disch_reas_inst.Dispose()
             Return False
         End Try
@@ -2823,6 +3106,8 @@ Public Class DISCHARGE_API
 
     Function DELETE_PROF_DISCH_REAS(ByVal i_id_prof_disch_reas As Int64) As Boolean
 
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: DELETE_PROF_DISCH_REAS(" & i_id_prof_disch_reas & ")")
+
         Dim sql As String = "UPDATE ALERT.PROFILE_DISCH_REASON PDR
                                 SET PDR.FLG_AVAILABLE='N'
                                 WHERE PDR.ID_PROFILE_DISCH_REASON=" & i_id_prof_disch_reas
@@ -2833,6 +3118,12 @@ Public Class DISCHARGE_API
             cmd_delete_prof_disch_reas.CommandType = CommandType.Text
             cmd_delete_prof_disch_reas.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: DELETE_PROF_DISCH_REAS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_prof_disch_reas.Dispose()
             Return False
         End Try
@@ -2844,6 +3135,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_ALERT_INSTR_GROUP(ByVal i_institution As Int64, ByVal i_software As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALERT_INSTR_GROUP(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2864,6 +3157,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALERT_INSTR_GROUP")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2871,6 +3170,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_ALERT_INSTR(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_group As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALERT_INSTR(" & i_institution & ", " & i_software & ", " & i_id_group & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -2892,6 +3193,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALERT_INSTR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2899,6 +3206,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function DELETE_DISCH_INSTR_REL(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_group As String, ByVal i_id_instruction As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: DELETE_DISCH_INSTR_REL(" & i_institution & ", " & i_software & ", " & i_id_group & ", " & i_id_instruction & ")")
 
         Dim sql As String = "DELETE FROM alert.disch_instr_relation dir
                                 WHERE dir.id_disch_instructions_group IN (SELECT DIG.ID_DISCH_INSTRUCTIONS_GROUP
@@ -2918,6 +3227,12 @@ Public Class DISCHARGE_API
             cmd_delete_disch_instr_rel.CommandType = CommandType.Text
             cmd_delete_disch_instr_rel.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: DELETE_DISCH_INSTR_REL")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_disch_instr_rel.Dispose()
             Return False
         End Try
@@ -2929,6 +3244,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_ALL_REASON_SCREENS(ByRef o_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_ALL_REASON_SCREENS()")
 
         Dim sql As String = "SELECT DISTINCT dr.file_to_execute
                                 FROM alert_default.discharge_reason dr
@@ -2943,6 +3260,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALL_REASON_SCREENS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2950,6 +3273,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_DEFAULT_SCREEN(ByVal i_reason As String, ByRef o_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DEFAULT_SCREEN(" & i_reason & ")")
 
         Dim sql As String = "SELECT DISTINCT dr.file_to_execute
                                 FROM alert_default.discharge_reason dr
@@ -2964,6 +3289,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DEFAULT_SCREEN")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -2971,6 +3302,8 @@ Public Class DISCHARGE_API
     End Function
 
     Function GET_DISCH_FLASH_FILES(ByRef o_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: GET_DISCH_FLASH_FILES()")
 
         Dim sql As String = "SELECT dff.id_discharge_flash_files, dff.intern_name
                                 FROM alert.discharge_flash_files dff
@@ -2983,6 +3316,12 @@ Public Class DISCHARGE_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_DISCH_FLASH_FILES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -3050,9 +3389,9 @@ Public Class DISCHARGE_API
 
     Function SET_DISCH_STATUS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_status As Integer, ByVal flg_default As String, ByVal i_id_disch_reas_dest As String) As Boolean
 
-        Dim l_market As Integer = db_access_general.GET_INSTITUTION_MARKET(i_institution)
-
         DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_DISCH_STATUS(" & i_institution & ", " & i_software & ", " & i_status & ", " & flg_default & ", " & i_id_disch_reas_dest & ")")
+
+        Dim l_market As Integer = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
         'FIX POR CAUSA DE BUG NA APLICAÇÃO (O GERAL (SEM DISCH_REAS_DEST) SOBREPÔEM-SE AO ESPECÍFICO)
         If i_id_disch_reas_dest = -1 Then
@@ -3086,6 +3425,66 @@ Public Class DISCHARGE_API
         Catch ex As Exception
 
             DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: SET_DISCH_STATUS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(Sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd_insert_status.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_status.Dispose()
+
+        Return True
+
+    End Function
+
+    Function DELETE_DISCH_STATUS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_status As Integer, ByVal flg_default As String, ByVal i_id_disch_reas_dest As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: DELETE_DISCH_STATUS(" & i_institution & ", " & i_software & ", " & i_status & ", " & flg_default & ", " & i_id_disch_reas_dest & ")")
+
+        Dim l_market As Integer = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim Sql As String
+
+        If i_id_disch_reas_dest = "-1" Then
+
+            Sql = "BEGIN
+                              
+                                DELETE FROM alert.disch_status_soft_inst i                              
+                                where i.id_discharge_status=" & i_status & "
+                                and i.id_software= " & i_software & "
+                                and i.id_institution in (" & i_institution & ", 0)
+                                and i.id_market= " & l_market & ";
+
+                            END;"
+
+            DEBUGGER.SET_DEBUG(Sql)
+
+        Else
+
+
+            Sql = "BEGIN
+                              
+                                DELETE FROM alert.disch_status_soft_inst i                              
+                                where i.id_discharge_status=" & i_status & "
+                                and i.id_software= " & i_software & "
+                                and i.id_institution=" & i_institution & "
+                                and i.id_market= " & l_market & "
+                                and i.id_disch_reas_dest= " & i_id_disch_reas_dest & ";
+
+                            END;"
+
+        End If
+
+        Dim cmd_insert_status As New OracleCommand(Sql, Connection.conn)
+
+        Try
+            cmd_insert_status.CommandType = CommandType.Text
+            cmd_insert_status.ExecuteNonQuery()
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: DELETE_DISCH_STATUS")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(Sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()

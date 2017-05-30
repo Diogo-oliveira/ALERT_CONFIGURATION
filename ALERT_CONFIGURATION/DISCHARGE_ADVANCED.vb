@@ -1017,8 +1017,6 @@ Public Class DISCHARGE_ADVANCED
                                     'Se não existir, insere. Caso contrário, faz update.
                                     If Not db_discharge.CHECK_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content, l_destination, l_dep_clin_serv) Then
 
-                                        MsgBox("não existe")
-
                                         If Not db_discharge.SET_MANUAL_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content,
                                                                                   l_destination, l_dep_clin_serv, ComboBox8.Text,
                                                                                   l_inst_dest, l_disch_episode, ComboBox15.Text,
@@ -1030,8 +1028,6 @@ Public Class DISCHARGE_ADVANCED
                                         End If
 
                                     Else
-
-                                        MsgBox("existe")
 
                                         If Not db_discharge.UPDATE_DISCH_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_loaded_reasons_alert(ComboBox13.SelectedIndex).id_content,
                                                                                    l_destination, l_dep_clin_serv, ComboBox8.Text,
@@ -1473,11 +1469,9 @@ Public Class DISCHARGE_ADVANCED
 
                         While dr.Read()
 
-                            MsgBox(dr.Item(0))
-
                             If Not db_discharge.SET_DISCH_STATUS(TextBox1.Text, g_selected_soft, l_disch_status, ComboBox22.Text, dr.Item(0)) Then
 
-                                MsgBox("ERROR SETTING DISCAHRGE STATUS.", vbCritical)
+                                MsgBox("ERROR SETTING DISCHARGE STATUS.", vbCritical)
 
                             End If
 
@@ -1515,18 +1509,85 @@ Public Class DISCHARGE_ADVANCED
     End Sub
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
+        ' ---------------------------------------  DELETE (ADAPTAR)  -------------------------------------
+        If ComboBox19.SelectedIndex > -1 Then
 
+            If ComboBox21.SelectedIndex > -1 Then
 
+                If ComboBox22.SelectedIndex > -1 Then
 
-        MsgBox(1800 Mod 900)
+                    'Verificar se foi escolhida uma reason que não a ALL
+                    If ComboBox19.SelectedIndex > 0 Then
 
-        MsgBox(900 Mod 900)
+                        Dim dr As OracleDataReader
 
-        MsgBox(800 Mod 900)
+                        'Se não for selecionada uma destination (Enviar parâmtero a -1)
+                        If ComboBox20.SelectedIndex < 0 Then
 
-        MsgBox(899 Mod 900)
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, -1, dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
 
-        MsgBox(901 Mod 900)
+                            'Se for selecioanda uma destination que é na verdade uma reason (Enviar parâmtero a  vazio)
+                        ElseIf g_a_dest_soft_inst(ComboBox20.SelectedIndex).type = "R" Then
+
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, "", dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
+
+                        Else
+
+                            If Not db_discharge.GET_REAS_DEST(TextBox1.Text, g_selected_soft, g_a_reasons_soft_inst(ComboBox19.SelectedIndex - 1).id_content, g_a_dest_soft_inst(ComboBox20.SelectedIndex).id_content, dr) Then
+                                MsgBox("ERROR GETTING DISCHARGE REASON DESTINATION.", vbCritical)
+                            End If
+
+                        End If
+
+                        Dim l_disch_status As Integer = -1
+                        If ComboBox21.SelectedIndex = 0 Then
+                            l_disch_status = 1 'Final
+                        Else
+                            l_disch_status = 7 'Pendind
+                        End If
+
+                        While dr.Read()
+
+                            If Not db_discharge.DELETE_DISCH_STATUS(TextBox1.Text, g_selected_soft, l_disch_status, ComboBox22.Text, dr.Item(0)) Then
+
+                                MsgBox("ERROR SETTING DISCHARGE STATUS.", vbCritical)
+
+                            End If
+
+                        End While
+
+                        'Se foi selecionada a reason ALL
+                    ElseIf ComboBox19.SelectedIndex = 0 Then
+
+                        Dim l_disch_status As Integer = -1
+                        If ComboBox21.SelectedIndex = 0 Then
+                            l_disch_status = 1 'Final
+                        Else
+                            l_disch_status = 7 'Pendind
+                        End If
+
+                        If Not db_discharge.DELETE_DISCH_STATUS(TextBox1.Text, g_selected_soft, l_disch_status, ComboBox22.Text, -1) Then
+
+                            MsgBox("ERROR")
+
+                        End If
+
+                    End If
+                Else
+                    MsgBox("Please define the flag default.")
+                End If
+
+            Else
+                MsgBox("Please select a discharge status.")
+            End If
+
+        Else
+            MsgBox("Please select a discharge reason.")
+        End If
 
     End Sub
 End Class

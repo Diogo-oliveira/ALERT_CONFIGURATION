@@ -861,7 +861,7 @@ Partial Class DISCHARGE_ADVANCED
         '
         Me.Label29.AutoSize = True
         Me.Label29.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label29.Location = New System.Drawing.Point(149, 116)
+        Me.Label29.Location = New System.Drawing.Point(139, 116)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(56, 13)
         Me.Label29.TabIndex = 194
@@ -870,9 +870,9 @@ Partial Class DISCHARGE_ADVANCED
         'Button9
         '
         Me.Button9.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button9.Location = New System.Drawing.Point(293, 132)
+        Me.Button9.Location = New System.Drawing.Point(304, 132)
         Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(101, 23)
+        Me.Button9.Size = New System.Drawing.Size(90, 23)
         Me.Button9.TabIndex = 193
         Me.Button9.Text = "SAVE"
         Me.Button9.UseVisualStyleBackColor = True
@@ -882,7 +882,7 @@ Partial Class DISCHARGE_ADVANCED
         Me.ComboBox22.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox22.FormattingEnabled = True
-        Me.ComboBox22.Location = New System.Drawing.Point(152, 132)
+        Me.ComboBox22.Location = New System.Drawing.Point(141, 131)
         Me.ComboBox22.Name = "ComboBox22"
         Me.ComboBox22.Size = New System.Drawing.Size(50, 24)
         Me.ComboBox22.TabIndex = 192
@@ -939,11 +939,11 @@ Partial Class DISCHARGE_ADVANCED
         'Button10
         '
         Me.Button10.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button10.Location = New System.Drawing.Point(170, 180)
+        Me.Button10.Location = New System.Drawing.Point(208, 132)
         Me.Button10.Name = "Button10"
-        Me.Button10.Size = New System.Drawing.Size(101, 23)
+        Me.Button10.Size = New System.Drawing.Size(90, 23)
         Me.Button10.TabIndex = 196
-        Me.Button10.Text = "SAVE"
+        Me.Button10.Text = "DELETE"
         Me.Button10.UseVisualStyleBackColor = True
         '
         'DISCHARGE_ADVANCED

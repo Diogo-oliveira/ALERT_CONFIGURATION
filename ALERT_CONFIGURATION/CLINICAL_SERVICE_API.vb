@@ -561,6 +561,8 @@ Public Class CLINICAL_SERVICE_API
     'Pode devolver vários resultados?
     Function GET_ALL_CLIN_SERV_INST(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef o_id_dep_clin_serv As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("CLIN_SERV_API :: GET_ALL_CLIN_SERV_INST(" & i_institution & ", " & i_software & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "SELECT DISTINCT c.id_content, pk_translation.get_translation(" & l_id_language & ", c.code_clinical_service)
@@ -586,6 +588,11 @@ Public Class CLINICAL_SERVICE_API
             Return True
 
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("DISCHARGE_API :: GET_ALL_CLIN_SERV_INST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
             cmd.Dispose()
 
