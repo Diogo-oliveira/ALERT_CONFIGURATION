@@ -2119,8 +2119,6 @@ Public Class DISCHARGE_API
 
         End If
 
-        MsgBox(sql)
-
         Dim CMD_UPDATE_DISCH_REAS_DEST As New OracleCommand(sql, Connection.conn)
 
         Try
@@ -2149,7 +2147,7 @@ Public Class DISCHARGE_API
                                     ByVal i_rank As Integer, ByVal i_presc_cancel As String, ByVal i_over_resp As String,
                                     ByVal i_mcdts As String) As Boolean
 
-        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason & ", " &
+        DEBUGGER.SET_DEBUG("DISCHARGE_API :: SET_MANUAL_DISCH_REAS_DEST(" & i_institution & ", " & i_software & ", " & i_reason &
                             ", " & i_destination & ", " & i_dep_clin_serv & ", " & i_diagnosis &
                             ", " & i_inst_dest & ", " & i_epis_type & ", " & i_flg_default &
                              ", " & i_rank & ", " & i_presc_cancel & ", " & i_over_resp &

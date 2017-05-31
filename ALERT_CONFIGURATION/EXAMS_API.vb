@@ -878,7 +878,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As Int64(), ByVal i_dep_clin_serv As Int64) As Boolean
+    Function DELETE_EXAMS_DEP_CLIN_SERV(ByVal i_exam As String(), ByVal i_dep_clin_serv As Int64) As Boolean
 
         Dim sql As String = ""
 
@@ -886,8 +886,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
             For i As Integer = 0 To i_exam.Count() - 1
 
-                Sql = "delete from ALERT.EXAM_DEP_CLIN_SERV S
-                             WHERE S.ID_EXAM = " & i_exam(i) & "                           
+                sql = "delete from ALERT.EXAM_DEP_CLIN_SERV S
+                             WHERE S.ID_EXAM  in (SELECT e.id_exam
+                                                    FROM alert.exam e
+                                                    WHERE e.id_content = '" & i_exam(i) & "'
+                                                    AND e.flg_available = 'Y'
+                                                    )                           
                              And S.FLG_TYPE='M'
                              And S.ID_DEP_CLIN_SERV= " & i_dep_clin_serv
 
@@ -1037,12 +1041,12 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
 
     End Function
 
-    Function DELETE_EXAMS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_exam As exams_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
+    Function DELETE_EXAMS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_exam As String, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
 
-        DEBUGGER.SET_DEBUG("EXAMS_API :: DELETE_EXAMS(" & i_institution & ", " & i_software & ", " & i_exam.id_content_exam & ", " & i_most_freq & ", " & i_flg_type & ")")
+        DEBUGGER.SET_DEBUG("EXAMS_API :: DELETE_EXAMS(" & i_institution & ", " & i_software & ", " & i_exam & ", " & i_most_freq & ", " & i_flg_type & ")")
 
         Dim sql As String = "   DELETE from alert.exam_dep_clin_serv dps
-                                        where dps.id_exam = (select e.id_exam from alert.exam e where e.id_content='" & i_exam.id_content_exam & "' and e.flg_available='Y')
+                                        where dps.id_exam = (select e.id_exam from alert.exam e where e.id_content='" & i_exam & "' and e.flg_available='Y')
                                         and (
                                         (dps.id_institution= " & i_institution & " and dps.id_software= " & i_software & " ) 
                                         or 

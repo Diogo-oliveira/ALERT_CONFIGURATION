@@ -1,12 +1,13 @@
 ﻿Public Class myGroupBox
-
     Inherits GroupBox
 
-    ' Private borderColor As Color
+    'Private borderColor As Color
 
     Public Sub New()
+
         MyBase.New
-        Me.borderColor = Color.Black
+        Me.BorderColor = Color.White
+
     End Sub
 
     Public Property BorderColor As Color
@@ -33,5 +34,4 @@
         e.Graphics.FillRectangle(New SolidBrush(Me.BackColor), textRect)
         e.Graphics.DrawString(Me.Text, Me.Font, New SolidBrush(Me.ForeColor), textRect)
     End Sub
-
 End Class

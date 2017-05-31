@@ -1064,7 +1064,7 @@ Public Class INSERT_OTHER_EXAM
 
                     'Apagar da ALERT.EXAM_DEP_CLIN_SERV (se arugmento for enviado a true, apenas serão apagados os mais frequentes)
 
-                    If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_alert(indexChecked), False, g_record_type) Then
+                    If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_alert(indexChecked).id_content_exam, False, g_record_type) Then
 
                         l_sucess = False
 
@@ -1235,72 +1235,17 @@ Public Class INSERT_OTHER_EXAM
 
         Cursor = Cursors.WaitCursor
 
-        Dim l_exams_delete_dcs As EXAMS_API.exams_default
-
         If CheckedListBox4.CheckedIndices.Count() > 0 Then
 
-            Dim i As Integer = 0
 
-            Dim indexChecked As Integer
-
-            Dim total_selected_exams As Integer = 0
-
-            For Each indexChecked In CheckedListBox4.CheckedIndices
-
-                total_selected_exams = total_selected_exams + 1
-
-            Next
-
-            ReDim g_a_selected_exams_delete_cs(total_selected_exams - 1)
-
-            Dim dr As OracleDataReader
-
-            For Each indexChecked In CheckedListBox4.CheckedIndices
-
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                If Not db_access.GET_FREQ_EXAM(TextBox1.Text, g_selected_soft, g_record_type, g_id_dep_clin_serv, "E", dr) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-
-                    MsgBox("ERROR GETTING EXAM_DEP_CLIN_SERV.", vbCritical)
-
-                Else
-
-                    Dim i_index As Integer = 0
-
-                    While dr.Read()
-
-                        If i_index = indexChecked.ToString() Then
-
-                            g_a_selected_exams_delete_cs(i) = dr.Item(1)
-
-                        End If
-
-                        i_index = i_index + 1
-
-                    End While
-
-                    i = i + 1
-
-                End If
-
-                dr.Dispose()
-
-            Next
-
-            dr.Dispose()
-            dr.Close()
+            ' 1 - Determinar os exames a serem eliminados. 
 
             Dim l_sucess As Boolean = True
 
-            For ii As Integer = 0 To g_a_selected_exams_delete_cs.Count() - 1
-
-                l_exams_delete_dcs.id_content_exam = g_a_selected_exams_delete_cs(ii)
+            For Each indexChecked In CheckedListBox4.CheckedIndices
 
 #Disable Warning BC42109 ' Variable is used before it has been assigned a value
-
-                If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, l_exams_delete_dcs, True, g_record_type) Then
-
+                If Not db_access.DELETE_EXAMS(TextBox1.Text, g_selected_soft, g_a_exams_for_clinical_service(indexChecked).id_content_exam, True, g_record_type) Then
 #Enable Warning BC42109 ' Variable is used before it has been assigned a value
 
                     l_sucess = False
@@ -1352,13 +1297,13 @@ Public Class INSERT_OTHER_EXAM
 
             Else
 
-                MsgBox("ERROR DELETING INTERVENTIONS!", vbCritical)
+                MsgBox("ERROR DELETING EXAMS!", vbCritical)
 
             End If
 
         Else
 
-            MsgBox("No selected interventions!", vbCritical)
+            MsgBox("No selected exams!", vbCritical)
 
         End If
 

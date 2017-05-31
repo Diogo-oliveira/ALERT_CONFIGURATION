@@ -233,6 +233,9 @@
     </Compile>
     <Compile Include="Form_location.vb" />
     <Compile Include="General.vb" />
+    <Compile Include="GroupBoxA.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="INSERT_IMAGING_EXAMS.Designer.vb">
       <DependentUpon>INSERT_IMAGING_EXAMS.vb</DependentUpon>
     </Compile>

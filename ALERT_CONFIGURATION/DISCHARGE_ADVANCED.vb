@@ -1047,7 +1047,7 @@ Public Class DISCHARGE_ADVANCED
                                     MsgBox("Please state if it is necessary to have an Overall responsible assigned to the patient when documenting a discharge.")
                                 End If
                             Else
-                                    MsgBox("Please state if prescriptions should be automatically canceled with discharge.")
+                                MsgBox("Please state if prescriptions should be automatically canceled with discharge.")
                             End If
                         Else
                             MsgBox("Please state if a discharge diagnosis should be mandatory.")
@@ -1162,17 +1162,17 @@ Public Class DISCHARGE_ADVANCED
 
                             ''-------------------------------------------------------------------------------
                         Else
-                                    MsgBox("Please select, at least, one discharge type.")
+                            MsgBox("Please select, at least, one discharge type.")
                         End If
                     Else
-                            MsgBox("Please select a discharge screen.")
+                        MsgBox("Please select a discharge screen.")
+                    End If
+                Else
+                    MsgBox("Please select a valid rank for the discharge reason.")
                 End If
             Else
-                MsgBox("Please select a valid rank for the discharge reason.")
+                MsgBox("Please set a rank for the discharge reason.")
             End If
-        Else
-            MsgBox("Please set a rank for the discharge reason.")
-        End If
         Else
             MsgBox("Please select a discharge reason.")
         End If
@@ -1342,10 +1342,10 @@ Public Class DISCHARGE_ADVANCED
                         MsgBox("Please set a rank.")
                     End If
                 Else
-                        MsgBox("Please select, at least, one profile template.")
+                    MsgBox("Please select, at least, one profile template.")
                 End If
             Else
-                    MsgBox("Please select a discharge type.")
+                MsgBox("Please select a discharge type.")
             End If
         Else
             MsgBox("Please select a discharge reason.")
