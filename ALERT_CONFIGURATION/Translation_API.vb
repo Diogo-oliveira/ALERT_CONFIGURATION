@@ -6,7 +6,7 @@ Public Class Translation_API
 
     Function CREATE_TEMP_TABLE() As Boolean
 
-        Dim sql As String = "create table output_records
+        Dim sql As String = "create table ac_output_records
                                 (
                                     record_index  number,
                                     updated_records clob,
@@ -30,7 +30,7 @@ Public Class Translation_API
 
     Function DELETE_TEMP_TABLE() As Boolean
 
-        Dim sql As String = "drop table output_records"
+        Dim sql As String = "DELETE From ac_output_records"
 
         Dim cmd_drop_temp As New OracleCommand(sql, Connection.conn)
 
@@ -81,9 +81,9 @@ Public Class Translation_API
   
                                     select (nvl(max(r.record_index),0)+1)
                                     into l_index  
-                                    from output_records r;
+                                    from ac_output_records r;
         
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
         
@@ -223,9 +223,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
         
-                                              insert into output_records
+                                              insert into ac_output_records
                                               values (l_index,i_updated_records,l_record_area);
                                               l_index:=l_index+1;
         
@@ -362,9 +362,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
         
-                                              insert into output_records
+                                              insert into ac_output_records
                                               values (l_index,i_updated_records,l_record_area);
                                               l_index:=l_index+1;
         
@@ -503,9 +503,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                            insert into output_records
+                                            insert into ac_output_records
                                             values (l_index,i_updated_records,l_record_area);
                                             l_index:=l_index+1;
           
@@ -643,9 +643,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                          insert into output_records
+                                          insert into ac_output_records
                                           values (l_index,i_updated_records,l_record_area);
                                           l_index:=l_index+1;
           
@@ -782,9 +782,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                          insert into output_records
+                                          insert into ac_output_records
                                           values (l_index,i_updated_records,l_record_area);
                                           l_index:=l_index+1;
           
@@ -920,9 +920,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                          insert into output_records
+                                          insert into ac_output_records
                                           values (l_index,i_updated_records,l_record_area);
                                           l_index:=l_index+1;
           
@@ -1060,9 +1060,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1200,9 +1200,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1341,9 +1341,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1495,9 +1495,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1634,9 +1634,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1774,9 +1774,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -1913,9 +1913,9 @@ Public Class Translation_API
   
                                         select (nvl(max(r.record_index),0)+1)
                                         into l_index  
-                                        from output_records r;
+                                        from ac_output_records r;
           
-                                    insert into output_records
+                                    insert into ac_output_records
                                     values (l_index,i_updated_records,l_record_area);
                                     l_index:=l_index+1;
           
@@ -2055,9 +2055,9 @@ Public Class Translation_API
     
                                     SELECT (nvl(MAX(r.record_index), 0) + 1)
                                     INTO l_index
-                                    FROM output_records r;
+                                    FROM ac_output_records r;
     
-                                    INSERT INTO output_records
+                                    INSERT INTO ac_output_records
                                     VALUES
                                         (l_index, i_updated_records, l_record_area);
                                     l_index := l_index + 1;
@@ -2206,9 +2206,9 @@ Public Class Translation_API
     
                                         SELECT (nvl(MAX(r.record_index), 0) + 1)
                                         INTO l_index
-                                        FROM output_records r;
+                                        FROM ac_output_records r;
     
-                                        INSERT INTO output_records
+                                        INSERT INTO ac_output_records
                                         VALUES
                                             (l_index, i_updated_records, l_record_area);
                                         l_index := l_index + 1;
@@ -2390,9 +2390,9 @@ Public Class Translation_API
           
                                         SELECT (nvl(MAX(r.record_index), 0) + 1)
                                         INTO l_index
-                                        FROM output_records r;
+                                        FROM ac_output_records r;
           
-                                        INSERT INTO output_records
+                                        INSERT INTO ac_output_records
                                         VALUES
                                             (l_index, i_updated_records, l_record_area);
                                         l_index := l_index + 1;
@@ -2529,9 +2529,9 @@ Public Class Translation_API
     
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
     
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -2676,9 +2676,9 @@ Public Class Translation_API
     
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
     
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -2768,13 +2768,13 @@ Public Class Translation_API
 
         Dim cmd_update_questionnaire As New OracleCommand(sql, Connection.conn)
 
-        Try
-            cmd_update_questionnaire.CommandType = CommandType.Text
-            cmd_update_questionnaire.ExecuteNonQuery()
-        Catch ex As Exception
-            cmd_update_questionnaire.Dispose()
-            Return False
-        End Try
+        'Try
+        cmd_update_questionnaire.CommandType = CommandType.Text
+        cmd_update_questionnaire.ExecuteNonQuery()
+        ' Catch ex As Exception
+        'cmd_update_questionnaire.Dispose()
+        'Return False
+        ' End Try
 
         cmd_update_questionnaire.Dispose()
         Return True
@@ -2815,9 +2815,9 @@ Public Class Translation_API
     
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
     
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -2954,9 +2954,9 @@ Public Class Translation_API
           
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
           
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -3094,9 +3094,9 @@ Public Class Translation_API
           
                                   SELECT (nvl(MAX(r.record_index), 0) + 1)
                                   INTO l_index
-                                  FROM output_records r;
+                                  FROM ac_output_records r;
           
-                                  INSERT INTO output_records
+                                  INSERT INTO ac_output_records
                                   VALUES
                                       (l_index, i_updated_records, l_record_area);
                                   l_index := l_index + 1;
@@ -3236,9 +3236,9 @@ Public Class Translation_API
           
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
           
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -3375,9 +3375,9 @@ Public Class Translation_API
           
                                       SELECT (nvl(MAX(r.record_index), 0) + 1)
                                       INTO l_index
-                                      FROM output_records r;
+                                      FROM ac_output_records r;
           
-                                      INSERT INTO output_records
+                                      INSERT INTO ac_output_records
                                       VALUES
                                           (l_index, i_updated_records, l_record_area);
                                       l_index := l_index + 1;
@@ -3514,9 +3514,9 @@ Public Class Translation_API
           
                                   SELECT (nvl(MAX(r.record_index), 0) + 1)
                                   INTO l_index
-                                  FROM output_records r;
+                                  FROM ac_output_records r;
           
-                                  INSERT INTO output_records
+                                  INSERT INTO ac_output_records
                                   VALUES
                                       (l_index, i_updated_records, l_record_area);
                                   l_index := l_index + 1;
@@ -3652,9 +3652,9 @@ Public Class Translation_API
           
                                   SELECT (nvl(MAX(r.record_index), 0) + 1)
                                   INTO l_index
-                                  FROM output_records r;
+                                  FROM ac_output_records r;
           
-                                  INSERT INTO output_records
+                                  INSERT INTO ac_output_records
                                   VALUES
                                       (l_index, i_updated_records, l_record_area);
                                   l_index := l_index + 1;
@@ -3761,7 +3761,7 @@ Public Class Translation_API
 
         Dim sql As String = "SELECT desc_record as ""UPDATE LOG""
                              FROM (SELECT r.record_index ""INDEX_RECORD"", r.updated_records ""DESC_RECORD""
-                                   FROM output_records r
+                                   FROM ac_output_records r
                                    ORDER BY 1 ASC) updated_records"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)

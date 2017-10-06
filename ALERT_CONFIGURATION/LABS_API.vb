@@ -4072,7 +4072,7 @@ Public Class LABS_API
   
                                                 BEGIN
     
-                                                  Select ar.id_analysis_room
+                                                  Select count(1) --ar.id_analysis_room
                                                     into l_id_a_room
                                                     from alert.analysis_room ar
                                                    where ar.id_analysis = i_id_analysis

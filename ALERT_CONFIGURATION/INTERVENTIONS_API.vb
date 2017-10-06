@@ -18,6 +18,8 @@ Public Class INTERVENTIONS_API
 
     Function GET_DEFAULT_VERSIONS(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
 
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_DEFAULT_VERSIONS(" & i_institution & ", " & i_software & ", " & i_flg_type & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "SELECT DISTINCT dim.version
@@ -95,6 +97,8 @@ Public Class INTERVENTIONS_API
             Dim cmd_old_v As New OracleCommand(sql, Connection.conn)
             cmd_old_v.CommandType = CommandType.Text
 
+            DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_DEFAULT_VERSIONS - Detected version prior to V2.7.0")
+
             Try
 
                 i_dr = cmd_old_v.ExecuteReader()
@@ -103,6 +107,11 @@ Public Class INTERVENTIONS_API
                 Return True
 
             Catch ex_2 As Exception
+
+                DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_DEFAULT_VERSIONS")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
                 cmd.Dispose()
                 cmd_old_v.Dispose()
@@ -118,6 +127,8 @@ Public Class INTERVENTIONS_API
 
         'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERV_CATS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "with tbl_interv_cats (id_content_interv_cat,id_content_interv, cod_interv_cat)
@@ -246,12 +257,165 @@ Public Class INTERVENTIONS_API
                           ORDER BY 2 ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
+
         Try
             cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
+
         Catch ex As Exception
+
+            sql = "with tbl_interv_cats (id_content_interv_cat,id_content_interv, cod_interv_cat)
+                                as
+                                (SELECT DISTINCT ic.id_content, i.id_content, ic.code_interv_category
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                WHERE i.flg_status = 'A'
+                                AND iic.id_software IN (0, " & i_software & ")
+                                AND iic.id_institution IN (0, " & i_institution & ")
+                                AND iic.flg_add_remove = 'A'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") 
+                                AND (I.FLG_CATEGORY_TYPE <> 'SR'OR I.FLG_CATEGORY_TYPE IS NULL)"
+            If i_flg_type = 0 Then
+
+                    sql = sql & " And idcs.flg_type In ('P', 'M', 'A', 'B') "
+
+                ElseIf i_flg_type = 1 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P', 'M') "
+
+                Else
+
+                    sql = sql & "And idcs.flg_type IN ('A', 'B') "
+
+                End If
+
+            sql = sql & "
+                                MINUS
+                                
+                                --Remover para Soft e instituição definidos
+                                SELECT DISTINCT ic.id_content , i.id_content , ic.code_interv_category
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                WHERE iic.id_software IN (" & i_software & ")
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (" & i_institution & ")
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") 
+                                AND (I.FLG_CATEGORY_TYPE <> 'SR'OR I.FLG_CATEGORY_TYPE IS NULL)"
+            If i_flg_type = 0 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M','B', 'A') "
+
+                ElseIf i_flg_type = 1 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M') "
+
+                Else
+
+                    sql = sql & "And idcs.flg_type IN ('B','A') "
+
+                End If
+
+            sql = sql & "
+                                MINUS
+                                
+                                --Remover para Instituição a 0 e soft definido
+                                SELECT DISTINCT ic.id_content , i.id_content ,ic.code_interv_category
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                WHERE iic.id_software = " & i_software & "
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (0)
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") 
+                                AND (I.FLG_CATEGORY_TYPE <> 'SR'OR I.FLG_CATEGORY_TYPE IS NULL)"
+            If i_flg_type = 0 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M','B','A') "
+
+                ElseIf i_flg_type = 1 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M') "
+
+                Else
+
+                    sql = sql & "And idcs.flg_type IN ('B','A') "
+
+                End If
+
+            sql = sql & "
+                                MINUS
+                                
+                                --REMOVER Para Soft 0 e Inst definida
+                                SELECT DISTINCT ic.id_content , i.id_content ,ic.code_interv_category
+                                FROM alert.interv_int_cat iic
+                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
+                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                WHERE iic.id_software = 0
+                                AND i.flg_status = 'A'
+                                AND iic.id_institution IN (" & i_institution & ")
+                                AND iic.flg_add_remove = 'R'
+                                AND ic.flg_available = 'Y'
+                                AND idcs.id_institution IN (0, " & i_institution & ")
+                                AND idcs.id_software IN (0, " & i_software & ") 
+                                AND (I.FLG_CATEGORY_TYPE <> 'SR'OR I.FLG_CATEGORY_TYPE IS NULL)"
+
+            If i_flg_type = 0 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M','B', 'A') "
+
+                ElseIf i_flg_type = 1 Then
+
+                    sql = sql & "And idcs.flg_type IN ('P','M') "
+
+                Else
+
+                    sql = sql & "And idcs.flg_type IN ('B','A') "
+
+                End If
+
+                sql = sql & ")       
+                          select distinct id_content_interv_cat, pk_translation.get_translation(" & l_id_language & ",cod_interv_cat) from tbl_interv_cats
+                          WHERE  pk_translation.get_translation(" & l_id_language & ",cod_interv_cat) IS NOT NULL
+                         -- and cod_interv_cat not like 'SPECIALITY%' (Existem associações a especialidades, por isso tive que remover isto -)
+                          ORDER BY 2 ASC"
+
+            Dim cmd2 As New OracleCommand(sql, Connection.conn)
+
+            Try
+
+                cmd2.CommandType = CommandType.Text
+                i_dr = cmd2.ExecuteReader()
+                cmd2.Dispose()
+                Return True
+
+            Catch ex2 As Exception
+
+                DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_INTERV_CATS_INST_SOFT")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+                cmd2.Dispose()
+                Return False
+
+            End Try
+
             cmd.Dispose()
             Return False
         End Try
@@ -261,6 +425,8 @@ Public Class INTERVENTIONS_API
 
         'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_FREQ_INTERVS(" & i_institution & ", " & i_software & ", " & i_flg_type & ", " & i_id_dep_clin_serv & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "with tbl_interv (id_content_interv, code_intervention)
@@ -400,12 +566,20 @@ Public Class INTERVENTIONS_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_FREQ_INTERVS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERVS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_id_content_interv_cat & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
@@ -549,6 +723,12 @@ Public Class INTERVENTIONS_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_INTERVS_INST_SOFT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -556,6 +736,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function GET_INTERV_CATS_DEFAULT(ByVal i_version As String, ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERV_CATS_DEFAULT(" & i_version & ", " & i_institution & ", " & i_software & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         'Bloco para versões >=V2.7.0
@@ -649,6 +831,11 @@ Public Class INTERVENTIONS_API
 
             Catch ex_2 As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_INTERV_CATS_DEFAULT")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 cmd_old_v.Dispose()
                 cmd.Dispose()
                 Return False
@@ -660,6 +847,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function GET_INTERVS_DEFAULT_BY_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_version As String, ByVal i_id_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERVS_DEFAULT_BY_CAT(" & i_institution & ", " & i_software & ", " & i_version & ", " & i_id_cat & ", " & i_flg_type & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         'Bloco para versões >=V2.7.0
@@ -748,6 +937,11 @@ Public Class INTERVENTIONS_API
 
             Catch ex_2 As Exception
 
+                DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_INTERVS_DEFAULT_BY_CAT")
+                DEBUGGER.SET_DEBUG(ex.Message)
+                DEBUGGER.SET_DEBUG(sql)
+                DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                 cmd_old_v.Dispose()
                 cmd.Dispose()
                 Return False
@@ -759,6 +953,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function EXISTS_INTERV_INT_CAT_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: EXISTS_INTERV_INT_CAT_SOFT(" & i_institution & ", " & i_software & ", " & "i_intervention" & ")")
 
         Dim sql As String = "DECLARE
 
@@ -814,6 +1010,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function EXIST_IN_OTHER_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_intervention As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: EXIST_IN_OTHER_CAT(" & i_institution & ", " & i_software & ", " & i_id_content_intervention & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
@@ -901,6 +1099,11 @@ Public Class INTERVENTIONS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: EXIST_IN_OTHER_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
             dr.Dispose()
@@ -913,6 +1116,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERVENTIONS(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERVENTIONS(" & i_institution & ", " & "i_a_interventions" & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
@@ -992,6 +1197,12 @@ Public Class INTERVENTIONS_API
             cmd_insert_interv.CommandType = CommandType.Text
             cmd_insert_interv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERVENTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_interv.Dispose()
             Return False
         End Try
@@ -1002,6 +1213,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERVS_TRANSLATION(ByVal i_institution As Int64, ByVal i_a_interventions() As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERVS_TRANSLATION(" & i_institution & ", " & "i_a_interventions" & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "DECLARE
@@ -1073,6 +1286,12 @@ Public Class INTERVENTIONS_API
             cmd_insert_interv.CommandType = CommandType.Text
             cmd_insert_interv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERVS_TRANSLATION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_interv.Dispose()
             Return False
         End Try
@@ -1083,6 +1302,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERV_INT_CAT(" & i_institution & ", " & i_software & ", i_a_interventions)")
 
         Dim sql As String = "DECLARE
 
@@ -1173,6 +1394,12 @@ Public Class INTERVENTIONS_API
             cmd_insert_interv_int_cat.CommandType = CommandType.Text
             cmd_insert_interv_int_cat.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERV_INT_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_interv_int_cat.Dispose()
             Return False
         End Try
@@ -1183,6 +1410,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_DEFAULT_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions() As interventions_default, ByVal i_flg_type As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_DEFAULT_INTERV_DEP_CLIN_SERV(" & i_institution & ", " & i_software & ", i_a_interventions, " & i_flg_type & ")")
 
         Dim sql As String = "DECLARE
 
@@ -1616,6 +1845,12 @@ Public Class INTERVENTIONS_API
             cmd_insert_interv_int_cat.CommandType = CommandType.Text
             cmd_insert_interv_int_cat.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_DEFAULT_INTERV_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_insert_interv_int_cat.Dispose()
             Return False
         End Try
@@ -1626,6 +1861,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERV_DEP_CLIN_SERV_FREQ(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_a_interventions As interventions_alert_flg, ByVal i_dep_clin_serv As Int64, ByVal i_flg_type As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERV_DEP_CLIN_SERV_FREQ(" & i_institution & ", " & i_software & ", i_a_interventions, " & i_dep_clin_serv & ", " & i_flg_type & ")")
 
         Dim sql As String = "DECLARE
 
@@ -1693,6 +1930,12 @@ Public Class INTERVENTIONS_API
             cmd_delete_interv_dep_clin_serv.CommandType = CommandType.Text
             cmd_delete_interv_dep_clin_serv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERV_DEP_CLIN_SERV_FREQ")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_interv_dep_clin_serv.Dispose()
             Return False
         End Try
@@ -1703,6 +1946,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function DELETE_INTERV_INT_CAT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: DELETE_INTERV_INT_CAT(" & i_institution & ", " & i_software & ", i_a_interventions" & ")")
 
         Dim sql As String = "DELETE FROM alert.interv_int_cat iic
                                 WHERE iic.id_intervention IN (SELECT i.id_intervention
@@ -1723,6 +1968,12 @@ Public Class INTERVENTIONS_API
             cmd_delete_interv_int_cat.CommandType = CommandType.Text
             cmd_delete_interv_int_cat.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: DELETE_INTERV_INT_CAT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_interv_int_cat.Dispose()
             Return False
         End Try
@@ -1733,6 +1984,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function DELETE_INTERV_DEP_CLIN_SERV(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default, ByVal i_most_freq As Boolean, ByVal i_flg_type As Integer) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: DELETE_INTERV_DEP_CLIN_SERV(" & i_institution & ", " & i_software & ", i_a_interventions" & ", " & i_most_freq & ", " & i_flg_type & ")")
 
         Dim sql As String
 
@@ -1779,6 +2032,12 @@ Public Class INTERVENTIONS_API
             cmd_delete_dep_clin_serv.CommandType = CommandType.Text
             cmd_delete_dep_clin_serv.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: DELETE_INTERV_DEP_CLIN_SERV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_delete_dep_clin_serv.Dispose()
             Return False
         End Try
@@ -1789,6 +2048,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERV_INT_CAT_REMOVE(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_intervention As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERV_INT_CAT_REMOVE(" & i_institution & ", " & i_software & ", i_a_interventions" & ")")
 
         Dim sql As String
 
@@ -1838,6 +2099,12 @@ Public Class INTERVENTIONS_API
             cmd_set_iic_remove.CommandType = CommandType.Text
             cmd_set_iic_remove.ExecuteNonQuery()
         Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERV_INT_CAT_REMOVE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd_set_iic_remove.Dispose()
             Return False
         End Try
@@ -1848,6 +2115,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function SET_INTERV_CAT(ByVal i_institution As Int64, ByVal i_a_intervs() As interventions_default) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: SET_INTERV_CAT(" & i_institution & ", i_a_intervs" & ")")
 
         If CHECK_CAT_VERSION() Then
 
@@ -1956,6 +2225,11 @@ Public Class INTERVENTIONS_API
 
                     Catch ex As Exception
 
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERV_CAT")
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG(sql_insert_cat)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                         cmd_insert_cat.Dispose()
                         Return False
 
@@ -2005,7 +2279,11 @@ Public Class INTERVENTIONS_API
 
                     Catch ex As Exception
 
-                        MsgBox("erro A INSERIR TRADUÇÃO")
+                        DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: SET_INTERV_CAT")
+                        DEBUGGER.SET_DEBUG(ex.Message)
+                        DEBUGGER.SET_DEBUG(sql_update)
+                        DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
                         cmd_upda_cat.Dispose()
                         Return False
 
@@ -2024,6 +2302,8 @@ Public Class INTERVENTIONS_API
     'fUNÇÃO QUE VERIFICA SE ESTAMOS NUMA VERSÃO DO ALERT QUE POSSUI INTERV_CAT NO DEFAULT
     Function CHECK_CAT_VERSION() As Boolean
 
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: CHECK_CAT_VERSION()")
+
         Dim sql As String = "SELECT COUNT(*)
                              FROM alert_default.interv_category "
 
@@ -2038,6 +2318,11 @@ Public Class INTERVENTIONS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: CHECK_CAT_VERSION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             Return False
 
         End Try
@@ -2045,6 +2330,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function GET_DISTINCT_CATEGORIES(ByVal i_a_intervs() As interventions_default, ByRef i_Dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_DISTINCT_CATEGORIES(i_a_intervs)")
 
         Dim sql As String = "Select distinct ic.id_content from alert_default.INTERV_CATEGORY ic
                                     where ic.flg_available = 'Y'
@@ -2076,6 +2363,11 @@ Public Class INTERVENTIONS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_DISTINCT_CATEGORIES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
 
@@ -2084,6 +2376,8 @@ Public Class INTERVENTIONS_API
     End Function
 
     Function CHECK_RECORD_EXISTENCE(ByVal i_id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: CHECK_RECORD_EXISTENCE(" & i_id_content_record & ", " & i_sql & ")")
 
         Dim l_total_records As Int16 = 0
 
@@ -2121,6 +2415,11 @@ Public Class INTERVENTIONS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: CHECK_RECORD_EXISTENCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -2132,6 +2431,8 @@ Public Class INTERVENTIONS_API
 
     Function GET_CAT_RANK(ByVal i_id_content_interv_cat As String) As Integer
 
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_CAT_RANK(" & i_id_content_interv_cat & ")")
+
         Dim sql As String = "SELECT DISTINCT ic.rank
                              FROM alert_default.interv_category ic where ic.id_content='" & i_id_content_interv_cat & "'
                              and ic.flg_available='Y'"
@@ -2139,24 +2440,40 @@ Public Class INTERVENTIONS_API
         Dim l_rank As Integer = 0
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
+
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
+        Try
+            While dr.Read()
 
-        While dr.Read()
+                l_rank = dr.Item(0)
 
-            l_rank = dr.Item(0)
+            End While
 
-        End While
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+            Return l_rank
 
-        dr.Dispose()
-        dr.Close()
-        cmd.Dispose()
-        Return l_rank
+
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_CAT_RANK")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+        End Try
 
     End Function
 
     Function CHECK_RECORD_TRANSLATION_EXISTENCE(ByVal i_institution As Int64, ByVal id_content_record As String, ByVal i_sql As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: CHECK_RECORD_TRANSLATION_EXISTENCE(" & i_institution & ", " & id_content_record & ", " & i_sql & ")")
 
         Dim l_translation As String = ""
 
@@ -2183,6 +2500,11 @@ Public Class INTERVENTIONS_API
 
         Catch ex As Exception
 
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: CHECK_RECORD_TRANSLATION_EXISTENCE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
@@ -2197,6 +2519,8 @@ Public Class INTERVENTIONS_API
 
     Function GET_CODE_INTERV_CAT_DEFAULT(ByVal i_id_content_interv_cat As String) As String
 
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_CODE_INTERV_CAT_DEFAULT(" & i_id_content_interv_cat & ")")
+
         Dim sql As String = "Select ic.code_interv_category from alert_default.interv_category ic
                              where ic.id_content='" & i_id_content_interv_cat & "'
                              and ic.flg_available='Y'"
@@ -2208,17 +2532,32 @@ Public Class INTERVENTIONS_API
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-        While dr.Read()
+        Try
 
-            l_code = dr.Item(0)
+            While dr.Read()
 
-        End While
+                l_code = dr.Item(0)
 
-        dr.Dispose()
-        dr.Close()
-        cmd.Dispose()
+            End While
 
-        Return l_code
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+            Return l_code
+
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("INTERVENTIONS_API :: GET_CODE_INTERV_CAT_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        End Try
 
     End Function
 
