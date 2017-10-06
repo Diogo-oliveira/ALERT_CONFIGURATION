@@ -60,6 +60,9 @@ Partial Class Procedures
         Me.Label5 = New System.Windows.Forms.Label()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
+        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -142,7 +145,7 @@ Partial Class Procedures
         Me.CheckedListBox4.FormattingEnabled = True
         Me.CheckedListBox4.Location = New System.Drawing.Point(833, 490)
         Me.CheckedListBox4.Name = "CheckedListBox4"
-        Me.CheckedListBox4.Size = New System.Drawing.Size(739, 289)
+        Me.CheckedListBox4.Size = New System.Drawing.Size(739, 276)
         Me.CheckedListBox4.TabIndex = 101
         '
         'Button11
@@ -238,7 +241,7 @@ Partial Class Procedures
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Location = New System.Drawing.Point(832, 118)
         Me.CheckedListBox1.Name = "CheckedListBox1"
-        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 289)
+        Me.CheckedListBox1.Size = New System.Drawing.Size(740, 276)
         Me.CheckedListBox1.TabIndex = 88
         '
         'Button4
@@ -301,7 +304,7 @@ Partial Class Procedures
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(874, 8)
+        Me.Label4.Location = New System.Drawing.Point(1036, 8)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 80
@@ -311,7 +314,7 @@ Partial Class Procedures
         '
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(877, 23)
+        Me.ComboBox3.Location = New System.Drawing.Point(1039, 23)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox3.TabIndex = 79
@@ -328,7 +331,7 @@ Partial Class Procedures
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(619, 8)
+        Me.Label3.Location = New System.Drawing.Point(781, 8)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(68, 13)
         Me.Label3.TabIndex = 77
@@ -338,7 +341,7 @@ Partial Class Procedures
         '
         Me.ComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox2.FormattingEnabled = True
-        Me.ComboBox2.Location = New System.Drawing.Point(620, 23)
+        Me.ComboBox2.Location = New System.Drawing.Point(782, 23)
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(228, 21)
         Me.ComboBox2.TabIndex = 76
@@ -379,7 +382,7 @@ Partial Class Procedures
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(433, 8)
+        Me.Label5.Location = New System.Drawing.Point(595, 8)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(123, 13)
         Me.Label5.TabIndex = 113
@@ -389,7 +392,7 @@ Partial Class Procedures
         '
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckBox1.Location = New System.Drawing.Point(436, 28)
+        Me.CheckBox1.Location = New System.Drawing.Point(600, 28)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(155, 19)
         Me.CheckBox1.TabIndex = 114
@@ -400,18 +403,52 @@ Partial Class Procedures
         '
         Me.CheckBox2.AutoSize = True
         Me.CheckBox2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckBox2.Location = New System.Drawing.Point(436, 53)
+        Me.CheckBox2.Location = New System.Drawing.Point(600, 53)
         Me.CheckBox2.Name = "CheckBox2"
         Me.CheckBox2.Size = New System.Drawing.Size(115, 19)
         Me.CheckBox2.TabIndex = 115
         Me.CheckBox2.Text = "Past Treatments"
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(433, 8)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(137, 13)
+        Me.Label7.TabIndex = 116
+        Me.Label7.Text = "PROCEDURE CATEGORY"
+        '
+        'RadioButton1
+        '
+        Me.RadioButton1.AutoSize = True
+        Me.RadioButton1.Location = New System.Drawing.Point(436, 29)
+        Me.RadioButton1.Name = "RadioButton1"
+        Me.RadioButton1.Size = New System.Drawing.Size(143, 17)
+        Me.RadioButton1.TabIndex = 117
+        Me.RadioButton1.TabStop = True
+        Me.RadioButton1.Text = "Non-Surgical Procedures"
+        Me.RadioButton1.UseVisualStyleBackColor = True
+        '
+        'RadioButton2
+        '
+        Me.RadioButton2.AutoSize = True
+        Me.RadioButton2.Location = New System.Drawing.Point(436, 52)
+        Me.RadioButton2.Name = "RadioButton2"
+        Me.RadioButton2.Size = New System.Drawing.Size(120, 17)
+        Me.RadioButton2.TabIndex = 118
+        Me.RadioButton2.TabStop = True
+        Me.RadioButton2.Text = "Surgical Procedures"
+        Me.RadioButton2.UseVisualStyleBackColor = True
+        '
         'Procedures
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.RadioButton2)
+        Me.Controls.Add(Me.RadioButton1)
+        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.CheckBox2)
         Me.Controls.Add(Me.CheckBox1)
         Me.Controls.Add(Me.Label5)
@@ -497,4 +534,7 @@ Partial Class Procedures
     Friend WithEvents Label5 As Label
     Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents RadioButton1 As RadioButton
+    Friend WithEvents RadioButton2 As RadioButton
 End Class

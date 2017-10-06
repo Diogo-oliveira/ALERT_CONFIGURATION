@@ -35,6 +35,8 @@ Public Class Procedures
 
     Dim g_a_selected_intervs_delete_cs() As String ' Array para remover procedimentos do alert
 
+    Dim g_surgical_procedures As Boolean = False
+
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
 
         Form_location.x_position = Me.Location.X
@@ -85,6 +87,15 @@ Public Class Procedures
         CheckBox1.Checked = True
         CheckBox2.Checked = True
         g_procedure_type = 0
+
+        'Select Non-Surgical procedures by default
+        RadioButton1.Select()
+
+        If Not db_intervention.CHECK_SURGICAL_INTERV_VERSION() Then
+            RadioButton2.Enabled = False
+        Else
+            RadioButton2.Enabled = True
+        End If
 
     End Sub
 
@@ -203,7 +214,7 @@ Public Class Procedures
         Dim dr_def_versions As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_procedure_type, dr_def_versions) Then
+        If Not db_intervention.GET_DEFAULT_VERSIONS(TextBox1.Text, g_selected_soft, g_procedure_type, dr_def_versions, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR LOADING DEFAULT VERSIONS -  ComboBox2_SelectedIndexChanged", MsgBoxStyle.Critical)
@@ -224,34 +235,38 @@ Public Class Procedures
         'Box de categorias na instituição/software
         Dim dr_exam_cat As OracleDataReader
 
+        If g_surgical_procedures = False Then
+
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
+            If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
+                MsgBox("ERROR LOADING INTERVENTION CATEGORIES FROM INSTITUTION!", vbCritical)
 
+            Else
+
+                ComboBox5.Items.Add("ALL")
+
+                ReDim g_a_interv_cats_alert(0)
+                g_a_interv_cats_alert(0) = 0
+
+                Dim l_index As Int16 = 1
+
+                While dr_exam_cat.Read()
+
+                    ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                    ReDim Preserve g_a_interv_cats_alert(l_index)
+                    g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
+                    l_index = l_index + 1
+
+                End While
+
+            End If
+            dr_exam_cat.Dispose()
+            dr_exam_cat.Close()
         Else
-
             ComboBox5.Items.Add("ALL")
-
-            ReDim g_a_interv_cats_alert(0)
-            g_a_interv_cats_alert(0) = 0
-
-            Dim l_index As Int16 = 1
-
-            While dr_exam_cat.Read()
-
-                ComboBox5.Items.Add(dr_exam_cat.Item(1))
-                ReDim Preserve g_a_interv_cats_alert(l_index)
-                g_a_interv_cats_alert(l_index) = dr_exam_cat.Item(0)
-                l_index = l_index + 1
-
-            End While
-
         End If
-
-        dr_exam_cat.Dispose()
-        dr_exam_cat.Close()
 
         'Preencher os Clinical Services
 
@@ -313,29 +328,35 @@ Public Class Procedures
 
         Dim dr_lab_cat_def As OracleDataReader
 
+        If g_surgical_procedures = False Then
+
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, g_procedure_type, dr_lab_cat_def) Then
+            If Not db_intervention.GET_INTERV_CATS_DEFAULT(ComboBox3.Text, TextBox1.Text, g_selected_soft, g_procedure_type, dr_lab_cat_def) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-            MsgBox("ERROR LOADING DEFAULT INTERVENTION CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+                MsgBox("ERROR LOADING DEFAULT INTERVENTION CATEGORIS -  ComboBox3_SelectedIndexChanged", MsgBoxStyle.Critical)
+
+            Else
+
+                ComboBox4.Items.Add("ALL")
+
+                While dr_lab_cat_def.Read()
+
+                    ComboBox4.Items.Add(dr_lab_cat_def.Item(1) & "  -  " & dr_lab_cat_def.Item(0)) 'Modificado para apresentar ID_CONTENT da categoria
+                    g_a_loaded_categories_default(l_index_loaded_categories) = dr_lab_cat_def.Item(0)
+                    l_index_loaded_categories = l_index_loaded_categories + 1
+                    ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
+
+                End While
+
+            End If
+
+            dr_lab_cat_def.Dispose()
+            dr_lab_cat_def.Close()
 
         Else
-
             ComboBox4.Items.Add("ALL")
-
-            While dr_lab_cat_def.Read()
-
-                ComboBox4.Items.Add(dr_lab_cat_def.Item(1) & "  -  " & dr_lab_cat_def.Item(0)) 'Modificado para apresentar ID_CONTENT da categoria
-                g_a_loaded_categories_default(l_index_loaded_categories) = dr_lab_cat_def.Item(0)
-                l_index_loaded_categories = l_index_loaded_categories + 1
-                ReDim Preserve g_a_loaded_categories_default(l_index_loaded_categories)
-
-            End While
-
         End If
-
-        dr_lab_cat_def.Dispose()
-        dr_lab_cat_def.Close()
 
         CheckedListBox1.Items.Clear()
 
@@ -354,13 +375,13 @@ Public Class Procedures
 
         Cursor = Cursors.WaitCursor
         CheckedListBox2.Items.Clear()
-        ''2 - Carregar a grelha de análises por categoria
+        ''2 - Carregar a grelha de procedimentos por categoria
         ''e    
-        ''3 - Criar estrutura com os elementos das análises carregados
+        ''3 - Criar estrutura com os elementos dos procedimentos carregados
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, g_procedure_type, dr) Then
+        If Not db_intervention.GET_INTERVS_DEFAULT_BY_CAT(TextBox1.Text, g_selected_soft, ComboBox3.SelectedItem.ToString, g_selected_category, g_procedure_type, dr, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING INTERVENTIONS BY CATEGORY >> ComboBox4_SelectedIndexChanged")
@@ -375,7 +396,12 @@ Public Class Procedures
 
                 ReDim Preserve g_a_loaded_interventions_default(l_dimension_array_loaded_interventions)
 
-                g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_category = dr.Item(0)
+                Try
+
+                    g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_category = dr.Item(0)
+                Catch ex As Exception
+                    g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_category = ""
+                End Try
                 g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).id_content_intervention = dr.Item(1)
                 g_a_loaded_interventions_default(l_dimension_array_loaded_interventions).desc_intervention = dr.Item(2)
 
@@ -494,11 +520,107 @@ Public Class Procedures
 
             Next
 
-            ''INSERIR CATEGORIA
 
-            If db_intervention.SET_INTERV_CAT(TextBox1.Text, l_a_checked_intervs) Then
+            If g_surgical_procedures = False Then
+
+                If db_intervention.SET_INTERV_CAT(TextBox1.Text, l_a_checked_intervs) Then
 #Disable Warning BC42104 ' Variable is used before it has been assigned a value
-                If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs) Then
+                    If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, g_surgical_procedures) Then
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
+                        If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs) Then
+                            If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs) Then
+                                If db_intervention.SET_DEFAULT_INTERV_DEP_CLIN_SERV(TextBox1.Text, g_selected_soft, l_a_checked_intervs, g_procedure_type) Then
+
+                                    MsgBox("Record(s) successfully inserted.", vbInformation)
+
+                                    '1 - Processo Limpeza
+                                    '1.1 - Limpar a box de análises a gravar no alert
+                                    CheckedListBox1.Items.Clear()
+
+                                    '1.2 - Remover o check das análises do default
+                                    For i As Integer = 0 To CheckedListBox2.Items.Count - 1
+
+                                        CheckedListBox2.SetItemChecked(i, False)
+
+                                    Next
+
+                                    '1.3 - Limpar g_a_selected_default_analysis (Array de analises do default selecionadas pelo utilizador)
+                                    ReDim g_a_selected_default_interventions(0)
+                                    g_index_selected_intervention_from_default = 0
+
+                                    '1.4 - Limpar a caixa de categorias de análises do ALERT
+                                    ComboBox5.Items.Clear()
+                                    ComboBox5.SelectedItem = ""
+
+                                    'Obter a nova lista de categorias do ALERT (foi atualizada por causa do último INSERT)
+                                    Dim dr_exam_cat As OracleDataReader
+
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                                    If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                                        MsgBox("ERROR LOADING INTERV CATEGORIES FROM INSTITUTION!", vbCritical)
+
+                                    Else
+
+                                        ComboBox5.Items.Add("ALL")
+
+                                        ReDim g_a_interv_cats_alert(0)
+                                        g_a_interv_cats_alert(0) = 0
+
+                                        Dim l_index_ec As Int16 = 1
+
+                                        While dr_exam_cat.Read()
+
+                                            ComboBox5.Items.Add(dr_exam_cat.Item(1))
+                                            ReDim Preserve g_a_interv_cats_alert(l_index_ec)
+                                            g_a_interv_cats_alert(l_index_ec) = dr_exam_cat.Item(0)
+                                            l_index_ec = l_index_ec + 1
+
+                                        End While
+
+                                    End If
+
+                                    dr_exam_cat.Dispose()
+                                    dr_exam_cat.Close()
+
+                                    '1.5 - Limpar as análises do ALERT apresentadas na BOX 3
+                                    'Isto porque podem ter sido adicionadas análises à categoria selecionada
+                                    CheckedListBox3.Items.Clear()
+
+                                    ReDim g_a_intervs_alert(0)
+                                    g_dimension_intervs_alert = 0
+                                Else
+
+                                    MsgBox("ERROR INSERTING INTERV_DEP_CLIN_SERV!", vbCritical)
+
+                                End If
+
+                            Else
+
+                                MsgBox("ERROR INSERTING INTERV_INT_CATS!", vbCritical)
+
+                            End If
+
+                        Else
+
+                            MsgBox("ERROR INSERTING INTERVENTIONS TRANSLATIONS!", vbCritical)
+
+                        End If
+
+                    Else
+                        MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
+                    End If
+
+                Else
+
+                    MsgBox("ERROR INSERTING INTERVENTION CATEGORY!", vbCritical)
+
+                End If
+
+            Else
+
+                If db_intervention.SET_INTERVENTIONS(TextBox1.Text, l_a_checked_intervs, g_surgical_procedures) Then
 #Enable Warning BC42104 ' Variable is used before it has been assigned a value
                     If db_intervention.SET_INTERVS_TRANSLATION(TextBox1.Text, l_a_checked_intervs) Then
                         If db_intervention.SET_INTERV_INT_CAT(TextBox1.Text, g_selected_soft, l_a_checked_intervs) Then
@@ -532,7 +654,7 @@ Public Class Procedures
                                 If Not db_intervention.GET_INTERV_CATS_INST_SOFT(TextBox1.Text, g_selected_soft, g_procedure_type, dr_exam_cat) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
-                                    MsgBox("ERROR LOADING LAB CATEGORIES FROM INSTITUTION!", vbCritical)
+                                    MsgBox("ERROR LOADING INTERV CATEGORIES FROM INSTITUTION!", vbCritical)
 
                                 Else
 
@@ -585,15 +707,11 @@ Public Class Procedures
                     MsgBox("ERROR INSERTING INTERVENTIONS!", vbCritical)
                 End If
 
-            Else
-
-                MsgBox("ERROR INSERTING INTERVENTION CATEGORY!", vbCritical)
-
             End If
 
         End If
 
-        Cursor = Cursors.Arrow
+            Cursor = Cursors.Arrow
 
     End Sub
 
@@ -614,7 +732,7 @@ Public Class Procedures
         ReDim g_a_intervs_alert(g_dimension_intervs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, g_procedure_type, dr_intervs) Then
+        If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, g_selected_category_alert, g_procedure_type, dr_intervs, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -623,7 +741,13 @@ Public Class Procedures
 
             While dr_intervs.Read()
 
-                g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+
+                Try
+                    g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+                Catch ex As Exception
+                    g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = ""
+                End Try
+
                 g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(1)
                 Try
                     g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
@@ -867,7 +991,7 @@ Public Class Procedures
                     ReDim g_a_intervs_alert(g_dimension_intervs_alert)
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, g_procedure_type, dr_intervs) Then
+                    If Not db_intervention.GET_INTERVS_INST_SOFT(TextBox1.Text, g_selected_soft, l_selected_category, g_procedure_type, dr_intervs, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                         MsgBox("ERROR GETTING INTERVENTIONS FROM INSTITUTION!", MsgBoxStyle.Critical)
@@ -878,7 +1002,12 @@ Public Class Procedures
 
                         While dr_intervs.Read()
 
-                            g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+                            Try
+                                g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = dr_intervs.Item(0)
+                            Catch ex As Exception
+                                g_a_intervs_alert(g_dimension_intervs_alert).id_content_category = ""
+                            End Try
+
                             g_a_intervs_alert(g_dimension_intervs_alert).id_content_intervention = dr_intervs.Item(1)
                             g_a_intervs_alert(g_dimension_intervs_alert).desc_intervention = dr_intervs.Item(2)
                             g_dimension_intervs_alert = g_dimension_intervs_alert + 1
@@ -922,7 +1051,7 @@ Public Class Procedures
             Dim dr_delete As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr_delete) Then
+            If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr_delete, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
@@ -1075,7 +1204,7 @@ Public Class Procedures
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, l_id_dep_clin_serv_aux, dr) Then
+        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, l_id_dep_clin_serv_aux, dr, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING INTERV_DEP_CLIN_SERV.", vbCritical)
@@ -1193,7 +1322,7 @@ Public Class Procedures
             For Each indexChecked In CheckedListBox4.CheckedIndices
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr) Then
+                If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                     MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV.", vbCritical)
@@ -1249,7 +1378,7 @@ Public Class Procedures
             Dim dr_new As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr_new) Then
+            If db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr_new, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 Dim i_new As Integer = 0
@@ -1358,7 +1487,7 @@ Public Class Procedures
         Dim dr As OracleDataReader
 
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr) Then
+        If Not db_intervention.GET_FREQ_INTERVS(TextBox1.Text, g_selected_soft, g_procedure_type, g_id_dep_clin_serv, dr, g_surgical_procedures) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
             MsgBox("ERROR GETTING INTERVENTIONS_DEP_CLIN_SERV", vbCritical)
@@ -1465,5 +1594,13 @@ Public Class Procedures
 
         Cursor = Cursors.Arrow
 
+    End Sub
+
+    Private Sub RadioButton2_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButton2.CheckedChanged
+        g_surgical_procedures = True
+    End Sub
+
+    Private Sub RadioButton1_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButton1.CheckedChanged
+        g_surgical_procedures = False
     End Sub
 End Class

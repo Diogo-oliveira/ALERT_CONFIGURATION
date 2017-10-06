@@ -11,6 +11,8 @@ Public Class Form1
     Dim g_height_initial As Integer = 430
     Dim g_height_extended As Integer = 500
 
+    Dim db_intervention As New INTERVENTIONS_API
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         If Connection.conn.State = 0 Then
@@ -267,7 +269,15 @@ Public Class Form1
                 Button5.Visible = True
                 Button6.Visible = True
                 Button9.Visible = True
+
                 Button10.Visible = True
+
+                If Not db_intervention.CHECK_SURGICAL_INTERV_VERSION() Then
+                    Button10.Enabled = True
+                Else
+                    Button10.Enabled = False
+                End If
+
                 Button11.Visible = True
                 Button12.Visible = True
                 Button13.Visible = True
@@ -375,16 +385,21 @@ Public Class Form1
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
 
-        Form_location.x_position = Me.Location.X
-        Form_location.y_position = Me.Location.Y
+        If Button10.Enabled = True Then
 
-        Dim FORM_SR_PROCEDURES As New SR_Procedures()
 
-        debug.SET_DEBUG("Loading SR_Procedures form.")
+            Form_location.x_position = Me.Location.X
+            Form_location.y_position = Me.Location.Y
 
-        Me.Hide()
+            Dim FORM_SR_PROCEDURES As New SR_Procedures()
 
-        FORM_SR_PROCEDURES.Show()
+            debug.SET_DEBUG("Loading SR_Procedures form.")
+
+            Me.Hide()
+
+            FORM_SR_PROCEDURES.Show()
+
+        End If
 
     End Sub
 
