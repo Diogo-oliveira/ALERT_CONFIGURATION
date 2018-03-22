@@ -2115,4 +2115,8 @@ Public Class Translation_Updates
 
         Cursor = Cursors.Arrow
     End Sub
+
+    Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
+
+    End Sub
 End Class

@@ -256,6 +256,13 @@
     <Compile Include="LAB_TESTS.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="MEDICATION.Designer.vb">
+      <DependentUpon>MEDICATION.vb</DependentUpon>
+    </Compile>
+    <Compile Include="MEDICATION.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Medication_API.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -335,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LAB_TESTS.resx">
       <DependentUpon>LAB_TESTS.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MEDICATION.resx">
+      <DependentUpon>MEDICATION.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
