@@ -719,6 +719,10 @@ Public Class General
 
             Return 9
 
+        ElseIf l_id_market = 11 Then
+
+            Return 8
+
         ElseIf l_id_market = 12 Then
 
             Return 16
@@ -738,6 +742,10 @@ Public Class General
         ElseIf l_id_market = 19 Then
 
             Return 19
+
+        ElseIf l_id_market = 20 Then
+
+            Return 2
 
         End If
 

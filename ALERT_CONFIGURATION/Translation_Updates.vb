@@ -1910,7 +1910,7 @@ Public Class Translation_Updates
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub Button1_Click(sender As Object, e As EventArgs) 
 
         Cursor = Cursors.WaitCursor
 
@@ -2091,6 +2091,26 @@ Public Class Translation_Updates
 
             PictureBox2.Hide()
 
+        End If
+
+        Cursor = Cursors.Arrow
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+        Cursor = Cursors.WaitCursor
+
+        ComboBox1.Text = ""
+
+        If TextBox1.Text <> "" Then
+            ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
+        End If
+
+        If ComboBox1.Text <> "" Then
+            If (translation.GET_LUCENE(TextBox1.Text)) Then
+                PictureBox2.Show()
+            Else
+                PictureBox2.Hide()
+            End If
         End If
 
         Cursor = Cursors.Arrow

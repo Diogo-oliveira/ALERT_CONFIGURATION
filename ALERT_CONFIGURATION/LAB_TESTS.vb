@@ -309,11 +309,35 @@ Public Class LAB_TESTS
 
                 ReDim Preserve g_a_loaded_analysis_default(l_dimension_array_loaded_analysis)
 
-                g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = dr.Item(6)
-                g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = dr.Item(0)
-                g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = dr.Item(1)
-                g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = dr.Item(2)
-                g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = dr.Item(3)
+                Try
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = dr.Item(6)
+                Catch ex As Exception
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_category = ""
+                End Try
+
+                Try
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = dr.Item(0)
+                Catch ex As Exception
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis_sample_type = ""
+                End Try
+
+                Try
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = dr.Item(1)
+                Catch ex As Exception
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_type = ""
+                End Try
+                Try
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = dr.Item(2)
+                Catch ex As Exception
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_recipient = ""
+                End Try
+
+                Try
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = dr.Item(3)
+                Catch ex As Exception
+                    g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).desc_analysis_sample_recipient = ""
+                End Try
+
                 g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_analysis = dr.Item(4)
                 g_a_loaded_analysis_default(l_dimension_array_loaded_analysis).id_content_sample_type = dr.Item(5)
 
