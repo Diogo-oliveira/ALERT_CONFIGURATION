@@ -51,7 +51,7 @@ Public Class Medication_API
                               JOIN institution i
                                 ON i.id_market = m.id_market
                              WHERE smi.flg_available = 'Y'
-                               AND i.id_institution = " & i_ID_INST
+                               AND i.id_institution = " & i_ID_INST & " and rownum=1"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -89,11 +89,12 @@ Public Class Medication_API
 
     End Function
 
-    Function GET_PRODUCT_OPTIONS(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_product_supplier As String, ByVal i_id_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_PRODUCT_OPTIONS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_product As String, ByVal i_product_supplier As String, ByVal i_id_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_OPTIONS(" & i_institution & ", " & i_id_product & ", " & i_product_supplier & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_OPTIONS(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_product_supplier & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
         Dim sql As String = "SELECT p.id_product,
                                nvl2(lpl.id_product, decode(p.flg_available,'Y','Y','N','N'), 'N') as available,
@@ -105,7 +106,7 @@ Public Class Medication_API
                                pm.flg_blood_derivative,
                                pm.flg_dopant,
                                pm.flg_narcotic,
-                               eds.desc_lang_8 as product_synonym
+                               eds.desc_lang_" & l_id_language & " as product_synonym
                           FROM alert_product_mt.product p
                           JOIN alert_product_mt.product_medication pm
                             ON pm.id_product = p.id_product
@@ -113,6 +114,12 @@ Public Class Medication_API
                           LEFT JOIN alert_product_mt.lnk_product_synonym lps
                             ON lps.id_product = p.id_product
                            AND lps.id_product_supplier = p.id_product_supplier
+                           AND lps.id_grant IN (SELECT g.id_grant
+                                                  FROM alert_product_mt.v_cfg_grant g
+                                                 WHERE g.market = " & l_market & "
+                                                   AND g.institution = " & i_institution & "
+                                                   AND g.software = " & i_software & "
+                                                   AND g.ID_CONTEXT is null)
                           LEFT JOIN alert_product_mt.entity_description eds
                             ON eds.code_entity_description = lps.code_synonym
                           LEFT JOIN alert_product_mt.lnk_product_pick_list lpl
@@ -140,7 +147,10 @@ Public Class Medication_API
         End Try
     End Function
 
-    Function SET_PARAMETERS(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_flg_available As String, i_id_pick_list As Int16, i_id_product_level As Int16) As Boolean
+    Function SET_PARAMETERS(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_flg_available As String, i_id_pick_list As Int16, i_id_product_level As Int16,
+                            ByVal i_med_type As Int16, ByVal i_mix_fluid As String, ByVal i_justify_expensive As String, i_controlled_drug As String,
+                            ByVal i_blood_derivate As String, ByVal i_dopant As String, ByVal i_narcotic As String,
+                            ByVal i_product_synonym As String) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -163,6 +173,43 @@ Public Class Medication_API
 
         If Not SET_LNK_PRODUCT_PICK_LIST(i_institution, i_id_product, i_id_product_supplier, i_id_pick_list) Then
             Return False
+        End If
+
+        sql = "UPDATE ALERT_PRODUCT_MT.PRODUCT_MEDICATION P
+                                 SET P.FLG_MIX_WITH_FLUID = '" & i_mix_fluid & "',
+                                   P.FLG_JUSTIFY_EXPENSIVE = '" & i_justify_expensive & "',
+                                   P.FLG_CONTROLLED_DRUG = '" & i_controlled_drug & "',
+                                   P.FLG_BLOOD_DERIVATIVE = '" & i_blood_derivate & "',
+                                   P.FLG_DOPANT = '" & i_dopant & "',
+                                   P.FLG_NARCOTIC = '" & i_narcotic & "',
+                                   P.id_product_med_type = '" & i_med_type & "'
+                               WHERE P.ID_PRODUCT='" & i_id_product & "'
+                                 AND P.ID_PRODUCT_SUPPLIER='" & i_id_product_supplier & "'"
+
+        Dim cmd_update_product_medication As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_product_medication.CommandType = CommandType.Text
+            cmd_update_product_medication.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_update_product_medication.Dispose()
+            Return False
+        End Try
+
+        If i_product_synonym <> "" Then
+
+            If Not SET_PRODUCT_SYNONYM(i_institution, i_id_product, i_id_product_supplier, i_id_pick_list, i_product_synonym) Then
+
+                Return False
+
+            End If
+        Else
+
+            If Not DELETE_PRODUCT_SYNONYM(i_id_product, i_id_product_supplier, i_id_pick_list) Then
+
+                Return False
+            End If
+
         End If
 
         Return True
@@ -199,4 +246,91 @@ Public Class Medication_API
 
     End Function
 
+    Function SET_PRODUCT_SYNONYM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_id_pick_list As Int16, ByVal i_synonym As String) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "DECLARE
+                                l_grant NUMBER(24);
+                            BEGIN
+
+                                BEGIN
+                                    SELECT g.id_grant
+                                      INTO l_grant
+                                      FROM alert_product_mt.v_cfg_grant g
+                                     WHERE g.market = 12
+                                       AND g.institution = 2945
+                                       AND g.software = 11
+                                       AND g.id_context IS NULL
+                                       AND rownum = 1;
+                                EXCEPTION
+                                    WHEN no_data_found THEN
+                                        l_grant := alert_product_mt.pk_grants.set_by_soft_inst(i_context     => '',
+                                                                                               i_prof        => profissional(0, 2945, 11),
+                                                                                               i_market      => 12,
+                                                                                               i_grant_order => 1);
+                                END;
+
+                                    INSERT INTO alert_product_mt.lnk_product_synonym
+                                        (id_product, id_product_supplier, code_synonym, id_grant, id_pick_list)
+                                    VALUES
+                                        ('" & i_id_product & "', '" & i_id_product_supplier & "', 'LNK_PRODUCT_SYNONYM.CODE_SYNONYM." & i_id_product_supplier & "." & i_id_product & "', l_grant , " & i_id_pick_list & ");
+
+                                    alert_product_mt.pk_product_utils.insert_into_entity_desc(" & l_id_language & ",
+                                                                                              'LNK_PRODUCT_SYNONYM.CODE_SYNONYM." & i_id_product_supplier & "." & i_id_product & "',
+                                                                                              NULL,
+                                                                                              '" & i_synonym & "');
+                                    pk_lucene_index_admin.sync_specific_index ('ALERT_PRODUCT_MT','ENTITY_DESCRIPTION'," & l_id_language & ");
+
+                                EXCEPTION
+                                    WHEN dup_val_on_index THEN
+                                    alert_product_mt.pk_product_utils.insert_into_entity_desc(" & l_id_language & ",
+                                                                                              'LNK_PRODUCT_SYNONYM.CODE_SYNONYM." & i_id_product_supplier & "." & i_id_product & "',
+                                                                                              NULL,
+                                                                                              '" & i_synonym & "');
+                                    pk_lucene_index_admin.sync_specific_index ('ALERT_PRODUCT_MT','ENTITY_DESCRIPTION'," & l_id_language & ");
+    
+                                END;"
+
+        Dim cmd_insert_syn As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_syn.CommandType = CommandType.Text
+            cmd_insert_syn.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_syn.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_syn.Dispose()
+
+        Return True
+
+    End Function
+
+    Function DELETE_PRODUCT_SYNONYM(ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_pick_list As Int16) As Boolean
+
+        Dim sql As String = "DELETE FROM alert_product_mt.lnk_product_synonym lps
+                         WHERE lps.id_product_supplier = '" & i_id_product_supplier & "'
+                           AND lps.id_product = '" & i_id_product & "'
+                           AND lps.id_pick_list = " & i_id_pick_list
+
+        Dim cmd_delete_syn As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_syn.CommandType = CommandType.Text
+            cmd_delete_syn.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_syn.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_syn.Dispose()
+
+        Return True
+
+    End Function
+
 End Class
+
+

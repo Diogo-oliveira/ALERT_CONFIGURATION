@@ -1445,11 +1445,7 @@ Public Class Supplies
 
             Cursor = Cursors.Arrow
 
-            End If
-
-    End Sub
-
-    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+        End If
 
     End Sub
 
