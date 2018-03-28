@@ -3,6 +3,11 @@ Public Class Medication_API
 
     Dim db_access_general As New General
 
+    Public Structure ROUTES
+        Public id_route As String
+        Public desc_route As String
+    End Structure
+
     Function GET_LIST_PRODUCTS(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByVal i_product_desc As String, ByRef i_dr As OracleDataReader) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_LIST_PRODUCTS(" & i_institution & ", " & i_product_supplier & ", " & i_product_desc & ")")
@@ -330,6 +335,123 @@ Public Class Medication_API
         Return True
 
     End Function
+
+    Function GET_PRODUCT_ROUTES(ByVal i_institution As Int64, ByVal i_product As String, ByVal i_product_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_ROUTES(" & i_institution & ", " & i_product & ", " & i_product_supplier & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT r.id_route, ed.desc_lang_" & l_id_language & " AS desc_route, r.flg_default
+                              FROM alert_product_mt.lnk_product_mkt_route r
+                              JOIN alert_product_mt.route ro
+                                ON ro.id_route = r.id_route
+                               AND ro.id_route_supplier = r.id_product_supplier
+                              JOIN alert_product_mt.entity_description ed
+                                ON ed.code_entity_description = ro.code_route
+                             WHERE r.id_product = '" & i_product & "'
+                               AND r.id_product_supplier = '" & i_product_supplier & "'
+                             ORDER BY desc_route ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_ROUTES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_MARKET_ROUTES(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_ROUTES(" & i_institution & ", " & i_product_supplier & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT r.id_route, ed.desc_lang_" & l_id_language & " AS desc_route
+                              FROM alert_product_mt.route r
+                              JOIN alert_product_mt.entity_description ed
+                                ON ed.code_entity_description = r.code_route
+                             WHERE r.id_route_supplier = '" & i_product_supplier & "'
+                             ORDER BY desc_route ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_ROUTES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function SET_PRODUCT_ROUTES(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_routes() As String) As Boolean
+
+        Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim sql As String = " DECLARE
+                                    l_id_routes table_varchar := table_varchar("
+
+        For i As Integer = 0 To i_routes.Count - 1
+
+            If i < i_routes.Count - 1 Then
+                sql = sql & "'" & i_routes(i) & "'" & ", "
+            Else
+                sql = sql & "'" & i_routes(i) & "'"
+            End If
+
+
+        Next
+        sql = sql & ");
+                                BEGIN
+
+                                    FOR i IN 1 .. l_id_routes.count
+                                    LOOP
+    
+                                        BEGIN        
+                                            insert into alert_product_mt.lnk_product_mkt_route (ID_PRODUCT, ID_PRODUCT_SUPPLIER, ID_MARKET, ID_ROUTE, ID_ROUTE_SUPPLIER, ID_ROUTE_STATUS, FLG_DEFAULT, RANK, FLG_STD)
+                                                                          values ('" & i_id_product & "', '" & i_id_product_supplier & "', " & l_id_market & ", l_id_routes(i), '" & i_id_product_supplier & "', 1, 'N', 1, 'U');
+                                                    EXCEPTION
+                                                        WHEN dup_val_on_index THEN
+                                                            CONTINUE;
+                                                    END;
+                                    END LOOP;                                               
+                                END;"
+
+        Dim cmd_insert_routes As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_routes.CommandType = CommandType.Text
+            cmd_insert_routes.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_routes.Dispose()
+            MsgBox(sql)
+            Return False
+        End Try
+
+        cmd_insert_routes.Dispose()
+
+        Return True
+
+    End Function
+
 
 End Class
 

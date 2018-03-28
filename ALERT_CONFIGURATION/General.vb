@@ -658,20 +658,21 @@ Public Class General
 
         DEBUGGER.SET_DEBUG("GENERAL :: GET_ID_LANG(" & i_id_institution & ")")
 
-        Dim l_id_market As Int16 = 0
+        Dim l_id_language As Int16 = 0
 
-        Dim sql As String = "Select i.id_market from institution i
-                             where i.id_institution= " & i_id_institution
+        Dim sql As String = "Select  PK_UTILS.get_institution_language(" & i_id_institution & ") FROM DUAL"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
 
         Dim dr As OracleDataReader = cmd.ExecuteReader()
 
-
         While dr.Read()
 
-            l_id_market = dr.Item(0)
+            l_id_language = dr.Item(0)
+            If l_id_language = 20 Then
+                l_id_language = 8
+            End If
 
         End While
 
@@ -679,77 +680,7 @@ Public Class General
         dr.Close()
         cmd.Dispose()
 
-        If l_id_market = 1 Then
-
-            Return 1
-
-        ElseIf l_id_market = 2 Then
-
-            Return 2
-
-        ElseIf l_id_market = 3 Then
-
-            Return 11
-
-        ElseIf l_id_market = 4 Then
-
-            Return 5
-
-        ElseIf l_id_market = 5 Then
-
-            Return 4
-
-        ElseIf l_id_market = 6 Then
-
-            Return 3
-
-        ElseIf l_id_market = 7 Then
-
-            Return 10
-
-        ElseIf l_id_market = 8 Then
-
-            Return 7
-
-        ElseIf l_id_market = 9 Then
-
-            Return 6
-
-        ElseIf l_id_market = 10 Then
-
-            Return 9
-
-        ElseIf l_id_market = 11 Then
-
-            Return 8
-
-        ElseIf l_id_market = 12 Then
-
-            Return 16
-
-        ElseIf l_id_market = 16 Then
-
-            Return 17
-
-        ElseIf l_id_market = 17 Then
-
-            Return 18
-
-        ElseIf l_id_market = 18 Then   'Na Prática, o mercado KW usa a lingua 7
-
-            Return 7
-
-        ElseIf l_id_market = 19 Then
-
-            Return 19
-
-        ElseIf l_id_market = 20 Then
-
-            Return 2
-
-        End If
-
-        Return 0
+        Return l_id_language
 
     End Function
 
