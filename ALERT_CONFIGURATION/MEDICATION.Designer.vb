@@ -23,10 +23,10 @@ Partial Class MEDICATION
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MEDICATION))
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle33 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle34 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle35 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle36 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -67,6 +67,17 @@ Partial Class MEDICATION
         Me.CheckedListBox1 = New System.Windows.Forms.CheckedListBox()
         Me.CheckedListBox2 = New System.Windows.Forms.CheckedListBox()
         Me.Button7 = New System.Windows.Forms.Button()
+        Me.Button3 = New System.Windows.Forms.Button()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.CheckedListBox3 = New System.Windows.Forms.CheckedListBox()
+        Me.CheckedListBox4 = New System.Windows.Forms.CheckedListBox()
+        Me.TextBox4 = New System.Windows.Forms.TextBox()
+        Me.Button4 = New System.Windows.Forms.Button()
+        Me.Button5 = New System.Windows.Forms.Button()
+        Me.Button6 = New System.Windows.Forms.Button()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.ComboBox13 = New System.Windows.Forms.ComboBox()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -137,34 +148,34 @@ Partial Class MEDICATION
         Me.DataGridView1.AllowUserToDeleteRows = False
         Me.DataGridView1.AllowUserToResizeColumns = False
         Me.DataGridView1.AllowUserToResizeRows = False
-        DataGridViewCellStyle9.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridView1.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle33.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridView1.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle33
         Me.DataGridView1.BackgroundColor = System.Drawing.SystemColors.ControlLight
         Me.DataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView1.ColumnHeadersVisible = False
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle10.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle10
+        DataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle34.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle34.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle34.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle34.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle34.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle34.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle34
         Me.DataGridView1.Location = New System.Drawing.Point(12, 143)
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.ReadOnly = True
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.AppWorkspace
-        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle35.BackColor = System.Drawing.SystemColors.AppWorkspace
+        DataGridViewCellStyle35.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle35.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle35.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle35.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle35.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle35
         Me.DataGridView1.RowHeadersVisible = False
-        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridView1.RowsDefaultCellStyle = DataGridViewCellStyle12
+        DataGridViewCellStyle36.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridView1.RowsDefaultCellStyle = DataGridViewCellStyle36
         Me.DataGridView1.Size = New System.Drawing.Size(1560, 351)
         Me.DataGridView1.TabIndex = 115
         '
@@ -225,9 +236,9 @@ Partial Class MEDICATION
         Me.Label6.AutoSize = True
         Me.Label6.Location = New System.Drawing.Point(674, 7)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(122, 13)
+        Me.Label6.Size = New System.Drawing.Size(200, 13)
         Me.Label6.TabIndex = 123
-        Me.Label6.Text = "TYPE OF MEDICATION"
+        Me.Label6.Text = "TYPE OF MEDICATION (only for picklist)"
         '
         'ComboBox5
         '
@@ -276,7 +287,7 @@ Partial Class MEDICATION
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(1430, 576)
+        Me.Button1.Location = New System.Drawing.Point(1431, 517)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(142, 34)
         Me.Button1.TabIndex = 128
@@ -447,18 +458,128 @@ Partial Class MEDICATION
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(849, 711)
+        Me.Button7.Location = New System.Drawing.Point(1472, 806)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(100, 23)
         Me.Button7.TabIndex = 149
         Me.Button7.Text = "BACK"
         Me.Button7.UseVisualStyleBackColor = True
         '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(586, 792)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(102, 23)
+        Me.Button3.TabIndex = 150
+        Me.Button3.Text = "SAVE"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(12, 576)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(108, 13)
+        Me.Label16.TabIndex = 151
+        Me.Label16.Text = "PRODUCT ROUTES"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(360, 576)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(97, 13)
+        Me.Label17.TabIndex = 152
+        Me.Label17.Text = "DEFAULT ROUTE"
+        '
+        'CheckedListBox3
+        '
+        Me.CheckedListBox3.CheckOnClick = True
+        Me.CheckedListBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox3.FormattingEnabled = True
+        Me.CheckedListBox3.Location = New System.Drawing.Point(723, 595)
+        Me.CheckedListBox3.Name = "CheckedListBox3"
+        Me.CheckedListBox3.Size = New System.Drawing.Size(325, 157)
+        Me.CheckedListBox3.TabIndex = 153
+        '
+        'CheckedListBox4
+        '
+        Me.CheckedListBox4.CheckOnClick = True
+        Me.CheckedListBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckedListBox4.FormattingEnabled = True
+        Me.CheckedListBox4.Location = New System.Drawing.Point(1084, 595)
+        Me.CheckedListBox4.Name = "CheckedListBox4"
+        Me.CheckedListBox4.Size = New System.Drawing.Size(325, 191)
+        Me.CheckedListBox4.TabIndex = 154
+        '
+        'TextBox4
+        '
+        Me.TextBox4.Location = New System.Drawing.Point(723, 758)
+        Me.TextBox4.Name = "TextBox4"
+        Me.TextBox4.Size = New System.Drawing.Size(217, 20)
+        Me.TextBox4.TabIndex = 155
+        '
+        'Button4
+        '
+        Me.Button4.Location = New System.Drawing.Point(946, 755)
+        Me.Button4.Name = "Button4"
+        Me.Button4.Size = New System.Drawing.Size(102, 23)
+        Me.Button4.TabIndex = 156
+        Me.Button4.Text = "SEARCH"
+        Me.Button4.UseVisualStyleBackColor = True
+        '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(946, 784)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(102, 23)
+        Me.Button5.TabIndex = 157
+        Me.Button5.Text = "SAVE"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
+        'Button6
+        '
+        Me.Button6.Location = New System.Drawing.Point(1307, 792)
+        Me.Button6.Name = "Button6"
+        Me.Button6.Size = New System.Drawing.Size(102, 23)
+        Me.Button6.TabIndex = 158
+        Me.Button6.Text = "SAVE"
+        Me.Button6.UseVisualStyleBackColor = True
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(720, 576)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(152, 13)
+        Me.Label18.TabIndex = 159
+        Me.Label18.Text = "PRODUCT UNIT MEASURES"
+        '
+        'ComboBox13
+        '
+        Me.ComboBox13.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox13.FormattingEnabled = True
+        Me.ComboBox13.Location = New System.Drawing.Point(895, 573)
+        Me.ComboBox13.Name = "ComboBox13"
+        Me.ComboBox13.Size = New System.Drawing.Size(153, 21)
+        Me.ComboBox13.TabIndex = 160
+        '
         'MEDICATION
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.ComboBox13)
+        Me.Controls.Add(Me.Label18)
+        Me.Controls.Add(Me.Button6)
+        Me.Controls.Add(Me.Button5)
+        Me.Controls.Add(Me.Button4)
+        Me.Controls.Add(Me.TextBox4)
+        Me.Controls.Add(Me.CheckedListBox4)
+        Me.Controls.Add(Me.CheckedListBox3)
+        Me.Controls.Add(Me.Label17)
+        Me.Controls.Add(Me.Label16)
+        Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.CheckedListBox2)
         Me.Controls.Add(Me.CheckedListBox1)
@@ -550,4 +671,15 @@ Partial Class MEDICATION
     Friend WithEvents CheckedListBox1 As CheckedListBox
     Friend WithEvents CheckedListBox2 As CheckedListBox
     Friend WithEvents Button7 As Button
+    Friend WithEvents Button3 As Button
+    Friend WithEvents Label16 As Label
+    Friend WithEvents Label17 As Label
+    Friend WithEvents CheckedListBox3 As CheckedListBox
+    Friend WithEvents CheckedListBox4 As CheckedListBox
+    Friend WithEvents TextBox4 As TextBox
+    Friend WithEvents Button4 As Button
+    Friend WithEvents Button5 As Button
+    Friend WithEvents Button6 As Button
+    Friend WithEvents Label18 As Label
+    Friend WithEvents ComboBox13 As ComboBox
 End Class

@@ -422,6 +422,12 @@ Public Class Medication_API
         sql = sql & ");
                                 BEGIN
 
+                                    DELETE FROM alert_product_mt.lnk_product_mkt_route R
+                                     WHERE R.ID_PRODUCT = '" & i_id_product & "' 
+                                      AND R.ID_PRODUCT_SUPPLIER = '" & i_id_product_supplier & "'
+                                      AND R.ID_MARKET = " & l_id_market & "
+                                      AND R.ID_ROUTE NOT IN (SELECT * FROM TABLE(l_id_routes));
+
                                     FOR i IN 1 .. l_id_routes.count
                                     LOOP
     
@@ -442,7 +448,6 @@ Public Class Medication_API
             cmd_insert_routes.ExecuteNonQuery()
         Catch ex As Exception
             cmd_insert_routes.Dispose()
-            MsgBox(sql)
             Return False
         End Try
 
@@ -452,6 +457,126 @@ Public Class Medication_API
 
     End Function
 
+    Function SET_ROUTE_DEFAULT(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_routes As String) As Boolean
+
+        Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim sql As String = "BEGIN
+
+                                UPDATE alert_product_mt.lnk_product_mkt_route l
+                                   SET l.flg_default = 'N'
+                                 WHERE l.id_product = '" & i_id_product & "'
+                                   AND l.id_product_supplier = '" & i_id_product_supplier & "'
+                                   AND l.id_market = " & l_id_market & ";
+
+                                UPDATE alert_product_mt.lnk_product_mkt_route l
+                                   SET l.flg_default = 'Y'
+                                 WHERE l.id_product = '" & i_id_product & "'
+                                   AND l.id_product_supplier = '" & i_id_product_supplier & "'
+                                   AND l.id_market = " & l_id_market & "
+                                   AND l.id_route = '" & i_routes & "';
+                            END;"
+
+        Dim cmd_route_default As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_route_default.CommandType = CommandType.Text
+            cmd_route_default.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_route_default.Dispose()
+            MsgBox(sql)
+            Return False
+        End Try
+
+        cmd_route_default.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_MARKET_UM(ByVal i_institution As Int64, ByVal i_search_string As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_MARKET_UM(" & i_institution & ", " & i_search_string & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT u.id_unit_measure, pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure) AS um_desc
+                              FROM alert.unit_measure u
+                             WHERE u.flg_available = 'Y'
+                               AND pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure) IS NOT NULL "
+
+        If i_search_string = "" Then
+
+            sql = sql & "                               
+                             ORDER BY um_desc ASC"
+
+        Else
+            sql = sql & "
+                               AND upper(pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure)) LIKE upper('%" & i_search_string & "%')
+                             ORDER BY um_desc ASC"
+        End If
+
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_MARKET_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function SET_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_um() As Int64) As Boolean
+
+        Dim sql As String = " DECLARE
+                                   l_tbl_um table_number := table_number("
+
+        For i As Integer = 0 To i_um.Count - 1
+
+            If i < i_um.Count - 1 Then
+                sql = sql & i_um(i) & ", "
+            Else
+                sql = sql & i_um(i)
+            End If
+
+
+        Next
+        sql = sql & ");
+                                BEGIN
+
+                                        FOR i IN 1 .. l_tbl_um.count
+                                        LOOP
+                                            INSERT INTO alert_product_mt.lnk_product_unit_measure
+                                                (id_product, id_product_supplier, id_unit_measure, id_unit_measure_context, flg_default)
+                                            VALUES
+                                                ('" & i_id_product & "', '" & i_id_product_supplier & "', l_tbl_um(i), " & i_context & ", 'N');
+                                        END LOOP;
+                                    END;"
+
+        Dim cmd_insert_um As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_insert_um.CommandType = CommandType.Text
+            cmd_insert_um.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_insert_um.Dispose()
+            Return False
+        End Try
+
+        cmd_insert_um.Dispose()
+
+        Return True
+
+    End Function
 
 End Class
 
