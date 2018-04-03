@@ -11,6 +11,40 @@ Public Class MEDICATION
     Dim g_a_product_routes() As String
     Dim g_a_market_routes() As String
     Dim g_a_market_um() As Int64
+    Dim g_a_product_um() As Int64
+
+    Dim g_selection_aux As Boolean = False
+
+    Function RESET_PRODUCT_PARAMETERS()
+
+        DataGridView1.Columns.Clear()
+        g_selected_index = -1
+        ReDim g_a_list_products(0)
+        ReDim g_a_product_routes(0)
+
+        ComboBox3.SelectedIndex = -1
+        ComboBox4.SelectedIndex = -1
+        ComboBox6.SelectedIndex = -1
+        ComboBox7.SelectedIndex = -1
+        ComboBox8.SelectedIndex = -1
+        ComboBox9.SelectedIndex = -1
+        ComboBox10.SelectedIndex = -1
+        ComboBox11.SelectedIndex = -1
+        ComboBox12.SelectedIndex = -1
+
+        TextBox3.Text = ""
+
+        CheckedListBox2.Items.Clear()
+
+        If CheckedListBox1.Items.Count() > 0 Then
+            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                CheckedListBox1.SetItemChecked(i, False)
+            Next
+        End If
+
+        Return True
+
+    End Function
 
     Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
         Cursor = Cursors.WaitCursor
@@ -101,11 +135,9 @@ Public Class MEDICATION
             MsgBox("ERROR GETTING ALL INSTITUTIONS!")
 
         Else
-
             While dr.Read()
                 ComboBox1.Items.Add(dr.Item(0))
             End While
-
         End If
 
         dr.Dispose()
@@ -149,9 +181,12 @@ Public Class MEDICATION
         ComboBox12.Items.Add("U")
 
         ComboBox13.Items.Add("Regular dose")
-        ComboBox13.SelectedItem = ComboBox13.Items.IndexOf(1)
         ComboBox13.Items.Add("Dose to be dispensed")
+        ComboBox13.SelectedIndex = 0
 
+        ComboBox14.Items.Add("Regular dose")
+        ComboBox14.Items.Add("Dose to be dispensed")
+        ComboBox14.SelectedIndex = 0
     End Sub
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
@@ -191,8 +226,39 @@ Public Class MEDICATION
                     Next
                     dr.Close()
 
+                    DataGridView1.ClearSelection()
+
                     CheckedListBox2.Items.Clear()
                     ReDim g_a_product_routes(0)
+
+                    Dim dr_routes As OracleDataReader
+                    Try
+                        DataGridView1.Rows(0).Selected = True
+                        If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
+                            MsgBox("Error getting product routes!", vbCritical)
+                        Else
+                            CheckedListBox2.Items.Clear()
+                            ReDim g_a_product_routes(0)
+                            Dim i As Integer = 0
+                            While dr_routes.Read
+                                CheckedListBox2.Items.Add(dr_routes.Item(1))
+                                If dr_routes.Item(2) = "Y" Then
+                                    CheckedListBox2.SetItemChecked(i, True)
+                                End If
+                                ReDim Preserve g_a_product_routes(i)
+                                g_a_product_routes(i) = dr_routes(0)
+                                i = i + 1
+                            End While
+                        End If
+                        dr_routes.Close()
+
+                    Catch ex As Exception
+                        MsgBox("No results found.", vbInformation)
+                        g_selected_index = -1
+                        If Not RESET_PRODUCT_PARAMETERS() Then
+                            MsgBox("Error reseting product parameters.", vbCritical)
+                        End If
+                    End Try
 
                 End If
             Else
@@ -294,22 +360,22 @@ Public Class MEDICATION
                 End While
             End If
             dr_routes.Close()
-        End If
 
-        If CheckedListBox1.Items.Count() > 0 Then
-            For i As Integer = 0 To CheckedListBox1.Items.Count - 1
-                CheckedListBox1.SetItemChecked(i, False)
-            Next
-        End If
-
-        If g_a_market_routes.Count > 0 And g_a_product_routes.Count > 0 Then
-            For i As Integer = 0 To g_a_market_routes.Count - 1
-                For j As Integer = 0 To g_a_product_routes.Count - 1
-                    If g_a_market_routes(i) = g_a_product_routes(j) Then
-                        CheckedListBox1.SetItemChecked(i, True)
-                    End If
+            If CheckedListBox1.Items.Count() > 0 Then
+                For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                    CheckedListBox1.SetItemChecked(i, False)
                 Next
-            Next
+            End If
+
+            If g_a_market_routes.Count > 0 And g_a_product_routes.Count > 0 Then
+                For i As Integer = 0 To g_a_market_routes.Count - 1
+                    For j As Integer = 0 To g_a_product_routes.Count - 1
+                        If g_a_market_routes(i) = g_a_product_routes(j) Then
+                            CheckedListBox1.SetItemChecked(i, True)
+                        End If
+                    Next
+                Next
+            End If
         End If
 
     End Sub
@@ -324,17 +390,19 @@ Public Class MEDICATION
             l_med_type = 1
         End If
 
-        If Not medication.SET_PARAMETERS(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
+        If g_selected_index > -1 Then
+            If Not medication.SET_PARAMETERS(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
                                          l_med_type, ComboBox7.Text, ComboBox8.Text, ComboBox9.Text, ComboBox10.Text, ComboBox11.Text, ComboBox12.Text, TextBox3.Text) Then
-
-            MsgBox("Error updating parameters!", vbCritical)
+                MsgBox("Error updating parameters!", vbCritical)
+            Else
+                MsgBox("Record updated!", vbInformation)
+            End If
+        Else
+            MsgBox("Please select a product!", vbCritical)
         End If
 
     End Sub
 
-    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
-
-    End Sub
 
     Private Sub CheckedListBox2_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles CheckedListBox2.ItemCheck
         If e.NewValue = CheckState.Checked Then
@@ -360,59 +428,64 @@ Public Class MEDICATION
         Dim l_a_product_routes() As String
         Dim l_index As Integer = 0
 
-        If CheckedListBox1.CheckedIndices.Count > 0 Then
+        If g_selected_index > -1 Then
+            If CheckedListBox1.CheckedIndices.Count > 0 Then
+                For Each indexChecked In CheckedListBox1.CheckedIndices
+                    ReDim Preserve l_a_product_routes(l_index)
+                    l_a_product_routes(l_index) = g_a_market_routes(indexChecked)
+                    l_index = l_index + 1
+                Next
+                If Not medication.SET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, l_a_product_routes) Then
+                    MsgBox("Error inserting procut routes!", vbCritical)
+                Else
+                    MsgBox("Record updated!", vbInformation)
+                End If
 
-            For Each indexChecked In CheckedListBox1.CheckedIndices
+                Dim dr_routes As OracleDataReader
+                If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
+                    MsgBox("Error getting product routes!", vbCritical)
+                Else
+                    CheckedListBox2.Items.Clear()
+                    ReDim g_a_product_routes(0)
+                    Dim i As Integer = 0
+                    While dr_routes.Read
+                        CheckedListBox2.Items.Add(dr_routes.Item(1))
+                        If dr_routes.Item(2) = "Y" Then
+                            CheckedListBox2.SetItemChecked(i, True)
+                        End If
+                        ReDim Preserve g_a_product_routes(i)
+                        g_a_product_routes(i) = dr_routes(0)
+                        i = i + 1
+                    End While
+                End If
+                dr_routes.Close()
 
-                ReDim Preserve l_a_product_routes(l_index)
-
-                l_a_product_routes(l_index) = g_a_market_routes(indexChecked)
-
-                l_index = l_index + 1
-
-            Next
-
-            If Not medication.SET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, l_a_product_routes) Then
-
-                MsgBox("Error inserting procut routes!", vbCritical)
-            End If
-
-            Dim dr_routes As OracleDataReader
-            If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
-                MsgBox("Error getting product routes!", vbCritical)
             Else
-                CheckedListBox2.Items.Clear()
-                ReDim g_a_product_routes(0)
-                Dim i As Integer = 0
-                While dr_routes.Read
-                    CheckedListBox2.Items.Add(dr_routes.Item(1))
-                    If dr_routes.Item(2) = "Y" Then
-                        CheckedListBox2.SetItemChecked(i, True)
-                    End If
-                    ReDim Preserve g_a_product_routes(i)
-                    g_a_product_routes(i) = dr_routes(0)
-                    i = i + 1
-                End While
+                MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
             End If
-            dr_routes.Close()
 
         Else
-            MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
+            MsgBox("Please select a product!", vbCritical)
         End If
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-
-        If CheckedListBox2.CheckedIndices.Count > 0 Then
-            Dim l_index As Integer = 0
-            For Each indexChecked In CheckedListBox2.CheckedIndices
-                l_index = indexChecked
-            Next
-            If Not medication.SET_ROUTE_DEFAULT(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, g_a_product_routes(l_index)) Then
-                MsgBox("Error setting default route!", vbCritical)
+        If g_selected_index > -1 Then
+            If CheckedListBox2.CheckedIndices.Count > 0 Then
+                Dim l_index As Integer = 0
+                For Each indexChecked In CheckedListBox2.CheckedIndices
+                    l_index = indexChecked
+                Next
+                If Not medication.SET_ROUTE_DEFAULT(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, g_a_product_routes(l_index)) Then
+                    MsgBox("Error setting default route!", vbCritical)
+                Else
+                    MsgBox("Record updated!", vbInformation)
+                End If
+            Else
+                MsgBox("Please select one default route.", vbInformation)
             End If
         Else
-            MsgBox("Please select one default route.", vbInformation)
+            MsgBox("Please select a product!", vbCritical)
         End If
     End Sub
 
@@ -420,45 +493,45 @@ Public Class MEDICATION
         Dim l_a_product_um() As Int64
         Dim l_index As Integer = 0
 
-        If CheckedListBox3.CheckedIndices.Count > 0 Then
+        If ComboBox13.SelectedIndex >= 0 Then
+            If CheckedListBox3.CheckedIndices.Count > 0 Then
 
-            For Each indexChecked In CheckedListBox3.CheckedIndices
+                For Each indexChecked In CheckedListBox3.CheckedIndices
+                    ReDim Preserve l_a_product_um(l_index)
+                    l_a_product_um(l_index) = g_a_market_um(indexChecked)
+                    l_index = l_index + 1
+                Next
 
-                ReDim Preserve l_a_product_um(l_index)
+                If Not medication.SET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox13.SelectedIndex + 1, l_a_product_um) Then
+                    MsgBox("Error inserting product unit measures!", vbCritical)
+                Else
+                    ComboBox14.SelectedIndex = ComboBox13.SelectedIndex
 
-                l_a_product_um(l_index) = g_a_market_um(indexChecked)
-
-                l_index = l_index + 1
-
-            Next
-
-            If Not medication.SET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox13.SelectedIndex + 1, l_a_product_um) Then
-
-                MsgBox("Error inserting product unit measures!", vbCritical)
+                    'OBTER AS UNIDADES DE MEDIDA DO PRODUTO
+                    Dim dr_product_um As OracleDataReader
+                    If Not medication.GET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, dr_product_um) Then
+                        MsgBox("Error getting product unit measures!", vbCritical)
+                    Else
+                        CheckedListBox4.Items.Clear()
+                        ReDim g_a_product_um(0)
+                        Dim i As Integer = 0
+                        While dr_product_um.Read
+                            CheckedListBox4.Items.Add(dr_product_um.Item(1))
+                            If dr_product_um.Item(2) = "Y" Then
+                                CheckedListBox4.SetItemChecked(i, True)
+                            End If
+                            ReDim Preserve g_a_product_um(i)
+                            g_a_product_um(i) = dr_product_um(0)
+                            i = i + 1
+                        End While
+                        dr_product_um.Close()
+                    End If
+                End If
+                    Else
+                MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
             End If
-
-            'OBTER AS UNIDADES DE MEDIDA DO PRODUTO
-            ' Dim dr_routes As OracleDataReader
-            '  If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
-            'MsgBox("Error getting product routes!", vbCritical)
-            'Else
-            'CheckedListBox2.Items.Clear()
-            'ReDim g_a_product_routes(0)
-            ''Dim i As Integer = 0
-            'While dr_routes.Read
-            'CheckedListBox2.Items.Add(dr_routes.Item(1))
-            'If dr_routes.Item(2) = "Y" Then
-            'CheckedListBox2.SetItemChecked(i, True)
-            'End If
-            '   ReDim Preserve g_a_product_routes(i)
-            '  g_a_product_routes(i) = dr_routes(0)
-            ' i = i + 1
-            'End While
-            ' e 'nd If
-            '  dr_routes.Close()
-
         Else
-            MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
+            MsgBox("Please select a dose context!", vbCritical)
         End If
     End Sub
 
@@ -484,8 +557,30 @@ Public Class MEDICATION
             dr_UM.Close()
             Cursor = Cursors.Arrow
         Else
-            MsgBox("Please select as Institution.")
+            MsgBox("Please select an Institution.")
         End If
 
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+
+        Dim l_a_product_um(0) As Int64
+        Dim l_index As Integer = 0
+
+        For Each indexChecked In CheckedListBox4.CheckedIndices
+            ReDim Preserve l_a_product_um(l_index)
+            l_a_product_um(l_index) = g_a_product_um(indexChecked)
+            l_index = l_index + 1
+        Next
+        If Not medication.DELETE_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, l_a_product_um) Then
+            MsgBox("Error deleting product unit measures!", vbCritical)
+        End If
+
+        ''fazer refresh à grelha de unidades do produto
+        ''atualizar array das unidades do produto
     End Sub
 End Class

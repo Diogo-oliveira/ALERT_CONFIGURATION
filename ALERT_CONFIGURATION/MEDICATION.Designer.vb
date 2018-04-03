@@ -23,10 +23,10 @@ Partial Class MEDICATION
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MEDICATION))
-        Dim DataGridViewCellStyle33 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle34 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle35 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle36 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -78,6 +78,13 @@ Partial Class MEDICATION
         Me.Button6 = New System.Windows.Forms.Button()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.ComboBox13 = New System.Windows.Forms.ComboBox()
+        Me.Button8 = New System.Windows.Forms.Button()
+        Me.Button12 = New System.Windows.Forms.Button()
+        Me.Button13 = New System.Windows.Forms.Button()
+        Me.Button14 = New System.Windows.Forms.Button()
+        Me.Button15 = New System.Windows.Forms.Button()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.ComboBox14 = New System.Windows.Forms.ComboBox()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -148,47 +155,48 @@ Partial Class MEDICATION
         Me.DataGridView1.AllowUserToDeleteRows = False
         Me.DataGridView1.AllowUserToResizeColumns = False
         Me.DataGridView1.AllowUserToResizeRows = False
-        DataGridViewCellStyle33.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridView1.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle33
+        DataGridViewCellStyle17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridView1.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle17
         Me.DataGridView1.BackgroundColor = System.Drawing.SystemColors.ControlLight
         Me.DataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView1.ColumnHeadersVisible = False
-        DataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle34.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle34.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle34.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle34.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle34.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle34.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle34
-        Me.DataGridView1.Location = New System.Drawing.Point(12, 143)
+        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle18.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.DataGridView1.DefaultCellStyle = DataGridViewCellStyle18
+        Me.DataGridView1.Location = New System.Drawing.Point(12, 118)
+        Me.DataGridView1.MultiSelect = False
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.ReadOnly = True
-        DataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle35.BackColor = System.Drawing.SystemColors.AppWorkspace
-        DataGridViewCellStyle35.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle35.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle35.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle35.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle35.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle35
+        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.AppWorkspace
+        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridView1.RowHeadersDefaultCellStyle = DataGridViewCellStyle19
         Me.DataGridView1.RowHeadersVisible = False
-        DataGridViewCellStyle36.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridView1.RowsDefaultCellStyle = DataGridViewCellStyle36
-        Me.DataGridView1.Size = New System.Drawing.Size(1560, 351)
+        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridView1.RowsDefaultCellStyle = DataGridViewCellStyle20
+        Me.DataGridView1.Size = New System.Drawing.Size(1560, 376)
         Me.DataGridView1.TabIndex = 115
         '
         'TextBox2
         '
-        Me.TextBox2.Location = New System.Drawing.Point(14, 92)
+        Me.TextBox2.Location = New System.Drawing.Point(14, 77)
         Me.TextBox2.Name = "TextBox2"
         Me.TextBox2.Size = New System.Drawing.Size(392, 20)
         Me.TextBox2.TabIndex = 116
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(429, 84)
+        Me.Button2.Location = New System.Drawing.Point(429, 69)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(142, 34)
         Me.Button2.TabIndex = 117
@@ -287,9 +295,9 @@ Partial Class MEDICATION
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(1431, 517)
+        Me.Button1.Location = New System.Drawing.Point(1431, 527)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(142, 34)
+        Me.Button1.Size = New System.Drawing.Size(141, 24)
         Me.Button1.TabIndex = 128
         Me.Button1.Text = "SAVE"
         Me.Button1.UseVisualStyleBackColor = True
@@ -403,7 +411,7 @@ Partial Class MEDICATION
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(12, 76)
+        Me.Label15.Location = New System.Drawing.Point(12, 61)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(136, 13)
         Me.Label15.TabIndex = 141
@@ -458,9 +466,9 @@ Partial Class MEDICATION
         '
         'Button7
         '
-        Me.Button7.Location = New System.Drawing.Point(1472, 806)
+        Me.Button7.Location = New System.Drawing.Point(1454, 778)
         Me.Button7.Name = "Button7"
-        Me.Button7.Size = New System.Drawing.Size(100, 23)
+        Me.Button7.Size = New System.Drawing.Size(118, 37)
         Me.Button7.TabIndex = 149
         Me.Button7.Text = "BACK"
         Me.Button7.UseVisualStyleBackColor = True
@@ -514,14 +522,14 @@ Partial Class MEDICATION
         '
         'TextBox4
         '
-        Me.TextBox4.Location = New System.Drawing.Point(723, 758)
+        Me.TextBox4.Location = New System.Drawing.Point(723, 766)
         Me.TextBox4.Name = "TextBox4"
         Me.TextBox4.Size = New System.Drawing.Size(217, 20)
         Me.TextBox4.TabIndex = 155
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(946, 755)
+        Me.Button4.Location = New System.Drawing.Point(946, 763)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(102, 23)
         Me.Button4.TabIndex = 156
@@ -530,7 +538,7 @@ Partial Class MEDICATION
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(946, 784)
+        Me.Button5.Location = New System.Drawing.Point(946, 792)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(102, 23)
         Me.Button5.TabIndex = 157
@@ -539,17 +547,17 @@ Partial Class MEDICATION
         '
         'Button6
         '
-        Me.Button6.Location = New System.Drawing.Point(1307, 792)
+        Me.Button6.Location = New System.Drawing.Point(1454, 725)
         Me.Button6.Name = "Button6"
-        Me.Button6.Size = New System.Drawing.Size(102, 23)
+        Me.Button6.Size = New System.Drawing.Size(118, 37)
         Me.Button6.TabIndex = 158
-        Me.Button6.Text = "SAVE"
+        Me.Button6.Text = "FREQUENCIES"
         Me.Button6.UseVisualStyleBackColor = True
         '
         'Label18
         '
         Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(720, 576)
+        Me.Label18.Location = New System.Drawing.Point(1081, 576)
         Me.Label18.Name = "Label18"
         Me.Label18.Size = New System.Drawing.Size(152, 13)
         Me.Label18.TabIndex = 159
@@ -564,11 +572,81 @@ Partial Class MEDICATION
         Me.ComboBox13.Size = New System.Drawing.Size(153, 21)
         Me.ComboBox13.TabIndex = 160
         '
+        'Button8
+        '
+        Me.Button8.Location = New System.Drawing.Point(1199, 792)
+        Me.Button8.Name = "Button8"
+        Me.Button8.Size = New System.Drawing.Size(102, 23)
+        Me.Button8.TabIndex = 161
+        Me.Button8.Text = "DELETE"
+        Me.Button8.UseVisualStyleBackColor = True
+        '
+        'Button12
+        '
+        Me.Button12.Location = New System.Drawing.Point(1454, 639)
+        Me.Button12.Name = "Button12"
+        Me.Button12.Size = New System.Drawing.Size(118, 37)
+        Me.Button12.TabIndex = 162
+        Me.Button12.Text = "FILTERS"
+        Me.Button12.UseVisualStyleBackColor = True
+        '
+        'Button13
+        '
+        Me.Button13.Location = New System.Drawing.Point(1454, 596)
+        Me.Button13.Name = "Button13"
+        Me.Button13.Size = New System.Drawing.Size(118, 37)
+        Me.Button13.TabIndex = 163
+        Me.Button13.Text = "STANDARD INSTRUCTIONS"
+        Me.Button13.UseVisualStyleBackColor = True
+        '
+        'Button14
+        '
+        Me.Button14.Location = New System.Drawing.Point(1454, 682)
+        Me.Button14.Name = "Button14"
+        Me.Button14.Size = New System.Drawing.Size(118, 37)
+        Me.Button14.TabIndex = 164
+        Me.Button14.Text = "SLIDING SCALES"
+        Me.Button14.UseVisualStyleBackColor = True
+        '
+        'Button15
+        '
+        Me.Button15.Location = New System.Drawing.Point(1307, 792)
+        Me.Button15.Name = "Button15"
+        Me.Button15.Size = New System.Drawing.Size(102, 23)
+        Me.Button15.TabIndex = 165
+        Me.Button15.Text = "SET DEFAULT"
+        Me.Button15.UseVisualStyleBackColor = True
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(720, 573)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(116, 13)
+        Me.Label19.TabIndex = 166
+        Me.Label19.Text = "UNIT MEASURES (All)"
+        '
+        'ComboBox14
+        '
+        Me.ComboBox14.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox14.FormattingEnabled = True
+        Me.ComboBox14.Location = New System.Drawing.Point(1256, 573)
+        Me.ComboBox14.Name = "ComboBox14"
+        Me.ComboBox14.Size = New System.Drawing.Size(153, 21)
+        Me.ComboBox14.TabIndex = 167
+        '
         'MEDICATION
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 841)
+        Me.Controls.Add(Me.ComboBox14)
+        Me.Controls.Add(Me.Label19)
+        Me.Controls.Add(Me.Button15)
+        Me.Controls.Add(Me.Button14)
+        Me.Controls.Add(Me.Button13)
+        Me.Controls.Add(Me.Button12)
+        Me.Controls.Add(Me.Button8)
         Me.Controls.Add(Me.ComboBox13)
         Me.Controls.Add(Me.Label18)
         Me.Controls.Add(Me.Button6)
@@ -682,4 +760,11 @@ Partial Class MEDICATION
     Friend WithEvents Button6 As Button
     Friend WithEvents Label18 As Label
     Friend WithEvents ComboBox13 As ComboBox
+    Friend WithEvents Button8 As Button
+    Friend WithEvents Button12 As Button
+    Friend WithEvents Button13 As Button
+    Friend WithEvents Button14 As Button
+    Friend WithEvents Button15 As Button
+    Friend WithEvents Label19 As Label
+    Friend WithEvents ComboBox14 As ComboBox
 End Class

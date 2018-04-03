@@ -555,10 +555,15 @@ Public Class Medication_API
 
                                         FOR i IN 1 .. l_tbl_um.count
                                         LOOP
+                                            BEGIN
                                             INSERT INTO alert_product_mt.lnk_product_unit_measure
                                                 (id_product, id_product_supplier, id_unit_measure, id_unit_measure_context, flg_default)
                                             VALUES
                                                 ('" & i_id_product & "', '" & i_id_product_supplier & "', l_tbl_um(i), " & i_context & ", 'N');
+                                            EXCEPTION
+                                                WHEN DUP_VAL_ON_INDEX THEN
+                                                      CONTINUE;
+                                            END;
                                         END LOOP;
                                     END;"
 
@@ -573,6 +578,76 @@ Public Class Medication_API
         End Try
 
         cmd_insert_um.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "       SELECT lum.id_unit_measure, pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure), lum.flg_default
+                                      FROM alert_product_mt.lnk_product_unit_measure lum
+                                      JOIN alert.unit_measure um
+                                        On um.id_unit_measure = lum.id_unit_measure
+                                     WHERE lum.id_product = '" & i_id_product & "'
+                                       And lum.id_product_supplier = '" & i_id_product_supplier & "'
+                                       AND lum.id_unit_measure_context = " & i_context
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function DELETE_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_unit_measure() As Int64) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = " DECLARE
+                                   l_tbl_um table_number := table_number("
+
+        For i As Integer = 0 To i_unit_measure.Count - 1
+
+            If i < i_unit_measure.Count - 1 Then
+                sql = sql & i_unit_measure(i) & ", "
+            Else
+                sql = sql & i_unit_measure(i)
+            End If
+
+
+        Next
+        sql = sql & ");
+                                BEGIN
+                                        FOR i IN 1 .. l_tbl_um.count
+                                        LOOP
+                                            DELETE FROM alert_product_mt.lnk_product_unit_measure lum
+                                             WHERE lum.id_product = '" & i_id_product & "'
+                                               AND lum.id_product_supplier = '" & i_id_product_supplier & "'
+                                               AND lum.id_unit_measure_context = " & i_context & "
+                                               AND lum.id_unit_measure = l_tbl_um(i);
+                                        END LOOP;
+                                    END;"
+
+        Dim cmd_delete_um As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_um.CommandType = CommandType.Text
+            cmd_delete_um.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_delete_um.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_um.Dispose()
 
         Return True
 
