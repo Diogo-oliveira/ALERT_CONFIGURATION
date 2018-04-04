@@ -263,6 +263,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Medication_API.vb" />
+    <Compile Include="Med_STD_Non_IV.Designer.vb">
+      <DependentUpon>Med_STD_Non_IV.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Med_STD_Non_IV.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -345,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MEDICATION.resx">
       <DependentUpon>MEDICATION.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Med_STD_Non_IV.resx">
+      <DependentUpon>Med_STD_Non_IV.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

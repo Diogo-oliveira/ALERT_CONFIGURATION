@@ -42,6 +42,12 @@ Public Class MEDICATION
             Next
         End If
 
+        For Each indexChecked In CheckedListBox3.CheckedIndices
+            CheckedListBox3.SetItemChecked(indexChecked, False)
+        Next
+        ReDim g_a_product_um(0)
+        CheckedListBox4.Items.Clear()
+
         Return True
 
     End Function
@@ -67,6 +73,10 @@ Public Class MEDICATION
         TextBox3.Text = ""
 
         If TextBox1.Text <> "" Then
+
+            If Not RESET_PRODUCT_PARAMETERS() Then
+                MsgBox("Error reseting product parameters.", vbCritical)
+            End If
 
             ComboBox1.Text = db_access_general.GET_INSTITUTION(TextBox1.Text)
 
@@ -376,6 +386,25 @@ Public Class MEDICATION
                     Next
                 Next
             End If
+            'OBTER AS UNIDADES DO PRODUTO
+            Dim dr_product_um As OracleDataReader
+            If Not medication.GET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, dr_product_um) Then
+                MsgBox("Error getting product unit measures!", vbCritical)
+            Else
+                CheckedListBox4.Items.Clear()
+                ReDim g_a_product_um(0)
+                Dim i As Integer = 0
+                While dr_product_um.Read
+                    CheckedListBox4.Items.Add(dr_product_um.Item(1))
+                    If dr_product_um.Item(2) = "Y" Then
+                        CheckedListBox4.SetItemChecked(i, True)
+                    End If
+                    ReDim Preserve g_a_product_um(i)
+                    g_a_product_um(i) = dr_product_um(0)
+                    i = i + 1
+                End While
+                dr_product_um.Close()
+            End If
         End If
 
     End Sub
@@ -390,8 +419,14 @@ Public Class MEDICATION
             l_med_type = 1
         End If
 
+        Dim l_selected_software As Int16 = 0
+
+        If g_selected_soft > -1 Then
+            l_selected_software = g_selected_soft
+        End If
+
         If g_selected_index > -1 Then
-            If Not medication.SET_PARAMETERS(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
+            If Not medication.SET_PARAMETERS(TextBox1.Text, l_selected_software, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
                                          l_med_type, ComboBox7.Text, ComboBox8.Text, ComboBox9.Text, ComboBox10.Text, ComboBox11.Text, ComboBox12.Text, TextBox3.Text) Then
                 MsgBox("Error updating parameters!", vbCritical)
             Else
@@ -528,7 +563,7 @@ Public Class MEDICATION
                     End If
                 End If
                     Else
-                MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
+                MsgBox("Please select, at least, one unit measure.", vbInformation)
             End If
         Else
             MsgBox("Please select a dose context!", vbCritical)
@@ -562,25 +597,83 @@ Public Class MEDICATION
 
     End Sub
 
-    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
-
-    End Sub
-
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
         Dim l_a_product_um(0) As Int64
         Dim l_index As Integer = 0
 
-        For Each indexChecked In CheckedListBox4.CheckedIndices
-            ReDim Preserve l_a_product_um(l_index)
-            l_a_product_um(l_index) = g_a_product_um(indexChecked)
-            l_index = l_index + 1
-        Next
-        If Not medication.DELETE_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, l_a_product_um) Then
-            MsgBox("Error deleting product unit measures!", vbCritical)
+        If ComboBox13.SelectedIndex >= 0 Then
+            If CheckedListBox4.CheckedIndices.Count > 0 Then
+                For Each indexChecked In CheckedListBox4.CheckedIndices
+                    ReDim Preserve l_a_product_um(l_index)
+                    l_a_product_um(l_index) = g_a_product_um(indexChecked)
+                    l_index = l_index + 1
+                Next
+                If Not medication.DELETE_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, l_a_product_um) Then
+                    MsgBox("Error deleting product unit measures!", vbCritical)
+                Else
+                    'MsgBox("Records deleted.", vbInformation)
+                    CheckedListBox4.Items.Clear()
+                    ReDim g_a_product_um(0)
+                    Dim dr_product_um As OracleDataReader
+                    If Not medication.GET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, dr_product_um) Then
+                        MsgBox("Error getting product unit measures!", vbCritical)
+                    Else
+                        Dim i As Integer = 0
+                        While dr_product_um.Read
+                            CheckedListBox4.Items.Add(dr_product_um.Item(1))
+                            If dr_product_um.Item(2) = "Y" Then
+                                CheckedListBox4.SetItemChecked(i, True)
+                            End If
+                            ReDim Preserve g_a_product_um(i)
+                            g_a_product_um(i) = dr_product_um(0)
+                            i = i + 1
+                        End While
+                        dr_product_um.Close()
+                    End If
+                End If
+            Else
+                MsgBox("Please select, at least, one unit measure.", vbInformation)
+            End If
+        Else
+            MsgBox("Please select a dose context!", vbCritical)
         End If
+    End Sub
 
-        ''fazer refresh à grelha de unidades do produto
-        ''atualizar array das unidades do produto
+    Private Sub CheckedListBox4_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles CheckedListBox4.ItemCheck
+        If e.NewValue = CheckState.Checked Then
+            For i As Integer = 0 To Me.CheckedListBox4.Items.Count - 1 Step 1
+                If i <> e.Index Then
+                    Me.CheckedListBox4.SetItemChecked(i, False)
+                End If
+            Next i
+        End If
+    End Sub
+
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+        If ComboBox13.SelectedIndex >= 0 Then
+            If CheckedListBox4.CheckedIndices.Count > 0 Then
+                If Not medication.SET_DEFAULT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, g_a_product_um(CheckedListBox4.SelectedIndex)) Then
+                    MsgBox("Error setting default unit measure!", vbCritical)
+                Else
+                    For Each indexChecked In CheckedListBox4.CheckedIndices
+                        CheckedListBox4.SetItemChecked(indexChecked, False)
+                    Next
+                    CheckedListBox4.SetItemChecked(CheckedListBox4.SelectedIndex, True)
+                End If
+            Else
+                MsgBox("Please select, at least, one unit measure.", vbInformation)
+            End If
+        Else
+            MsgBox("Please select a dose context!", vbCritical)
+        End If
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
+        Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier)
+        MED_STD.ShowDialog()
     End Sub
 End Class

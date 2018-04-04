@@ -152,7 +152,7 @@ Public Class Medication_API
         End Try
     End Function
 
-    Function SET_PARAMETERS(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_flg_available As String, i_id_pick_list As Int16, i_id_product_level As Int16,
+    Function SET_PARAMETERS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_flg_available As String, i_id_pick_list As Int16, i_id_product_level As Int16,
                             ByVal i_med_type As Int16, ByVal i_mix_fluid As String, ByVal i_justify_expensive As String, i_controlled_drug As String,
                             ByVal i_blood_derivate As String, ByVal i_dopant As String, ByVal i_narcotic As String,
                             ByVal i_product_synonym As String) As Boolean
@@ -203,7 +203,7 @@ Public Class Medication_API
 
         If i_product_synonym <> "" Then
 
-            If Not SET_PRODUCT_SYNONYM(i_institution, i_id_product, i_id_product_supplier, i_id_pick_list, i_product_synonym) Then
+            If Not SET_PRODUCT_SYNONYM(i_institution, i_software, i_id_product, i_id_product_supplier, i_id_pick_list, i_product_synonym) Then
 
                 Return False
 
@@ -251,9 +251,10 @@ Public Class Medication_API
 
     End Function
 
-    Function SET_PRODUCT_SYNONYM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_id_pick_list As Int16, ByVal i_synonym As String) As Boolean
+    Function SET_PRODUCT_SYNONYM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_id_pick_list As Int16, ByVal i_synonym As String) As Boolean
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
         Dim sql As String = "DECLARE
                                 l_grant NUMBER(24);
@@ -263,16 +264,16 @@ Public Class Medication_API
                                     SELECT g.id_grant
                                       INTO l_grant
                                       FROM alert_product_mt.v_cfg_grant g
-                                     WHERE g.market = 12
-                                       AND g.institution = 2945
-                                       AND g.software = 11
+                                     WHERE g.market = " & l_id_market & "
+                                       AND g.institution = " & i_institution & "
+                                       AND g.software = " & i_software & "
                                        AND g.id_context IS NULL
                                        AND rownum = 1;
                                 EXCEPTION
                                     WHEN no_data_found THEN
                                         l_grant := alert_product_mt.pk_grants.set_by_soft_inst(i_context     => '',
-                                                                                               i_prof        => profissional(0, 2945, 11),
-                                                                                               i_market      => 12,
+                                                                                               i_prof        => profissional(0, " & i_institution & ",  " & i_software & "),
+                                                                                               i_market      => " & l_id_market & ",
                                                                                                i_grant_order => 1);
                                 END;
 
@@ -587,13 +588,14 @@ Public Class Medication_API
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        Dim sql As String = "       SELECT lum.id_unit_measure, pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure), lum.flg_default
+        Dim sql As String = "       SELECT lum.id_unit_measure, pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure) AS PROD_DESC, lum.flg_default
                                       FROM alert_product_mt.lnk_product_unit_measure lum
                                       JOIN alert.unit_measure um
                                         On um.id_unit_measure = lum.id_unit_measure
                                      WHERE lum.id_product = '" & i_id_product & "'
                                        And lum.id_product_supplier = '" & i_id_product_supplier & "'
-                                       AND lum.id_unit_measure_context = " & i_context
+                                       AND lum.id_unit_measure_context = " & i_context & "
+                                       ORDER BY PROD_DESC ASC"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
@@ -610,20 +612,15 @@ Public Class Medication_API
 
     Function DELETE_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_unit_measure() As Int64) As Boolean
 
-        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
-
         Dim sql As String = " DECLARE
                                    l_tbl_um table_number := table_number("
 
         For i As Integer = 0 To i_unit_measure.Count - 1
-
             If i < i_unit_measure.Count - 1 Then
                 sql = sql & i_unit_measure(i) & ", "
             Else
                 sql = sql & i_unit_measure(i)
             End If
-
-
         Next
         sql = sql & ");
                                 BEGIN
@@ -653,6 +650,147 @@ Public Class Medication_API
 
     End Function
 
+    Function SET_DEFAULT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_unit_measure As Int64) As Boolean
+
+        Dim sql As String = " BEGIN
+
+                                UPDATE alert_product_mt.lnk_product_unit_measure lum
+                                SET lum.flg_default='N'
+                                 WHERE lum.id_product = '" & i_id_product & "'
+                                   AND lum.id_product_supplier = '" & i_id_product_supplier & "'
+                                   AND lum.id_unit_measure_context = " & i_context & ";
+
+   
+                                UPDATE alert_product_mt.lnk_product_unit_measure lum
+                                SET lum.flg_default='Y'
+                                 WHERE lum.id_product = '" & i_id_product & "'
+                                   AND lum.id_product_supplier = '" & i_id_product_supplier & "'
+                                   AND lum.id_unit_measure_context = " & i_context & "
+                                   AND LUM.ID_UNIT_MEASURE = " & i_unit_measure & ";
+
+                                END;  "
+
+        Dim cmd_default_um As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_default_um.CommandType = CommandType.Text
+            cmd_default_um.ExecuteNonQuery()
+        Catch ex As Exception
+            cmd_default_um.Dispose()
+            Return False
+        End Try
+
+        cmd_default_um.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_ALL_FREQS(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef i_dr As OracleDataReader) As Boolean
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim sql As String = "SELECT v3.data AS data, v3.label AS label, v3.type AS TYPE, v3.rank AS rank
+                              FROM (
+                                    --frequecies from presc_list
+                                    SELECT g.data AS data, g.label AS label, g.type AS TYPE, g.display_rank AS rank
+                                      FROM TABLE(alert_product_tr.pk_product.get_presc_list_pipelined(i_lang                => " & l_id_language & ",
+                                                                                                       i_session_data        => alert_product_mt.session_data(NULL,
+                                                                                                                                             " & i_institution & ",
+                                                                                                                                             " & i_software & ",
+                                                                                                                                             " & l_market & "),
+                                                                                                       i_id_description_type => 1,
+                                                                                                       i_id_presc_list       => 3)) g
+        
+                                    UNION ALL
+                                    --frequencies from presc_dir_frequency
+                                    SELECT v2.id_presc_dir_frequency AS data, v2.frequency_desc AS label, 'V' AS TYPE, v2.rank AS rank
+                                      FROM (SELECT /*+OPT_ESTIMATE(TABLE t ROWS=1)*/
+                                              t.id_presc_dir_frequency,
+                                              nvl(t.frequency_synonym,
+                                                  alert_product_tr.pk_api_med_core_in.get_translation(i_lang      => " & l_id_language & ",
+                                                                                                      i_code_mess => t.code_presc_dir_frequency)) frequency_desc,
+                                              t.display_rank rank,
+                                              t.flg_freq_type,
+                                              t.flg_default,
+                                              t.num_days,
+                                              t.flg_prn,
+                                              t.flg_normal,
+                                              t.flg_iv
+                                               FROM TABLE(alert_product_mt.pk_product_med.tf_get_frequencies_attributes(i_lang               => " & l_id_language & ",
+                                                                                                                        i_session_data       => alert_product_mt.session_data(NULL,
+                                                                                                                                                             " & i_institution & ",
+                                                                                                                                                             " & i_software & ",
+                                                                                                                                                             " & l_market & "),
+                                                                                                                        i_tab_frequency_type => table_varchar('PDSTD'))) t) v2) v3
+                             WHERE v3.type <> 'AI'
+                               AND label IS NOT NULL
+                             ORDER BY rank NULLS LAST, label, data"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        ' Try
+        cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        '  Catch ex As Exception
+
+        ' DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_OPTIONS")
+        ' DEBUGGER.SET_DEBUG(ex.Message)
+        ' DEBUGGER.SET_DEBUG(sql)
+        ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+        'cmd.Dispose()
+        'Return False
+        ' End Try
+    End Function
+
+    Function GET_PRODUCT_DESC(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String) As String
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+
+        Dim l_product_desc As String = ""
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "   SELECT ed.desc_lang_" & l_id_language & "
+                                  FROM alert_product_mt.product p
+                                  JOIN alert_product_mt.entity_description ed
+                                    ON ed.code_entity_description = p.code_product
+                                 WHERE p.id_product = '" & i_id_product & "'
+                                   AND p.id_product_supplier = '" & i_id_product_supplier & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_product_desc = dr.Item(0)
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+
+            'DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION :: GET_PRODUCT_SUPPLIER")
+            'DEBUGGER.SET_DEBUG(ex.Message)
+            'DEBUGGER.SET_DEBUG(sql)
+            'DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        End Try
+
+        Return l_product_desc
+
+    End Function
 End Class
 
 
