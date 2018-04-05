@@ -239,9 +239,9 @@ Partial Class MEDICATION
         Me.Label6.AutoSize = True
         Me.Label6.Location = New System.Drawing.Point(674, 7)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(200, 13)
+        Me.Label6.Size = New System.Drawing.Size(213, 13)
         Me.Label6.TabIndex = 123
-        Me.Label6.Text = "TYPE OF MEDICATION (only for picklist)"
+        Me.Label6.Text = "TYPE OF PRESCRIPTION (only for picklist)"
         '
         'ComboBox5
         '
