@@ -8,6 +8,19 @@ Public Class Medication_API
         Public desc_route As String
     End Structure
 
+    Public Structure MED_SET_INSTRUCTIONS
+        Public id_product As String
+        Public id_std_presc_dir As Int64
+        Public rank As Int64
+        Public id_grant As Int64
+        Public market As Int16
+        Public market_desc As String
+        Public software As Int16
+        Public software_desc As String
+        Public id_pick_list As Int16
+        Public institution As Int64
+    End Structure
+
     Function GET_LIST_PRODUCTS(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByVal i_product_desc As String, ByRef i_dr As OracleDataReader) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_LIST_PRODUCTS(" & i_institution & ", " & i_product_supplier & ", " & i_product_desc & ")")
@@ -789,6 +802,121 @@ Public Class Medication_API
         End Try
 
         Return l_product_desc
+
+    End Function
+
+    Function GET_ALL_INSTRUCTIONS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim sql As String = "   SELECT lsd.id_product,
+                                       d.id_std_presc_directions,
+                                       lsd.rank,
+                                       lsd.id_grant,
+                                       cfg.market,
+                                       (SELECT (cgd.value || ' - ' || m.desc_market)
+                                          FROM alert_product_mt.config_grant cg
+                                          JOIN alert_product_mt.config_grant_det cgd
+                                            ON cgd.id_grant = cg.id_grant
+                                          JOIN alert_product_mt.config_universe cu
+                                            ON cu.id_universe = cgd.id_universe
+                                          JOIN market m
+                                            ON m.id_market = cgd.value
+                                         WHERE cg.id_grant = lsd.id_grant
+                                           AND cu.column_name = 'market') AS MARKET_DESC,
+                                       cfg.software,
+                                       (SELECT (cgd.value || ' - ' || (decode(cgd.value, 0, 'ALL', s.name)))
+                                          FROM alert_product_mt.config_grant cg
+                                          JOIN alert_product_mt.config_grant_det cgd
+                                            ON cgd.id_grant = cg.id_grant
+                                          JOIN alert_product_mt.config_universe cu
+                                            ON cu.id_universe = cgd.id_universe
+                                          JOIN software s
+                                            ON s.id_software = cgd.value
+                                         WHERE cg.id_grant = lsd.id_grant
+                                           AND cu.column_name = 'software') AS SOFTWARE_DESC,
+                                       lsd.id_pick_list,
+                                       (SELECT cgd.value
+                                          FROM alert_product_mt.config_grant cg
+                                          JOIN alert_product_mt.config_grant_det cgd
+                                            ON cgd.id_grant = cg.id_grant
+                                          JOIN alert_product_mt.config_universe cu
+                                            ON cu.id_universe = cgd.id_universe
+                                         WHERE cg.id_grant = lsd.id_grant
+                                           AND cu.column_name = 'institution') AS INSTITUTION
+                                  FROM alert_product_mt.std_presc_dir d
+                                  JOIN alert_product_mt.lnk_product_std_presc_dir lsd
+                                    ON lsd.id_std_presc_directions = d.id_std_presc_directions
+                                  JOIN alert_product_mt.v_cfg_grant cfg
+                                    ON cfg.id_grant = lsd.id_grant
+                                 WHERE lsd.id_product IN ('" & i_id_product & "')
+                                   AND lsd.id_product_supplier = '" & i_id_product_supplier & "'
+                                   AND cfg.id_context = 'LNK_PRODUCT_STD_PRESC_DIR'
+                                   AND cfg.institution IN (0, " & i_institution & ")
+                                   AND cfg.market IN (0, " & l_market & ")
+                                   AND cfg.software IN (0, " & i_software & ")
+                                   AND lsd.id_pick_list IN (0, " & i_pick_list & ")
+                                 ORDER BY cfg.market DESC, cfg.institution DESC, cfg.software DESC, lsd.id_pick_list DESC, lsd.rank ASC  "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            '    DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            '   DEBUGGER.SET_DEBUG(ex.Message)
+            '  DEBUGGER.SET_DEBUG(sql)
+            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function GET_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_std_presc_dir As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim sql As String = "   SELECT d.id_std_presc_directions,
+                                       d.flg_sos,
+                                       d.id_sos_take_condition,
+                                       d.sos_take_condition,
+                                       ed_s.desc_lang_" & l_id_language & " AS admin_site,
+                                       ed_am.desc_lang_" & l_id_language & " AS admin_method,
+                                       d.notes,
+                                       to_char(d.patient_instr_desc) AS patient_instructions
+                                  FROM alert_product_mt.std_presc_dir d
+                                  LEFT JOIN alert_product_mt.admin_method am
+                                    ON am.id_admin_method = d.id_admin_method
+                                  LEFT JOIN translation ed_am
+                                    ON ed_am.code_translation = am.code_admin_method
+                                  LEFT JOIN alert_product_mt.admin_site a
+                                    ON a.id_admin_site = d.id_admin_site
+                                  LEFT JOIN translation ed_s
+                                    ON ed_s.code_translation = a.code_admin_site
+                                 WHERE d.id_std_presc_directions =  " & i_id_std_presc_dir
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            '    DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            '   DEBUGGER.SET_DEBUG(ex.Message)
+            '  DEBUGGER.SET_DEBUG(sql)
+            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
 
     End Function
 End Class

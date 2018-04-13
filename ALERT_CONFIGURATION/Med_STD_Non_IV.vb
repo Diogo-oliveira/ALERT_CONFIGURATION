@@ -10,6 +10,8 @@ Public Class MED_STD_NON_IV
     Dim g_id_software_index As Int16 = -1 ''index do software
     Dim g_selected_software As Int16 = -1
 
+    Dim g_a_med_set_instructions() As Medication_API.MED_SET_INSTRUCTIONS
+
     Public Sub New(ByVal i_institution As Int64, ByVal i_software_index As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String)
 
         InitializeComponent()
@@ -53,6 +55,80 @@ Public Class MED_STD_NON_IV
             End While
         End If
 
+        ComboBox28.Items.Add("0 - ALL")
+        ComboBox28.Items.Add("1 - External Prescription")
+        ComboBox28.Items.Add("2 - Administer Here")
+        ComboBox28.Items.Add("3 - Home Medication")
+
+        ComboBox24.Items.Add("Y")
+        ComboBox24.Items.Add("N")
+
     End Sub
 
+    Private Sub ComboBox28_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox28.SelectedIndexChanged
+        Dim dr_med_set_instruction As OracleDataReader
+        ReDim g_a_med_set_instructions(0)
+        ComboBox1.Items.Clear()
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
+        Else
+            Dim i As Integer = 0
+            While dr_med_set_instruction.Read()
+                ReDim Preserve g_a_med_set_instructions(i)
+                g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
+                g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
+                g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
+                g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
+                g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
+                g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
+                g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
+                g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
+                g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
+                g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
+
+                ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
+
+                i = i + 1
+
+            End While
+        End If
+    End Sub
+
+    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
+        TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant
+
+        Dim dr_std_presc_dir As OracleDataReader
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+        If Not medication.GET_STD_PRESC_DIR(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, dr_std_presc_dir) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+            MsgBox("ERROR GETTING STANDARD_PRESC_DIR!", vbCritical)
+        Else
+            While dr_std_presc_dir.Read()
+                ComboBox24.Text = dr_std_presc_dir.Item(1)
+                Try
+                    TextBox24.Text = dr_std_presc_dir.Item(3)
+                Catch ex As Exception
+                    TextBox24.Text = ""
+                End Try
+
+                Try
+                    ComboBox26 = dr_std_presc_dir.Item(4)
+                Catch ex As Exception
+                    ComboBox26.Text = ""
+                End Try
+
+                Try
+                    ComboBox27 = dr_std_presc_dir.Item(5)
+                Catch ex As Exception
+                    ComboBox27.Text = ""
+                End Try
+
+            End While
+        End If
+
+    End Sub
 End Class

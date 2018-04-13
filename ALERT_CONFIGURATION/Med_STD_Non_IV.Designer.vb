@@ -144,6 +144,10 @@ Partial Class MED_STD_NON_IV
         Me.Label54 = New System.Windows.Forms.Label()
         Me.ComboBox29 = New System.Windows.Forms.ComboBox()
         Me.Label55 = New System.Windows.Forms.Label()
+        Me.TextBox27 = New System.Windows.Forms.TextBox()
+        Me.Label56 = New System.Windows.Forms.Label()
+        Me.ComboBox30 = New System.Windows.Forms.ComboBox()
+        Me.Label57 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -1334,11 +1338,50 @@ Partial Class MED_STD_NON_IV
         Me.Label55.TabIndex = 263
         Me.Label55.Text = "NEW SOFTWARE (Optional)"
         '
+        'TextBox27
+        '
+        Me.TextBox27.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox27.Location = New System.Drawing.Point(721, 139)
+        Me.TextBox27.Name = "TextBox27"
+        Me.TextBox27.Size = New System.Drawing.Size(92, 22)
+        Me.TextBox27.TabIndex = 264
+        '
+        'Label56
+        '
+        Me.Label56.AutoSize = True
+        Me.Label56.Location = New System.Drawing.Point(718, 123)
+        Me.Label56.Name = "Label56"
+        Me.Label56.Size = New System.Drawing.Size(45, 13)
+        Me.Label56.TabIndex = 265
+        Me.Label56.Text = "GRANT"
+        '
+        'ComboBox30
+        '
+        Me.ComboBox30.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox30.FormattingEnabled = True
+        Me.ComboBox30.Location = New System.Drawing.Point(819, 139)
+        Me.ComboBox30.Name = "ComboBox30"
+        Me.ComboBox30.Size = New System.Drawing.Size(96, 21)
+        Me.ComboBox30.TabIndex = 266
+        '
+        'Label57
+        '
+        Me.Label57.AutoSize = True
+        Me.Label57.Location = New System.Drawing.Point(816, 123)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(52, 13)
+        Me.Label57.TabIndex = 267
+        Me.Label57.Text = "MARKET"
+        '
         'MED_STD_NON_IV
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(929, 725)
+        Me.Controls.Add(Me.Label57)
+        Me.Controls.Add(Me.ComboBox30)
+        Me.Controls.Add(Me.Label56)
+        Me.Controls.Add(Me.TextBox27)
         Me.Controls.Add(Me.Label55)
         Me.Controls.Add(Me.ComboBox29)
         Me.Controls.Add(Me.Label54)
@@ -1512,4 +1555,8 @@ Partial Class MED_STD_NON_IV
     Friend WithEvents Label54 As Label
     Friend WithEvents ComboBox29 As ComboBox
     Friend WithEvents Label55 As Label
+    Friend WithEvents TextBox27 As TextBox
+    Friend WithEvents Label56 As Label
+    Friend WithEvents ComboBox30 As ComboBox
+    Friend WithEvents Label57 As Label
 End Class
