@@ -919,6 +919,114 @@ Public Class Medication_API
         End Try
 
     End Function
+
+    Function GET_SOS_LIST(ByVal i_institution As Int64, ByVal i_software As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim sql As String = "   SELECT DISTINCT *
+                                  FROM (SELECT cr.id_cancel_reason AS id_cancel_reason,
+                                               nvl2(rsi.desc_synonym, rsi.desc_synonym, pk_translation.get_translation(" & l_id_language & ", cr.code_cancel_reason)) reason_desc
+                                          FROM alert.cancel_reason cr
+                                          LEFT JOIN alert.reason_synonym_inst rsi
+                                            ON rsi.id_reason = cr.id_cancel_reason
+                                           AND rsi.id_institution = " & i_institution & "
+                                          JOIN alert.reason_action_relation rar
+                                            ON rar.id_reason = cr.id_cancel_reason
+                                          JOIN alert.reason_action ra
+                                            ON ra.id_action = rar.id_action
+                                           AND ra.flg_type = 'O'
+                                          JOIN alert.cancel_rea_soft_inst crsi
+                                            ON crsi.id_cancel_reason = cr.id_cancel_reason
+                                          JOIN alert.cancel_rea_area cra
+                                            ON cra.id_cancel_rea_area = crsi.id_cancel_rea_area
+                                         WHERE upper(cra.intern_name) = upper('PRN_DEFAULT_REASONS')
+                                           AND crsi.id_software IN (0, " & i_software & " )
+                                           AND crsi.id_institution IN (0, " & i_institution & ")
+                                           AND crsi.flg_available = 'Y')
+                                 ORDER BY reason_desc ASC "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            '  DEBUGGER.SET_DEBUG(ex.Message)
+            '  DEBUGGER.SET_DEBUG(sql)
+            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_ADMIN_METHOD_LIST(ByVal i_institution As Int64, ByVal i_id_route As Int64, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim sql As String = "   SELECT lras.id_admin_method, pk_translation.get_translation(" & l_id_language & ", am.code_admin_method) AS admin_method_desc
+                                  FROM alert_product_mt.lnk_route_admin_method lras
+                                  JOIN alert_product_mt.admin_method am
+                                    ON am.id_admin_method = lras.id_admin_method
+                                 WHERE lras.id_route = '" & i_id_route & "'
+                                   AND lras.id_route_supplier = '" & i_id_route_supplier & "'
+                                   AND lras.flg_available = 'Y'
+                                 ORDER BY admin_method_desc "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            '  DEBUGGER.SET_DEBUG(ex.Message)
+            '  DEBUGGER.SET_DEBUG(sql)
+            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_ADMIN_SITE_LIST(ByVal i_institution As Int64, ByVal i_id_route As Int64, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+        Dim sql As String = "  SELECT am.id_admin_site, pk_translation.get_translation(" & l_id_language & ", am.code_admin_site) AS admin_site_desc
+                               FROM alert_product_mt.lnk_route_admin_site lras
+                               JOIN alert_product_mt.admin_site am
+                                 ON am.id_admin_site = lras.id_admin_site
+                              WHERE lras.id_route = '" & i_id_route & "'
+                                AND lras.id_route_supplier = '" & i_id_route_supplier & "'
+                                order by admin_site_desc"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+
+            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            '  DEBUGGER.SET_DEBUG(ex.Message)
+            '  DEBUGGER.SET_DEBUG(sql)
+            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
 End Class
 
 

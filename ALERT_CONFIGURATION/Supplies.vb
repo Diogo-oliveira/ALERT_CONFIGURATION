@@ -1278,7 +1278,9 @@ Public Class Supplies
 
                 Next
 
+#Disable Warning BC42104 ' Variable is used before it has been assigned a value
                 If Not db_supplies.DELETE_SUPPLY_SOFT_INST(TextBox1.Text, g_selected_soft, l_selected_supplies_alert, g_a_SUP_AREAS(ComboBox6.SelectedIndex).id_supply_area) Then
+#Enable Warning BC42104 ' Variable is used before it has been assigned a value
 
                     MsgBox("ERROR DELETING SUPPLIES FROM ALERT!", vbCritical)
 

@@ -15,6 +15,8 @@ Public Class MEDICATION
 
     Dim g_selection_aux As Boolean = False
 
+    Dim g_default_route As Int64 = -1
+
     Function RESET_PRODUCT_PARAMETERS()
 
         DataGridView1.Columns.Clear()
@@ -47,6 +49,8 @@ Public Class MEDICATION
         Next
         ReDim g_a_product_um(0)
         CheckedListBox4.Items.Clear()
+
+        g_default_route = -1
 
         Return True
 
@@ -254,6 +258,7 @@ Public Class MEDICATION
                                 CheckedListBox2.Items.Add(dr_routes.Item(1))
                                 If dr_routes.Item(2) = "Y" Then
                                     CheckedListBox2.SetItemChecked(i, True)
+                                    g_default_route = dr_routes(0)
                                 End If
                                 ReDim Preserve g_a_product_routes(i)
                                 g_a_product_routes(i) = dr_routes(0)
@@ -515,6 +520,7 @@ Public Class MEDICATION
                     MsgBox("Error setting default route!", vbCritical)
                 Else
                     MsgBox("Record updated!", vbInformation)
+                    g_default_route = g_a_product_routes(l_index)
                 End If
             Else
                 MsgBox("Please select one default route.", vbInformation)
@@ -673,7 +679,7 @@ Public Class MEDICATION
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier)
+        Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
         MED_STD.ShowDialog()
     End Sub
 End Class
