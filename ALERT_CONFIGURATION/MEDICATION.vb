@@ -15,7 +15,7 @@ Public Class MEDICATION
 
     Dim g_selection_aux As Boolean = False
 
-    Dim g_default_route As Int64 = -1
+    Dim g_default_route As String = -1
 
     Function RESET_PRODUCT_PARAMETERS()
 
@@ -581,7 +581,7 @@ Public Class MEDICATION
         If TextBox1.Text <> "" Then
             Cursor = Cursors.WaitCursor
             Dim dr_UM As OracleDataReader
-            If Not medication.GET_MARKET_UM(TextBox1.Text, TextBox4.Text, dr_UM) Then
+            If Not medication.GET_MARKET_UM(TextBox1.Text, g_selected_soft, TextBox4.Text, dr_UM) Then
                 MsgBox("Error getting MARKET UNIT MEASURES!", vbCritical)
             Else
                 CheckedListBox3.Items.Clear()

@@ -45,12 +45,10 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_LIST_PRODUCTS")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
             cmd.Dispose()
             Return False
         End Try
@@ -77,30 +75,19 @@ Public Class Medication_API
         Dim dr As OracleDataReader
 
         Try
-
             dr = cmd.ExecuteReader()
-
             While dr.Read()
-
                 l_id_product_supplier = dr.Item(0)
-
             End While
-
             dr.Dispose()
             dr.Close()
             cmd.Dispose()
-
         Catch ex As Exception
-
             DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION :: GET_PRODUCT_SUPPLIER")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
-            dr.Dispose()
-            dr.Close()
             cmd.Dispose()
-
         End Try
 
         Return l_id_product_supplier
@@ -170,6 +157,12 @@ Public Class Medication_API
                             ByVal i_blood_derivate As String, ByVal i_dopant As String, ByVal i_narcotic As String,
                             ByVal i_product_synonym As String) As Boolean
 
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_PARAMETERS(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_id_product_supplier &
+         ", " & i_flg_available & ", " & i_id_pick_list & ", " & i_id_product_level &
+        ", " & i_med_type & ", " & i_mix_fluid & ", " & i_justify_expensive & ", " & i_controlled_drug &
+         ", " & i_blood_derivate & ", " & i_dopant & ", " & i_narcotic &
+         i_product_synonym & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "UPDATE ALERT_PRODUCT_MT.PRODUCT P
@@ -183,6 +176,10 @@ Public Class Medication_API
             cmd_update_product.CommandType = CommandType.Text
             cmd_update_product.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_update_product.Dispose()
             Return False
         End Try
@@ -210,24 +207,22 @@ Public Class Medication_API
             cmd_update_product_medication.CommandType = CommandType.Text
             cmd_update_product_medication.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PARAMETERS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_update_product_medication.Dispose()
             Return False
         End Try
 
         If i_product_synonym <> "" Then
-
             If Not SET_PRODUCT_SYNONYM(i_institution, i_software, i_id_product, i_id_product_supplier, i_id_pick_list, i_product_synonym) Then
-
                 Return False
-
             End If
         Else
-
             If Not DELETE_PRODUCT_SYNONYM(i_id_product, i_id_product_supplier, i_id_pick_list) Then
-
                 Return False
             End If
-
         End If
 
         Return True
@@ -235,6 +230,8 @@ Public Class Medication_API
     End Function
 
     Function SET_LNK_PRODUCT_PICK_LIST(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_id_pick_list As Int16) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_LNK_PRODUCT_PICK_LIST(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_id_pick_list & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -254,6 +251,10 @@ Public Class Medication_API
             cmd_insert_pl.CommandType = CommandType.Text
             cmd_insert_pl.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_LNK_PRODUCT_PICK_LIST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_insert_pl.Dispose()
             Return False
         End Try
@@ -265,6 +266,8 @@ Public Class Medication_API
     End Function
 
     Function SET_PRODUCT_SYNONYM(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, i_id_pick_list As Int16, ByVal i_synonym As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_PRODUCT_SYNONYM(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_id_pick_list & ", " & i_synonym & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
@@ -317,6 +320,10 @@ Public Class Medication_API
             cmd_insert_syn.CommandType = CommandType.Text
             cmd_insert_syn.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PRODUCT_SYNONYM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_insert_syn.Dispose()
             Return False
         End Try
@@ -329,6 +336,8 @@ Public Class Medication_API
 
     Function DELETE_PRODUCT_SYNONYM(ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_pick_list As Int16) As Boolean
 
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: DELETE_PRODUCT_SYNONYM(" & i_id_product & ", " & i_id_product_supplier & ", " & i_id_pick_list & ")")
+
         Dim sql As String = "DELETE FROM alert_product_mt.lnk_product_synonym lps
                          WHERE lps.id_product_supplier = '" & i_id_product_supplier & "'
                            AND lps.id_product = '" & i_id_product & "'
@@ -340,6 +349,10 @@ Public Class Medication_API
             cmd_delete_syn.CommandType = CommandType.Text
             cmd_delete_syn.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PRODUCT_SYNONYM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_delete_syn.Dispose()
             Return False
         End Try
@@ -374,12 +387,10 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
             DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_ROUTES")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
             cmd.Dispose()
             Return False
         End Try
@@ -387,7 +398,7 @@ Public Class Medication_API
 
     Function GET_MARKET_ROUTES(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_ROUTES(" & i_institution & ", " & i_product_supplier & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_MARKET_ROUTES(" & i_institution & ", " & i_product_supplier & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -405,18 +416,18 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_ROUTES")
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_MARKET_ROUTES")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function SET_PRODUCT_ROUTES(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_routes() As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_PRODUCT_ROUTES(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", i_routes())")
 
         Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
@@ -461,6 +472,10 @@ Public Class Medication_API
             cmd_insert_routes.CommandType = CommandType.Text
             cmd_insert_routes.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PRODUCT_ROUTES")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_insert_routes.Dispose()
             Return False
         End Try
@@ -472,6 +487,8 @@ Public Class Medication_API
     End Function
 
     Function SET_ROUTE_DEFAULT(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_routes As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_ROUTE_DEFAULT(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_routes & ")")
 
         Dim l_id_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
@@ -497,8 +514,11 @@ Public Class Medication_API
             cmd_route_default.CommandType = CommandType.Text
             cmd_route_default.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_ROUTE_DEFAULT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_route_default.Dispose()
-            MsgBox(sql)
             Return False
         End Try
 
@@ -508,16 +528,22 @@ Public Class Medication_API
 
     End Function
 
-    Function GET_MARKET_UM(ByVal i_institution As Int64, ByVal i_search_string As String, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_MARKET_UM(ByVal i_institution As Int64, ByVal i_id_software As Int64, ByVal i_search_string As String, ByRef i_dr As OracleDataReader) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_MARKET_UM(" & i_institution & ", " & i_search_string & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        Dim sql As String = "SELECT u.id_unit_measure, pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure) AS um_desc
-                              FROM alert.unit_measure u
-                             WHERE u.flg_available = 'Y'
-                               AND pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure) IS NOT NULL "
+        Dim sql As String = "SELECT DISTINCT u.id_unit_measure, t.desc_lang_" & l_id_language & " um_desc
+                               FROM alert.unit_measure u
+                               JOIN unit_mea_soft_inst s
+                                 ON s.id_unit_measure = u.id_unit_measure
+                               JOIN translation t
+                                 ON t.code_translation = u.code_unit_measure
+                              WHERE s.id_institution IN (0, " & i_institution & ")
+                                AND s.id_software IN (0, " & i_id_software & ")
+                                and s.flg_prescription='Y'
+                                AND t.desc_lang_" & l_id_language & " IS NOT NULL "
 
         If i_search_string = "" Then
 
@@ -538,18 +564,18 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
             DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_MARKET_UM")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function SET_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_um() As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_PRODUCT_UM(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_context & ", i_um())")
 
         Dim sql As String = " DECLARE
                                    l_tbl_um table_number := table_number("
@@ -587,6 +613,10 @@ Public Class Medication_API
             cmd_insert_um.CommandType = CommandType.Text
             cmd_insert_um.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_PRODUCT_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_insert_um.Dispose()
             Return False
         End Try
@@ -598,6 +628,8 @@ Public Class Medication_API
     End Function
 
     Function GET_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_UM(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_context & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
@@ -617,13 +649,18 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
     End Function
 
     Function DELETE_PRODUCT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_unit_measure() As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: DELETE_PRODUCT_UM(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_context & ", i_unit_measure())")
 
         Dim sql As String = " DECLARE
                                    l_tbl_um table_number := table_number("
@@ -653,6 +690,10 @@ Public Class Medication_API
             cmd_delete_um.CommandType = CommandType.Text
             cmd_delete_um.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: DELETE_PRODUCT_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_delete_um.Dispose()
             Return False
         End Try
@@ -664,6 +705,8 @@ Public Class Medication_API
     End Function
 
     Function SET_DEFAULT_UM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_context As Int16, ByVal i_unit_measure As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_DEFAULT_UM(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_context & ", " & i_unit_measure & ")")
 
         Dim sql As String = " BEGIN
 
@@ -689,6 +732,10 @@ Public Class Medication_API
             cmd_default_um.CommandType = CommandType.Text
             cmd_default_um.ExecuteNonQuery()
         Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_DEFAULT_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd_default_um.Dispose()
             Return False
         End Try
@@ -700,6 +747,8 @@ Public Class Medication_API
     End Function
 
     Function GET_ALL_FREQS(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ALL_FREQS(" & i_institution & ", " & i_software & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
@@ -742,26 +791,24 @@ Public Class Medication_API
                              ORDER BY rank NULLS LAST, label, data"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
-        ' Try
-        cmd.CommandType = CommandType.Text
+        Try
+            cmd.CommandType = CommandType.Text
             i_dr = cmd.ExecuteReader()
             cmd.Dispose()
             Return True
-        '  Catch ex As Exception
-
-        ' DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_OPTIONS")
-        ' DEBUGGER.SET_DEBUG(ex.Message)
-        ' DEBUGGER.SET_DEBUG(sql)
-        ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
-        'cmd.Dispose()
-        'Return False
-        ' End Try
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_ALL_FREQS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
     End Function
 
     Function GET_PRODUCT_DESC(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String) As String
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_DESC(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ")")
 
         Dim l_product_desc As String = ""
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
@@ -789,16 +836,11 @@ Public Class Medication_API
             cmd.Dispose()
 
         Catch ex As Exception
-
-            'DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION :: GET_PRODUCT_SUPPLIER")
-            'DEBUGGER.SET_DEBUG(ex.Message)
-            'DEBUGGER.SET_DEBUG(sql)
-            'DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
-            dr.Dispose()
-            dr.Close()
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_PRODUCT_DESC")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
-
         End Try
 
         Return l_product_desc
@@ -807,7 +849,7 @@ Public Class Medication_API
 
     Function GET_ALL_INSTRUCTIONS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ALL_INSTRUCTIONS(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_pick_list & ")")
 
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
@@ -867,12 +909,10 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            '    DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
-            '   DEBUGGER.SET_DEBUG(ex.Message)
-            '  DEBUGGER.SET_DEBUG(sql)
-            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_ALL_INSTRUCTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
@@ -880,7 +920,8 @@ Public Class Medication_API
 
     Function GET_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_std_presc_dir As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_STD_PRESC_DIR(" & i_institution & ", " & i_id_std_presc_dir & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "   SELECT d.id_std_presc_directions,
                                        d.flg_sos,
@@ -908,12 +949,10 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            '    DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
-            '   DEBUGGER.SET_DEBUG(ex.Message)
-            '  DEBUGGER.SET_DEBUG(sql)
-            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_PRESC_DIR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
@@ -922,7 +961,8 @@ Public Class Medication_API
 
     Function GET_SOS_LIST(ByVal i_institution As Int64, ByVal i_software As Int64, ByRef i_dr As OracleDataReader) As Boolean
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_SOS_LIST(" & i_institution & ", " & i_software & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "   SELECT DISTINCT *
                                   FROM (SELECT cr.id_cancel_reason AS id_cancel_reason,
@@ -953,21 +993,20 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
-            '  DEBUGGER.SET_DEBUG(ex.Message)
-            '  DEBUGGER.SET_DEBUG(sql)
-            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_SOS_LIST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
 
     End Function
 
-    Function GET_ADMIN_METHOD_LIST(ByVal i_institution As Int64, ByVal i_id_route As Int64, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_ADMIN_METHOD_LIST(ByVal i_institution As Int64, ByVal i_id_route As String, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ADMIN_METHOD_LIST(" & i_institution & ", " & i_id_route & ", " & i_id_route_supplier & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "   SELECT lras.id_admin_method, pk_translation.get_translation(" & l_id_language & ", am.code_admin_method) AS admin_method_desc
                                   FROM alert_product_mt.lnk_route_admin_method lras
@@ -985,21 +1024,20 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
-            '  DEBUGGER.SET_DEBUG(ex.Message)
-            '  DEBUGGER.SET_DEBUG(sql)
-            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_ADMIN_METHOD_LIST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
 
     End Function
 
-    Function GET_ADMIN_SITE_LIST(ByVal i_institution As Int64, ByVal i_id_route As Int64, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_ADMIN_SITE_LIST(ByVal i_institution As Int64, ByVal i_id_route As String, ByVal i_id_route_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        'DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ADMIN_SITE_LIST(" & i_institution & ", " & i_id_route & ", " & i_id_route_supplier & ")")
+
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "  SELECT am.id_admin_site, pk_translation.get_translation(" & l_id_language & ", am.code_admin_site) AS admin_site_desc
                                FROM alert_product_mt.lnk_route_admin_site lras
@@ -1016,16 +1054,104 @@ Public Class Medication_API
             cmd.Dispose()
             Return True
         Catch ex As Exception
-
-            '  DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: MEDICATION_API")
-            '  DEBUGGER.SET_DEBUG(ex.Message)
-            '  DEBUGGER.SET_DEBUG(sql)
-            ' DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_ADMIN_SITE_LIST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
             cmd.Dispose()
             Return False
         End Try
 
+    End Function
+
+    Function GET_DURATION_UM(ByVal i_institution As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_DURATION_UM(" & i_institution & ")")
+
+        Dim sql As String = "  SELECT lnk.id_unit_measure AS id,
+                                       pk_translation.get_translation(2, um.code_unit_measure) as um_desc
+                                  FROM alert_product_mt.lnk_main_um_umc lnk
+                                  JOIN alert.unit_measure um
+                                    ON um.id_unit_measure = lnk.id_unit_measure
+                                   AND um.id_unit_measure_type = lnk.id_unit_measure_context
+                                 WHERE lnk.id_unit_measure_context = 5
+                                 ORDER BY um_desc"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_DURATION_UM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
+
+    End Function
+
+    Function GET_STD_PRESC_DIR_ITEM(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_pick_list As Int16, ByVal i_id_std_presc_dir As Int64, ByVal i_grant As Int64, ByVal i_rank As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM(" & i_institution & ", " & i_id_product & ", " & i_id_pick_list & ", " & i_id_std_presc_dir & ", " & i_grant & ", " & i_rank & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT *
+                              FROM (SELECT pi.rank,
+                                           pi.duration_value,
+                                           pi.id_unit_duration,
+                                           pk_translation.get_translation(" & l_id_language & ", um_duration.code_unit_measure) AS duration_desc,
+                                           pi.num_executions,
+                                           pi.id_dose,
+                                           pi.dose_value,
+                                           pi.id_unit_dose,
+                                           pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure) Unit_Measure,
+                                           pi.id_presc_dir_frequency AS ID_FREQUENCY,
+                                           nvl(tf.desc_lang_" & l_id_language & ", t_single.desc_lang_" & l_id_language & ") ASFrequency,
+                                           rownum rn
+                                      FROM alert_product_mt.std_presc_dir d
+                                      LEFT JOIN alert_product_mt.lnk_product_std_presc_dir lsd
+                                        ON lsd.id_std_presc_directions = d.id_std_presc_directions
+                                      LEFT JOIN alert_product_mt.std_presc_dir_item pi
+                                        ON pi.id_std_presc_directions = d.id_std_presc_directions
+                                      LEFT JOIN alert_product_mt.presc_dir_frequency f
+                                        ON f.id_presc_dir_frequency = pi.id_presc_dir_frequency
+                                      LEFT JOIN translation tf
+                                        ON tf.code_translation = f.code_presc_dir_frequency
+                                      LEFT JOIN alert.unit_measure um
+                                        ON um.id_unit_measure = pi.id_unit_dose
+                                      LEFT JOIN alert.unit_measure um_duration
+                                        ON um_duration.id_unit_measure = pi.id_unit_duration
+                                      LEFT JOIN alert_product_mt.presc_list_item pli
+                                        ON pli.id_presc_list_item = pi.id_presc_dir_frequency
+                                      LEFT JOIN translation t_single
+                                        ON t_single.code_translation = pli.code_presc_list_item
+                                     WHERE lsd.id_product IN ('" & i_id_product & "')
+                                       AND lsd.id_grant = " & i_grant & "
+                                       AND lsd.id_pick_list = " & i_id_pick_list & "
+                                       AND lsd.rank = " & i_rank & "
+                                       and d.id_std_presc_directions = " & i_id_std_presc_dir & "
+                                  order by rank asc)
+                             WHERE rn < 8 " 'limitar a 7 instruções
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
     End Function
 End Class
 
