@@ -54,6 +54,39 @@ Public Class Medication_API
         End Try
     End Function
 
+    Function GET_LIST_PRODUCTS_BY_ID(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByVal i_id_product As String, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_LIST_PRODUCTS_BY_ID(" & i_institution & ", " & i_product_supplier & ", " & i_id_product & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT ed.desc_lang_" & l_id_language & " AS prod_desc, p.id_product
+                              FROM alert_product_mt.product p
+                              JOIN alert_product_mt.product_medication pm
+                                ON pm.id_product = p.id_product
+                               AND pm.id_product_supplier = p.id_product_supplier
+                              JOIN alert_product_mt.entity_description ed
+                                ON ed.code_entity_description = p.code_product
+                             WHERE p.id_product_supplier = '" & i_product_supplier & "'
+                               AND UPPER(p.id_product) LIKE UPPER('" & i_id_product & "')
+                             ORDER BY prod_desc ASC"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_LIST_PRODUCTS_BY_ID")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
     Function GET_PRODUCT_SUPPLIER(ByVal i_ID_INST As Int64) As String
 
         DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_SUPPLIER(" & i_ID_INST & ")")
@@ -1152,6 +1185,47 @@ Public Class Medication_API
             cmd.Dispose()
             Return False
         End Try
+    End Function
+
+    Function GET_STD_CREEN_TYPE(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String) As Int16
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_STD_CREEN_TYPE(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ")")
+
+        Dim l_id_type_screen As Int16 = 0
+        Dim sql As String = "SELECT DISTINCT (nvl2(c.id_product, 3, DECODE(pm.id_product_med_type,2,2,1)))
+                              FROM alert_product_mt.product_medication pm
+                              LEFT JOIN alert_product_mt.product_med_component c
+                                ON c.id_product = pm.id_product
+                               AND c.id_product_supplier = pm.id_product_supplier
+                               AND pm.id_product_med_type = 2
+                             WHERE pm.id_product = '" & i_id_product & "'
+                               AND pm.id_product_supplier = '" & i_id_product_supplier & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_id_type_screen = dr.Item(0)
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_CREEN_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_type_screen
+
     End Function
 End Class
 

@@ -253,35 +253,263 @@ Public Class MED_STD_NON_IV
             Dim i As Integer = 0
             While dr_std_presc_dir_item.Read()
                 If i = 0 Then
+                    'DOSE
                     Try
                         TextBox1.Text = dr_std_presc_dir_item.Item(6)
                     Catch ex As Exception
                         TextBox1.Text = ""
                     End Try
+                    'DOSE UNIT MEASURE
                     Try
                         ComboBox4.Text = dr_std_presc_dir_item.Item(8)
                     Catch ex As Exception
                         ComboBox4.Text = ""
                     End Try
+                    'FREQUENCY
                     Try
                         ComboBox3.Text = dr_std_presc_dir_item.Item(10)
                     Catch ex As Exception
                         ComboBox3.Text = ""
                     End Try
+                    'DURATION
                     Try
                         TextBox3.Text = dr_std_presc_dir_item.Item(1)
                     Catch ex As Exception
                         TextBox3.Text = ""
                     End Try
+                    'DURATION UNIT MEASURE
                     Try
                         ComboBox5.Text = dr_std_presc_dir_item.Item(3)
                     Catch ex As Exception
                         ComboBox5.Text = ""
                     End Try
+                    'EXECUTIONS
                     Try
                         TextBox4.Text = dr_std_presc_dir_item.Item(4)
                     Catch ex As Exception
                         TextBox4.Text = ""
+                    End Try
+                ElseIf i = 1 Then
+                    'DOSE
+                    Try
+                        TextBox8.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox8.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox7.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox7.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox8.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox8.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox7.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox7.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox6.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox6.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox6.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox6.Text = ""
+                    End Try
+                ElseIf i = 2 Then
+                    'DOSE
+                    Try
+                        TextBox11.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox11.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox10.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox10.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox11.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox11.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox10.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox10.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox9.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox9.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox9.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox9.Text = ""
+                    End Try
+                ElseIf i = 3 Then
+                    'DOSE
+                    Try
+                        TextBox20.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox20.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox19.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox19.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox20.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox20.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox19.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox19.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox18.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox18.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox18.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox18.Text = ""
+                    End Try
+                ElseIf i = 4 Then
+                    'DOSE
+                    Try
+                        TextBox17.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox17.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox16.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox16.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox17.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox17.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox16.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox16.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox15.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox15.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox15.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox15.Text = ""
+                    End Try
+                ElseIf i = 5 Then
+                    'DOSE
+                    Try
+                        TextBox14.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox14.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox13.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox13.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox14.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox14.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox13.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox13.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox12.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox12.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox12.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox12.Text = ""
+                    End Try
+                ElseIf i = 6 Then
+                    'DOSE
+                    Try
+                        TextBox23.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        TextBox23.Text = ""
+                    End Try
+                    'DOSE UNIT MEASURE
+                    Try
+                        ComboBox22.Text = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        ComboBox22.Text = ""
+                    End Try
+                    'FREQUENCY
+                    Try
+                        ComboBox23.Text = dr_std_presc_dir_item.Item(10)
+                    Catch ex As Exception
+                        ComboBox23.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox22.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox22.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox21.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox21.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox21.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox21.Text = ""
                     End Try
                 End If
                 i = i + 1

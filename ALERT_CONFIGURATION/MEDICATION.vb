@@ -679,7 +679,88 @@ Public Class MEDICATION
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
-        MED_STD.ShowDialog()
+        If medication.GET_STD_CREEN_TYPE(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier) = 1 Then
+            Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
+            MED_STD.ShowDialog()
+        End If
+
+    End Sub
+
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+        Cursor = Cursors.WaitCursor
+
+        Dim l_column_width As Int64 = DataGridView1.Size.Width - 120 'Tentar evitar o scroll
+
+        Dim dr As OracleDataReader
+        If (ComboBox1.Text <> "") Then
+            If (TextBox5.Text <> "") Then
+                If Not medication.GET_LIST_PRODUCTS_BY_ID(TextBox1.Text, g_id_product_supplier, TextBox5.Text, dr) Then
+
+                    MsgBox("Error getting list of products!", vbCritical)
+
+                Else
+                    DataGridView1.Columns.Clear()
+
+                    Dim Table As New DataTable
+
+                    Table.Load(dr)
+                    DataGridView1.DataSource = Table
+
+                    DataGridView1.Columns(0).Width = l_column_width
+                    DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
+
+                    Dim l_dimension_list_products As Int64 = 0
+
+                    For Each row As DataRow In Table.Rows
+
+                        ReDim Preserve g_a_list_products(l_dimension_list_products)
+                        g_a_list_products(l_dimension_list_products) = row.Item("ID_PRODUCT")
+                        l_dimension_list_products = l_dimension_list_products + 1
+                    Next
+                    dr.Close()
+
+                    DataGridView1.ClearSelection()
+
+                    CheckedListBox2.Items.Clear()
+                    ReDim g_a_product_routes(0)
+
+                    Dim dr_routes As OracleDataReader
+                    Try
+                        DataGridView1.Rows(0).Selected = True
+                        If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
+                            MsgBox("Error getting product routes!", vbCritical)
+                        Else
+                            CheckedListBox2.Items.Clear()
+                            ReDim g_a_product_routes(0)
+                            Dim i As Integer = 0
+                            While dr_routes.Read
+                                CheckedListBox2.Items.Add(dr_routes.Item(1))
+                                If dr_routes.Item(2) = "Y" Then
+                                    CheckedListBox2.SetItemChecked(i, True)
+                                    g_default_route = dr_routes(0)
+                                End If
+                                ReDim Preserve g_a_product_routes(i)
+                                g_a_product_routes(i) = dr_routes(0)
+                                i = i + 1
+                            End While
+                        End If
+                        dr_routes.Close()
+
+                    Catch ex As Exception
+                        MsgBox("No results found.", vbInformation)
+                        g_selected_index = -1
+                        If Not RESET_PRODUCT_PARAMETERS() Then
+                            MsgBox("Error reseting product parameters.", vbCritical)
+                        End If
+                    End Try
+                End If
+            Else
+                MsgBox("Please insert a medication ID! ", vbCritical)
+            End If
+        Else
+            MsgBox("Please select an institution! ", vbCritical)
+        End If
+
+        Cursor = Cursors.Arrow
     End Sub
 End Class
