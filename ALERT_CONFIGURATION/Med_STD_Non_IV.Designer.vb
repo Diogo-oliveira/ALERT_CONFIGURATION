@@ -1165,7 +1165,7 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox24.FormattingEnabled = True
         Me.ComboBox24.Location = New System.Drawing.Point(12, 141)
         Me.ComboBox24.Name = "ComboBox24"
-        Me.ComboBox24.Size = New System.Drawing.Size(70, 21)
+        Me.ComboBox24.Size = New System.Drawing.Size(48, 21)
         Me.ComboBox24.TabIndex = 242
         '
         'Label47
@@ -1181,9 +1181,9 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox25.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox25.FormattingEnabled = True
-        Me.ComboBox25.Location = New System.Drawing.Point(88, 142)
+        Me.ComboBox25.Location = New System.Drawing.Point(66, 142)
         Me.ComboBox25.Name = "ComboBox25"
-        Me.ComboBox25.Size = New System.Drawing.Size(269, 21)
+        Me.ComboBox25.Size = New System.Drawing.Size(280, 21)
         Me.ComboBox25.TabIndex = 244
         '
         'Label48
@@ -1198,9 +1198,9 @@ Partial Class MED_STD_NON_IV
         'TextBox24
         '
         Me.TextBox24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox24.Location = New System.Drawing.Point(363, 142)
+        Me.TextBox24.Location = New System.Drawing.Point(352, 142)
         Me.TextBox24.Name = "TextBox24"
-        Me.TextBox24.Size = New System.Drawing.Size(323, 22)
+        Me.TextBox24.Size = New System.Drawing.Size(334, 22)
         Me.TextBox24.TabIndex = 248
         '
         'Label49
@@ -1237,16 +1237,16 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox26.FormattingEnabled = True
         Me.ComboBox26.Location = New System.Drawing.Point(12, 195)
         Me.ComboBox26.Name = "ComboBox26"
-        Me.ComboBox26.Size = New System.Drawing.Size(191, 21)
+        Me.ComboBox26.Size = New System.Drawing.Size(334, 21)
         Me.ComboBox26.TabIndex = 252
         '
         'ComboBox27
         '
         Me.ComboBox27.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox27.FormattingEnabled = True
-        Me.ComboBox27.Location = New System.Drawing.Point(209, 195)
+        Me.ComboBox27.Location = New System.Drawing.Point(352, 195)
         Me.ComboBox27.Name = "ComboBox27"
-        Me.ComboBox27.Size = New System.Drawing.Size(191, 21)
+        Me.ComboBox27.Size = New System.Drawing.Size(335, 21)
         Me.ComboBox27.TabIndex = 253
         '
         'Label51
@@ -1261,7 +1261,7 @@ Partial Class MED_STD_NON_IV
         'Label52
         '
         Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(206, 179)
+        Me.Label52.Location = New System.Drawing.Point(354, 179)
         Me.Label52.Name = "Label52"
         Me.Label52.Size = New System.Drawing.Size(92, 13)
         Me.Label52.TabIndex = 255

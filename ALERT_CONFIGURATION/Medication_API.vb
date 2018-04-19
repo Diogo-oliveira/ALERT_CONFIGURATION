@@ -1227,6 +1227,252 @@ Public Class Medication_API
         Return l_id_type_screen
 
     End Function
+
+    Function GET_ID_GRANT(ByVal i_institution As Int64, ByVal i_software As String, ByVal i_context As String) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ID_GRANT(" & i_institution & ", " & i_software & ", " & i_context & ")")
+
+        Dim l_id_grant As Int64 = -1
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+
+        Dim sql As String = "   SELECT *
+                                 FROM (SELECT c.id_grant
+                                         FROM alert_product_mt.v_cfg_grant c
+                                        WHERE c.id_context = '" & i_context & "'
+                                          AND c.market IN (0, " & l_market & ")
+                                          AND c.institution IN (0, " & i_institution & ")
+                                          AND c.software IN (0, " & i_software & ")
+                                        ORDER BY c.market DESC, c.institution DESC, c.software DESC, c.grant_order ASC)
+                                WHERE rownum = 1"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                Try
+                    l_id_grant = dr.Item(0)
+                Catch ex As Exception
+                    l_id_grant = -1
+                End Try
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_CREEN_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_grant
+
+    End Function
+
+
+
+    Function SET_ID_GRANT(ByVal i_institution As Int64, ByVal i_software As String, ByVal i_context As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_ID_GRANT(" & i_institution & ", " & i_software & ", " & i_context & ")")
+
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+        Dim sql As String = " DECLARE
+                                    l_grant NUMBER;
+                                BEGIN
+
+                                    l_grant := alert_product_tr.pk_grants.set_by_soft_inst(i_context     => 'LNK_PRODUCT_STD_PRESC_DIR',
+                                                                                           i_prof        => profissional(0, " & i_institution & ", " & i_software & "),
+                                                                                           i_market      => " & l_market & ",
+                                                                                           i_grant_order => 1);
+                                END;  "
+
+        Dim cmd_default_um As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_default_um.CommandType = CommandType.Text
+            cmd_default_um.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: SET_ID_GRANT")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_default_um.Dispose()
+            Return False
+        End Try
+
+        cmd_default_um.Dispose()
+
+        Return True
+
+    End Function
+
+    Function UPDATE_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_std_presc_dir As Int64, ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_id_new_std_presc_dir As Int64, ByVal i_rank As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: UPDATE_STD_PRESC_DIR(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_id_std_presc_dir & ", " & i_id_grant & ", " & i_id_pick_list & ", " & i_id_new_std_presc_dir & ", " & i_rank & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "UPDATE alert_product_mt.lnk_product_std_presc_dir d
+                               SET d.rank = " & i_rank & ", d.id_std_presc_directions = " & i_id_new_std_presc_dir & "
+                             WHERE d.id_product = '" & i_id_product & "'
+                               AND d.id_std_presc_directions = " & i_id_std_presc_dir & "
+                               AND d.id_product_supplier = '" & i_id_product_supplier & "'
+                               AND d.id_grant = " & i_id_grant & "
+                               AND d.id_pick_list =" & i_id_pick_list
+
+        Dim cmd_update_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_std.CommandType = CommandType.Text
+            cmd_update_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: UPDATE_STD_PRESC_DIR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_update_std.Dispose()
+            Return False
+        End Try
+
+        cmd_update_std.Dispose()
+
+        Return True
+
+    End Function
+
+    Function CHECK_DUP_INSTRUCTIONS(ByVal i_institution As Int64, ByVal i_id_std_presc_dir As Int64) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CHECK_DUP_INSTRUCTIONS(" & i_institution & ", " & i_id_std_presc_dir & ")")
+
+        Dim l_count As Int64 = 0
+
+        Dim sql As String = "SELECT COUNT(*)
+                              FROM (SELECT *
+                                      FROM alert_product_mt.lnk_product_std_presc_dir d
+                                     WHERE d.id_std_presc_directions = " & i_id_std_presc_dir & "
+        
+                                    UNION ALL
+        
+                                    SELECT *
+                                      FROM alert_product_mt.lnk_product_std_presc_dir d
+                                     WHERE d.id_std_presc_directions = " & i_id_std_presc_dir & "
+                                       AND d.id_pick_list = 0)"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_count = dr.Item(0)
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CHECK_DUP_INSTRUCTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_count
+
+    End Function
+
+    Function GET_NEW_STD_INSTRUCTION_ID(ByVal i_institution As Int64) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_NEW_STD_INSTRUCTION_ID(" & i_institution & ")")
+
+        Dim l_id_std_instruction As Int64 = 0
+
+        Dim sql As String = "select alert_product_mt.seq_std_presc_dir.nextval from dual"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_id_std_instruction = dr.Item(0)
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_NEW_STD_INSTRUCTION_ID")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_std_instruction
+
+    End Function
+
+    Function CREATE_STD_INSTRUCTION(ByVal i_institution As Int64, ByVal i_id_std_presc_directions As Int64, ByVal i_flg_sos As String, ByVal i_id_sos As Int16, ByVal i_sos_take_condition As String, ByVal i_notes As String, ByVal i_patient_instructions As String, ByVal i_id_admin_site As String, ByVal i_id_admin_method As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_INSTRUCTION(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_flg_sos & ", " & i_id_sos & ", " & i_sos_take_condition & ", " & i_notes & ", " & i_patient_instructions & ", " & i_id_admin_site & ", " & i_id_admin_method & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim l_id_sos_take_condition As String = "NULL"
+
+        If i_id_sos <> 19 Then
+            l_id_sos_take_condition = "32"
+        End If
+
+
+        Dim sql As String = "INSERT INTO alert_product_mt.std_presc_dir
+                                (id_std_presc_directions,
+                                 flg_sos,
+                                 id_sos,
+                                 id_sos_take_condition,
+                                 sos_take_condition,
+                                 flg_free_text,
+                                 notes,
+                                 patient_instr_desc,
+                                 id_admin_site,
+                                 id_admin_method)
+                            VALUES
+                                (" & i_id_std_presc_directions & ", '" & i_flg_sos & "', " & i_id_sos & ", " & l_id_sos_take_condition & ", '" & i_sos_take_condition & "', 'N', '" & i_notes & "',  '" & i_patient_instructions & "',  " & i_id_admin_site & ",  " & i_id_admin_method & ")"
+
+        Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_create_std.CommandType = CommandType.Text
+            cmd_create_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_INSTRUCTION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_create_std.Dispose()
+            Return False
+        End Try
+
+        cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
 End Class
 
 

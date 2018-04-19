@@ -554,7 +554,7 @@ Public Class MED_STD_NON_IV
             While l_dr_admin_sites.Read()
                 ComboBox26.Items.Add(l_dr_admin_sites.Item(1))
                 ReDim Preserve g_a_admin_sites(ii)
-                g_a_admin_sites(ii) = g_a_admin_sites(0)
+                g_a_admin_sites(ii) = l_dr_admin_sites.Item(0)
                 ii = ii + 1
             End While
 
@@ -567,5 +567,98 @@ Public Class MED_STD_NON_IV
 
     Private Sub TextBox24_TextChanged(sender As Object, e As EventArgs) Handles TextBox24.TextChanged
         ComboBox25.SelectedIndex = -1
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Cursor = Cursors.WaitCursor
+        Dim l_id_grant As Int64 = -1
+
+        If ComboBox2.SelectedIndex < 0 Then
+            MsgBox("Please select a software.", vbInformation)
+        ElseIf ComboBox28.SelectedIndex < 0 Then
+            MsgBox("Please select a type of prescription.", vbInformation)
+        ElseIf ComboBox1.SelectedIndex < 0 And TextBox26.Text = "" Then
+            MsgBox("Please select a rank.", vbInformation)
+        Else
+            'VERIFICAR SE EXISTE GRANT
+            If TextBox27.Text = "" Then
+                l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
+                If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                    MsgBox("Error creating ID_GRANT!", vbCritical)
+                Else
+                    l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                End If
+            Else
+                'NESTE CASO JÁ EXISTIA INSTRUÇÃO. SERÁ FEITO UPDATE
+
+                'VERIFICAR SE INSTRUÇÃO É UTILIZADA EM DIVERSAS PICK_LISTS/SOFTWARES
+                'CASO SEJA É NECESSÁRIO PERGUNTAR SE SE FAZ UPDATE OU SE SE INSERE NOVA INSTRUÇÃO
+                l_id_grant = TextBox27.Text
+                Dim l_create_new As Integer = 0
+
+                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir) > 1 Then
+                    l_create_new = MsgBox("The current standard instruction is also being usaed for other softwares and/or type of prescriptions. Do you wish to create a new instruction just for the selected software and type of prescription? (Responding 'No' will result on the update of the current standard instruction)", MessageBoxButtons.YesNo)
+                End If
+
+                If l_create_new = 0 Or l_create_new = DialogResult.No Then
+                    'UPDATE LNK_PRODUCT_STD_INSTRUCTION               
+                    If TextBox26.Text <> "" Then
+                        ''NESTE CASO É NECESSÁRIO FAZER UPDATE AO RANK
+                        If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, TextBox26.Text) Then
+                            MsgBox("Error updating instruction rank!", vbCritical)
+                        End If
+                    End If
+                Else
+                    ''CRIAÇÃO DE UMA NOVA INSTRUÇÃO
+                    MsgBox("A new instruction will be created") ''APAGAR
+                    ''criar novo id
+                    Dim l_id_new_instruction As Int64 = medication.GET_NEW_STD_INSTRUCTION_ID(g_id_institution)
+                    Dim l_flg_sos As String
+                    Dim l_id_sos As Int16 = 19
+                    Dim l_sos_condition As String = ""
+
+                    If ComboBox24.Text = "" Then
+                        l_flg_sos = "N"
+                    Else
+                        l_flg_sos = ComboBox24.Text
+                    End If
+
+                    If ComboBox24.Text = "Y" Then
+                        l_id_sos = 18
+                    End If
+
+                    If TextBox24.Text <> "" Then
+                        l_sos_condition = TextBox24.Text
+                    ElseIf ComboBox25.Text <> "" Then
+                        l_sos_condition = ComboBox25.Text
+                    End If
+
+                    Dim l_id_admin_site As String = "NULL"
+                    If ComboBox26.SelectedIndex > -1 Then
+                        l_id_admin_site = g_a_admin_sites(ComboBox26.SelectedIndex)
+                    End If
+
+                    Dim l_id_admin_method As String = "NULL"
+                    If ComboBox27.SelectedIndex > -1 Then
+                        l_id_admin_method = g_a_admin_methods(ComboBox27.SelectedIndex)
+                    End If
+
+                    If Not medication.CREATE_STD_INSTRUCTION(g_id_institution, l_id_new_instruction, l_flg_sos, l_id_sos, l_sos_condition, TextBox5.Text, TextBox25.Text, l_id_admin_site, l_id_admin_method) Then
+                        MsgBox("Error creating standard instruction!", vbCritical)
+                    End If
+                    Dim l_rank As Int64 = 1
+                    If TextBox26.Text <> "" Then
+                        l_rank = TextBox26.Text
+                    ElseIf combobox1.Text <> "" Then
+                        l_rank = ComboBox1.Text
+                    End If
+                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, l_id_new_instruction, l_rank) Then
+                        MsgBox("Error updating instruction id/rank!", vbCritical)
+                    End If
+                End If
+            End If
+        End If
+        Cursor = Cursors.Arrow
     End Sub
 End Class
