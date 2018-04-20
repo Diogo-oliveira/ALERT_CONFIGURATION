@@ -1473,6 +1473,62 @@ Public Class Medication_API
         Return True
 
     End Function
+
+    Function CREATE_STD_PRESC_DIR_ITEM(ByVal i_institution As Int64, ByVal i_id_std_presc_directions As Int64, ByVal i_index_instructions As Int16, ByVal i_a_instructions() As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_index_instructions & ", i_a_instructions())")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "BEGIN
+                             INSERT INTO alert_product_mt.std_presc_dir_item
+                                (id_std_presc_directions,
+                                 id_std_presc_dir_item,
+                                 id_recurrence,
+                                 duration_value,
+                                 id_unit_duration,
+                                 num_executions,
+                                 id_dose,
+                                 dose_value,
+                                 id_unit_dose,
+                                 rank,
+                                 id_presc_dir_frequency)
+                            VALUES
+                                (" & i_id_std_presc_directions & ", " & i_index_instructions & ", " & i_a_instructions(2) & ", " & i_a_instructions(3) & ", " & i_a_instructions(4) & ", " & i_a_instructions(5) & ", 10, " & i_a_instructions(0) & ", " & i_a_instructions(1) & ", " & i_index_instructions & ", " & i_a_instructions(2) & ");
+                              EXCEPTION
+                                    WHEN dup_val_on_index THEN
+                                        UPDATE alert_product_mt.std_presc_dir_item i
+                                           SET i.id_recurrence          = " & i_a_instructions(2) & ",
+                                               i.id_duration            = " & i_a_instructions(3) & ",
+                                               i.id_unit_duration       = " & i_a_instructions(4) & ",
+                                               i.num_executions         = " & i_a_instructions(5) & ",
+                                               i.id_dose                = " & i_a_instructions(0) & ",
+                                               i.dose_value             = " & i_a_instructions(1) & ",
+                                               i.id_presc_dir_frequency = " & i_a_instructions(2) & "
+                                         WHERE i.id_std_presc_directions = " & i_id_std_presc_directions & "
+                                           AND i.id_std_presc_dir_item = " & i_index_instructions & ";
+                                END;"
+
+        Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_create_std.CommandType = CommandType.Text
+            cmd_create_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_create_std.Dispose()
+            Return False
+        End Try
+
+        cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
+
 End Class
 
 

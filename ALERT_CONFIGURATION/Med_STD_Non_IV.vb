@@ -17,6 +17,7 @@ Public Class MED_STD_NON_IV
     Dim g_a_admin_sites() As Int64
     Dim g_a_product_um() As Int64
     Dim g_a_duration_um() As Int64
+    Dim g_a_frequencies() As Int64
 
     Public Sub New(ByVal i_institution As Int64, ByVal i_software_index As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_default_route As Int64)
 
@@ -58,7 +59,8 @@ Public Class MED_STD_NON_IV
         g_selected_software = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, g_id_institution)
 
         Dim dr_freq As OracleDataReader
-
+        ReDim g_a_frequencies(0)
+        Dim l_index_freq As Int16 = 0
         If Not medication.GET_ALL_FREQS(g_id_institution, g_selected_software, dr_freq) Then
             MsgBox("Error getting all frequencies")
         Else
@@ -76,6 +78,10 @@ Public Class MED_STD_NON_IV
                 ComboBox17.Items.Add(dr_freq.Item(1))
                 ComboBox14.Items.Add(dr_freq.Item(1))
                 ComboBox23.Items.Add(dr_freq.Item(1))
+
+                ReDim Preserve g_a_frequencies(l_index_freq)
+                g_a_frequencies(l_index_freq) = dr_freq.Item(0)
+                l_index_freq = l_index_freq + 1
             End While
         End If
 
@@ -160,8 +166,365 @@ Public Class MED_STD_NON_IV
             l_dr_duration_um.Close()
         End If
 
-
     End Sub
+
+    Function CHECK_NUMBER_INSTRUCTIONS() As Int16
+        'VARIFICAR QUANTOS SETS DE INSTRUÇÕES DEVEM SER GRAVADOS
+        Dim l_n_of_instruction As Int16 = -1
+        '#1
+        If (TextBox1.Text <> "" Or ComboBox4.Text <> "" Or ComboBox3.Text <> "" Or TextBox3.Text <> "" Or ComboBox5.Text <> "" Or TextBox4.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#2
+        If (TextBox8.Text <> "" Or ComboBox7.Text <> "" Or ComboBox8.Text <> "" Or TextBox7.Text <> "" Or ComboBox6.Text <> "" Or TextBox6.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#3
+        If (TextBox11.Text <> "" Or ComboBox10.Text <> "" Or ComboBox1.Text <> "" Or TextBox10.Text <> "" Or ComboBox9.Text <> "" Or TextBox9.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#4
+        If (TextBox20.Text <> "" Or ComboBox19.Text <> "" Or ComboBox20.Text <> "" Or TextBox19.Text <> "" Or ComboBox18.Text <> "" Or TextBox18.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#5
+        If (TextBox17.Text <> "" Or ComboBox16.Text <> "" Or ComboBox17.Text <> "" Or TextBox16.Text <> "" Or ComboBox15.Text <> "" Or TextBox15.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#6
+        If (TextBox14.Text <> "" Or ComboBox13.Text <> "" Or ComboBox14.Text <> "" Or TextBox13.Text <> "" Or ComboBox12.Text <> "" Or TextBox12.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#7
+        If (TextBox23.Text <> "" Or ComboBox22.Text <> "" Or ComboBox23.Text <> "" Or TextBox22.Text <> "" Or ComboBox21.Text <> "" Or TextBox21.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+
+        Return l_n_of_instruction
+
+    End Function
+
+    Function GET_INSTRUCTIONS(ByVal i_index_instructions As Int16, ByRef o_array_instructions() As String) As Boolean
+        ReDim o_array_instructions(5)
+
+        Try
+            If i_index_instructions = 0 Then
+                If TextBox1.Text <> "" Then
+                    o_array_instructions(0) = TextBox1.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox4.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox4.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox3.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox3.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox3.Text <> "" Then
+                    o_array_instructions(3) = TextBox3.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox5.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox5.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox4.Text <> "" Then
+                    o_array_instructions(5) = TextBox4.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 1 Then
+                If TextBox8.Text <> "" Then
+                    o_array_instructions(0) = TextBox8.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox7.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox7.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox8.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox8.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox7.Text <> "" Then
+                    o_array_instructions(3) = TextBox7.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox6.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox6.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox6.Text <> "" Then
+                    o_array_instructions(5) = TextBox6.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 2 Then
+                If TextBox11.Text <> "" Then
+                    o_array_instructions(0) = TextBox11.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox10.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox10.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox1.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox1.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox10.Text <> "" Then
+                    o_array_instructions(3) = TextBox10.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox9.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox9.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox9.Text <> "" Then
+                    o_array_instructions(5) = TextBox9.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 3 Then
+                If TextBox20.Text <> "" Then
+                    o_array_instructions(0) = TextBox20.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox19.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox19.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox20.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox20.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox19.Text <> "" Then
+                    o_array_instructions(3) = TextBox19.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox18.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox18.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox18.Text <> "" Then
+                    o_array_instructions(5) = TextBox18.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 4 Then
+                If TextBox17.Text <> "" Then
+                    o_array_instructions(0) = TextBox17.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox16.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox16.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox17.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox17.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox16.Text <> "" Then
+                    o_array_instructions(3) = TextBox16.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox15.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox15.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox15.Text <> "" Then
+                    o_array_instructions(5) = TextBox15.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 5 Then
+                If TextBox14.Text <> "" Then
+                    o_array_instructions(0) = TextBox14.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox13.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox13.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox14.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox14.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox13.Text <> "" Then
+                    o_array_instructions(3) = TextBox13.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox12.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox12.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox12.Text <> "" Then
+                    o_array_instructions(5) = TextBox12.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+
+            ElseIf i_index_instructions = 6 Then
+                If TextBox23.Text <> "" Then
+                    o_array_instructions(0) = TextBox23.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                If ComboBox22.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox22.SelectedIndex - 1) ''+1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                If ComboBox23.Text <> "" Then
+                    o_array_instructions(2) = g_a_frequencies(ComboBox23.SelectedIndex - 1)
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                If TextBox22.Text <> "" Then
+                    o_array_instructions(3) = TextBox22.Text
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                If ComboBox21.Text <> "" Then
+                    o_array_instructions(4) = g_a_duration_um(ComboBox21.SelectedIndex - 1)
+                Else
+                    o_array_instructions(4) = "NULL"
+                End If
+                If TextBox21.Text <> "" Then
+                    o_array_instructions(5) = TextBox21.Text
+                Else
+                    o_array_instructions(5) = "NULL"
+                End If
+            End If
+
+        Catch ex As Exception
+            Return False
+        End Try
+
+        Return True
+
+    End Function
+
+    Function CREATE_NEW_SET_INSTRUCTIONS() As Boolean
+        Try
+            ''CRIAÇÃO DE UMA NOVA INSTRUÇÃO
+            MsgBox("A new instruction will be created") ''APAGAR
+            ''criar novo id
+            Dim l_id_new_instruction As Int64 = medication.GET_NEW_STD_INSTRUCTION_ID(g_id_institution)
+            Dim l_flg_sos As String
+            Dim l_id_sos As Int16 = 19
+            Dim l_sos_condition As String = ""
+
+            If ComboBox24.Text = "" Then
+                l_flg_sos = "N"
+            Else
+                l_flg_sos = ComboBox24.Text
+            End If
+
+            If ComboBox24.Text = "Y" Then
+                l_id_sos = 18
+            End If
+
+            If TextBox24.Text <> "" Then
+                l_sos_condition = TextBox24.Text
+            ElseIf ComboBox25.Text <> "" Then
+                l_sos_condition = ComboBox25.Text
+            End If
+
+            Dim l_id_admin_site As String = "NULL"
+            If ComboBox26.SelectedIndex > -1 Then
+                l_id_admin_site = g_a_admin_sites(ComboBox26.SelectedIndex)
+            End If
+
+            Dim l_id_admin_method As String = "NULL"
+            If ComboBox27.SelectedIndex > -1 Then
+                l_id_admin_method = g_a_admin_methods(ComboBox27.SelectedIndex)
+            End If
+
+            If Not medication.CREATE_STD_INSTRUCTION(g_id_institution, l_id_new_instruction, l_flg_sos, l_id_sos, l_sos_condition, TextBox5.Text, TextBox25.Text, l_id_admin_site, l_id_admin_method) Then
+                MsgBox("Error creating standard instruction!", vbCritical)
+            End If
+            Dim l_rank As Int64 = 1
+            If TextBox26.Text <> "" Then
+                l_rank = TextBox26.Text
+            ElseIf ComboBox1.Text <> "" Then
+                l_rank = ComboBox1.Text
+            End If
+
+            If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, l_id_new_instruction, l_rank) Then
+                MsgBox("Error updating instruction id/rank!", vbCritical)
+            End If
+
+            Dim l_number_instructions_to_add As Int16 = CHECK_NUMBER_INSTRUCTIONS()
+
+            If l_number_instructions_to_add > -1 Then
+                Dim l_a_instructions() As String
+
+                For i As Integer = 0 To l_number_instructions_to_add
+                    GET_INSTRUCTIONS(i, l_a_instructions)
+                    MsgBox("l_number_instructions_to_add - " & i)
+                    MsgBox(l_a_instructions(2))
+                    If Not medication.CREATE_STD_PRESC_DIR_ITEM(g_id_institution, l_id_new_instruction, i + 1, l_a_instructions) Then
+                        MsgBox("Error creating standard prescription direction item!", vbCritical)
+                    End If
+                Next
+            End If
+        Catch ex As Exception
+            Return False
+        End Try
+        Return True
+    End Function
+
 
     Private Sub ComboBox28_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox28.SelectedIndexChanged
         Dim dr_med_set_instruction As OracleDataReader
@@ -584,11 +947,18 @@ Public Class MED_STD_NON_IV
             If TextBox27.Text = "" Then
                 l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
                 'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
-                If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
-                    MsgBox("Error creating ID_GRANT!", vbCritical)
-                Else
-                    l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                If l_id_grant = -1 Then
+                    If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                        MsgBox("Error creating ID_GRANT!", vbCritical)
+                    Else
+                        l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                    End If
                 End If
+
+                If Not CREATE_NEW_SET_INSTRUCTIONS() Then
+                    MsgBox("Error creating new set of instructions", vbCritical)
+                End If
+
             Else
                 'NESTE CASO JÁ EXISTIA INSTRUÇÃO. SERÁ FEITO UPDATE
 
@@ -653,12 +1023,30 @@ Public Class MED_STD_NON_IV
                     ElseIf combobox1.Text <> "" Then
                         l_rank = ComboBox1.Text
                     End If
+
                     If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, l_id_new_instruction, l_rank) Then
                         MsgBox("Error updating instruction id/rank!", vbCritical)
                     End If
+
+                    Dim l_number_instructions_to_add As Int16 = CHECK_NUMBER_INSTRUCTIONS()
+
+                    If l_number_instructions_to_add > -1 Then
+                        Dim l_a_instructions() As String
+
+                        For i As Integer = 0 To l_number_instructions_to_add
+                            GET_INSTRUCTIONS(i, l_a_instructions)
+                            MsgBox("l_number_instructions_to_add - " & i)
+                            MsgBox(l_a_instructions(2))
+                            If Not medication.CREATE_STD_PRESC_DIR_ITEM(g_id_institution, l_id_new_instruction, i + 1, l_a_instructions) Then
+                                MsgBox("Error creating standard prescription direction item!", vbCritical)
+                            End If
+                        Next
+                    End If
+
                 End If
             End If
         End If
         Cursor = Cursors.Arrow
     End Sub
+
 End Class
