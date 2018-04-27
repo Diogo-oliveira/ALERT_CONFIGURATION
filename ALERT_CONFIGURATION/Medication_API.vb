@@ -561,22 +561,33 @@ Public Class Medication_API
 
     End Function
 
-    Function GET_MARKET_UM(ByVal i_institution As Int64, ByVal i_id_software As Int64, ByVal i_search_string As String, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_MARKET_UM(ByVal i_institution As Int64, ByVal i_id_software As Int64, ByVal i_search_string As String, ByVal i_id_product_supplier As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_MARKET_UM(" & i_institution & ", " & i_search_string & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_MARKET_UM(" & i_institution & ", " & i_id_software & ", " & i_search_string & ", " & i_id_product_supplier & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
-        Dim sql As String = "SELECT DISTINCT u.id_unit_measure, t.desc_lang_" & l_id_language & " um_desc
-                               FROM alert.unit_measure u
-                               JOIN unit_mea_soft_inst s
-                                 ON s.id_unit_measure = u.id_unit_measure
-                               JOIN translation t
-                                 ON t.code_translation = u.code_unit_measure
-                              WHERE s.id_institution IN (0, " & i_institution & ")
-                                AND s.id_software IN (0, " & i_id_software & ")
-                                and s.flg_prescription='Y'
-                                AND t.desc_lang_" & l_id_language & " IS NOT NULL "
+        Dim sql As String = "SELECT id_unit_measure, pk_translation.get_translation(" & l_id_language & ", code_unit_measure) AS um_desc
+                                  FROM (SELECT v1.id_unit_measure, um.code_unit_measure
+                                          FROM (SELECT DISTINCT lpum.id_unit_measure AS id_unit_measure
+                                                  FROM alert_product_mt.lnk_product_unit_measure lpum
+                                                 WHERE lpum.id_unit_measure_context = 1
+                                                   AND lpum.id_product_supplier IN ('" & i_id_product_supplier & "')) v1 
+                                          JOIN alert.unit_measure um
+                                            ON um.id_unit_measure = v1.id_unit_measure
+                                         WHERE um.flg_available = 'Y'
+                                           AND um.id_unit_measure_type = 1015
+        
+                                        UNION ALL
+        
+                                        SELECT ume.id_unit_measure, um.code_unit_measure
+                                          FROM alert_product_mt.lnk_um_supp_exceptions ume
+                                          JOIN alert.unit_measure um
+                                            ON um.id_unit_measure = ume.id_unit_measure
+                                         WHERE ume.flg_available = 'Y'
+                                           AND ume.id_unit_measure_context = 1015
+                                           AND ume.id_supplier IN ('" & i_id_product_supplier & "')
+        )"
 
         If i_search_string = "" Then
 
@@ -585,7 +596,7 @@ Public Class Medication_API
 
         Else
             sql = sql & "
-                               AND upper(pk_translation.get_translation(" & l_id_language & ", u.code_unit_measure)) LIKE upper('%" & i_search_string & "%')
+                               where upper(pk_translation.get_translation(" & l_id_language & ", code_unit_measure)) LIKE upper('%" & i_search_string & "%')
                              ORDER BY um_desc ASC"
         End If
 
@@ -880,11 +891,67 @@ Public Class Medication_API
 
     End Function
 
+    Function COUNT_STD_INSTR_PICK_LIST(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_pick_list As Int16) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: COUNT_STD_INSTR_PICK_LIST(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_pick_list & ")")
+
+        Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+        Dim L_COUNT As Int64
+
+        Dim sql As String = "SELECT COUNT(*)
+                              FROM alert_product_mt.std_presc_dir d
+                              JOIN alert_product_mt.lnk_product_std_presc_dir lsd
+                                ON lsd.id_std_presc_directions = d.id_std_presc_directions
+                              JOIN alert_product_mt.v_cfg_grant cfg
+                                ON cfg.id_grant = lsd.id_grant
+                             WHERE lsd.id_product IN ('" & i_id_product & "')
+                               AND lsd.id_product_supplier = '" & i_id_product_supplier & "'
+                               AND cfg.id_context = 'LNK_PRODUCT_STD_PRESC_DIR'
+                               AND cfg.institution IN (0, " & i_institution & ")
+                               AND cfg.market IN (0, " & l_market & ")
+                               AND cfg.software IN (0, " & i_software & ")
+                               AND lsd.id_pick_list IN (" & i_pick_list & ") "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                Try
+                    L_COUNT = dr.Item(0)
+                Catch ex As Exception
+                    L_COUNT = 0
+                End Try
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: COUNT_STD_INSTR_PICK_LIST")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return L_COUNT
+    End Function
+
     Function GET_ALL_INSTRUCTIONS(ByVal i_institution As Int64, ByVal i_software As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ALL_INSTRUCTIONS(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_pick_list & ")")
 
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
+        Dim l_id_pick_list As Int16 = 0
+
+        If COUNT_STD_INSTR_PICK_LIST(i_institution, i_software, i_id_product, i_id_product_supplier, i_pick_list) > 0 Then
+            l_id_pick_list = i_pick_list
+        End If
 
         Dim sql As String = "   SELECT lsd.id_product,
                                        d.id_std_presc_directions,
@@ -932,7 +999,7 @@ Public Class Medication_API
                                    AND cfg.institution IN (0, " & i_institution & ")
                                    AND cfg.market IN (0, " & l_market & ")
                                    AND cfg.software IN (0, " & i_software & ")
-                                   AND lsd.id_pick_list IN (0, " & i_pick_list & ")
+                                   AND lsd.id_pick_list IN (" & l_id_pick_list & ")
                                  ORDER BY cfg.market DESC, cfg.institution DESC, cfg.software DESC, lsd.id_pick_list DESC, lsd.rank ASC  "
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
@@ -1137,7 +1204,7 @@ Public Class Medication_API
                               FROM (SELECT pi.rank,
                                            pi.duration_value,
                                            pi.id_unit_duration,
-                                           pk_translation.get_translation(" & l_id_language & ", um_duration.code_unit_measure) AS duration_desc,
+                                           pk_translation.get_translation(2, um_duration.code_unit_measure) AS duration_desc,
                                            pi.num_executions,
                                            pi.id_dose,
                                            pi.dose_value,
@@ -1276,8 +1343,6 @@ Public Class Medication_API
 
     End Function
 
-
-
     Function SET_ID_GRANT(ByVal i_institution As Int64, ByVal i_software As String, ByVal i_context As String) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: SET_ID_GRANT(" & i_institution & ", " & i_software & ", " & i_context & ")")
@@ -1334,6 +1399,37 @@ Public Class Medication_API
             cmd_update_std.ExecuteNonQuery()
         Catch ex As Exception
             DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: UPDATE_STD_PRESC_DIR")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_update_std.Dispose()
+            Return False
+        End Try
+
+        cmd_update_std.Dispose()
+
+        Return True
+
+    End Function
+
+    Function CREATE_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_std_presc_dir As Int64, ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_rank As Int64) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_id_std_presc_dir & ", " & i_id_grant & ", " & i_id_pick_list & ", " & i_rank & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "INSERT INTO alert_product_mt.lnk_product_std_presc_dir
+                                    (id_product, id_product_supplier, id_std_presc_directions, rank, id_grant, id_pick_list)
+                                VALUES
+                                    ('" & i_id_product & "', '" & i_id_product_supplier & "', " & i_id_std_presc_dir & ", " & i_rank & ", " & i_id_grant & ", " & i_id_pick_list & ")"
+
+        Dim cmd_update_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_update_std.CommandType = CommandType.Text
+            cmd_update_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
@@ -1452,7 +1548,7 @@ Public Class Medication_API
                                  id_admin_site,
                                  id_admin_method)
                             VALUES
-                                (" & i_id_std_presc_directions & ", '" & i_flg_sos & "', " & i_id_sos & ", " & l_id_sos_take_condition & ", '" & i_sos_take_condition & "', 'N', '" & i_notes & "',  '" & i_patient_instructions & "',  " & i_id_admin_site & ",  " & i_id_admin_method & ")"
+                                (" & i_id_std_presc_directions & ", '" & i_flg_sos & "', " & i_id_sos & ", " & l_id_sos_take_condition & ", " & i_sos_take_condition & ", 'N', '" & i_notes & "',  '" & i_patient_instructions & "',  " & i_id_admin_site & ",  " & i_id_admin_method & ")"
 
         Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
 
@@ -1524,6 +1620,39 @@ Public Class Medication_API
         End Try
 
         cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
+
+
+    Function DELETE_STD_INSTRUCTION(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_suplier As String, ByVal i_id_std_presc_directions As Int64, ByVal i_rank As Int64, ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: DELETE_STD_INSTRUCTION(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_id_product_suplier & ", " & i_id_std_presc_directions & ", " & i_rank & ", " & i_id_grant & ", " & i_id_pick_list & ") ")
+
+        Dim sql As String = " DELETE FROM alert_product_mt.lnk_product_std_presc_dir d
+                              WHERE d.id_product = '" & i_id_product & "'
+                                AND d.id_product_supplier = '" & i_id_product_suplier & "'
+                                AND d.id_std_presc_directions = " & i_id_std_presc_directions & "
+                                AND d.rank = " & i_rank & "
+                                AND d.id_grant = " & i_id_grant & "
+                                AND d.id_pick_list = " & i_id_pick_list
+
+        Dim cmd_delete_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_delete_std.CommandType = CommandType.Text
+            cmd_delete_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: DELETE_STD_INSTRUCTION")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_delete_std.Dispose()
+            Return False
+        End Try
+
+        cmd_delete_std.Dispose()
 
         Return True
 

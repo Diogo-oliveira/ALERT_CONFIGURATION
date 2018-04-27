@@ -581,7 +581,7 @@ Public Class MEDICATION
         If TextBox1.Text <> "" Then
             Cursor = Cursors.WaitCursor
             Dim dr_UM As OracleDataReader
-            If Not medication.GET_MARKET_UM(TextBox1.Text, g_selected_soft, TextBox4.Text, dr_UM) Then
+            If Not medication.GET_MARKET_UM(TextBox1.Text, g_selected_soft, TextBox4.Text, g_id_product_supplier, dr_UM) Then
                 MsgBox("Error getting MARKET UNIT MEASURES!", vbCritical)
             Else
                 CheckedListBox3.Items.Clear()
@@ -594,8 +594,8 @@ Public Class MEDICATION
                     g_a_market_um(i) = dr_UM(0)
                     i = i + 1
                 End While
+                dr_UM.Close()
             End If
-            dr_UM.Close()
             Cursor = Cursors.Arrow
         Else
             MsgBox("Please select an Institution.")
