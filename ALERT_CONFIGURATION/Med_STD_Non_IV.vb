@@ -47,8 +47,10 @@ Public Class MED_STD_NON_IV
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
         Else
+            ComboBox29.Items.Add("")
             While dr_soft.Read()
                 ComboBox2.Items.Add(dr_soft.Item(1))
+                ComboBox29.Items.Add(dr_soft.Item(1))
             End While
         End If
 
@@ -94,19 +96,11 @@ Public Class MED_STD_NON_IV
         ComboBox24.Items.Add("Y")
         ComboBox24.Items.Add("N")
 
-        Dim l_dr_market As OracleDataReader
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not db_access_general.GET_MARKETS(l_dr_market) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            MsgBox("ERROR GETTING MARKETS!", vbCritical)
-        Else
-
-            While l_dr_market.Read()
-                If l_dr_market.Item(0) = 0 Or l_dr_market.Item(0) = g_id_market Then
-                    ComboBox30.Items.Add(l_dr_market.Item(1))
-                End If
-            End While
-        End If
+        ComboBox31.Items.Add("")
+        ComboBox31.Items.Add("0 - ALL")
+        ComboBox31.Items.Add("1 - External Prescription")
+        ComboBox31.Items.Add("2 - Administer Here")
+        ComboBox31.Items.Add("3 - Home Medication")
 
         Dim l_dr_product_um As OracleDataReader
         If Not medication.GET_PRODUCT_UM(g_id_institution, g_id_product, g_id_product_supplier, 1, l_dr_product_um) Then
@@ -456,7 +450,7 @@ Public Class MED_STD_NON_IV
 
     End Function
 
-    Function CREATE_SET_INSTRUCTIONS(ByVal i_id_grant As Int64, ByVal i_create_new As String) As Boolean
+    Function CREATE_SET_INSTRUCTIONS(ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_create_new As String) As Boolean
         Try
             ''CRIAÇÃO DE UMA NOVA INSTRUÇÃO
             ''criar novo id
@@ -507,12 +501,12 @@ Public Class MED_STD_NON_IV
             Dim l_previous_id_directions As Int64 = 0
 
             If i_create_new = "N" Then
-                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, i_id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, l_id_new_instruction, l_rank) Then
+                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
                     MsgBox("Error updating lnk_product_std_presc_dir!", vbCritical)
                 End If
 
             Else
-                If Not medication.CREATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, l_id_new_instruction, i_id_grant, ComboBox28.SelectedIndex, l_rank) Then
+                If Not medication.CREATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, l_id_new_instruction, i_id_grant, i_id_pick_list, l_rank) Then
                     MsgBox("Error creating new lnk_product_std_presc_dir!!", vbCritical)
                 End If
             End If
@@ -542,6 +536,10 @@ Public Class MED_STD_NON_IV
         ComboBox27.SelectedIndex = -1
         TextBox5.Text = ""
         TextBox25.Text = ""
+        TextBox26.Text = ""
+        ComboBox29.SelectedIndex = -1
+        ComboBox31.SelectedIndex = -1
+        TextBox27.Text = ""
     End Function
 
     Function RESET_SET_INSTRUCTIONS()
@@ -642,12 +640,10 @@ Public Class MED_STD_NON_IV
 
             Cursor = Cursors.WaitCursor
 
+            RESET_MAIN_INSTRUCTIONS()
+            RESET_SET_INSTRUCTIONS()
+
             TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant
-            If g_a_med_set_instructions(ComboBox1.SelectedIndex).market = 0 Then
-                ComboBox30.SelectedIndex = 0
-            ElseIf g_a_med_set_instructions(ComboBox1.SelectedIndex).market = g_id_market Then
-                ComboBox30.SelectedIndex = 1
-            End If
 
             Dim dr_std_presc_dir As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -663,12 +659,12 @@ Public Class MED_STD_NON_IV
                         TextBox24.Text = ""
                     End Try
                     Try
-                        ComboBox26 = dr_std_presc_dir.Item(4)
+                        ComboBox26.Text = dr_std_presc_dir.Item(4)
                     Catch ex As Exception
                         ComboBox26.Text = ""
                     End Try
                     Try
-                        ComboBox27 = dr_std_presc_dir.Item(5)
+                        ComboBox27.Text = dr_std_presc_dir.Item(5)
                     Catch ex As Exception
                         ComboBox27.Text = ""
                     End Try
@@ -686,10 +682,6 @@ Public Class MED_STD_NON_IV
                 dr_std_presc_dir.Close()
             End If
 
-
-            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-            ''CONTINUAR PARA TODOS OS CAMPOS
-            ''CRAIR A ESTRUTURA OUS O ARRAYS PARA GUARDAR AS INSTRUÇÕES A SEREM GRAVADAS
             Dim dr_std_presc_dir_item As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
             If Not medication.GET_STD_PRESC_DIR_ITEM(g_id_institution, g_id_product, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, dr_std_presc_dir_item) Then
@@ -1113,23 +1105,28 @@ Public Class MED_STD_NON_IV
         ElseIf (TextBox22.Text <> "" And
         ComboBox21.Text = "") Then
             MsgBox("Please select a duration unit measure for instruction #7.", vbInformation)
+        ElseIf ((ComboBox2.text = ComboBox29.text) And (ComboBox28.text = ComboBox31.text)) Then
+            MsgBox("The software and type of prescription to copy to cannot be the same as the software and type of prescription of origin. Please review the information.", vbInformation)
         Else
-            'VERIFICAR SE EXISTE GRANT
-            If TextBox27.Text = "" Then
+            'VERIFICAR SE NÃO EXISTE GRANT
+            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 0 Then
                 l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
                 'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
                 If l_id_grant = -1 Then
                     If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
                         MsgBox("Error creating ID_GRANT!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
                     Else
                         l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
                     End If
                 End If
 
-                If Not CREATE_SET_INSTRUCTIONS(l_id_grant, "Y") Then
+                If Not CREATE_SET_INSTRUCTIONS(l_id_grant, ComboBox28.SelectedIndex, "Y") Then
                     MsgBox("Error creating new set of instructions", vbCritical)
+                    Cursor = Cursors.Arrow
+                    Exit Sub
                 End If
-
             Else
                 'NESTE CASO JÁ EXISTIA INSTRUÇÃO. SERÁ FEITO UPDATE
 
@@ -1152,59 +1149,90 @@ Public Class MED_STD_NON_IV
                     End If
 
                     ''NESTE CASO É NECESSÁRIO FAZER UPDATE AO RANK
-                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, l_rank) Then
+                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, l_rank, l_id_grant) Then
                         MsgBox("Error updating instruction rank!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
                     End If
 
-                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, "N") Then
+                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, ComboBox28.SelectedIndex, "N") Then
                         MsgBox("Error creating new set of instructions", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
                     End If
 
                 Else
-                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, "Y") Then
+                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, ComboBox28.SelectedIndex, "Y") Then
                         MsgBox("Error creating new set of instructions", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
                     End If
                 End If
             End If
 
+            'VERIFICAR SE É PARA COPIAR AS INTRUÇÕES PARA UM SEGUNDO SOFTWARE/PICK_LIST
+            If (ComboBox29.SelectedIndex > 0 And ComboBox31.SelectedIndex > 0) Then
+                Dim l_id_software_copy As Int16 = db_access_general.GET_SELECTED_SOFT(ComboBox29.SelectedIndex - 1, g_id_institution)
+                l_id_grant = medication.GET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR")
+                'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
+                MsgBox(l_id_software_copy)
+                MsgBox(ComboBox31.SelectedIndex - 1)
+
+                If l_id_grant = -1 Then
+                    If Not medication.SET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                        MsgBox("Error creating ID_GRANT!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    Else
+                        l_id_grant = medication.GET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR")
+                    End If
+                End If
+                If Not CREATE_SET_INSTRUCTIONS(l_id_grant, ComboBox31.SelectedIndex - 1, "Y") Then
+                    MsgBox("Error creating new set of instructions", vbCritical)
+                    Cursor = Cursors.Arrow
+                    Exit Sub
+                End If
+            End If
+
             Dim dr_med_set_instruction As OracleDataReader
-            ReDim g_a_med_set_instructions(0)
-            ComboBox1.Items.Clear()
+                ReDim g_a_med_set_instructions(0)
+                ComboBox1.Items.Clear()
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
+                If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
+                Cursor = Cursors.Arrow
+                Exit Sub
             Else
-                Dim i As Integer = 0
-                While dr_med_set_instruction.Read()
-                    ReDim Preserve g_a_med_set_instructions(i)
-                    g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
-                    g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
-                    g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
-                    g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
-                    g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
-                    g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
-                    g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
-                    g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
-                    g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
-                    g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
+                    Dim i As Integer = 0
+                    While dr_med_set_instruction.Read()
+                        ReDim Preserve g_a_med_set_instructions(i)
+                        g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
+                        g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
+                        g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
+                        g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
+                        g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
+                        g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
+                        g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
+                        g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
+                        g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
+                        g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
 
-                    ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
+                        ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
 
-                    i = i + 1
+                        i = i + 1
 
-                End While
+                    End While
+                End If
+
+                MsgBox("Record inserted.", vbInformation)
             End If
-
-            MsgBox("Record inserted.", vbInformation)
-        End If
-        Cursor = Cursors.Arrow
+            Cursor = Cursors.Arrow
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        ComboBox30.SelectedIndex = -1
         TextBox27.Text = ""
 
         ComboBox1.SelectedIndex = -1
@@ -1226,7 +1254,6 @@ Public Class MED_STD_NON_IV
             Else
                 MsgBox("Record deleted.", vbInformation)
 
-                ComboBox30.SelectedIndex = -1
                 TextBox27.Text = ""
 
                 TextBox26.Text = ""
@@ -1409,5 +1436,29 @@ Public Class MED_STD_NON_IV
         If ComboBox21.Text <> "" Then
             TextBox21.Text = ""
         End If
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        If ComboBox2.SelectedIndex > -1 Then
+            Dim l_id_grant As Int64
+            l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+
+            'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
+            If l_id_grant = -1 Then
+                If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                    MsgBox("Error creating ID_GRANT!", vbCritical)
+                Else
+                    l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                End If
+            End If
+
+            TextBox27.Text = l_id_grant
+
+        End If
+    End Sub
+
+    Private Sub Label58_Click(sender As Object, e As EventArgs) Handles Label58.Click
+
     End Sub
 End Class

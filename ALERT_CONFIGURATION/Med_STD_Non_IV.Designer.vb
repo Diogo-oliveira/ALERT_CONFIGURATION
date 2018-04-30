@@ -146,9 +146,10 @@ Partial Class MED_STD_NON_IV
         Me.Label55 = New System.Windows.Forms.Label()
         Me.TextBox27 = New System.Windows.Forms.TextBox()
         Me.Label56 = New System.Windows.Forms.Label()
-        Me.ComboBox30 = New System.Windows.Forms.ComboBox()
-        Me.Label57 = New System.Windows.Forms.Label()
         Me.Button1 = New System.Windows.Forms.Button()
+        Me.Label58 = New System.Windows.Forms.Label()
+        Me.ComboBox31 = New System.Windows.Forms.ComboBox()
+        Me.Button2 = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -200,7 +201,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(272, 74)
+        Me.ComboBox1.Location = New System.Drawing.Point(272, 79)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(64, 21)
         Me.ComboBox1.TabIndex = 146
@@ -208,7 +209,7 @@ Partial Class MED_STD_NON_IV
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(269, 58)
+        Me.Label1.Location = New System.Drawing.Point(269, 63)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(37, 13)
         Me.Label1.TabIndex = 147
@@ -316,7 +317,7 @@ Partial Class MED_STD_NON_IV
         'Label43
         '
         Me.Label43.AutoSize = True
-        Me.Label43.Location = New System.Drawing.Point(94, 21)
+        Me.Label43.Location = New System.Drawing.Point(69, 21)
         Me.Label43.Name = "Label43"
         Me.Label43.Size = New System.Drawing.Size(66, 13)
         Me.Label43.TabIndex = 153
@@ -327,9 +328,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox22.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox22.FormattingEnabled = True
-        Me.ComboBox22.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox22.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox22.Name = "ComboBox22"
-        Me.ComboBox22.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox22.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox22.TabIndex = 152
         '
         'Label44
@@ -346,13 +347,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox23.Location = New System.Drawing.Point(11, 39)
         Me.TextBox23.Name = "TextBox23"
-        Me.TextBox23.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox23.Size = New System.Drawing.Size(55, 22)
         Me.TextBox23.TabIndex = 150
         '
         'Label45
         '
         Me.Label45.AutoSize = True
-        Me.Label45.Location = New System.Drawing.Point(180, 21)
+        Me.Label45.Location = New System.Drawing.Point(209, 21)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(73, 13)
         Me.Label45.TabIndex = 149
@@ -363,9 +364,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox23.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox23.FormattingEnabled = True
-        Me.ComboBox23.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox23.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox23.Name = "ComboBox23"
-        Me.ComboBox23.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox23.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox23.TabIndex = 148
         '
         'GroupBox4
@@ -445,7 +446,7 @@ Partial Class MED_STD_NON_IV
         'Label25
         '
         Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(94, 21)
+        Me.Label25.Location = New System.Drawing.Point(69, 21)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(66, 13)
         Me.Label25.TabIndex = 153
@@ -456,9 +457,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox13.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox13.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox13.FormattingEnabled = True
-        Me.ComboBox13.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox13.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox13.Name = "ComboBox13"
-        Me.ComboBox13.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox13.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox13.TabIndex = 152
         '
         'Label26
@@ -475,13 +476,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox14.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox14.Location = New System.Drawing.Point(11, 39)
         Me.TextBox14.Name = "TextBox14"
-        Me.TextBox14.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox14.Size = New System.Drawing.Size(55, 22)
         Me.TextBox14.TabIndex = 150
         '
         'Label27
         '
         Me.Label27.AutoSize = True
-        Me.Label27.Location = New System.Drawing.Point(180, 21)
+        Me.Label27.Location = New System.Drawing.Point(209, 21)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(73, 13)
         Me.Label27.TabIndex = 149
@@ -492,9 +493,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox14.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox14.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox14.FormattingEnabled = True
-        Me.ComboBox14.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox14.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox14.Name = "ComboBox14"
-        Me.ComboBox14.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox14.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox14.TabIndex = 148
         '
         'GroupBox5
@@ -574,7 +575,7 @@ Partial Class MED_STD_NON_IV
         'Label31
         '
         Me.Label31.AutoSize = True
-        Me.Label31.Location = New System.Drawing.Point(94, 21)
+        Me.Label31.Location = New System.Drawing.Point(69, 21)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(66, 13)
         Me.Label31.TabIndex = 153
@@ -585,9 +586,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox16.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox16.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox16.FormattingEnabled = True
-        Me.ComboBox16.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox16.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox16.Name = "ComboBox16"
-        Me.ComboBox16.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox16.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox16.TabIndex = 152
         '
         'Label32
@@ -604,13 +605,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox17.Location = New System.Drawing.Point(11, 39)
         Me.TextBox17.Name = "TextBox17"
-        Me.TextBox17.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox17.Size = New System.Drawing.Size(55, 22)
         Me.TextBox17.TabIndex = 150
         '
         'Label33
         '
         Me.Label33.AutoSize = True
-        Me.Label33.Location = New System.Drawing.Point(180, 21)
+        Me.Label33.Location = New System.Drawing.Point(209, 21)
         Me.Label33.Name = "Label33"
         Me.Label33.Size = New System.Drawing.Size(73, 13)
         Me.Label33.TabIndex = 149
@@ -621,9 +622,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox17.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox17.FormattingEnabled = True
-        Me.ComboBox17.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox17.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox17.Name = "ComboBox17"
-        Me.ComboBox17.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox17.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox17.TabIndex = 148
         '
         'GroupBox6
@@ -703,7 +704,7 @@ Partial Class MED_STD_NON_IV
         'Label37
         '
         Me.Label37.AutoSize = True
-        Me.Label37.Location = New System.Drawing.Point(94, 21)
+        Me.Label37.Location = New System.Drawing.Point(69, 21)
         Me.Label37.Name = "Label37"
         Me.Label37.Size = New System.Drawing.Size(66, 13)
         Me.Label37.TabIndex = 153
@@ -714,9 +715,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox19.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox19.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox19.FormattingEnabled = True
-        Me.ComboBox19.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox19.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox19.Name = "ComboBox19"
-        Me.ComboBox19.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox19.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox19.TabIndex = 152
         '
         'Label38
@@ -733,13 +734,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox20.Location = New System.Drawing.Point(11, 39)
         Me.TextBox20.Name = "TextBox20"
-        Me.TextBox20.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox20.Size = New System.Drawing.Size(55, 22)
         Me.TextBox20.TabIndex = 150
         '
         'Label39
         '
         Me.Label39.AutoSize = True
-        Me.Label39.Location = New System.Drawing.Point(180, 21)
+        Me.Label39.Location = New System.Drawing.Point(209, 21)
         Me.Label39.Name = "Label39"
         Me.Label39.Size = New System.Drawing.Size(73, 13)
         Me.Label39.TabIndex = 149
@@ -750,9 +751,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox20.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox20.FormattingEnabled = True
-        Me.ComboBox20.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox20.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox20.Name = "ComboBox20"
-        Me.ComboBox20.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox20.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox20.TabIndex = 148
         '
         'GroupBox3
@@ -832,7 +833,7 @@ Partial Class MED_STD_NON_IV
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(94, 21)
+        Me.Label19.Location = New System.Drawing.Point(69, 21)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(66, 13)
         Me.Label19.TabIndex = 153
@@ -843,9 +844,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox10.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox10.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox10.FormattingEnabled = True
-        Me.ComboBox10.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox10.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox10.Name = "ComboBox10"
-        Me.ComboBox10.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox10.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox10.TabIndex = 152
         '
         'Label20
@@ -862,13 +863,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox11.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox11.Location = New System.Drawing.Point(11, 39)
         Me.TextBox11.Name = "TextBox11"
-        Me.TextBox11.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox11.Size = New System.Drawing.Size(55, 22)
         Me.TextBox11.TabIndex = 150
         '
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(180, 21)
+        Me.Label21.Location = New System.Drawing.Point(209, 21)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(73, 13)
         Me.Label21.TabIndex = 149
@@ -879,9 +880,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox11.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox11.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox11.FormattingEnabled = True
-        Me.ComboBox11.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox11.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox11.Name = "ComboBox11"
-        Me.ComboBox11.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox11.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox11.TabIndex = 148
         '
         'GroupBox2
@@ -961,7 +962,7 @@ Partial Class MED_STD_NON_IV
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(94, 21)
+        Me.Label12.Location = New System.Drawing.Point(69, 21)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(66, 13)
         Me.Label12.TabIndex = 153
@@ -972,9 +973,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox7.FormattingEnabled = True
-        Me.ComboBox7.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox7.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox7.Name = "ComboBox7"
-        Me.ComboBox7.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox7.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox7.TabIndex = 152
         '
         'Label13
@@ -991,13 +992,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox8.Location = New System.Drawing.Point(11, 39)
         Me.TextBox8.Name = "TextBox8"
-        Me.TextBox8.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox8.Size = New System.Drawing.Size(55, 22)
         Me.TextBox8.TabIndex = 150
         '
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(180, 21)
+        Me.Label14.Location = New System.Drawing.Point(209, 21)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(73, 13)
         Me.Label14.TabIndex = 149
@@ -1008,9 +1009,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox8.FormattingEnabled = True
-        Me.ComboBox8.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox8.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox8.Name = "ComboBox8"
-        Me.ComboBox8.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox8.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox8.TabIndex = 148
         '
         'GroupBox1
@@ -1063,7 +1064,7 @@ Partial Class MED_STD_NON_IV
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(565, 23)
+        Me.Label6.Location = New System.Drawing.Point(562, 23)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(64, 13)
         Me.Label6.TabIndex = 156
@@ -1090,7 +1091,7 @@ Partial Class MED_STD_NON_IV
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(94, 21)
+        Me.Label5.Location = New System.Drawing.Point(69, 21)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(66, 13)
         Me.Label5.TabIndex = 153
@@ -1101,9 +1102,9 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox4.FormattingEnabled = True
-        Me.ComboBox4.Location = New System.Drawing.Point(97, 37)
+        Me.ComboBox4.Location = New System.Drawing.Point(72, 37)
         Me.ComboBox4.Name = "ComboBox4"
-        Me.ComboBox4.Size = New System.Drawing.Size(80, 24)
+        Me.ComboBox4.Size = New System.Drawing.Size(134, 24)
         Me.ComboBox4.TabIndex = 152
         '
         'Label4
@@ -1120,13 +1121,13 @@ Partial Class MED_STD_NON_IV
         Me.TextBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox1.Location = New System.Drawing.Point(11, 39)
         Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(80, 22)
+        Me.TextBox1.Size = New System.Drawing.Size(55, 22)
         Me.TextBox1.TabIndex = 150
         '
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(180, 21)
+        Me.Label2.Location = New System.Drawing.Point(209, 23)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(73, 13)
         Me.Label2.TabIndex = 149
@@ -1137,15 +1138,15 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox3.FormattingEnabled = True
-        Me.ComboBox3.Location = New System.Drawing.Point(183, 37)
+        Me.ComboBox3.Location = New System.Drawing.Point(212, 37)
         Me.ComboBox3.Name = "ComboBox3"
-        Me.ComboBox3.Size = New System.Drawing.Size(376, 24)
+        Me.ComboBox3.Size = New System.Drawing.Size(347, 24)
         Me.ComboBox3.TabIndex = 148
         '
         'PictureBox1
         '
         Me.PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), System.Drawing.Image)
-        Me.PictureBox1.Location = New System.Drawing.Point(721, 10)
+        Me.PictureBox1.Location = New System.Drawing.Point(708, 10)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(196, 100)
         Me.PictureBox1.TabIndex = 241
@@ -1154,7 +1155,7 @@ Partial Class MED_STD_NON_IV
         'Label46
         '
         Me.Label46.AutoSize = True
-        Me.Label46.Location = New System.Drawing.Point(11, 108)
+        Me.Label46.Location = New System.Drawing.Point(9, 110)
         Me.Label46.Name = "Label46"
         Me.Label46.Size = New System.Drawing.Size(29, 13)
         Me.Label46.TabIndex = 243
@@ -1164,7 +1165,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox24.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox24.FormattingEnabled = True
-        Me.ComboBox24.Location = New System.Drawing.Point(12, 123)
+        Me.ComboBox24.Location = New System.Drawing.Point(12, 126)
         Me.ComboBox24.Name = "ComboBox24"
         Me.ComboBox24.Size = New System.Drawing.Size(48, 21)
         Me.ComboBox24.TabIndex = 242
@@ -1172,7 +1173,7 @@ Partial Class MED_STD_NON_IV
         'Label47
         '
         Me.Label47.AutoSize = True
-        Me.Label47.Location = New System.Drawing.Point(87, 109)
+        Me.Label47.Location = New System.Drawing.Point(63, 110)
         Me.Label47.Name = "Label47"
         Me.Label47.Size = New System.Drawing.Size(77, 13)
         Me.Label47.TabIndex = 245
@@ -1182,7 +1183,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox25.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox25.FormattingEnabled = True
-        Me.ComboBox25.Location = New System.Drawing.Point(66, 124)
+        Me.ComboBox25.Location = New System.Drawing.Point(66, 126)
         Me.ComboBox25.Name = "ComboBox25"
         Me.ComboBox25.Size = New System.Drawing.Size(280, 21)
         Me.ComboBox25.TabIndex = 244
@@ -1190,7 +1191,7 @@ Partial Class MED_STD_NON_IV
         'Label48
         '
         Me.Label48.AutoSize = True
-        Me.Label48.Location = New System.Drawing.Point(360, 110)
+        Me.Label48.Location = New System.Drawing.Point(349, 110)
         Me.Label48.Name = "Label48"
         Me.Label48.Size = New System.Drawing.Size(131, 13)
         Me.Label48.TabIndex = 247
@@ -1236,7 +1237,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox26.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox26.FormattingEnabled = True
-        Me.ComboBox26.Location = New System.Drawing.Point(12, 173)
+        Me.ComboBox26.Location = New System.Drawing.Point(12, 174)
         Me.ComboBox26.Name = "ComboBox26"
         Me.ComboBox26.Size = New System.Drawing.Size(334, 21)
         Me.ComboBox26.TabIndex = 252
@@ -1245,7 +1246,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox27.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox27.FormattingEnabled = True
-        Me.ComboBox27.Location = New System.Drawing.Point(352, 173)
+        Me.ComboBox27.Location = New System.Drawing.Point(351, 174)
         Me.ComboBox27.Name = "ComboBox27"
         Me.ComboBox27.Size = New System.Drawing.Size(335, 21)
         Me.ComboBox27.TabIndex = 253
@@ -1253,7 +1254,7 @@ Partial Class MED_STD_NON_IV
         'Label51
         '
         Me.Label51.AutoSize = True
-        Me.Label51.Location = New System.Drawing.Point(12, 157)
+        Me.Label51.Location = New System.Drawing.Point(10, 158)
         Me.Label51.Name = "Label51"
         Me.Label51.Size = New System.Drawing.Size(69, 13)
         Me.Label51.TabIndex = 254
@@ -1262,7 +1263,7 @@ Partial Class MED_STD_NON_IV
         'Label52
         '
         Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(354, 157)
+        Me.Label52.Location = New System.Drawing.Point(348, 158)
         Me.Label52.Name = "Label52"
         Me.Label52.Size = New System.Drawing.Size(92, 13)
         Me.Label52.TabIndex = 255
@@ -1270,7 +1271,7 @@ Partial Class MED_STD_NON_IV
         '
         'Button8
         '
-        Me.Button8.Location = New System.Drawing.Point(666, 666)
+        Me.Button8.Location = New System.Drawing.Point(682, 657)
         Me.Button8.Name = "Button8"
         Me.Button8.Size = New System.Drawing.Size(108, 33)
         Me.Button8.TabIndex = 257
@@ -1279,7 +1280,7 @@ Partial Class MED_STD_NON_IV
         '
         'Button5
         '
-        Me.Button5.Location = New System.Drawing.Point(796, 666)
+        Me.Button5.Location = New System.Drawing.Point(796, 657)
         Me.Button5.Name = "Button5"
         Me.Button5.Size = New System.Drawing.Size(108, 34)
         Me.Button5.TabIndex = 256
@@ -1289,7 +1290,7 @@ Partial Class MED_STD_NON_IV
         'Label53
         '
         Me.Label53.AutoSize = True
-        Me.Label53.Location = New System.Drawing.Point(9, 58)
+        Me.Label53.Location = New System.Drawing.Point(9, 63)
         Me.Label53.Name = "Label53"
         Me.Label53.Size = New System.Drawing.Size(135, 13)
         Me.Label53.TabIndex = 259
@@ -1299,7 +1300,7 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox28.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox28.FormattingEnabled = True
-        Me.ComboBox28.Location = New System.Drawing.Point(12, 74)
+        Me.ComboBox28.Location = New System.Drawing.Point(12, 79)
         Me.ComboBox28.Name = "ComboBox28"
         Me.ComboBox28.Size = New System.Drawing.Size(254, 21)
         Me.ComboBox28.TabIndex = 258
@@ -1307,7 +1308,7 @@ Partial Class MED_STD_NON_IV
         'TextBox26
         '
         Me.TextBox26.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox26.Location = New System.Drawing.Point(342, 73)
+        Me.TextBox26.Location = New System.Drawing.Point(343, 78)
         Me.TextBox26.Name = "TextBox26"
         Me.TextBox26.Size = New System.Drawing.Size(110, 22)
         Me.TextBox26.TabIndex = 260
@@ -1315,7 +1316,7 @@ Partial Class MED_STD_NON_IV
         'Label54
         '
         Me.Label54.AutoSize = True
-        Me.Label54.Location = New System.Drawing.Point(339, 57)
+        Me.Label54.Location = New System.Drawing.Point(340, 63)
         Me.Label54.Name = "Label54"
         Me.Label54.Size = New System.Drawing.Size(114, 13)
         Me.Label54.TabIndex = 261
@@ -1325,15 +1326,15 @@ Partial Class MED_STD_NON_IV
         '
         Me.ComboBox29.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox29.FormattingEnabled = True
-        Me.ComboBox29.Location = New System.Drawing.Point(458, 75)
+        Me.ComboBox29.Location = New System.Drawing.Point(721, 126)
         Me.ComboBox29.Name = "ComboBox29"
-        Me.ComboBox29.Size = New System.Drawing.Size(228, 21)
+        Me.ComboBox29.Size = New System.Drawing.Size(183, 21)
         Me.ComboBox29.TabIndex = 262
         '
         'Label55
         '
         Me.Label55.AutoSize = True
-        Me.Label55.Location = New System.Drawing.Point(459, 57)
+        Me.Label55.Location = New System.Drawing.Point(718, 113)
         Me.Label55.Name = "Label55"
         Me.Label55.Size = New System.Drawing.Size(113, 13)
         Me.Label55.TabIndex = 263
@@ -1342,56 +1343,65 @@ Partial Class MED_STD_NON_IV
         'TextBox27
         '
         Me.TextBox27.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox27.Location = New System.Drawing.Point(823, 145)
+        Me.TextBox27.Location = New System.Drawing.Point(482, 77)
         Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.ReadOnly = True
         Me.TextBox27.Size = New System.Drawing.Size(92, 22)
         Me.TextBox27.TabIndex = 264
         '
         'Label56
         '
         Me.Label56.AutoSize = True
-        Me.Label56.Location = New System.Drawing.Point(820, 129)
+        Me.Label56.Location = New System.Drawing.Point(479, 63)
         Me.Label56.Name = "Label56"
-        Me.Label56.Size = New System.Drawing.Size(45, 13)
+        Me.Label56.Size = New System.Drawing.Size(91, 13)
         Me.Label56.TabIndex = 265
-        Me.Label56.Text = "GRANT"
-        '
-        'ComboBox30
-        '
-        Me.ComboBox30.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComboBox30.FormattingEnabled = True
-        Me.ComboBox30.Location = New System.Drawing.Point(721, 147)
-        Me.ComboBox30.Name = "ComboBox30"
-        Me.ComboBox30.Size = New System.Drawing.Size(96, 21)
-        Me.ComboBox30.TabIndex = 266
-        '
-        'Label57
-        '
-        Me.Label57.AutoSize = True
-        Me.Label57.Location = New System.Drawing.Point(718, 131)
-        Me.Label57.Name = "Label57"
-        Me.Label57.Size = New System.Drawing.Size(52, 13)
-        Me.Label57.TabIndex = 267
-        Me.Label57.Text = "MARKET"
+        Me.Label56.Text = "GRANT (optional)"
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(12, 673)
+        Me.Button1.Location = New System.Drawing.Point(12, 657)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(108, 33)
         Me.Button1.TabIndex = 268
         Me.Button1.Text = "CLEAR"
         Me.Button1.UseVisualStyleBackColor = True
         '
+        'Label58
+        '
+        Me.Label58.AutoSize = True
+        Me.Label58.Location = New System.Drawing.Point(718, 158)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(180, 13)
+        Me.Label58.TabIndex = 270
+        Me.Label58.Text = "TYPE OF PRESCRIPTION (Copy to)"
+        '
+        'ComboBox31
+        '
+        Me.ComboBox31.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox31.FormattingEnabled = True
+        Me.ComboBox31.Location = New System.Drawing.Point(721, 174)
+        Me.ComboBox31.Name = "ComboBox31"
+        Me.ComboBox31.Size = New System.Drawing.Size(183, 21)
+        Me.ComboBox31.TabIndex = 269
+        '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(578, 77)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(108, 23)
+        Me.Button2.TabIndex = 271
+        Me.Button2.Text = "GET GRANT"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
         'MED_STD_NON_IV
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(929, 725)
+        Me.ClientSize = New System.Drawing.Size(919, 701)
+        Me.Controls.Add(Me.Button2)
+        Me.Controls.Add(Me.Label58)
+        Me.Controls.Add(Me.ComboBox31)
         Me.Controls.Add(Me.Button1)
-        Me.Controls.Add(Me.Label57)
-        Me.Controls.Add(Me.ComboBox30)
         Me.Controls.Add(Me.Label56)
         Me.Controls.Add(Me.TextBox27)
         Me.Controls.Add(Me.Label55)
@@ -1425,8 +1435,8 @@ Partial Class MED_STD_NON_IV
         Me.Controls.Add(Me.Label15)
         Me.Controls.Add(Me.TextBox2)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
-        Me.MaximumSize = New System.Drawing.Size(945, 764)
-        Me.MinimumSize = New System.Drawing.Size(945, 764)
+        Me.MaximumSize = New System.Drawing.Size(935, 740)
+        Me.MinimumSize = New System.Drawing.Size(935, 740)
         Me.Name = "MED_STD_NON_IV"
         Me.Text = "MED_STD_NON_IV"
         Me.Panel1.ResumeLayout(False)
@@ -1572,7 +1582,8 @@ Partial Class MED_STD_NON_IV
     Friend WithEvents Label55 As Label
     Friend WithEvents TextBox27 As TextBox
     Friend WithEvents Label56 As Label
-    Friend WithEvents ComboBox30 As ComboBox
-    Friend WithEvents Label57 As Label
     Friend WithEvents Button1 As Button
+    Friend WithEvents Label58 As Label
+    Friend WithEvents ComboBox31 As ComboBox
+    Friend WithEvents Button2 As Button
 End Class

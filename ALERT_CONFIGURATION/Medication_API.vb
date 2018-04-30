@@ -1378,14 +1378,14 @@ Public Class Medication_API
 
     End Function
 
-    Function UPDATE_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_std_presc_dir As Int64, ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_id_new_std_presc_dir As Int64, ByVal i_rank As Int64) As Boolean
+    Function UPDATE_STD_PRESC_DIR(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_id_std_presc_dir As Int64, ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_id_new_std_presc_dir As Int64, ByVal i_rank As Int64, ByVal i_id_new_grant As Int64) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: UPDATE_STD_PRESC_DIR(" & i_institution & ", " & i_id_product & ", " & i_id_product_supplier & ", " & i_id_std_presc_dir & ", " & i_id_grant & ", " & i_id_pick_list & ", " & i_id_new_std_presc_dir & ", " & i_rank & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim sql As String = "UPDATE alert_product_mt.lnk_product_std_presc_dir d
-                               SET d.rank = " & i_rank & ", d.id_std_presc_directions = " & i_id_new_std_presc_dir & "
+                               SET d.rank = " & i_rank & ", d.id_std_presc_directions = " & i_id_new_std_presc_dir & ", d.id_grant = " & i_id_new_grant & "
                              WHERE d.id_product = '" & i_id_product & "'
                                AND d.id_std_presc_directions = " & i_id_std_presc_dir & "
                                AND d.id_product_supplier = '" & i_id_product_supplier & "'

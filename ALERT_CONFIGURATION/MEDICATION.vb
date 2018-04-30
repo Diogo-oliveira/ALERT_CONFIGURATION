@@ -567,8 +567,9 @@ Public Class MEDICATION
                         End While
                         dr_product_um.Close()
                     End If
+                    MsgBox("Record updated.", vbInformation)
                 End If
-                    Else
+            Else
                 MsgBox("Please select, at least, one unit measure.", vbInformation)
             End If
         Else
@@ -638,6 +639,7 @@ Public Class MEDICATION
                         dr_product_um.Close()
                     End If
                 End If
+                MsgBox("Record deleted.", vbInformation)
             Else
                 MsgBox("Please select, at least, one unit measure.", vbInformation)
             End If
@@ -670,6 +672,7 @@ Public Class MEDICATION
             Else
                 MsgBox("Please select, at least, one unit measure.", vbInformation)
             End If
+            MsgBox("Record updated.", vbInformation)
         Else
             MsgBox("Please select a dose context!", vbCritical)
         End If
@@ -682,6 +685,8 @@ Public Class MEDICATION
         If medication.GET_STD_CREEN_TYPE(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier) = 1 Then
             Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
             MED_STD.ShowDialog()
+        Else
+            MsgBox("The standard instructions functionality is not yet available for this medication type.", vbInformation)
         End If
 
     End Sub
