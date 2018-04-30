@@ -686,7 +686,10 @@ Public Class MEDICATION
             Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
             MED_STD.ShowDialog()
         Else
-            MsgBox("The standard instructions functionality is not yet available for this medication type.", vbInformation)
+            ' MsgBox("The standard instructions functionality is not yet available for this medication type.", vbInformation)
+
+            Dim MED_STD As New Med_STD_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
+            MED_STD.ShowDialog()
         End If
 
     End Sub
