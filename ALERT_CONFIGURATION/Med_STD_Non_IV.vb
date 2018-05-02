@@ -19,7 +19,7 @@ Public Class MED_STD_NON_IV
     Dim g_a_duration_um() As Int64
     Dim g_a_frequencies() As Int64
 
-    Public Sub New(ByVal i_institution As Int64, ByVal i_software_index As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_default_route As Int64)
+    Public Sub New(ByVal i_institution As Int64, ByVal i_software_index As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_default_route As String)
 
         InitializeComponent()
         g_id_product = i_id_product
@@ -29,6 +29,53 @@ Public Class MED_STD_NON_IV
         g_default_route = i_default_route
 
     End Sub
+
+    Function RESET_FREQUENCIES(ByVal i_prn As String)
+
+        ComboBox3.Items.Clear()
+        ComboBox8.Items.Clear()
+        ComboBox11.Items.Clear()
+        ComboBox20.Items.Clear()
+        ComboBox17.Items.Clear()
+        ComboBox14.Items.Clear()
+        ComboBox23.Items.Clear()
+
+        ComboBox3.SelectedIndex = -1
+        ComboBox8.SelectedIndex = -1
+        ComboBox11.SelectedIndex = -1
+        ComboBox20.SelectedIndex = -1
+        ComboBox17.SelectedIndex = -1
+        ComboBox14.SelectedIndex = -1
+        ComboBox23.SelectedIndex = -1
+
+        Dim dr_freq As OracleDataReader
+        ReDim g_a_frequencies(0)
+        Dim l_index_freq As Int16 = 0
+        If Not medication.GET_ALL_FREQS(g_id_institution, g_selected_software, i_prn, dr_freq) Then
+            MsgBox("Error getting all frequencies")
+        Else
+            ComboBox3.Items.Add("")
+            ComboBox8.Items.Add("")
+            ComboBox11.Items.Add("")
+            ComboBox20.Items.Add("")
+            ComboBox17.Items.Add("")
+            ComboBox14.Items.Add("")
+            ComboBox23.Items.Add("")
+            While dr_freq.Read()
+                ComboBox3.Items.Add(dr_freq.Item(1))
+                ComboBox8.Items.Add(dr_freq.Item(1))
+                ComboBox11.Items.Add(dr_freq.Item(1))
+                ComboBox20.Items.Add(dr_freq.Item(1))
+                ComboBox17.Items.Add(dr_freq.Item(1))
+                ComboBox14.Items.Add(dr_freq.Item(1))
+                ComboBox23.Items.Add(dr_freq.Item(1))
+
+                ReDim Preserve g_a_frequencies(l_index_freq)
+                g_a_frequencies(l_index_freq) = dr_freq.Item(0)
+                l_index_freq = l_index_freq + 1
+            End While
+        End If
+    End Function
 
     Private Sub MED_STD_NON_IV_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -60,33 +107,7 @@ Public Class MED_STD_NON_IV
         ComboBox2.SelectedIndex = g_id_software_index
         g_selected_software = db_access_general.GET_SELECTED_SOFT(ComboBox2.SelectedIndex, g_id_institution)
 
-        Dim dr_freq As OracleDataReader
-        ReDim g_a_frequencies(0)
-        Dim l_index_freq As Int16 = 0
-        If Not medication.GET_ALL_FREQS(g_id_institution, g_selected_software, dr_freq) Then
-            MsgBox("Error getting all frequencies")
-        Else
-            ComboBox3.Items.Add("")
-            ComboBox8.Items.Add("")
-            ComboBox11.Items.Add("")
-            ComboBox20.Items.Add("")
-            ComboBox17.Items.Add("")
-            ComboBox14.Items.Add("")
-            ComboBox23.Items.Add("")
-            While dr_freq.Read()
-                ComboBox3.Items.Add(dr_freq.Item(1))
-                ComboBox8.Items.Add(dr_freq.Item(1))
-                ComboBox11.Items.Add(dr_freq.Item(1))
-                ComboBox20.Items.Add(dr_freq.Item(1))
-                ComboBox17.Items.Add(dr_freq.Item(1))
-                ComboBox14.Items.Add(dr_freq.Item(1))
-                ComboBox23.Items.Add(dr_freq.Item(1))
-
-                ReDim Preserve g_a_frequencies(l_index_freq)
-                g_a_frequencies(l_index_freq) = dr_freq.Item(0)
-                l_index_freq = l_index_freq + 1
-            End While
-        End If
+        RESET_FREQUENCIES("N")
 
         ComboBox28.Items.Add("0 - ALL")
         ComboBox28.Items.Add("1 - External Prescription")
@@ -160,6 +181,34 @@ Public Class MED_STD_NON_IV
             End While
             l_dr_duration_um.Close()
         End If
+
+        Dim l_dr_admin_method As OracleDataReader
+        If Not medication.GET_ADMIN_METHOD_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_method) Then
+            MsgBox("Error getting list of administration methods!", vbCritical)
+        End If
+
+        ReDim g_a_admin_methods(0)
+        Dim i_admin_method As Integer = 0
+        While l_dr_admin_method.Read()
+            ComboBox27.Items.Add(l_dr_admin_method.Item(1))
+            ReDim Preserve g_a_admin_methods(i_admin_method)
+            g_a_admin_methods(i_admin_method) = l_dr_admin_method(0)
+            i_admin_method = i_admin_method + 1
+        End While
+
+        Dim l_dr_admin_sites As OracleDataReader
+        If Not medication.GET_ADMIN_SITE_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_sites) Then
+            MsgBox("Error getting list of administration sotes!", vbCritical)
+        End If
+
+        ReDim g_a_admin_sites(0)
+        Dim ii As Integer = 0
+        While l_dr_admin_sites.Read()
+            ComboBox26.Items.Add(l_dr_admin_sites.Item(1))
+            ReDim Preserve g_a_admin_sites(ii)
+            g_a_admin_sites(ii) = l_dr_admin_sites.Item(0)
+            ii = ii + 1
+        End While
 
     End Sub
 
@@ -618,7 +667,7 @@ Public Class MED_STD_NON_IV
                 g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
                 g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
                 g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
-                g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
+                g_a_med_set_instructions(i).market_desc = ""
                 g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
                 g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
                 g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
@@ -971,34 +1020,6 @@ Public Class MED_STD_NON_IV
                 ComboBox25.Items.Add(l_dr_sos(1))
             End While
 
-            Dim l_dr_admin_method As OracleDataReader
-            If Not medication.GET_ADMIN_METHOD_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_method) Then
-                MsgBox("Error getting list of administration methods!", vbCritical)
-            End If
-
-            ReDim g_a_admin_methods(0)
-            Dim i As Integer = 0
-            While l_dr_admin_method.Read()
-                ComboBox27.Items.Add(l_dr_admin_method.Item(1))
-                ReDim Preserve g_a_admin_methods(i)
-                g_a_admin_methods(i) = l_dr_admin_method(0)
-                i = i + 1
-            End While
-
-            Dim l_dr_admin_sites As OracleDataReader
-            If Not medication.GET_ADMIN_SITE_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_sites) Then
-                MsgBox("Error getting list of administration sotes!", vbCritical)
-            End If
-
-            ReDim g_a_admin_sites(0)
-            Dim ii As Integer = 0
-            While l_dr_admin_sites.Read()
-                ComboBox26.Items.Add(l_dr_admin_sites.Item(1))
-                ReDim Preserve g_a_admin_sites(ii)
-                g_a_admin_sites(ii) = l_dr_admin_sites.Item(0)
-                ii = ii + 1
-            End While
-
         End If
 
         If ComboBox28.SelectedIndex > -1 Then
@@ -1023,7 +1044,7 @@ Public Class MED_STD_NON_IV
                     g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
                     g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
                     g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
-                    g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
+                    g_a_med_set_instructions(i).market_desc = ""
                     g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
                     g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
                     g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
@@ -1207,19 +1228,19 @@ Public Class MED_STD_NON_IV
             Else
                     Dim i As Integer = 0
                     While dr_med_set_instruction.Read()
-                        ReDim Preserve g_a_med_set_instructions(i)
-                        g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
-                        g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
-                        g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
-                        g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
-                        g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
-                        g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
-                        g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
-                        g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
-                        g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
-                        g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
+                    ReDim Preserve g_a_med_set_instructions(i)
+                    g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
+                    g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
+                    g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
+                    g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
+                    g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
+                    g_a_med_set_instructions(i).market_desc = ""
+                    g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
+                    g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
+                    g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
+                    g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
 
-                        ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
+                    ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
 
                         i = i + 1
 
@@ -1279,7 +1300,7 @@ Public Class MED_STD_NON_IV
                         g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
                         g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
                         g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
-                        g_a_med_set_instructions(i).market_desc = dr_med_set_instruction.Item(5)
+                        g_a_med_set_instructions(i).market_desc = ""
                         g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
                         g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
                         g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
@@ -1351,6 +1372,12 @@ Public Class MED_STD_NON_IV
         If ComboBox24.Text = "N" Then
             ComboBox25.SelectedIndex = -1
             TextBox24.Text = ""
+
+            RESET_FREQUENCIES("N")
+        ElseIf ComboBox24.Text = "Y" Then
+            RESET_FREQUENCIES("Y")
+        Else
+            RESET_FREQUENCIES("N")
         End If
     End Sub
 
@@ -1456,9 +1483,5 @@ Public Class MED_STD_NON_IV
             TextBox27.Text = l_id_grant
 
         End If
-    End Sub
-
-    Private Sub Label58_Click(sender As Object, e As EventArgs) Handles Label58.Click
-
     End Sub
 End Class

@@ -790,9 +790,9 @@ Public Class Medication_API
 
     End Function
 
-    Function GET_ALL_FREQS(ByVal i_institution As Int64, ByVal i_software As Int16, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_ALL_FREQS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_prn As String, ByRef i_dr As OracleDataReader) As Boolean
 
-        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ALL_FREQS(" & i_institution & ", " & i_software & ")")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_ALL_FREQS(" & i_institution & ", " & i_software & ", " & i_prn & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
@@ -829,7 +829,8 @@ Public Class Medication_API
                                                                                                                                                              " & i_institution & ",
                                                                                                                                                              " & i_software & ",
                                                                                                                                                              " & l_market & "),
-                                                                                                                        i_tab_frequency_type => table_varchar('PDSTD'))) t) v2) v3
+                                                                                                                        i_tab_frequency_type => table_varchar('PDSTD'))) t
+                                            WHERE t.id_market = " & l_market & " AND (t.flg_prn='" & i_prn & "' or ('" & i_prn & "'= 'N' AND t.flg_prn='A'))) v2) v3
                              WHERE v3.type <> 'AI'
                                AND label IS NOT NULL
                              ORDER BY rank NULLS LAST, label, data"
@@ -1211,7 +1212,7 @@ Public Class Medication_API
                                            pi.id_unit_dose,
                                            pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure) Unit_Measure,
                                            pi.id_presc_dir_frequency AS ID_FREQUENCY,
-                                           nvl(tf.desc_lang_" & l_id_language & ", t_single.desc_lang_" & l_id_language & ") ASFrequency,
+                                           nvl(tf.desc_lang_" & l_id_language & ", t_single.desc_lang_" & l_id_language & ") AS Frequency,
                                            rownum rn
                                       FROM alert_product_mt.std_presc_dir d
                                       LEFT JOIN alert_product_mt.lnk_product_std_presc_dir lsd
@@ -1302,15 +1303,22 @@ Public Class Medication_API
         Dim l_id_grant As Int64 = -1
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
-        Dim sql As String = "   SELECT *
-                                 FROM (SELECT c.id_grant
-                                         FROM alert_product_mt.v_cfg_grant c
-                                        WHERE c.id_context = '" & i_context & "'
-                                          AND c.market IN (0, " & l_market & ")
-                                          AND c.institution IN (0, " & i_institution & ")
-                                          AND c.software IN (0, " & i_software & ")
-                                        ORDER BY c.market DESC, c.institution DESC, c.software DESC, c.grant_order ASC)
-                                WHERE rownum = 1"
+        Dim sql As String = "SELECT id_grant
+                              FROM (SELECT id_grant, grant_order, market, institution, software, decode(grant_order, 99,99,rownum) AS rn
+                                      FROM (SELECT *
+                                              FROM (SELECT c.id_grant,
+                                                           c.market,
+                                                           c.institution,
+                                                           c.software,
+                                                           decode(c.grant_order, 0, 99, c.grant_order) AS grant_order
+                                                             FROM alert_product_mt.v_cfg_grant c
+                                                            WHERE c.id_context = '" & i_context & "'
+                                                              AND c.market IN (0, " & l_market & ")
+                                                              AND c.institution IN (0, " & i_institution & ")
+                                                              AND c.software IN (0, " & i_software & "))
+                                             ORDER BY market DESC, institution DESC, software DESC, grant_order ASC)
+                                     ORDER BY rn ASC)
+                             WHERE rownum = 1"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -1590,7 +1598,7 @@ Public Class Medication_API
                                  rank,
                                  id_presc_dir_frequency)
                             VALUES
-                                (" & i_id_std_presc_directions & ", " & i_index_instructions & ", " & i_a_instructions(2) & ", " & i_a_instructions(3) & ", " & i_a_instructions(4) & ", " & i_a_instructions(5) & ", 10, " & i_a_instructions(0) & ", " & i_a_instructions(1) & ", " & i_index_instructions & ", " & i_a_instructions(2) & ");
+                                (" & i_id_std_presc_directions & ", ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL, " & i_a_instructions(2) & ", " & i_a_instructions(3) & ", " & i_a_instructions(4) & ", " & i_a_instructions(5) & ", 10, " & i_a_instructions(0) & ", " & i_a_instructions(1) & ", " & i_index_instructions & ", " & i_a_instructions(2) & ");
                               EXCEPTION
                                     WHEN dup_val_on_index THEN
                                         UPDATE alert_product_mt.std_presc_dir_item i
@@ -1601,8 +1609,7 @@ Public Class Medication_API
                                                i.id_dose                = " & i_a_instructions(0) & ",
                                                i.dose_value             = " & i_a_instructions(1) & ",
                                                i.id_presc_dir_frequency = " & i_a_instructions(2) & "
-                                         WHERE i.id_std_presc_directions = " & i_id_std_presc_directions & "
-                                           AND i.id_std_presc_dir_item = " & i_index_instructions & ";
+                                         WHERE i.id_std_presc_directions = " & i_id_std_presc_directions & ";
                                 END;"
 
         Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
@@ -1658,6 +1665,63 @@ Public Class Medication_API
 
     End Function
 
+
+    Function GET_STD_PRESC_DIR_ITEM_IV(ByVal i_institution As Int64, ByVal i_id_product As String, ByVal i_id_pick_list As Int16, ByVal i_id_std_presc_dir As Int64, ByVal i_grant As Int64, ByVal i_rank As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM_IV(" & i_institution & ", " & i_id_product & ", " & i_id_pick_list & ", " & i_id_std_presc_dir & ", " & i_grant & ", " & i_rank & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT *
+                              FROM (SELECT pi.rank,
+                                           pi.duration_value,
+                                           pi.id_unit_duration,
+                                           pk_translation.get_translation(2, um_duration.code_unit_measure) AS duration_desc,
+                                           pi.num_executions,
+                                           pi.id_presc_dir_frequency AS ID_FREQUENCY,
+                                           nvl(tf.desc_lang_" & l_id_language & ", t_single.desc_lang_" & l_id_language & ") AS Frequency,
+                                           rownum rn,
+                                           pi.id_std_presc_dir_item
+                                      FROM alert_product_mt.std_presc_dir d
+                                      LEFT JOIN alert_product_mt.lnk_product_std_presc_dir lsd
+                                        ON lsd.id_std_presc_directions = d.id_std_presc_directions
+                                      LEFT JOIN alert_product_mt.std_presc_dir_item pi
+                                        ON pi.id_std_presc_directions = d.id_std_presc_directions
+                                      LEFT JOIN alert_product_mt.presc_dir_frequency f
+                                        ON f.id_presc_dir_frequency = pi.id_presc_dir_frequency
+                                      LEFT JOIN translation tf
+                                        ON tf.code_translation = f.code_presc_dir_frequency
+                                      LEFT JOIN alert.unit_measure um
+                                        ON um.id_unit_measure = pi.id_unit_dose
+                                      LEFT JOIN alert.unit_measure um_duration
+                                        ON um_duration.id_unit_measure = pi.id_unit_duration
+                                      LEFT JOIN alert_product_mt.presc_list_item pli
+                                        ON pli.id_presc_list_item = pi.id_presc_dir_frequency
+                                      LEFT JOIN translation t_single
+                                        ON t_single.code_translation = pli.code_presc_list_item
+                                     WHERE lsd.id_product IN ('" & i_id_product & "')
+                                       AND lsd.id_grant = " & i_grant & "
+                                       AND lsd.id_pick_list = " & i_id_pick_list & "
+                                       AND lsd.rank = " & i_rank & "
+                                       and d.id_std_presc_directions = " & i_id_std_presc_dir & "
+                                  order by rank asc)
+                             WHERE rn = 1 "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM_IV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
 End Class
 
 
