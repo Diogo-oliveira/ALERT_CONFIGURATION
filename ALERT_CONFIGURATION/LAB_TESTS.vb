@@ -1297,7 +1297,11 @@ Public Class LAB_TESTS
 
                     ReDim Preserve g_a_labs_for_clinical_service(l_dimension)
                     g_a_labs_for_clinical_service(l_dimension).id_content_analysis_sample_type = dr.Item(0)
-                    g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = dr.Item(1)
+                    Try
+                        g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = dr.Item(1)
+                    Catch ex As Exception
+                        g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_type = ""
+                    End Try
                     Try
                         g_a_labs_for_clinical_service(l_dimension).desc_analysis_sample_recipient = dr.Item(2)
                     Catch ex As Exception

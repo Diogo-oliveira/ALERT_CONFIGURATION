@@ -1446,7 +1446,6 @@ Public Class Medication_API
         End Try
 
         cmd_update_std.Dispose()
-
         Return True
 
     End Function
@@ -1722,6 +1721,146 @@ Public Class Medication_API
             Return False
         End Try
     End Function
+
+    Function GET_STD_PRESC_DIR_ITEM_SEQ(ByVal i_institution As Int64, ByVal i_id_std_presc_dir_item As Int64, ByRef i_dr As OracleDataReader) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM_SEQ(" & i_institution & ", " & i_id_std_presc_dir_item & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "SELECT *
+                              FROM (SELECT s.dose_value,
+                                           s.id_unit_dose,
+                                           pk_translation.get_translation(" & l_id_language & ", um.code_unit_measure) um_desc,
+                                           s.duration_value,
+                                           CASE
+                                                WHEN s.id_unit_duration = 10374
+                                                     AND s.duration_value >= 60 THEN
+                                                 (s.duration_value - MOD(s.duration_value, 60)) / 60
+                                                ELSE
+                                                 NULL
+                                            END duration_hours,
+                                           CASE
+                                                WHEN s.id_unit_duration = 10374
+                                                     AND MOD(s.duration_value, 60) > 0 THEN
+                                                 MOD(s.duration_value, 60)
+                                                ELSE
+                                                 NULL
+                                            END duration_minutes,
+                                           CASE
+                                                WHEN s.id_rate <> 21 THEN
+                                                 s.rate_value
+                                                ELSE
+                                                 NULL
+                                            END rate_value,
+                                           s.id_unit_rate,
+                                           CASE
+                                                WHEN s.id_rate <> 21
+                                                     OR s.id_rate IS NULL THEN
+                                                 pk_translation.get_translation(2, um_rate.code_unit_measure)
+                                                ELSE
+                                                 pk_translation.get_translation(2, 'PRESC_RATE.CODE_RATE.21')
+                                            END rate_desc,
+                                           rownum rn
+                                      FROM alert_product_mt.std_presc_dir_item_seq s
+                                      LEFT JOIN alert.unit_measure um
+                                        ON um.id_unit_measure = s.id_unit_dose
+                                      LEFT JOIN alert.unit_measure um_duration
+                                        ON um_duration.id_unit_measure = s.id_unit_duration
+                                      LEFT JOIN alert.unit_measure um_rate
+                                        ON um_rate.id_unit_measure = s.id_unit_rate
+                                     WHERE s.id_std_presc_dir_item = " & i_id_std_presc_dir_item & "
+                                     ORDER BY s.id_item_seq ASC)
+                             WHERE rn < 8 "
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        Try
+            cmd.CommandType = CommandType.Text
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+            Return True
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_STD_PRESC_DIR_ITEM_SEQ")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+            Return False
+        End Try
+    End Function
+
+    Function CREATE_STD_PRESC_DIR_ITEM_IV(ByVal i_institution As Int64, ByVal i_id_std_presc_directions As Int64, ByVal i_id_frequency As String, ByVal i_duration As String, ByVal i_unit_duration As String, ByVal i_num_exec As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_IV(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_id_frequency & ", " & i_duration & ", " & i_unit_duration & ", " & i_num_exec & "())")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim l_id_frequency As String = "NULL"
+        Dim l_id_recurrence As String = "0"
+        If i_id_frequency <> "" Then
+            l_id_frequency = i_id_frequency
+            l_id_recurrence = i_id_frequency
+        End If
+
+        Dim l_id_duration As String = "NULL"
+        If i_duration <> "" Then
+            l_id_duration = i_duration
+        End If
+
+        Dim l_id_unit_duration As String = "NULL"
+        If i_unit_duration <> "" Then
+            l_id_unit_duration = i_unit_duration
+        End If
+
+        Dim l_num_execs As String = "NULL"
+        If i_num_exec <> "" Then
+            l_num_execs = i_num_exec
+        End If
+
+        Dim sql As String = "BEGIN
+                                INSERT INTO alert_product_mt.std_presc_dir_item
+                                    (id_std_presc_directions,
+                                     id_std_presc_dir_item,
+                                     id_recurrence,
+                                     duration_value,
+                                     id_unit_duration,
+                                     num_executions,
+                                     rank,
+                                     id_presc_dir_frequency)
+                                VALUES
+                                    (" & i_id_std_presc_directions & ", ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL, " & l_id_recurrence & ", " & l_id_duration & ", " & l_id_unit_duration & ", " & l_num_execs & ", 1, " & l_id_frequency & ");
+                              EXCEPTION
+                                    WHEN dup_val_on_index THEN
+                                        UPDATE alert_product_mt.std_presc_dir_item i
+                                           SET i.id_recurrence          = " & l_id_recurrence & ",
+                                               i.id_duration            = " & l_id_duration & ",
+                                               i.id_unit_duration       = " & l_id_unit_duration & ",
+                                               i.num_executions         = " & l_num_execs & ",
+                                               i.id_presc_dir_frequency = " & l_id_frequency & "
+                                         WHERE i.id_std_presc_directions = " & i_id_std_presc_directions & ";
+                                END;"
+
+        Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_create_std.CommandType = CommandType.Text
+            cmd_create_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_IV")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_create_std.Dispose()
+
+            Return False
+        End Try
+
+        cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
 End Class
+
 
 

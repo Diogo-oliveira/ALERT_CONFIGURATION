@@ -1142,7 +1142,7 @@ Partial Class Med_STD_IV
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(46, 13)
         Me.Label11.TabIndex = 391
-        Me.Label11.Text = "DOSE 1"
+        Me.Label11.Text = "DOSE 2"
         '
         'Label12
         '
@@ -1151,7 +1151,7 @@ Partial Class Med_STD_IV
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(46, 13)
         Me.Label12.TabIndex = 392
-        Me.Label12.Text = "DOSE 1"
+        Me.Label12.Text = "DOSE 3"
         '
         'Label13
         '
@@ -1160,7 +1160,7 @@ Partial Class Med_STD_IV
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(46, 13)
         Me.Label13.TabIndex = 393
-        Me.Label13.Text = "DOSE 1"
+        Me.Label13.Text = "DOSE 4"
         '
         'Label14
         '
@@ -1169,7 +1169,7 @@ Partial Class Med_STD_IV
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(46, 13)
         Me.Label14.TabIndex = 394
-        Me.Label14.Text = "DOSE 1"
+        Me.Label14.Text = "DOSE 5"
         '
         'Label16
         '
@@ -1178,7 +1178,7 @@ Partial Class Med_STD_IV
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(46, 13)
         Me.Label16.TabIndex = 395
-        Me.Label16.Text = "DOSE 1"
+        Me.Label16.Text = "DOSE 6"
         '
         'Label17
         '
@@ -1187,7 +1187,7 @@ Partial Class Med_STD_IV
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(46, 13)
         Me.Label17.TabIndex = 396
-        Me.Label17.Text = "DOSE 1"
+        Me.Label17.Text = "DOSE 7"
         '
         'Med_STD_IV
         '

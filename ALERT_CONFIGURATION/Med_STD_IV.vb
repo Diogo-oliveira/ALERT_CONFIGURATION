@@ -11,7 +11,7 @@ Public Class Med_STD_IV
     Dim g_selected_software As Int16 = -1
     Dim g_default_route As String = -1
     Dim g_id_market As Int16 = -1
-    Dim g_id_std_presc_dir_item As Int64
+    Dim g_id_std_presc_dir_item As Int64 = -1
 
     Dim g_a_med_set_instructions() As Medication_API.MED_SET_INSTRUCTIONS
     Dim g_a_frequencies() As Int64
@@ -53,6 +53,218 @@ Public Class Med_STD_IV
 
     End Function
 
+    Function CREATE_SET_INSTRUCTIONS(ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_create_new As String) As Boolean
+        Try
+            ''CRIAÇÃO DE UMA NOVA INSTRUÇÃO
+            ''criar novo id
+            Dim l_id_new_instruction As Int64 = medication.GET_NEW_STD_INSTRUCTION_ID(g_id_institution)
+            Dim l_flg_sos As String
+            Dim l_id_sos As Int16 = 19
+            Dim l_sos_condition As String = ""
+
+            'flg_sos
+            If ComboBox24.Text = "" Then
+                l_flg_sos = "N"
+            Else
+                l_flg_sos = ComboBox24.Text
+            End If
+
+            If ComboBox24.Text = "Y" Then
+                l_id_sos = 18
+            End If
+
+            If TextBox24.Text <> "" Then
+                l_sos_condition = "'" & TextBox24.Text & "'"
+            ElseIf ComboBox25.Text <> "" Then
+                l_sos_condition = "'" & ComboBox25.Text & "'"
+            Else
+                l_sos_condition = "NULL"
+            End If
+
+            Dim l_id_admin_site As String = "NULL"
+            If ComboBox26.SelectedIndex > -1 Then
+                l_id_admin_site = g_a_admin_sites(ComboBox26.SelectedIndex)
+            End If
+
+            Dim l_id_admin_method As String = "NULL"
+            If ComboBox27.SelectedIndex > -1 Then
+                l_id_admin_method = g_a_admin_methods(ComboBox27.SelectedIndex)
+            End If
+
+            If Not medication.CREATE_STD_INSTRUCTION(g_id_institution, l_id_new_instruction, l_flg_sos, l_id_sos, l_sos_condition, TextBox36.Text, TextBox35.Text, l_id_admin_site, l_id_admin_method) Then
+                MsgBox("Error creating standard instruction!", vbCritical)
+            End If
+
+            Dim l_rank As Int64 = 1
+            If TextBox26.Text <> "" Then
+                l_rank = TextBox26.Text
+            ElseIf ComboBox1.Text <> "" Then
+                l_rank = ComboBox1.Text
+            End If
+
+            Dim l_previous_id_directions As Int64 = 0
+
+            If i_create_new = "N" Then
+
+                'VER MELHOR
+                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
+                    MsgBox("Error updating lnk_product_std_presc_dir!", vbCritical)
+                End If
+
+            Else
+
+                If Not medication.CREATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, l_id_new_instruction, i_id_grant, i_id_pick_list, l_rank) Then
+                    MsgBox("Error creating new lnk_product_std_presc_dir!!", vbCritical)
+                End If
+            End If
+
+            Dim l_id_frequency As String = ""
+            If ComboBox3.SelectedIndex > 0 Then
+                l_id_frequency = g_a_frequencies(ComboBox3.SelectedIndex - 1)
+            End If
+
+            Dim l_id_duration As String = ""
+            If ComboBox5.SelectedIndex > 0 Then
+                l_id_duration = g_a_duration_um(ComboBox5.SelectedIndex - 1)
+            End If
+
+            If Not medication.CREATE_STD_PRESC_DIR_ITEM_IV(g_id_institution, l_id_new_instruction, l_id_frequency, TextBox3.Text, l_id_duration, TextBox4.Text) Then
+                MsgBox("ERROR CREATE_STD_PRESC_DIR_ITEM_IV")
+            End If
+
+            Dim l_number_instructions_to_add As Int16 = CHECK_NUMBER_INSTRUCTIONS()
+            If l_number_instructions_to_add > -1 Then
+                Dim l_a_instructions() As String
+
+                For i As Integer = 0 To l_number_instructions_to_add
+                    'GET_INSTRUCTIONS(i, l_a_instructions)
+                    'If Not medication.CREATE_STD_PRESC_DIR_ITEM(g_id_institution, l_id_new_instruction, i + 1, l_a_instructions) Then
+                    'MsgBox("Error creating standard prescription direction item!", vbCritical)
+                    'End If
+                Next
+            End If
+        Catch ex As Exception
+            Return False
+        End Try
+        Return True
+    End Function
+
+    Function CHECK_NUMBER_INSTRUCTIONS() As Int16
+        'VARIFICAR QUANTOS SETS DE INSTRUÇÕES DEVEM SER GRAVADOS
+        Dim l_n_of_instruction As Int16 = -1
+        '#1
+        If (TextBox1.Text <> "" Or TextBox17.Text <> "" Or TextBox34.Text <> "" Or TextBox23.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#2
+        If (TextBox5.Text <> "" Or TextBox16.Text <> "" Or TextBox33.Text <> "" Or TextBox22.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#3
+        If (TextBox6.Text <> "" Or TextBox15.Text <> "" Or TextBox32.Text <> "" Or TextBox20.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#4
+        If (TextBox7.Text <> "" Or TextBox14.Text <> "" Or TextBox29.Text <> "" Or TextBox18.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#5
+        If (TextBox8.Text <> "" Or TextBox13.Text <> "" Or TextBox31.Text <> "" Or TextBox30.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#6
+        If (TextBox9.Text <> "" Or TextBox12.Text <> "" Or TextBox28.Text <> "" Or TextBox19.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+        '#7
+        If (TextBox10.Text <> "" Or TextBox11.Text <> "" Or TextBox25.Text <> "" Or TextBox21.Text <> "") Then
+            l_n_of_instruction = l_n_of_instruction + 1
+        Else
+            Return l_n_of_instruction
+        End If
+
+        Return l_n_of_instruction
+
+    End Function
+
+    Function GET_INSTRUCTIONS(ByVal i_index_instructions As Int16, ByRef o_array_instructions() As String) As Boolean
+
+        ReDim o_array_instructions(6)
+
+        Try
+            If i_index_instructions = 0 Then
+                'DOSE
+                If TextBox1.Text <> "" Then
+                    o_array_instructions(0) = TextBox1.Text
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox4.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox4.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox17.Text <> "" And ComboBox18.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = TextBox17.Text
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox18.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox18.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox34.Text <> "" Then
+                    l_aux = TextBox34.Text * 60
+                End If
+
+                If TextBox23.Text <> "" And TextBox34.Text <> "" Then
+                    l_aux = l_aux + TextBox23.Text
+                ElseIf TextBox23.Text <> "" And TextBox34.Text = "" Then
+                    l_aux = TextBox23.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+                o_array_instructions(6) = "10374"
+
+
+                ''continuar para as outras dosaes
+                ''construir função de gravaçao da item_seq inserindo o array o_array_instructions
+            End If
+
+        Catch ex As Exception
+            Return False
+        End Try
+
+        Return True
+
+    End Function
 
     Private Sub Med_STD_IV_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Text = "MEDICATION - STANDARD INSTRUCTIONS ::::  Connected to " & Connection.db
@@ -348,6 +560,9 @@ Public Class Med_STD_IV
         TextBox19.Text = ""
         TextBox21.Text = ""
 
+        'std_presc_dir_item
+        g_id_std_presc_dir_item = -1
+
     End Function
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -571,15 +786,462 @@ Public Class Med_STD_IV
                     Catch ex As Exception
                         TextBox4.Text = ""
                     End Try
-                    g_id_std_presc_dir_item = dr_std_presc_dir_item.Item(8)
+                    Try
+                        g_id_std_presc_dir_item = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        g_id_std_presc_dir_item = -1
+                    End Try
+
                 End While
             End If
 
-            '''continuar com a obtençao das doses
-            '''será necessário criar nova função na api para ir ler STD_PRESC_DIR_ITEM_SEQ (utilizar o valor de g_id_std_presc_dir_item
-            '''tratar do reset ao valor g_id_std_presc_dir_item
+            Dim l_index_seq As Int16 = 0
+            Dim dr_std_presc_dir_item_seq As OracleDataReader
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not medication.GET_STD_PRESC_DIR_ITEM_SEQ(g_id_institution, g_id_std_presc_dir_item, dr_std_presc_dir_item_seq) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM_seq!", vbCritical)
+            Else
+                While dr_std_presc_dir_item_seq.Read()
+                    If l_index_seq = 0 Then
+                        ''dose value
+                        Try
+                            TextBox1.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox1.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox4.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox4.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox17.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox17.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox18.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox18.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox34.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox34.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox23.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox23.Text = ""
+                        End Try
+
+                    ElseIf l_index_seq = 1 Then
+                        ''dose value
+                        Try
+                            TextBox5.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox5.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox6.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox6.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox16.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox16.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox17.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox17.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox33.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox33.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox22.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox22.Text = ""
+                        End Try
+
+                    ElseIf l_index_seq = 2 Then
+                        ''dose value
+                        Try
+                            TextBox6.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox6.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox7.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox7.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox15.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox15.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox16.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox16.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox32.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox32.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox20.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox20.Text = ""
+                        End Try
+
+                    ElseIf l_index_seq = 3 Then
+                        ''dose value
+                        Try
+                            TextBox7.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox7.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox8.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox8.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox14.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox14.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox15.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox15.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox29.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox29.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox18.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox18.Text = ""
+                        End Try
+
+                    ElseIf l_index_seq = 4 Then
+                        ''dose value
+                        Try
+                            TextBox8.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox8.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox9.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox9.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox13.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox13.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox14.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox14.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox31.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox31.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox30.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox30.Text = ""
+                        End Try
+
+
+                    ElseIf l_index_seq = 5 Then
+                        ''dose value
+                        Try
+                            TextBox9.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox9.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox10.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox10.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox12.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox12.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox13.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox13.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox28.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox28.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox19.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox19.Text = ""
+                        End Try
+
+                    ElseIf l_index_seq = 6 Then
+                        ''dose value
+                        Try
+                            TextBox10.Text = dr_std_presc_dir_item_seq.Item(0)
+                        Catch ex As Exception
+                            TextBox10.Text = ""
+                        End Try
+                        ''dose desc
+                        Try
+                            ComboBox11.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox11.Text = ""
+                        End Try
+                        ''rate value
+                        Try
+                            TextBox11.Text = dr_std_presc_dir_item_seq.Item(6)
+                        Catch ex As Exception
+                            TextBox11.Text = ""
+                        End Try
+                        ''rate desc
+                        Try
+                            ComboBox12.Text = dr_std_presc_dir_item_seq.Item(8)
+                        Catch ex As Exception
+                            ComboBox12.Text = ""
+                        End Try
+                        'hours
+                        Try
+                            TextBox25.Text = dr_std_presc_dir_item_seq.Item(4)
+                        Catch ex As Exception
+                            TextBox25.Text = ""
+                        End Try
+                        'minutes
+                        Try
+                            TextBox21.Text = dr_std_presc_dir_item_seq.Item(5)
+                        Catch ex As Exception
+                            TextBox21.Text = ""
+                        End Try
+                    End If
+                    l_index_seq = l_index_seq + 1
+                End While
+            End If
             Cursor = Cursors.Arrow
         End If
+    End Sub
+
+    Private Sub ComboBox18_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox18.SelectedIndexChanged
+        If ComboBox18.SelectedIndex = 2 Or ComboBox18.SelectedIndex = 0 Then
+            TextBox17.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox17_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox17.SelectedIndexChanged
+        If ComboBox17.SelectedIndex = 2 Or ComboBox17.SelectedIndex = 0 Then
+            TextBox11.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox16_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox16.SelectedIndexChanged
+        If ComboBox16.SelectedIndex = 2 Or ComboBox16.SelectedIndex = 0 Then
+            TextBox15.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox15_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox15.SelectedIndexChanged
+        If ComboBox15.SelectedIndex = 2 Or ComboBox15.SelectedIndex = 0 Then
+            TextBox14.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox14_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox14.SelectedIndexChanged
+        If ComboBox14.SelectedIndex = 2 Or ComboBox14.SelectedIndex = 0 Then
+            TextBox13.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox13_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox13.SelectedIndexChanged
+        If ComboBox13.SelectedIndex = 2 Or ComboBox13.SelectedIndex = 0 Then
+            TextBox12.Text = ""
+        End If
+    End Sub
+
+    Private Sub ComboBox12_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox12.SelectedIndexChanged
+        If ComboBox12.SelectedIndex = 2 Or ComboBox12.SelectedIndex = 0 Then
+            TextBox11.Text = ""
+        End If
+    End Sub
+
+    Private Sub TextBox17_TextChanged(sender As Object, e As EventArgs) Handles TextBox17.TextChanged
+        If TextBox17.Text <> "" And ComboBox18.SelectedIndex <> 1 Then
+            ComboBox18.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox16_TextChanged(sender As Object, e As EventArgs) Handles TextBox16.TextChanged
+        If TextBox16.Text <> "" And ComboBox17.SelectedIndex <> 1 Then
+            ComboBox17.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox15_TextChanged(sender As Object, e As EventArgs) Handles TextBox15.TextChanged
+        If TextBox15.Text <> "" And ComboBox16.SelectedIndex <> 1 Then
+            ComboBox16.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox14_TextChanged(sender As Object, e As EventArgs) Handles TextBox14.TextChanged
+        If TextBox14.Text <> "" And ComboBox15.SelectedIndex <> 1 Then
+            ComboBox15.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox13_TextChanged(sender As Object, e As EventArgs) Handles TextBox13.TextChanged
+        If TextBox13.Text <> "" And ComboBox14.SelectedIndex <> 1 Then
+            ComboBox14.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox12_TextChanged(sender As Object, e As EventArgs) Handles TextBox12.TextChanged
+        If TextBox12.Text <> "" And ComboBox13.SelectedIndex <> 1 Then
+            ComboBox13.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub TextBox11_TextChanged(sender As Object, e As EventArgs) Handles TextBox11.TextChanged
+        If TextBox11.Text <> "" And ComboBox12.SelectedIndex <> 1 Then
+            ComboBox12.SelectedIndex = 1
+        End If
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Cursor = Cursors.WaitCursor
+        Dim l_id_grant As Int64 = -1
+
+        If ComboBox2.SelectedIndex <0 Then
+            MsgBox("Please select a software.", vbInformation)
+        ElseIf ComboBox28.SelectedIndex < 0 Then
+            MsgBox("Please select a type of prescription.", vbInformation)
+        ElseIf ComboBox1.SelectedIndex < 0 And TextBox26.Text = "" Then
+            MsgBox("Please select a rank.", vbInformation)
+        Else
+            'VERIFICAR SE NÃO EXISTE GRANT
+            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 0 Then
+                l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
+                If l_id_grant = -1 Then
+                    If Not medication.SET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                        MsgBox("Error creating ID_GRANT!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    Else
+                        l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
+                    End If
+                End If
+
+                If Not CREATE_SET_INSTRUCTIONS(l_id_grant, ComboBox28.SelectedIndex, "Y") Then
+                    MsgBox("Error creating new set of instructions", vbCritical)
+                    Cursor = Cursors.Arrow
+                    Exit Sub
+                End If
+            Else
+                'NESTE CASO JÁ EXISTIA INSTRUÇÃO. SERÁ FEITO UPDATE
+
+                'VERIFICAR SE INSTRUÇÃO É UTILIZADA EM DIVERSAS PICK_LISTS/SOFTWARES
+                'CASO SEJA É NECESSÁRIO PERGUNTAR SE SE FAZ UPDATE OU SE SE INSERE NOVA INSTRUÇÃO
+                l_id_grant = TextBox27.Text
+                Dim l_create_new As Integer = 0
+
+                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir) > 1 And ComboBox28.SelectedIndex > 0 Then
+                    l_create_new = MsgBox("The current standard instruction is also being usaed for other softwares and/or type of prescriptions. Do you wish to create a new instruction just for the selected software and type of prescription? (Responding 'No' will result on the update of the current standard instruction)", MessageBoxButtons.YesNo)
+                End If
+
+                If l_create_new = 0 Or l_create_new = DialogResult.No Then
+                    'UPDATE LNK_PRODUCT_STD_INSTRUCTION               
+                    Dim l_rank As Int64 = 0
+                    If TextBox26.Text <> "" Then
+                        l_rank = TextBox26.Text
+                    Else
+                        l_rank = ComboBox1.Text
+                    End If
+
+                    ''NESTE CASO É NECESSÁRIO FAZER UPDATE AO RANK
+                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, l_rank, l_id_grant) Then
+                        MsgBox("Error updating instruction rank!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    End If
+
+                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, ComboBox28.SelectedIndex, "N") Then
+                        MsgBox("Error creating new set of instructions", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    End If
+
+                Else
+                    If Not CREATE_SET_INSTRUCTIONS(TextBox27.Text, ComboBox28.SelectedIndex, "Y") Then
+                        MsgBox("Error creating new set of instructions", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    End If
+                End If
+            End If
+
+        End If
+
+        Cursor = Cursors.Arrow
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+        Dim L_STRING() As String
+        GET_INSTRUCTIONS(0, L_STRING)
 
     End Sub
 End Class
