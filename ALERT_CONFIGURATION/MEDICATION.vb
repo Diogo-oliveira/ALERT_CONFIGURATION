@@ -424,21 +424,42 @@ Public Class MEDICATION
             l_med_type = 1
         End If
 
+        Dim l_med_type_change As Boolean = False
+
+        If l_med_type <> medication.GET_PRODUCT_MED_TYPE(g_a_list_products(g_selected_index), g_id_product_supplier) Then
+            l_med_type_change = True
+        End If
+
+        Dim l_n_std_instructions As Integer = medication.GET_PRODUCT_N_STD_INSTRUCTIONS(g_a_list_products(g_selected_index), g_id_product_supplier)
+
         Dim l_selected_software As Int16 = 0
 
         If g_selected_soft > -1 Then
             l_selected_software = g_selected_soft
         End If
 
-        If g_selected_index > -1 Then
-            If Not medication.SET_PARAMETERS(TextBox1.Text, l_selected_software, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
-                                         l_med_type, ComboBox7.Text, ComboBox8.Text, ComboBox9.Text, ComboBox10.Text, ComboBox11.Text, ComboBox12.Text, TextBox3.Text) Then
-                MsgBox("Error updating parameters!", vbCritical)
+
+        Dim l_confirm_med_type_change As Integer = 0
+
+        If l_med_type_change = True And l_n_std_instructions > 0 Then
+
+            l_confirm_med_type_change = MsgBox("The selected product has default standard instructions. Changing its medication type may cause problems when prescribing this product. Are you sure you want to perform the changes?", MessageBoxButtons.YesNo)
+
+        End If
+
+        If l_confirm_med_type_change = 0 Or l_confirm_med_type_change = DialogResult.Yes Then
+
+            If g_selected_index > -1 Then
+                If Not medication.SET_PARAMETERS(TextBox1.Text, l_selected_software, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox3.Text, ComboBox5.SelectedIndex + 1, ComboBox6.Text,
+                                             l_med_type, ComboBox7.Text, ComboBox8.Text, ComboBox9.Text, ComboBox10.Text, ComboBox11.Text, ComboBox12.Text, TextBox3.Text) Then
+                    MsgBox("Error updating parameters!", vbCritical)
+                Else
+                    MsgBox("Record updated!", vbInformation)
+                End If
             Else
-                MsgBox("Record updated!", vbInformation)
+                MsgBox("Please select a product!", vbCritical)
             End If
-        Else
-            MsgBox("Please select a product!", vbCritical)
+
         End If
 
     End Sub

@@ -58,6 +58,7 @@ Public Class Med_STD_IV
             ''CRIAÇÃO DE UMA NOVA INSTRUÇÃO
             ''criar novo id
             Dim l_id_new_instruction As Int64 = medication.GET_NEW_STD_INSTRUCTION_ID(g_id_institution)
+            Dim l_id_new_std_presc_dir_item As Int64 = medication.GET_NEW_STD_PRESC_DIR_ITEM_ID(g_id_institution)
             Dim l_flg_sos As String
             Dim l_id_sos As Int16 = 19
             Dim l_sos_condition As String = ""
@@ -128,8 +129,8 @@ Public Class Med_STD_IV
                 l_id_duration = g_a_duration_um(ComboBox5.SelectedIndex - 1)
             End If
 
-            If Not medication.CREATE_STD_PRESC_DIR_ITEM_IV(g_id_institution, l_id_new_instruction, l_id_frequency, TextBox3.Text, l_id_duration, TextBox4.Text) Then
-                MsgBox("ERROR CREATE_STD_PRESC_DIR_ITEM_IV")
+            If Not medication.CREATE_STD_PRESC_DIR_ITEM_IV(g_id_institution, l_id_new_instruction, l_id_new_std_presc_dir_item, l_id_frequency, TextBox3.Text, l_id_duration, TextBox4.Text) Then
+                MsgBox("ERROR CREATE_STD_PRESC_DIR_ITEM_IV!", vbCritical)
             End If
 
             Dim l_number_instructions_to_add As Int16 = CHECK_NUMBER_INSTRUCTIONS()
@@ -137,10 +138,11 @@ Public Class Med_STD_IV
                 Dim l_a_instructions() As String
 
                 For i As Integer = 0 To l_number_instructions_to_add
-                    'GET_INSTRUCTIONS(i, l_a_instructions)
-                    'If Not medication.CREATE_STD_PRESC_DIR_ITEM(g_id_institution, l_id_new_instruction, i + 1, l_a_instructions) Then
-                    'MsgBox("Error creating standard prescription direction item!", vbCritical)
-                    'End If
+                    GET_INSTRUCTIONS(i, l_a_instructions)
+
+                    If Not medication.CREATE_STD_PRESC_DIR_ITEM_SEQ(g_id_institution, l_id_new_std_presc_dir_item, g_id_product_supplier, i + 1, l_a_instructions) Then
+                        MsgBox("Error createing std_presc_dir_item!", vbCritical)
+                    End If
                 Next
             End If
         Catch ex As Exception
@@ -153,43 +155,43 @@ Public Class Med_STD_IV
         'VARIFICAR QUANTOS SETS DE INSTRUÇÕES DEVEM SER GRAVADOS
         Dim l_n_of_instruction As Int16 = -1
         '#1
-        If (TextBox1.Text <> "" Or TextBox17.Text <> "" Or TextBox34.Text <> "" Or TextBox23.Text <> "") Then
+        If (TextBox1.Text <> "" Or TextBox17.Text <> "" Or TextBox34.Text <> "" Or TextBox23.Text <> "" Or ComboBox18.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#2
-        If (TextBox5.Text <> "" Or TextBox16.Text <> "" Or TextBox33.Text <> "" Or TextBox22.Text <> "") Then
+        If (TextBox5.Text <> "" Or TextBox16.Text <> "" Or TextBox33.Text <> "" Or TextBox22.Text <> "" Or ComboBox17.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#3
-        If (TextBox6.Text <> "" Or TextBox15.Text <> "" Or TextBox32.Text <> "" Or TextBox20.Text <> "") Then
+        If (TextBox6.Text <> "" Or TextBox15.Text <> "" Or TextBox32.Text <> "" Or TextBox20.Text <> "" Or ComboBox16.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#4
-        If (TextBox7.Text <> "" Or TextBox14.Text <> "" Or TextBox29.Text <> "" Or TextBox18.Text <> "") Then
+        If (TextBox7.Text <> "" Or TextBox14.Text <> "" Or TextBox29.Text <> "" Or TextBox18.Text <> "" Or ComboBox15.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#5
-        If (TextBox8.Text <> "" Or TextBox13.Text <> "" Or TextBox31.Text <> "" Or TextBox30.Text <> "") Then
+        If (TextBox8.Text <> "" Or TextBox13.Text <> "" Or TextBox31.Text <> "" Or TextBox30.Text <> "" Or ComboBox14.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#6
-        If (TextBox9.Text <> "" Or TextBox12.Text <> "" Or TextBox28.Text <> "" Or TextBox19.Text <> "") Then
+        If (TextBox9.Text <> "" Or TextBox12.Text <> "" Or TextBox28.Text <> "" Or TextBox19.Text <> "" Or ComboBox13.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
         End If
         '#7
-        If (TextBox10.Text <> "" Or TextBox11.Text <> "" Or TextBox25.Text <> "" Or TextBox21.Text <> "") Then
+        If (TextBox10.Text <> "" Or TextBox11.Text <> "" Or TextBox25.Text <> "" Or TextBox21.Text <> "" Or ComboBox12.SelectedIndex = 2) Then
             l_n_of_instruction = l_n_of_instruction + 1
         Else
             Return l_n_of_instruction
@@ -207,7 +209,7 @@ Public Class Med_STD_IV
             If i_index_instructions = 0 Then
                 'DOSE
                 If TextBox1.Text <> "" Then
-                    o_array_instructions(0) = TextBox1.Text
+                    o_array_instructions(0) = (TextBox1.Text).Replace(",", ".")
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
@@ -219,7 +221,7 @@ Public Class Med_STD_IV
                 End If
                 'RATE
                 If TextBox17.Text <> "" And ComboBox18.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = TextBox17.Text
+                    o_array_instructions(2) = (TextBox17.Text).Replace(",", ".")
                 Else
                     o_array_instructions(2) = "NULL"
                 End If
@@ -251,12 +253,341 @@ Public Class Med_STD_IV
                     l_duration = l_aux
                 End If
                 o_array_instructions(5) = l_duration
-                o_array_instructions(6) = "10374"
 
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
 
-                ''continuar para as outras dosaes
+            ElseIf i_index_instructions = 1 Then
+                'DOSE
+                If TextBox5.Text <> "" Then
+                    o_array_instructions(0) = (TextBox5.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox6.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox6.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox16.Text <> "" And ComboBox17.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox16.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox17.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox17.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox33.Text <> "" Then
+                    l_aux = TextBox33.Text * 60
+                End If
+
+                If TextBox22.Text <> "" And TextBox33.Text <> "" Then
+                    l_aux = l_aux + TextBox22.Text
+                ElseIf TextBox22.Text <> "" And TextBox33.Text = "" Then
+                    l_aux = TextBox22.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
+            ElseIf i_index_instructions = 2 Then
+                'DOSE
+                If TextBox6.Text <> "" Then
+                    o_array_instructions(0) = (TextBox6.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox7.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox7.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox15.Text <> "" And ComboBox16.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox15.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox16.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox16.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox32.Text <> "" Then
+                    l_aux = TextBox32.Text * 60
+                End If
+
+                If TextBox20.Text <> "" And TextBox32.Text <> "" Then
+                    l_aux = l_aux + TextBox20.Text
+                ElseIf TextBox20.Text <> "" And TextBox32.Text = "" Then
+                    l_aux = TextBox20.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
+            ElseIf i_index_instructions = 3 Then
+                'DOSE
+                If TextBox7.Text <> "" Then
+                    o_array_instructions(0) = (TextBox7.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox8.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox8.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox14.Text <> "" And ComboBox15.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox14.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox15.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox15.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox29.Text <> "" Then
+                    l_aux = TextBox29.Text * 60
+                End If
+
+                If TextBox18.Text <> "" And TextBox29.Text <> "" Then
+                    l_aux = l_aux + TextBox18.Text
+                ElseIf TextBox18.Text <> "" And TextBox29.Text = "" Then
+                    l_aux = TextBox18.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
+            ElseIf i_index_instructions = 4 Then
+                'DOSE
+                If TextBox8.Text <> "" Then
+                    o_array_instructions(0) = (TextBox8.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox9.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox9.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox13.Text <> "" And ComboBox14.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox13.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox14.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox14.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox31.Text <> "" Then
+                    l_aux = TextBox31.Text * 60
+                End If
+
+                If TextBox30.Text <> "" And TextBox31.Text <> "" Then
+                    l_aux = l_aux + TextBox30.Text
+                ElseIf TextBox30.Text <> "" And TextBox31.Text = "" Then
+                    l_aux = TextBox30.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
+            ElseIf i_index_instructions = 5 Then
+                'DOSE
+                If TextBox9.Text <> "" Then
+                    o_array_instructions(0) = (TextBox9.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox10.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox10.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox12.Text <> "" And ComboBox13.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox12.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox13.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox13.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox28.Text <> "" Then
+                    l_aux = TextBox28.Text * 60
+                End If
+
+                If TextBox19.Text <> "" And TextBox28.Text <> "" Then
+                    l_aux = l_aux + TextBox19.Text
+                ElseIf TextBox19.Text <> "" And TextBox28.Text = "" Then
+                    l_aux = TextBox19.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
+            ElseIf i_index_instructions = 6 Then
+                'DOSE
+                If TextBox10.Text <> "" Then
+                    o_array_instructions(0) = (TextBox10.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(0) = "NULL"
+                End If
+                'DOSE UNIT MEASURE
+                If ComboBox11.Text <> "" Then
+                    o_array_instructions(1) = g_a_product_um(ComboBox11.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                Else
+                    o_array_instructions(1) = "NULL"
+                End If
+                'RATE
+                If TextBox11.Text <> "" And ComboBox12.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                    o_array_instructions(2) = (TextBox11.Text).Replace(",", ".")
+                Else
+                    o_array_instructions(2) = "NULL"
+                End If
+                'RATE UNIT MEASURE
+                If ComboBox12.SelectedIndex = 1 Then
+                    o_array_instructions(3) = "10491"
+                Else
+                    o_array_instructions(3) = "NULL"
+                End If
+                'RATE UNIT MEASURE - BOLUS
+                If ComboBox12.SelectedIndex = 2 Then
+                    o_array_instructions(4) = "21"
+                Else
+                    o_array_instructions(4) = "9999"
+                End If
+                ''DURATION
+                Dim l_duration As String = "NULL"
+                Dim l_aux As Int64 = 0
+                If TextBox25.Text <> "" Then
+                    l_aux = TextBox25.Text * 60
+                End If
+
+                If TextBox21.Text <> "" And TextBox25.Text <> "" Then
+                    l_aux = l_aux + TextBox21.Text
+                ElseIf TextBox21.Text <> "" And TextBox25.Text = "" Then
+                    l_aux = TextBox21.Text
+                End If
+                If l_aux > 0 Then
+                    l_duration = l_aux
+                End If
+                o_array_instructions(5) = l_duration
+
+                If l_duration = "NULL" Then
+                    o_array_instructions(6) = "NULL"
+                Else
+                    o_array_instructions(6) = "10374"
+                End If
+
                 ''construir função de gravaçao da item_seq inserindo o array o_array_instructions
             End If
+
+
 
         Catch ex As Exception
             Return False
@@ -282,8 +613,10 @@ Public Class Med_STD_IV
 
             MsgBox("ERROR GETTING SOFTWARES!", vbCritical)
         Else
+            ComboBox29.Items.Add("")
             While dr_soft.Read()
                 ComboBox2.Items.Add(dr_soft.Item(1))
+                ComboBox29.Items.Add(dr_soft.Item(1))
             End While
         End If
 
@@ -299,6 +632,12 @@ Public Class Med_STD_IV
         ComboBox28.Items.Add("1 - External Prescription")
         ComboBox28.Items.Add("2 - Administer Here")
         ComboBox28.Items.Add("3 - Home Medication")
+
+        ComboBox31.Items.Add("")
+        ComboBox31.Items.Add("0 - ALL")
+        ComboBox31.Items.Add("1 - External Prescription")
+        ComboBox31.Items.Add("2 - Administer Here")
+        ComboBox31.Items.Add("3 - Home Medication")
 
         ComboBox24.Items.Add("Y")
         ComboBox24.Items.Add("N")
@@ -568,6 +907,9 @@ Public Class Med_STD_IV
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
         ComboBox1.SelectedIndex = -1
+
+        TextBox27.Text = ""
+        TextBox26.Text = ""
 
         RESET_MAIN_INSTRUCTIONS()
 
@@ -1085,7 +1427,7 @@ Public Class Med_STD_IV
 
     Private Sub ComboBox17_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox17.SelectedIndexChanged
         If ComboBox17.SelectedIndex = 2 Or ComboBox17.SelectedIndex = 0 Then
-            TextBox11.Text = ""
+            TextBox16.Text = ""
         End If
     End Sub
 
@@ -1234,14 +1576,203 @@ Public Class Med_STD_IV
                 End If
             End If
 
+            'VERIFICAR SE É PARA COPIAR AS INTRUÇÕES PARA UM SEGUNDO SOFTWARE/PICK_LIST
+            If (ComboBox29.SelectedIndex > 0 And ComboBox31.SelectedIndex > 0) Then
+                Dim l_id_software_copy As Int16 = db_access_general.GET_SELECTED_SOFT(ComboBox29.SelectedIndex - 1, g_id_institution)
+                l_id_grant = medication.GET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR")
+                'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
+
+                If l_id_grant = -1 Then
+                    If Not medication.SET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR") Then
+                        MsgBox("Error creating ID_GRANT!", vbCritical)
+                        Cursor = Cursors.Arrow
+                        Exit Sub
+                    Else
+                        l_id_grant = medication.GET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR")
+                    End If
+                End If
+                If Not CREATE_SET_INSTRUCTIONS(l_id_grant, ComboBox31.SelectedIndex - 1, "Y") Then
+                    MsgBox("Error creating new set of instructions", vbCritical)
+                    Cursor = Cursors.Arrow
+                    Exit Sub
+                End If
+            End If
+
+            Dim dr_med_set_instruction As OracleDataReader
+            ReDim g_a_med_set_instructions(0)
+            ComboBox1.Items.Clear()
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
+                Cursor = Cursors.Arrow
+                Exit Sub
+            Else
+                Dim i As Integer = 0
+                While dr_med_set_instruction.Read()
+                    ReDim Preserve g_a_med_set_instructions(i)
+                    g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
+                    g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
+                    g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
+                    g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
+                    g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
+                    g_a_med_set_instructions(i).market_desc = ""
+                    g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
+                    g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
+                    g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
+                    g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
+
+                    ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
+
+                    i = i + 1
+
+                End While
+            End If
+
+            MsgBox("Record inserted.", vbInformation)
+
         End If
 
         Cursor = Cursors.Arrow
     End Sub
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
-        Dim L_STRING() As String
-        GET_INSTRUCTIONS(0, L_STRING)
 
+        If ComboBox1.SelectedIndex < 0 Then
+            MsgBox("Please select a standard instruction from the RANK dropdown menu to be deleted.", vbInformation)
+        Else
+            If Not medication.DELETE_STD_INSTRUCTION(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, TextBox27.Text, ComboBox28.SelectedIndex) Then
+                MsgBox("Error deleteing standard instruction!", vbCritical)
+            Else
+                MsgBox("Record deleted.", vbInformation)
+
+                TextBox27.Text = ""
+
+                TextBox26.Text = ""
+                ComboBox29.SelectedIndex = -1
+
+                RESET_SET_INSTRUCTIONS()
+                RESET_MAIN_INSTRUCTIONS()
+
+                Dim dr_med_set_instruction As OracleDataReader
+                ReDim g_a_med_set_instructions(0)
+                ComboBox1.Items.Clear()
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+
+                    MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
+                Else
+                    Dim i As Integer = 0
+                    While dr_med_set_instruction.Read()
+                        ReDim Preserve g_a_med_set_instructions(i)
+                        g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
+                        g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
+                        g_a_med_set_instructions(i).rank = dr_med_set_instruction.Item(2)
+                        g_a_med_set_instructions(i).id_grant = dr_med_set_instruction.Item(3)
+                        g_a_med_set_instructions(i).market = dr_med_set_instruction.Item(4)
+                        g_a_med_set_instructions(i).market_desc = ""
+                        g_a_med_set_instructions(i).software = dr_med_set_instruction.Item(6)
+                        g_a_med_set_instructions(i).software_desc = dr_med_set_instruction.Item(7)
+                        g_a_med_set_instructions(i).id_pick_list = dr_med_set_instruction.Item(8)
+                        g_a_med_set_instructions(i).institution = dr_med_set_instruction.Item(9)
+
+                        ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
+
+                        i = i + 1
+
+                    End While
+                End If
+
+            End If
+
+        End If
+
+    End Sub
+
+    'DOSE 1
+    Private Sub TextBox1_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox1.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE1
+    Private Sub TextBox17_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox17.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE2
+    Private Sub TextBox5_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox5.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE2
+    Private Sub TextBox16_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox16.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE3
+    Private Sub TextBox6_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox6.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE3
+    Private Sub TextBox15_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox15.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE4
+    Private Sub TextBox7_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox7.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE4
+    Private Sub TextBox14_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox14.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE5
+    Private Sub TextBox8_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox8.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE5
+    Private Sub TextBox13_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox13.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE6
+    Private Sub TextBox9_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox9.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE6
+    Private Sub TextBox12_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox12.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'DOSE5
+    Private Sub TextBox10_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox10.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
+    End Sub
+    'RATE5
+    Private Sub TextBox11_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox11.KeyPress
+        If Not Char.IsNumber(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) AndAlso Not e.KeyChar = "." AndAlso Not e.KeyChar = "," Then
+            e.Handled = True
+        End If
     End Sub
 End Class

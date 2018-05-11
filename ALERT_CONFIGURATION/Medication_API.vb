@@ -127,6 +127,78 @@ Public Class Medication_API
 
     End Function
 
+    Function GET_PRODUCT_MED_TYPE(ByVal i_id_product As String, ByVal i_id_product_supplier As String) As Int16
+
+        DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_MED_TYPE(" & i_id_product & ", " & i_id_product_supplier & ")")
+
+        Dim l_id_product_supplier As String = ""
+
+        Dim sql As String = "   SELECT decode(pm.id_product_med_type, 2, 2, 1) med_type
+                                 FROM alert_product_mt.product_medication pm
+                                WHERE pm.id_product = '" & i_id_product & "'
+                                  AND pm.id_product_supplier = '" & i_id_product_supplier & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_id_product_supplier = dr.Item(0)
+            End While
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION :: GET_PRODUCT_MED_TYPE")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_product_supplier
+
+    End Function
+
+    Function GET_PRODUCT_N_STD_INSTRUCTIONS(ByVal i_id_product As String, ByVal i_id_product_supplier As String) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION :: GET_PRODUCT_N_STD_INSTRUCTIONS(" & i_id_product & ", " & i_id_product_supplier & ")")
+
+        Dim l_id_product_supplier As String = ""
+
+        Dim sql As String = " SELECT COUNT(*)
+                              FROM alert_product_mt.lnk_product_std_presc_dir d
+                             WHERE d.id_product = '" & i_id_product & "'
+                               AND d.id_product_supplier = '" & i_id_product_supplier & "'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_id_product_supplier = dr.Item(0)
+            End While
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION :: GET_PRODUCT_N_STD_INSTRUCTIONS")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_product_supplier
+
+    End Function
+
     Function GET_PRODUCT_OPTIONS(ByVal i_institution As Int64, ByVal i_software As Int16, ByVal i_id_product As String, ByVal i_product_supplier As String, ByVal i_id_pick_list As Int16, ByRef i_dr As OracleDataReader) As Boolean
 
         DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_PRODUCT_OPTIONS(" & i_institution & ", " & i_software & ", " & i_id_product & ", " & i_product_supplier & ")")
@@ -1789,15 +1861,15 @@ Public Class Medication_API
         End Try
     End Function
 
-    Function CREATE_STD_PRESC_DIR_ITEM_IV(ByVal i_institution As Int64, ByVal i_id_std_presc_directions As Int64, ByVal i_id_frequency As String, ByVal i_duration As String, ByVal i_unit_duration As String, ByVal i_num_exec As String) As Boolean
+    Function CREATE_STD_PRESC_DIR_ITEM_IV(ByVal i_institution As Int64, ByVal i_id_std_presc_directions As Int64, ByVal i_id_std_presc_dir_item As Int64, ByVal i_id_frequency As String, ByVal i_duration As String, ByVal i_unit_duration As String, ByVal i_num_exec As String) As Boolean
 
-        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_IV(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_id_frequency & ", " & i_duration & ", " & i_unit_duration & ", " & i_num_exec & "())")
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_IV(" & i_institution & ", " & i_id_std_presc_directions & ", " & i_id_std_presc_dir_item & ", " & i_id_frequency & ", " & i_duration & ", " & i_unit_duration & ", " & i_num_exec & "())")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
         Dim l_id_frequency As String = "NULL"
         Dim l_id_recurrence As String = "0"
-        If i_id_frequency <> "" Then
+        If i_id_frequency <> "" And i_id_frequency <> "1" Then
             l_id_frequency = i_id_frequency
             l_id_recurrence = i_id_frequency
         End If
@@ -1828,7 +1900,7 @@ Public Class Medication_API
                                      rank,
                                      id_presc_dir_frequency)
                                 VALUES
-                                    (" & i_id_std_presc_directions & ", ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL, " & l_id_recurrence & ", " & l_id_duration & ", " & l_id_unit_duration & ", " & l_num_execs & ", 1, " & l_id_frequency & ");
+                                    (" & i_id_std_presc_directions & ", " & i_id_std_presc_dir_item & ", " & l_id_recurrence & ", " & l_id_duration & ", " & l_id_unit_duration & ", " & l_num_execs & ", 1, " & l_id_frequency & ");
                               EXCEPTION
                                     WHEN dup_val_on_index THEN
                                         UPDATE alert_product_mt.std_presc_dir_item i
@@ -1858,6 +1930,86 @@ Public Class Medication_API
         cmd_create_std.Dispose()
 
         Return True
+
+    End Function
+
+    Function CREATE_STD_PRESC_DIR_ITEM_SEQ(ByVal i_institution As Int64, ByVal i_id_std_presc_dir_ITEM As Int64, ByVal i_id_product_Supplier As String, ByVal i_item_seq As Int16, ByVal i_instructions() As String) As Boolean
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_SEQ(" & i_institution & ", " & i_id_std_presc_dir_ITEM & ", " & i_id_product_Supplier & ", " & i_item_seq & ", " & i_instructions(0) & ", " & i_instructions(1) & ", " & i_instructions(2) & ", " & i_instructions(3) & ", " & i_instructions(4) & ", " & i_instructions(5) & ", " & i_instructions(6) & ")")
+
+        Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
+
+        Dim sql As String = "BEGIN
+                                INSERT INTO alert_product_mt.std_presc_dir_item_seq
+                                    (id_std_presc_dir_item,
+                                     id_item_seq,
+                                     id_dose,
+                                     dose_value,
+                                     id_unit_dose,
+                                     duration_value,
+                                     id_unit_duration,
+                                     id_rate,
+                                     rate_value,
+                                     id_unit_rate,
+                                     id_product,
+                                     id_product_supplier)
+                                VALUES
+                                    (" & i_id_std_presc_dir_ITEM & ", " & i_item_seq & ", 10, " & i_instructions(0) & ", " & i_instructions(1) & ", " & i_instructions(5) & ", " & i_instructions(6) & ", " & i_instructions(4) & ", " & i_instructions(2) & ", " & i_instructions(3) & ", NULL, '" & i_id_product_Supplier & "');
+                                END;"
+
+        Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_create_std.CommandType = CommandType.Text
+            cmd_create_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_SEQ")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_create_std.Dispose()
+
+            Return False
+        End Try
+
+        cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
+
+    Function GET_NEW_STD_PRESC_DIR_ITEM_ID(ByVal i_institution As Int64) As Int64
+
+        DEBUGGER.SET_DEBUG("MEDICATION_API :: GET_NEW_STD_PRESC_DIR_ITEM_ID(" & i_institution & ")")
+
+        Dim l_id_std_instruction As Int64 = 0
+
+        Dim sql As String = "select ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL from dual"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
+
+        Try
+            dr = cmd.ExecuteReader()
+            While dr.Read()
+                l_id_std_instruction = dr.Item(0)
+            End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
+
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: GET_NEW_STD_PRESC_DIR_ITEM_ID")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
+        End Try
+
+        Return l_id_std_instruction
 
     End Function
 End Class

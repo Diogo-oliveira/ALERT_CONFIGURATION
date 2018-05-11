@@ -1196,9 +1196,6 @@ Public Class MED_STD_NON_IV
                 Dim l_id_software_copy As Int16 = db_access_general.GET_SELECTED_SOFT(ComboBox29.SelectedIndex - 1, g_id_institution)
                 l_id_grant = medication.GET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR")
                 'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
-                MsgBox(l_id_software_copy)
-                MsgBox(ComboBox31.SelectedIndex - 1)
-
                 If l_id_grant = -1 Then
                     If Not medication.SET_ID_GRANT(g_id_institution, l_id_software_copy, "LNK_PRODUCT_STD_PRESC_DIR") Then
                         MsgBox("Error creating ID_GRANT!", vbCritical)
@@ -1216,17 +1213,17 @@ Public Class MED_STD_NON_IV
             End If
 
             Dim dr_med_set_instruction As OracleDataReader
-                ReDim g_a_med_set_instructions(0)
-                ComboBox1.Items.Clear()
+            ReDim g_a_med_set_instructions(0)
+            ComboBox1.Items.Clear()
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
+            If Not medication.GET_ALL_INSTRUCTIONS(g_id_institution, g_selected_software, g_id_product, g_id_product_supplier, ComboBox28.SelectedIndex, dr_med_set_instruction) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
 
                 MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
                 Cursor = Cursors.Arrow
                 Exit Sub
             Else
-                    Dim i As Integer = 0
+                Dim i As Integer = 0
                     While dr_med_set_instruction.Read()
                     ReDim Preserve g_a_med_set_instructions(i)
                     g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
