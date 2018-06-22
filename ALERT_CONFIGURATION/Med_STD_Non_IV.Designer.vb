@@ -150,6 +150,7 @@ Partial Class MED_STD_NON_IV
         Me.Label58 = New System.Windows.Forms.Label()
         Me.ComboBox31 = New System.Windows.Forms.ComboBox()
         Me.Button2 = New System.Windows.Forms.Button()
+        Me.Button3 = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -1359,7 +1360,7 @@ Partial Class MED_STD_NON_IV
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(12, 657)
+        Me.Button1.Location = New System.Drawing.Point(568, 656)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(108, 33)
         Me.Button1.TabIndex = 268
@@ -1393,11 +1394,21 @@ Partial Class MED_STD_NON_IV
         Me.Button2.Text = "GET GRANT"
         Me.Button2.UseVisualStyleBackColor = True
         '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(12, 660)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(108, 33)
+        Me.Button3.TabIndex = 272
+        Me.Button3.Text = "BACK"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
         'MED_STD_NON_IV
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(919, 701)
+        Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Label58)
         Me.Controls.Add(Me.ComboBox31)
@@ -1586,4 +1597,5 @@ Partial Class MED_STD_NON_IV
     Friend WithEvents Label58 As Label
     Friend WithEvents ComboBox31 As ComboBox
     Friend WithEvents Button2 As Button
+    Friend WithEvents Button3 As Button
 End Class

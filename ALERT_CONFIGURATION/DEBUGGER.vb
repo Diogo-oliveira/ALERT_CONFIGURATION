@@ -1,6 +1,7 @@
 ﻿Imports System
 Imports System.IO
 Imports System.Text
+Imports Oracle.DataAccess.Client
 
 Public Class DEBUGGER
 
@@ -99,6 +100,98 @@ Public Class DEBUGGER
 
         sw = File.AppendText(l_debug_file)
         sw.WriteLine(" ")
+        sw.Close()
+
+    End Function
+
+    Public Shared Function GET_ARRAY_STRING(ByVal i_values As String()) As String
+
+        Dim l_array As String = ""
+
+        For i As Integer = 0 To i_values.Count - 1
+            If i = 0 Then
+                l_array = l_array & "["
+            End If
+
+            l_array = l_array & i_values(i)
+
+            If i = i_values.Count - 1 Then
+                l_array = l_array & "]"
+            Else
+                l_array = l_array & ", "
+            End If
+        Next
+
+        Return l_array
+
+    End Function
+
+    Public Shared Function GET_ARRAY_NUMBER(ByVal i_values As Int64()) As String
+
+        Dim l_array As String = ""
+
+        For i As Integer = 0 To i_values.Count - 1
+            If i = 0 Then
+                l_array = l_array & "["
+            End If
+
+            l_array = l_array & i_values(i)
+
+            If i = i_values.Count - 1 Then
+                l_array = l_array & "]"
+            Else
+                l_array = l_array & ", "
+            End If
+        Next
+
+        Return l_array
+
+    End Function
+
+    Public Shared Function SET_RESPONSE(ByVal i_function_name As String, i_parameters As String(), i_result As OracleDataReader)
+
+        Dim l_debug_file As String = CURRENT_PATH & DEBUG_FOLDER & DEBUG_FILE
+        Dim sw As StreamWriter
+
+        Dim l_has_results As Boolean = False
+
+        sw = File.AppendText(l_debug_file)
+
+        Try
+            ' sw.WriteLine(DateTime.Now & " - " & i_function_name & " RESPONSE:")
+            sw.WriteLine("Parameters:")
+            sw.WriteLine(" ")
+
+            For i As Integer = 0 To i_parameters.Count - 1
+
+                sw.WriteLine("[" & i & "]: " & i_parameters(i).ToUpper)
+
+            Next
+
+            sw.WriteLine(" ")
+            sw.WriteLine("Items:")
+            sw.WriteLine(" ")
+
+            Dim ii As Integer = 0
+            While i_result.Read()
+                sw.WriteLine("[" & ii & "]")
+                For j As Integer = 0 To i_parameters.Count - 1
+                    sw.WriteLine("   " & i_parameters(j).ToUpper & ": " & i_result.Item(j))
+                Next
+                sw.WriteLine(" ")
+                ii = ii + 1
+                l_has_results = True
+            End While
+
+            If l_has_results = False Then
+                sw.WriteLine("   NULL")
+                sw.WriteLine(" ")
+            End If
+
+        Catch ex As Exception
+            sw.Close()
+        End Try
+
         sw.Close()
 
     End Function

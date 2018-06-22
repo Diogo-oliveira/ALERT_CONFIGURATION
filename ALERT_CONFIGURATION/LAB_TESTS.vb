@@ -616,10 +616,14 @@ Public Class LAB_TESTS
 
             While dr.Read()
 
-                ReDim Preserve g_a_loaded_rooms(i_index_room)
-                ComboBox7.Items.Add(dr.Item(0))
-                g_a_loaded_rooms(i_index_room) = dr.Item(1)
-                i_index_room = i_index_room + 1
+                Try
+                    ReDim Preserve g_a_loaded_rooms(i_index_room)
+                    g_a_loaded_rooms(i_index_room) = dr.Item(1)
+                    ComboBox7.Items.Add(dr.Item(0))
+                    i_index_room = i_index_room + 1
+                Catch ex As Exception
+                    Continue While
+                End Try
 
             End While
 
@@ -1434,11 +1438,17 @@ Public Class LAB_TESTS
 
                 While dr.Read()
 
+                    Try
 
-                    ReDim Preserve g_a_loaded_rooms(i_index_room)
-                    ComboBox7.Items.Add(dr.Item(0))
-                    g_a_loaded_rooms(i_index_room) = dr.Item(1)
-                    i_index_room = i_index_room + 1
+                        ReDim Preserve g_a_loaded_rooms(i_index_room)
+                        g_a_loaded_rooms(i_index_room) = dr.Item(1)
+                        ComboBox7.Items.Add(dr.Item(0))
+                        g_a_loaded_rooms(i_index_room) = dr.Item(1)
+                        i_index_room = i_index_room + 1
+
+                    Catch ex As Exception
+                        Continue While
+                    End Try
 
                 End While
 
