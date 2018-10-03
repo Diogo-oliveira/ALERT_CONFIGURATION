@@ -222,17 +222,17 @@ Public Class MEDICATION
                 Else
                     DataGridView1.Columns.Clear()
 
-                    Dim Table As New DataTable
+                    Dim l_table As New DataTable
 
-                    Table.Load(dr)
-                    DataGridView1.DataSource = Table
+                    l_table.Load(dr)
+                    DataGridView1.DataSource = l_table
 
                     DataGridView1.Columns(0).Width = l_column_width
                     DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
 
                     Dim l_dimension_list_products As Int64 = 0
 
-                    For Each row As DataRow In Table.Rows
+                    For Each row As DataRow In l_table.Rows
 
                         ReDim Preserve g_a_list_products(l_dimension_list_products)
                         g_a_list_products(l_dimension_list_products) = row.Item("ID_PRODUCT")
@@ -267,6 +267,9 @@ Public Class MEDICATION
                         End If
                         dr_routes.Close()
 
+                        'DataGridView1.DataBindings.Clear()
+                        'Table.Clear()
+
                     Catch ex As Exception
                         MsgBox("No results found.", vbInformation)
                         g_selected_index = -1
@@ -295,7 +298,9 @@ Public Class MEDICATION
         End If
 
         If g_selected_index > -1 Then
+
             Dim dr As OracleDataReader
+
             If Not medication.GET_PRODUCT_OPTIONS(TextBox1.Text, g_selected_soft, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox5.SelectedIndex + 1, dr) Then
 
                 MsgBox("Error getting product options!", vbCritical)
@@ -354,7 +359,9 @@ Public Class MEDICATION
                     End Try
                 End While
 
+                dr.Dispose()
                 dr.Close()
+
             End If
 
             Dim dr_routes As OracleDataReader
@@ -374,6 +381,8 @@ Public Class MEDICATION
                     i = i + 1
                 End While
             End If
+
+            dr_routes.Dispose()
             dr_routes.Close()
 
             If CheckedListBox1.Items.Count() > 0 Then
@@ -408,7 +417,11 @@ Public Class MEDICATION
                     g_a_product_um(i) = dr_product_um(0)
                     i = i + 1
                 End While
+
+                dr_product_um.Dispose()
                 dr_product_um.Close()
+
+
             End If
         End If
 
@@ -520,6 +533,7 @@ Public Class MEDICATION
                     End While
                 End If
                 dr_routes.Close()
+                dr_routes.Dispose()
 
             Else
                 MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
@@ -587,6 +601,7 @@ Public Class MEDICATION
                             i = i + 1
                         End While
                         dr_product_um.Close()
+                        dr_product_um.Dispose()
                     End If
                     MsgBox("Record updated.", vbInformation)
                 End If
@@ -617,6 +632,7 @@ Public Class MEDICATION
                     i = i + 1
                 End While
                 dr_UM.Close()
+                dr_UM.Dispose()
             End If
             Cursor = Cursors.Arrow
         Else
@@ -658,6 +674,7 @@ Public Class MEDICATION
                             i = i + 1
                         End While
                         dr_product_um.Close()
+                        dr_product_um.Dispose()
                     End If
                 End If
                 MsgBox("Record deleted.", vbInformation)
@@ -703,13 +720,16 @@ Public Class MEDICATION
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
-        If medication.GET_STD_CREEN_TYPE(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier) = 1 Then
+        Dim l_screen_type As Integer = medication.GET_STD_CREEN_TYPE(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier)
+
+        If l_screen_type = 1 Then
             Dim MED_STD As New MED_STD_NON_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
             MED_STD.ShowDialog()
-        Else
-            ' MsgBox("The standard instructions functionality is not yet available for this medication type.", vbInformation)
-
+        ElseIf l_screen_type = 2 Then
             Dim MED_STD As New Med_STD_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
+            MED_STD.ShowDialog()
+        Else
+            Dim MED_STD As New Med_STD_Complex_IV(TextBox1.Text, ComboBox2.SelectedIndex, g_a_list_products(g_selected_index), g_id_product_supplier, g_default_route)
             MED_STD.ShowDialog()
         End If
 
@@ -747,7 +767,7 @@ Public Class MEDICATION
                         l_dimension_list_products = l_dimension_list_products + 1
                     Next
                     dr.Close()
-
+                    dr.Dispose()
                     DataGridView1.ClearSelection()
 
                     CheckedListBox2.Items.Clear()
@@ -774,6 +794,7 @@ Public Class MEDICATION
                             End While
                         End If
                         dr_routes.Close()
+                        dr_routes.Dispose()
 
                     Catch ex As Exception
                         MsgBox("No results found.", vbInformation)
@@ -789,7 +810,12 @@ Public Class MEDICATION
         Else
             MsgBox("Please select an institution! ", vbCritical)
         End If
-
+        dr.Close()
+        dr.Dispose()
         Cursor = Cursors.Arrow
+    End Sub
+
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+
     End Sub
 End Class

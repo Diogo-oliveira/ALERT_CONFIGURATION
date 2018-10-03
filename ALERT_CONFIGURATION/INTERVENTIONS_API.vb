@@ -137,12 +137,12 @@ Public Class INTERVENTIONS_API
 
     End Function
 
-    Function GET_INTERV_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader) As Boolean
+    Function GET_INTERV_CATS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_flg_type As Integer, ByVal i_surgical_procedures As Boolean, ByRef i_dr As OracleDataReader) As Boolean
 
         'Esta função vai ver as categorias que têm procedimentos disponíveis para a Instituição e Softwares selecionados
         'Os procedimentos têm que respeitar a fla_add_remove da tabela alert_int_cat
 
-        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERV_CATS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_flg_type & ")")
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERV_CATS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_flg_type & ", " & i_surgical_procedures & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "with tbl_interv_cats (id_content_interv_cat,id_content_interv, cod_interv_cat)
@@ -174,22 +174,32 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "
-                                MINUS
+            MINUS
                                 
                                 --Remover para Soft e instituição definidos
-                                SELECT DISTINCT ic.id_content , i.id_content , ic.code_interv_category
-                                FROM alert.interv_int_cat iic
-                                JOIN alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
-                                JOIN alert.intervention i ON i.id_intervention = iic.id_intervention
-                                JOIN alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
-                                WHERE iic.id_software IN (" & i_software & ")
-                                AND i.flg_status = 'A'
-                                AND iic.id_institution IN (" & i_institution & ")
-                                AND iic.flg_add_remove = 'R'
-                                AND ic.flg_available = 'Y'
-                                AND idcs.id_institution IN (0, " & i_institution & ")
-                                AND idcs.id_software IN (0, " & i_software & ") "
+                                Select Case DISTINCT ic.id_content , i.id_content , ic.code_interv_category
+                                From alert.interv_int_cat iic
+                                Join alert.interv_category ic ON ic.id_interv_category = iic.id_interv_category
+                                Join alert.intervention i ON i.id_intervention = iic.id_intervention
+                                Join alert.interv_dep_clin_serv idcs ON idcs.id_intervention = i.id_intervention
+                                Where iic.id_software In (" & i_software & ")
+                                And i.flg_status = 'A'
+                                And iic.id_institution IN (" & i_institution & ")
+                                And iic.flg_add_remove = 'R'
+                                And ic.flg_available = 'Y'
+                                And idcs.id_institution IN (0, " & i_institution & ")
+                                And idcs.id_software IN (0, " & i_software & ") "
         If i_flg_type = 0 Then
 
             sql = sql & "And idcs.flg_type IN ('P','M','B', 'A') "
@@ -201,6 +211,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('B','A') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -234,6 +254,16 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "
                                 MINUS
                                 
@@ -261,6 +291,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('B','A') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -309,6 +349,16 @@ Public Class INTERVENTIONS_API
 
             End If
 
+            If i_surgical_procedures = True Then
+
+                sql = sql & "AND i.flg_category_type = 'SR'"
+
+            Else
+
+                sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+            End If
+
             sql = sql & "
                                 MINUS
                                 
@@ -337,6 +387,16 @@ Public Class INTERVENTIONS_API
             Else
 
                 sql = sql & "And idcs.flg_type IN ('B','A') "
+
+            End If
+
+            If i_surgical_procedures = True Then
+
+                sql = sql & "AND i.flg_category_type = 'SR'"
+
+            Else
+
+                sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
             End If
 
@@ -371,6 +431,16 @@ Public Class INTERVENTIONS_API
 
             End If
 
+            If i_surgical_procedures = True Then
+
+                sql = sql & "AND i.flg_category_type = 'SR'"
+
+            Else
+
+                sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+            End If
+
             sql = sql & "
                                 MINUS
                                 
@@ -400,6 +470,16 @@ Public Class INTERVENTIONS_API
             Else
 
                 sql = sql & "And idcs.flg_type IN ('B','A') "
+
+            End If
+
+            If i_surgical_procedures = True Then
+
+                sql = sql & "AND i.flg_category_type = 'SR'"
+
+            Else
+
+                sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
             End If
 
@@ -477,6 +557,16 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "
                                 MINUS
                                 
@@ -505,6 +595,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('B','A') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -539,6 +639,16 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "
                                 MINUS
                                 
@@ -567,6 +677,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('B','A') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -616,6 +736,16 @@ Public Class INTERVENTIONS_API
 
                 End If
 
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+                End If
+
                 sql = sql & "
                                 MINUS
                                 
@@ -644,6 +774,16 @@ Public Class INTERVENTIONS_API
                 Else
 
                     sql = sql & "And idcs.flg_type IN ('B','A') "
+
+                End If
+
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
                 End If
 
@@ -678,6 +818,16 @@ Public Class INTERVENTIONS_API
 
                 End If
 
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+                End If
+
                 sql = sql & "
                                 MINUS
                                 
@@ -706,6 +856,16 @@ Public Class INTERVENTIONS_API
                 Else
 
                     sql = sql & "And idcs.flg_type IN ('B','A') "
+
+                End If
+
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
                 End If
 
@@ -740,7 +900,7 @@ Public Class INTERVENTIONS_API
 
     Function GET_INTERVS_INST_SOFT(ByVal i_institution As Int64, ByVal i_software As Integer, ByVal i_id_content_interv_cat As String, ByVal i_flg_type As Integer, ByRef i_dr As OracleDataReader, ByVal i_surgical_procedures As Boolean) As Boolean
 
-        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERVS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_id_content_interv_cat & ", " & i_flg_type & ")")
+        DEBUGGER.SET_DEBUG("INTERVENTIONS_API :: GET_INTERVS_INST_SOFT(" & i_institution & ", " & i_software & ", " & i_id_content_interv_cat & ", " & i_flg_type & ", " & i_surgical_procedures & ")")
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim sql As String = "WITH tbl_interventions(id_content_interv_cat,
@@ -774,6 +934,16 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "MINUS
   
                       SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
@@ -799,6 +969,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('A','B') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -831,6 +1011,16 @@ Public Class INTERVENTIONS_API
 
         End If
 
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+        End If
+
         sql = sql & "MINUS
 
                       SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
@@ -857,6 +1047,16 @@ Public Class INTERVENTIONS_API
         Else
 
             sql = sql & "And idcs.flg_type IN ('A','B') "
+
+        End If
+
+        If i_surgical_procedures = True Then
+
+            sql = sql & "AND i.flg_category_type = 'SR'"
+
+        Else
+
+            sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
         End If
 
@@ -921,6 +1121,16 @@ Public Class INTERVENTIONS_API
 
                 End If
 
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+                End If
+
                 sql = sql & "MINUS
   
                       SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
@@ -946,6 +1156,16 @@ Public Class INTERVENTIONS_API
                 Else
 
                     sql = sql & "And idcs.flg_type IN ('A','B') "
+
+                End If
+
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
                 End If
 
@@ -978,6 +1198,16 @@ Public Class INTERVENTIONS_API
 
                 End If
 
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+                End If
+
                 sql = sql & "MINUS
 
                       SELECT DISTINCT ic.id_content, i.id_content, i.code_intervention
@@ -1004,6 +1234,16 @@ Public Class INTERVENTIONS_API
                 Else
 
                     sql = sql & "And idcs.flg_type IN ('A','B') "
+
+                End If
+
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
 
                 End If
 
@@ -1051,7 +1291,17 @@ Public Class INTERVENTIONS_API
 
                 End If
 
-                sql = sql & "  AND i.flg_category_type = 'SR'
+                If i_surgical_procedures = True Then
+
+                    sql = sql & "AND i.flg_category_type = 'SR'"
+
+                Else
+
+                    sql = sql & "AND (i.flg_category_type <> 'SR' OR i.flg_category_type IS NULL) "
+
+                End If
+
+                sql = sql & "  
                           )
 
                         SELECT DISTINCT id_content_interv_cat, id_content_intervention, pk_translation.get_translation(" & l_id_language & ", code_intervention)

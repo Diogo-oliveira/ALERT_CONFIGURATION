@@ -1274,6 +1274,8 @@ Partial Class Med_STD_IV
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel1)
+        Me.MaximumSize = New System.Drawing.Size(1265, 720)
+        Me.MinimumSize = New System.Drawing.Size(1265, 720)
         Me.Name = "Med_STD_IV"
         Me.Text = "Med_STD_IV"
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()

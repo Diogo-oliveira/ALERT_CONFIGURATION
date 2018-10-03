@@ -56,6 +56,7 @@ Public Class DEBUGGER
         sw.WriteLine("                            ALERT_ENVIRONMENTS_CONFIGURATION")
         sw.WriteLine(" ")
         sw.WriteLine(DateTime.Now & " - " & "STARTING DEBUGGER")
+        sw.Dispose()
         sw.Close()
 
     End Function
@@ -67,6 +68,7 @@ Public Class DEBUGGER
 
         sw = File.AppendText(l_debug_file)
         sw.WriteLine(DateTime.Now & " - " & i_debug)
+        sw.Dispose()
         sw.Close()
 
     End Function
@@ -78,6 +80,7 @@ Public Class DEBUGGER
 
         sw = File.AppendText(l_debug_file)
         sw.WriteLine("##############         ERROR FOUND IN " & i_screen & "      ##############")
+        sw.Dispose()
         sw.Close()
 
     End Function
@@ -89,6 +92,7 @@ Public Class DEBUGGER
 
         sw = File.AppendText(l_debug_file)
         sw.WriteLine("###########################################################################################")
+        sw.Dispose()
         sw.Close()
 
     End Function
@@ -100,6 +104,7 @@ Public Class DEBUGGER
 
         sw = File.AppendText(l_debug_file)
         sw.WriteLine(" ")
+        sw.Dispose()
         sw.Close()
 
     End Function
@@ -192,6 +197,7 @@ Public Class DEBUGGER
             sw.Close()
         End Try
 
+        sw.Dispose()
         sw.Close()
 
     End Function

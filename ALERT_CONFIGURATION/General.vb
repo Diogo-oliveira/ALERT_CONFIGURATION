@@ -16,8 +16,6 @@ Public Class General
 
     Public Function GET_INSTITUTION_ID(ByRef i_id_selected_item As Int64) As Int64
 
-        DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION_ID (" & i_id_selected_item & ")")
-
         Dim sql As String = "select decode(i.id_market,
                       1,
                       T.desc_lang_1,
@@ -52,7 +50,7 @@ Public Class General
           join translation t
             on t.code_translation = i.code_institution
          where i.flg_available = 'Y'
-           and i.flg_type = 'H'
+           --AND i.flg_type = 'H'
            and (decode(i.id_market,
                        1,
                        T.desc_lang_1,
@@ -91,6 +89,17 @@ Public Class General
 
         Try
             dr = cmd.ExecuteReader()
+            cmd.Dispose()
+
+            DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION_ID (" & i_id_selected_item & ")")
+            Dim l_parameters(1) As String
+            l_parameters(0) = "id_lang"
+            l_parameters(1) = "id_institution"
+
+            DEBUGGER.SET_RESPONSE("GENERAL :: GET_INSTITUTION_ID", l_parameters, dr)
+            dr = cmd.ExecuteReader()
+            cmd.Dispose()
+
         Catch ex As Exception
 
             DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION_ID")
@@ -133,7 +142,7 @@ Public Class General
           join translation t
             on t.code_translation = i.code_institution
          where i.flg_available = 'Y'
-           and i.flg_type = 'H'
+           --AND i.flg_type = 'H'
            and (decode(i.id_market,
                        1,
                        T.desc_lang_1,
@@ -168,6 +177,16 @@ Public Class General
             Try
                 Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
                 cmd_Old_version.CommandType = CommandType.Text
+
+                dr = cmd_Old_version.ExecuteReader()
+                cmd.Dispose()
+
+                DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION_ID (" & i_id_selected_item & ")")
+                Dim l_parameters(1) As String
+                l_parameters(0) = "id_lang"
+                l_parameters(1) = "id_institution"
+
+                DEBUGGER.SET_RESPONSE("GENERAL :: GET_INSTITUTION_ID", l_parameters, dr)
                 dr = cmd_Old_version.ExecuteReader()
                 cmd_Old_version.Dispose()
 
@@ -211,8 +230,6 @@ Public Class General
 
     Public Function GET_INSTITUTION(ByVal i_ID_INST As Int64) As String
 
-        DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION(" & i_ID_INST & ")")
-
         Dim l_id_language As Int16 = GET_ID_LANG(i_ID_INST)
 
         Dim l_inst As String = ""
@@ -222,7 +239,7 @@ Public Class General
                             JOIN translation t ON t.code_translation = i.code_institution
                             WHERE i.id_institution = " & i_ID_INST & "
                             AND i.flg_available = 'Y'
-                            and i.flg_type='H'"
+                            --and i.flg_type='H'"
 
         Dim cmd As New OracleCommand(sql, Connection.conn)
         cmd.CommandType = CommandType.Text
@@ -231,7 +248,33 @@ Public Class General
 
         Try
 
-            dr = cmd.ExecuteReader()
+            Try
+                '     dr.Dispose()
+                dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
+            cmd.Dispose()
+            DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION(" & i_ID_INST & ")")
+
+            Dim l_parameters(0) As String
+            l_parameters(0) = "DESC_INSTITUTION"
+
+            DEBUGGER.SET_RESPONSE("GENERAL :: GET_INSTITUTION", l_parameters, dr)
+            Try
+                '  dr.Dispose()
+                dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
 
             While dr.Read()
 
@@ -261,8 +304,6 @@ Public Class General
     End Function
 
     Public Function GET_ALL_INSTITUTIONS(ByRef i_dr As OracleDataReader) As Boolean
-
-        DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
 
         Dim sql As String = "select decode(i.id_market,
                                                           1,
@@ -297,7 +338,7 @@ Public Class General
                                               join translation t
                                                 on t.code_translation = i.code_institution
                                              where i.flg_available = 'Y'
-                                               and i.flg_type = 'H'
+                                               --AND i.flg_type = 'H'
                                                and (decode(i.id_market,
                                                           1,
                                                           T.desc_lang_1,
@@ -333,8 +374,17 @@ Public Class General
             Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
-            i_dr = cmd.ExecuteReader()
+            DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
 
+            i_dr = cmd.ExecuteReader()
+            cmd.Dispose()
+
+            Dim l_parameters(0) As String
+            l_parameters(0) = "DESC_INSTITUTION"
+
+            DEBUGGER.SET_RESPONSE("GENERAL :: GET_ALL_INSTITUTIONS", l_parameters, i_dr)
+
+            i_dr = cmd.ExecuteReader()
             cmd.Dispose()
 
             Return True
@@ -382,7 +432,7 @@ Public Class General
                                               join translation t
                                                 on t.code_translation = i.code_institution
                                              where i.flg_available = 'Y'
-                                               and i.flg_type = 'H'
+                                               --AND i.flg_type = 'H'
                                                and (decode(i.id_market,
                                                           1,
                                                           T.desc_lang_1,
@@ -417,9 +467,35 @@ Public Class General
                 Dim cmd_Old_version As New OracleCommand(sql, Connection.conn)
                 cmd_Old_version.CommandType = CommandType.Text
 
+                Try
+                    '   i_dr.Dispose()
+                    i_dr = cmd_Old_version.ExecuteReader()
+                    cmd_Old_version.Dispose()
+                    cmd_Old_version.Cancel()
+                Catch ex_2 As Exception
+                    i_dr = cmd_Old_version.ExecuteReader()
+                    cmd_Old_version.Dispose()
+                    cmd_Old_version.Cancel()
+                End Try
+
+                DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
+
+                Dim l_parameters(0) As String
+                l_parameters(0) = "DESC_INSTITUTION"
+
+                DEBUGGER.SET_RESPONSE("GENERAL :: GET_ALL_INSTITUTIONS", l_parameters, i_dr)
                 i_dr = cmd_Old_version.ExecuteReader()
 
-                cmd_Old_version.Dispose()
+                Try
+                    '  i_dr.Dispose()
+                    i_dr = cmd_Old_version.ExecuteReader()
+                    cmd_Old_version.Dispose()
+                    cmd_Old_version.Cancel()
+                Catch ex_2 As Exception
+                    i_dr = cmd_Old_version.ExecuteReader()
+                    cmd_Old_version.Dispose()
+                    cmd_Old_version.Cancel()
+                End Try
 
                 Return True
 
@@ -468,8 +544,10 @@ Public Class General
             Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
+            '  i_dr.Dispose()
             i_dr = cmd.ExecuteReader()
-            cmd.Dispose()
+                cmd.Dispose()
+            'cmd.Cancel()
 
             Return True
 
@@ -496,11 +574,9 @@ Public Class General
                                       d.id_dep_clin_serv from alert.dep_clin_serv d
                                  join alert.clinical_service c
                                  on c.id_clinical_service=d.id_clinical_service
-                                 join alert.department dep on dep.id_department=d.id_department                                 
-                                 join software s on s.id_software=dep.id_software
-                                 JOIN INSTITUTION I ON I.id_institution=DEP.ID_INSTITUTION                                 
+                                 join alert.department dep on dep.id_department=d.id_department                                                               
                                  where dep.id_institution= " & i_ID_INST & "
-                                 and dep.id_software= " & i_ID_SOFT & "
+                                 and (dep.id_software= " & i_ID_SOFT & " OR dep.id_software IS NULL)
                                  and dep.flg_available='Y'
                                  and c.flg_available='Y'
                                  and d.flg_available='Y'
@@ -513,7 +589,6 @@ Public Class General
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
 
             Return True
@@ -680,6 +755,7 @@ Public Class General
         dr.Close()
         cmd.Dispose()
 
+
         Return l_id_language
 
     End Function
@@ -785,7 +861,6 @@ Public Class General
             cmd.CommandType = CommandType.Text
 
             i_dr = cmd.ExecuteReader()
-
             cmd.Dispose()
 
             Return True
@@ -815,7 +890,16 @@ Public Class General
             Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
-            i_dr = cmd.ExecuteReader()
+            Try
+                i_dr.Dispose()
+                i_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                i_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
 
             cmd.Dispose()
 
@@ -848,7 +932,16 @@ Public Class General
             Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
-            i_dr = cmd.ExecuteReader()
+            Try
+                i_dr.Dispose()
+                i_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                i_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
 
             cmd.Dispose()
 
@@ -1054,7 +1147,16 @@ Public Class General
             Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
-            o_dr = cmd.ExecuteReader()
+            Try
+                o_dr.Dispose()
+                o_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                o_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
 
             cmd.Dispose()
 
@@ -1154,7 +1256,16 @@ Public Class General
 
         Try
             cmd.CommandType = CommandType.Text
-            o_dr = cmd.ExecuteReader()
+            Try
+                o_dr.Dispose()
+                o_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            Catch ex As Exception
+                o_dr = cmd.ExecuteReader()
+                cmd.Dispose()
+                cmd.Cancel()
+            End Try
             cmd.Dispose()
             Return True
         Catch ex As Exception
@@ -1186,7 +1297,6 @@ Public Class General
             cmd.CommandType = CommandType.Text
 
             dr = cmd.ExecuteReader()
-
             cmd.Dispose()
 
             While dr.Read()

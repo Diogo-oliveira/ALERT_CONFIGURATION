@@ -159,10 +159,20 @@ Public Class DISCHARGE_ADVANCED
 
                 ReDim Preserve g_a_reasons_soft_inst(l_index_reason)
                 g_a_reasons_soft_inst(l_index_reason).id_content = dr_new.Item(0)
-                g_a_reasons_soft_inst(l_index_reason).desccription = dr_new.Item(1)
+                Try
+                    g_a_reasons_soft_inst(l_index_reason).desccription = dr_new.Item(1)
+                Catch ex As Exception
+                    g_a_reasons_soft_inst(l_index_reason).desccription = " "
+                End Try
+
                 l_index_reason = l_index_reason + 1
 
-                ComboBox19.Items.Add(dr_new.Item(1) & "  -  [" & dr_new.Item(0) & "]")
+                Try
+                    ComboBox19.Items.Add(dr_new.Item(1) & "  -  [" & dr_new.Item(0) & "]")
+                Catch ex As Exception
+                    ComboBox19.Items.Add(" ")
+                End Try
+
 
             End While
 
