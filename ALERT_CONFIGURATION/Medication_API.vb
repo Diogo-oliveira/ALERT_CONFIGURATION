@@ -2442,7 +2442,7 @@ Public Class Medication_API
                                      id_product,
                                      id_product_supplier)
                                 VALUES
-                                    (" & i_id_std_presc_dir_ITEM & ", " & i_item_seq & ", 10, " & i_instructions(0) & ", " & i_instructions(1) & ", " & i_instructions(5) & ", " & i_instructions(6) & ", " & i_instructions(4) & ", " & i_instructions(2) & ", " & i_instructions(3) & ", NULL, '" & i_id_product_Supplier & "');
+                                    (" & i_id_std_presc_dir_ITEM & ", " & i_item_seq & ", 10, " & i_instructions(0) & ", " & i_instructions(1) & ", " & i_instructions(5) & ", " & i_instructions(6) & ", " & i_instructions(4) & ", " & i_instructions(2) & ", " & i_instructions(3) & ",  " & i_instructions(7) & ", '" & i_id_product_Supplier & "');
                                 END;"
 
         Dim cmd_create_std As New OracleCommand(sql, Connection.conn)

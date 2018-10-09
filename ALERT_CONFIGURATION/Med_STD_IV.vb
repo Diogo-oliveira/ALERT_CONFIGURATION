@@ -203,7 +203,7 @@ Public Class Med_STD_IV
 
     Function GET_INSTRUCTIONS(ByVal i_index_instructions As Int16, ByRef o_array_instructions() As String) As Boolean
 
-        ReDim o_array_instructions(6)
+        ReDim o_array_instructions(7)
 
         Try
             If i_index_instructions = 0 Then
@@ -259,6 +259,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 1 Then
                 'DOSE
@@ -313,6 +315,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 2 Then
                 'DOSE
@@ -367,6 +371,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 3 Then
                 'DOSE
@@ -421,6 +427,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 4 Then
                 'DOSE
@@ -475,6 +483,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 5 Then
                 'DOSE
@@ -529,6 +539,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
             ElseIf i_index_instructions = 6 Then
                 'DOSE
@@ -583,6 +595,8 @@ Public Class Med_STD_IV
                 Else
                     o_array_instructions(6) = "10374"
                 End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "NULL"
 
                 ''construir função de gravaçao da item_seq inserindo o array o_array_instructions
             End If

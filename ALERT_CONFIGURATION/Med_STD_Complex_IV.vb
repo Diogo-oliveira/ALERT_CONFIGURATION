@@ -55,7 +55,99 @@ Public Class Med_STD_Complex_IV
                 l_index_freq = l_index_freq + 1
             End While
         End If
+    End Function
 
+    Function SAVE_TO_DOSE_STRUCT()
+        If g_component_selected_index > -1 Then
+            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_1 = TextBox1.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_1 = -1
+            End If
+            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_2 = TextBox5.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_2 = -1
+            End If
+            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_3 = TextBox6.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_3 = -1
+            End If
+            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_4 = TextBox7.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_4 = -1
+            End If
+            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_5 = TextBox8.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_5 = -1
+            End If
+            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_6 = TextBox9.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_6 = -1
+            End If
+            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_7 = TextBox10.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_7 = -1
+            End If
+
+            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = ""
+            End If
+            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = ""
+            End If
+            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = ""
+            End If
+            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = ""
+            End If
+            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = ""
+            End If
+            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = ""
+            End If
+            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = ""
+            End If
+
+            g_a_doses_list(g_component_selected_index).flg_updated = "Y"
+
+        End If
     End Function
 
     Function CREATE_SET_INSTRUCTIONS(ByVal i_id_grant As Int64, ByVal i_id_pick_list As Int16, ByVal i_create_new As String) As Boolean
@@ -138,18 +230,148 @@ Public Class Med_STD_Complex_IV
                 MsgBox("ERROR CREATE_STD_PRESC_DIR_ITEM_IV!", vbCritical)
             End If
 
-            Dim l_number_instructions_to_add As Int16 = CHECK_NUMBER_INSTRUCTIONS()
-            If l_number_instructions_to_add > -1 Then
-                Dim l_a_instructions() As String
+            ''MODIFICAR A PARTIR DAQUI
+            Dim l_compononent_count As Int16 = g_a_doses_list.Count
+            If l_compononent_count > 0 Then
+                ''Percorrer as instruções para cada componente
+                For i As Integer = 0 To l_compononent_count - 1
+                    If g_a_doses_list(i).flg_updated = "Y" Then
+                        For J As Integer = 0 To 6
+                            Dim l_a_instructions() As String
+                            GET_INSTRUCTIONS(J, g_a_doses_list(i), l_a_instructions)
 
-                For i As Integer = 0 To l_number_instructions_to_add
-                    GET_INSTRUCTIONS(i, l_a_instructions)
+                            If l_a_instructions(0) <> "NULL" Then
+                                If Not medication.CREATE_STD_PRESC_DIR_ITEM_SEQ(g_id_institution, l_id_new_std_presc_dir_item, g_id_product_supplier, J + 1, l_a_instructions) Then
+                                    MsgBox("Error createing std_presc_dir_item!", vbCritical)
+                                End If
+                            End If
+                        Next
+                    Else
+                        Dim dr_std_presc_dir_item_seq As OracleDataReader
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                        If Not medication.GET_STD_PRESC_DIR_ITEM_SEQ_COMPLEX(g_id_institution, g_id_std_presc_dir_item, g_a_components_list(i), g_id_product_supplier, dr_std_presc_dir_item_seq) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                            MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM_seq!", vbCritical)
+                        Else
+                            Dim l_index_seq As Int16 = 0
+                            While dr_std_presc_dir_item_seq.Read()
+                                If l_index_seq = 0 Then
+                                    ''dose value                                    
+                                    Try
+                                        g_a_doses_list(i).dose_value_1 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_1 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_1 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_1 = -1
+                                    End Try
 
-                    If Not medication.CREATE_STD_PRESC_DIR_ITEM_SEQ(g_id_institution, l_id_new_std_presc_dir_item, g_id_product_supplier, i + 1, l_a_instructions) Then
-                        MsgBox("Error createing std_presc_dir_item!", vbCritical)
+                                ElseIf l_index_seq = 1 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_2 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_2 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_2 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_2 = -1
+                                    End Try
+
+                                ElseIf l_index_seq = 2 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_3 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_3 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_3 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_3 = -1
+                                    End Try
+
+                                ElseIf l_index_seq = 3 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_4 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_4 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_4 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_4 = -1
+                                    End Try
+
+                                ElseIf l_index_seq = 4 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_5 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_5 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_5 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_5 = -1
+                                    End Try
+
+                                ElseIf l_index_seq = 5 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_6 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_6 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_6 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_6 = -1
+                                    End Try
+
+                                ElseIf l_index_seq = 6 Then
+                                    ''dose value
+                                    Try
+                                        g_a_doses_list(i).dose_value_7 = dr_std_presc_dir_item_seq.Item(0)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).dose_value_7 = -1
+                                    End Try
+                                    ''dose um
+                                    Try
+                                        g_a_doses_list(i).id_unit_dose_7 = dr_std_presc_dir_item_seq.Item(1)
+                                    Catch ex As Exception
+                                        g_a_doses_list(i).id_unit_dose_7 = -1
+                                    End Try
+
+                                End If
+                                l_index_seq = l_index_seq + 1
+                            End While
+
+                            For J As Integer = 0 To 6
+                                Dim l_a_instructions() As String
+                                GET_INSTRUCTIONS(J, g_a_doses_list(i), l_a_instructions)
+
+                                If l_a_instructions(0) <> "NULL" Then
+                                    If Not medication.CREATE_STD_PRESC_DIR_ITEM_SEQ(g_id_institution, l_id_new_std_presc_dir_item, g_id_product_supplier, J + 1, l_a_instructions) Then
+                                        MsgBox("Error createing std_presc_dir_item!", vbCritical)
+                                    End If
+                                End If
+                            Next
+                        End If
                     End If
                 Next
             End If
+
         Catch ex As Exception
             Return False
         End Try
@@ -206,393 +428,195 @@ Public Class Med_STD_Complex_IV
 
     End Function
 
-    Function GET_INSTRUCTIONS(ByVal i_index_instructions As Int16, ByRef o_array_instructions() As String) As Boolean
+    Function GET_INSTRUCTIONS(ByVal i_index_instructions As Int16, ByVal i_a_doses As Medication_API.MED_SET_DOSES, ByRef o_array_instructions() As String) As Boolean
 
-        ReDim o_array_instructions(6)
+        ReDim o_array_instructions(7)
 
         Try
             If i_index_instructions = 0 Then
                 'DOSE
-                If TextBox1.Text <> "" Then
-                    o_array_instructions(0) = (TextBox1.Text).Replace(",", ".")
+                If i_a_doses.dose_value_1 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_1
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox4.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox4.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_1 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_1
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox17.Text <> "" And ComboBox18.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox17.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox18.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox18.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox34.Text <> "" Then
-                    l_aux = TextBox34.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox23.Text <> "" And TextBox34.Text <> "" Then
-                    l_aux = l_aux + TextBox23.Text
-                ElseIf TextBox23.Text <> "" And TextBox34.Text = "" Then
-                    l_aux = TextBox23.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 1 Then
                 'DOSE
-                If TextBox5.Text <> "" Then
-                    o_array_instructions(0) = (TextBox5.Text).Replace(",", ".")
+                If i_a_doses.dose_value_2 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_2
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox6.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox6.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_2 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_2
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox16.Text <> "" And ComboBox17.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox16.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox17.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox17.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox33.Text <> "" Then
-                    l_aux = TextBox33.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox22.Text <> "" And TextBox33.Text <> "" Then
-                    l_aux = l_aux + TextBox22.Text
-                ElseIf TextBox22.Text <> "" And TextBox33.Text = "" Then
-                    l_aux = TextBox22.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 2 Then
                 'DOSE
-                If TextBox6.Text <> "" Then
-                    o_array_instructions(0) = (TextBox6.Text).Replace(",", ".")
+                If i_a_doses.dose_value_3 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_3
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox7.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox7.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_3 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_3
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox15.Text <> "" And ComboBox16.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox15.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox16.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox16.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox32.Text <> "" Then
-                    l_aux = TextBox32.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox20.Text <> "" And TextBox32.Text <> "" Then
-                    l_aux = l_aux + TextBox20.Text
-                ElseIf TextBox20.Text <> "" And TextBox32.Text = "" Then
-                    l_aux = TextBox20.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 3 Then
                 'DOSE
-                If TextBox7.Text <> "" Then
-                    o_array_instructions(0) = (TextBox7.Text).Replace(",", ".")
+                If i_a_doses.dose_value_4 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_4
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox8.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox8.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_4 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_4
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox14.Text <> "" And ComboBox15.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox14.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox15.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox15.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox29.Text <> "" Then
-                    l_aux = TextBox29.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox18.Text <> "" And TextBox29.Text <> "" Then
-                    l_aux = l_aux + TextBox18.Text
-                ElseIf TextBox18.Text <> "" And TextBox29.Text = "" Then
-                    l_aux = TextBox18.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 4 Then
                 'DOSE
-                If TextBox8.Text <> "" Then
-                    o_array_instructions(0) = (TextBox8.Text).Replace(",", ".")
+                If i_a_doses.dose_value_5 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_5
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox9.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox9.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_5 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_5
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox13.Text <> "" And ComboBox14.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox13.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox14.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox14.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox31.Text <> "" Then
-                    l_aux = TextBox31.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox30.Text <> "" And TextBox31.Text <> "" Then
-                    l_aux = l_aux + TextBox30.Text
-                ElseIf TextBox30.Text <> "" And TextBox31.Text = "" Then
-                    l_aux = TextBox30.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 5 Then
                 'DOSE
-                If TextBox9.Text <> "" Then
-                    o_array_instructions(0) = (TextBox9.Text).Replace(",", ".")
+                If i_a_doses.dose_value_6 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_6
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox10.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox10.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_6 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_6
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox12.Text <> "" And ComboBox13.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox12.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox13.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox13.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox28.Text <> "" Then
-                    l_aux = TextBox28.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox19.Text <> "" And TextBox28.Text <> "" Then
-                    l_aux = l_aux + TextBox19.Text
-                ElseIf TextBox19.Text <> "" And TextBox28.Text = "" Then
-                    l_aux = TextBox19.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
             ElseIf i_index_instructions = 6 Then
                 'DOSE
-                If TextBox10.Text <> "" Then
-                    o_array_instructions(0) = (TextBox10.Text).Replace(",", ".")
+                If i_a_doses.dose_value_7 <> -1 Then
+                    o_array_instructions(0) = i_a_doses.dose_value_7
                 Else
                     o_array_instructions(0) = "NULL"
                 End If
                 'DOSE UNIT MEASURE
-                If ComboBox11.Text <> "" Then
-                    o_array_instructions(1) = g_a_product_um(ComboBox11.SelectedIndex - 1) ''-1 PORQUE A 1ª POSIÇÃO DA COMBOBOX É NULL
+                If i_a_doses.id_unit_dose_7 <> -1 Then
+                    o_array_instructions(1) = i_a_doses.id_unit_dose_7
                 Else
                     o_array_instructions(1) = "NULL"
                 End If
                 'RATE
-                If TextBox11.Text <> "" And ComboBox12.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
-                    o_array_instructions(2) = (TextBox11.Text).Replace(",", ".")
-                Else
-                    o_array_instructions(2) = "NULL"
-                End If
+                o_array_instructions(2) = "NULL"
                 'RATE UNIT MEASURE
-                If ComboBox12.SelectedIndex = 1 Then
-                    o_array_instructions(3) = "10491"
-                Else
-                    o_array_instructions(3) = "NULL"
-                End If
+                o_array_instructions(3) = "NULL"
                 'RATE UNIT MEASURE - BOLUS
-                If ComboBox12.SelectedIndex = 2 Then
-                    o_array_instructions(4) = "21"
-                Else
-                    o_array_instructions(4) = "9999"
-                End If
+                o_array_instructions(4) = "NULL"
                 ''DURATION
-                Dim l_duration As String = "NULL"
-                Dim l_aux As Int64 = 0
-                If TextBox25.Text <> "" Then
-                    l_aux = TextBox25.Text * 60
-                End If
+                o_array_instructions(5) = "NULL"
+                o_array_instructions(6) = "NULL"
 
-                If TextBox21.Text <> "" And TextBox25.Text <> "" Then
-                    l_aux = l_aux + TextBox21.Text
-                ElseIf TextBox21.Text <> "" And TextBox25.Text = "" Then
-                    l_aux = TextBox21.Text
-                End If
-                If l_aux > 0 Then
-                    l_duration = l_aux
-                End If
-                o_array_instructions(5) = l_duration
-
-                If l_duration = "NULL" Then
-                    o_array_instructions(6) = "NULL"
-                Else
-                    o_array_instructions(6) = "10374"
-                End If
+                ''ID_PRODUCT
+                o_array_instructions(7) = "'" & i_a_doses.id_product_component & "'"
 
                 ''construir função de gravaçao da item_seq inserindo o array o_array_instructions
             End If
-
-
 
         Catch ex As Exception
             Return False
@@ -1550,6 +1574,10 @@ Public Class Med_STD_Complex_IV
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         Cursor = Cursors.WaitCursor
+
+        ''Gravar para a estrutura de doses antes de limpar
+        SAVE_TO_DOSE_STRUCT()
+
         Dim l_id_grant As Int64 = -1
 
         If ComboBox2.SelectedIndex < 0 Then
@@ -1828,97 +1856,7 @@ Public Class Med_STD_Complex_IV
     Private Sub ComboBox40_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox40.SelectedIndexChanged
 
         ''Gravar para a estrutura de doses antes de limpar
-        If g_component_selected_index > -1 Then
-            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_1 = TextBox1.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_1 = -1
-            End If
-            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_2 = TextBox5.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_2 = -1
-            End If
-            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_3 = TextBox6.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_3 = -1
-            End If
-            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_4 = TextBox7.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_4 = -1
-            End If
-            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_5 = TextBox8.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_5 = -1
-            End If
-            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_6 = TextBox9.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_6 = -1
-            End If
-            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).dose_value_7 = TextBox10.Text
-            Else
-                g_a_doses_list(g_component_selected_index).dose_value_7 = -1
-            End If
-
-            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
-                MsgBox(g_a_unit_measure.Count)
-                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = ""
-            End If
-            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = ""
-            End If
-            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = ""
-            End If
-            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = ""
-            End If
-            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = ""
-            End If
-            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = ""
-            End If
-            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
-                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).id_unit_measure
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).unit_measure_desc
-            Else
-                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = -1
-                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = ""
-            End If
-
-            g_a_doses_list(g_component_selected_index).flg_updated = "Y"
-
-        End If
+        SAVE_TO_DOSE_STRUCT()
 
         ''LIMPAR
         ComboBox4.Items.Clear()
