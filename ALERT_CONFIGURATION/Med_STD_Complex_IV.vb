@@ -13,6 +13,7 @@ Public Class Med_STD_Complex_IV
     Dim g_default_route As String = -1
     Dim g_id_market As Int16 = -1
     Dim g_id_std_presc_dir_item As Int64 = -1
+    Dim g_component_selected_index As Int64 = -1
 
     Dim g_a_med_set_instructions() As Medication_API.MED_SET_INSTRUCTIONS
     Dim g_a_frequencies() As Int64
@@ -22,6 +23,7 @@ Public Class Med_STD_Complex_IV
     Dim g_a_duration_um() As Int64
     Dim g_a_components_list() As String
     Dim g_a_doses_list() As Medication_API.MED_SET_DOSES
+    Dim g_a_unit_measure() As Medication_API.UM_INFO
 
     Public Sub New(ByVal i_institution As Int64, ByVal i_software_index As Int16, ByVal i_id_product As String, ByVal i_id_product_supplier As String, ByVal i_default_route As String)
 
@@ -681,11 +683,38 @@ Public Class Med_STD_Complex_IV
         End If
 
         ReDim g_a_components_list(0)
+        ReDim g_a_doses_list(0)
         Dim i_cl As Integer = 0
         While l_dr_components_list.Read()
             ComboBox40.Items.Add(l_dr_components_list.Item(1))
             ReDim Preserve g_a_components_list(i_cl)
             g_a_components_list(i_cl) = l_dr_components_list.Item(0)
+
+            ReDim Preserve g_a_doses_list(i_cl)
+            g_a_doses_list(i_cl).id_product_component = l_dr_components_list.Item(0)
+            g_a_doses_list(i_cl).dose_value_1 = -1
+            g_a_doses_list(i_cl).dose_value_2 = -1
+            g_a_doses_list(i_cl).dose_value_3 = -1
+            g_a_doses_list(i_cl).dose_value_4 = -1
+            g_a_doses_list(i_cl).dose_value_5 = -1
+            g_a_doses_list(i_cl).dose_value_6 = -1
+            g_a_doses_list(i_cl).dose_value_7 = -1
+            g_a_doses_list(i_cl).id_unit_dose_1 = -1
+            g_a_doses_list(i_cl).id_unit_dose_2 = -1
+            g_a_doses_list(i_cl).id_unit_dose_3 = -1
+            g_a_doses_list(i_cl).id_unit_dose_4 = -1
+            g_a_doses_list(i_cl).id_unit_dose_5 = -1
+            g_a_doses_list(i_cl).id_unit_dose_6 = -1
+            g_a_doses_list(i_cl).id_unit_dose_7 = -1
+            g_a_doses_list(i_cl).desc_unit_dose_1 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_2 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_3 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_4 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_5 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_6 = ""
+            g_a_doses_list(i_cl).desc_unit_dose_7 = ""
+            g_a_doses_list(i_cl).flg_updated = "N"
+
             i_cl = i_cl + 1
         End While
 
@@ -851,7 +880,7 @@ Public Class Med_STD_Complex_IV
         ComboBox10.SelectedIndex = -1
         ComboBox11.SelectedIndex = -1
 
-        ReDim g_a_doses_list(0)
+        'ReDim g_a_doses_list(0)
 
         'rates
         TextBox17.Text = ""
@@ -1799,13 +1828,97 @@ Public Class Med_STD_Complex_IV
     Private Sub ComboBox40_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox40.SelectedIndexChanged
 
         ''Gravar para a estrutura de doses antes de limpar
-        Dim l_dose_length As Integer = g_a_doses_list.Count
+        If g_component_selected_index > -1 Then
+            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_1 = TextBox1.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_1 = -1
+            End If
+            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_2 = TextBox5.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_2 = -1
+            End If
+            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_3 = TextBox6.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_3 = -1
+            End If
+            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_4 = TextBox7.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_4 = -1
+            End If
+            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_5 = TextBox8.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_5 = -1
+            End If
+            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_6 = TextBox9.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_6 = -1
+            End If
+            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).dose_value_7 = TextBox10.Text
+            Else
+                g_a_doses_list(g_component_selected_index).dose_value_7 = -1
+            End If
 
-        ReDim Preserve g_a_doses_list(l_dose_length)
-        'g_a_doses_list(l_dose_length).id_item_seq =
-        'g_a_doses_list(l_dose_length).dose_value
-        'g_a_doses_list(l_dose_length).id_unit_dose
-        'g_a_doses_list(l_dose_length).id_product_component
+            If TextBox1.Text <> "" And ComboBox4.SelectedIndex > 0 Then
+                MsgBox(g_a_unit_measure.Count)
+                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = g_a_unit_measure(ComboBox4.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_1 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_1 = ""
+            End If
+            If TextBox5.Text <> "" And ComboBox6.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = g_a_unit_measure(ComboBox6.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_2 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_2 = ""
+            End If
+            If TextBox6.Text <> "" And ComboBox7.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = g_a_unit_measure(ComboBox7.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_3 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_3 = ""
+            End If
+            If TextBox7.Text <> "" And ComboBox8.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = g_a_unit_measure(ComboBox8.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_4 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_4 = ""
+            End If
+            If TextBox8.Text <> "" And ComboBox9.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = g_a_unit_measure(ComboBox9.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_5 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_5 = ""
+            End If
+            If TextBox9.Text <> "" And ComboBox10.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = g_a_unit_measure(ComboBox10.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_6 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_6 = ""
+            End If
+            If TextBox10.Text <> "" And ComboBox11.SelectedIndex > 0 Then
+                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).id_unit_measure
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = g_a_unit_measure(ComboBox11.SelectedIndex - 1).unit_measure_desc
+            Else
+                g_a_doses_list(g_component_selected_index).id_unit_dose_7 = -1
+                g_a_doses_list(g_component_selected_index).desc_unit_dose_7 = ""
+            End If
+
+            g_a_doses_list(g_component_selected_index).flg_updated = "Y"
+
+        End If
 
         ''LIMPAR
         ComboBox4.Items.Clear()
@@ -1825,6 +1938,9 @@ Public Class Med_STD_Complex_IV
 
             ReDim g_a_product_um(0)
 
+            Dim l_index_um As Integer = 0
+            ReDim g_a_unit_measure(0)
+
             While l_dr_product_um.Read()
                 If i = 0 Then
                     ComboBox4.Items.Add("")
@@ -1842,6 +1958,12 @@ Public Class Med_STD_Complex_IV
                 ComboBox9.Items.Add(l_dr_product_um.Item(1))
                 ComboBox10.Items.Add(l_dr_product_um.Item(1))
                 ComboBox11.Items.Add(l_dr_product_um.Item(1))
+
+                ReDim Preserve g_a_unit_measure(l_index_um)
+                g_a_unit_measure(l_index_um).id_unit_measure = l_dr_product_um.Item(0)
+                g_a_unit_measure(l_index_um).unit_measure_desc = l_dr_product_um.Item(1)
+                l_index_um = l_index_um + 1
+
                 ReDim Preserve g_a_product_um(i)
                 g_a_product_um(i) = l_dr_product_um(0)
                 i = i + 1
@@ -1867,13 +1989,59 @@ Public Class Med_STD_Complex_IV
         ComboBox10.Text = ""
         ComboBox11.Text = ""
 
-        Dim dr_std_presc_dir_item_seq As OracleDataReader
-#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-        If Not medication.GET_STD_PRESC_DIR_ITEM_SEQ_COMPLEX(g_id_institution, g_id_std_presc_dir_item, g_a_components_list(ComboBox40.SelectedIndex), g_id_product_supplier, dr_std_presc_dir_item_seq) Then
-#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM_seq!", vbCritical)
+        If g_a_doses_list(ComboBox40.SelectedIndex).flg_updated = "Y" Then
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_1 > -1 Then
+                TextBox1.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_1
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_2 > -1 Then
+                TextBox5.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_2
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_3 > -1 Then
+                TextBox6.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_3
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_4 > -1 Then
+                TextBox7.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_4
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_5 > -1 Then
+                TextBox8.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_5
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_6 > -1 Then
+                TextBox9.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_6
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).dose_value_7 > -1 Then
+                TextBox10.Text = g_a_doses_list(ComboBox40.SelectedIndex).dose_value_7
+            End If
+
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_1 > -1 Then
+                ComboBox4.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_1
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_2 > -1 Then
+                ComboBox6.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_2
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_3 > -1 Then
+                ComboBox7.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_3
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_4 > -1 Then
+                ComboBox8.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_4
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_5 > -1 Then
+                ComboBox9.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_5
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_6 > -1 Then
+                ComboBox10.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_6
+            End If
+            If g_a_doses_list(ComboBox40.SelectedIndex).id_unit_dose_7 > -1 Then
+                ComboBox11.Text = g_a_doses_list(ComboBox40.SelectedIndex).desc_unit_dose_7
+            End If
+
         Else
-            While dr_std_presc_dir_item_seq.Read()
+            Dim dr_std_presc_dir_item_seq As OracleDataReader
+#Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+            If Not medication.GET_STD_PRESC_DIR_ITEM_SEQ_COMPLEX(g_id_institution, g_id_std_presc_dir_item, g_a_components_list(ComboBox40.SelectedIndex), g_id_product_supplier, dr_std_presc_dir_item_seq) Then
+#Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
+                MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM_seq!", vbCritical)
+            Else
+                While dr_std_presc_dir_item_seq.Read()
                 If l_index_seq = 0 Then
                     ''dose value
                     Try
@@ -1881,12 +2049,12 @@ Public Class Med_STD_Complex_IV
                     Catch ex As Exception
                         TextBox1.Text = ""
                     End Try
-                    ''dose desc
-                    Try
-                        ComboBox4.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox4.Text = ""
-                    End Try
+                        ''dose desc
+                        Try
+                            ComboBox4.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox4.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 1 Then
                     ''dose value
@@ -1897,10 +2065,10 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox6.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox6.Text = ""
-                    End Try
+                            ComboBox6.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox6.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 2 Then
                     ''dose value
@@ -1911,10 +2079,10 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox7.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox7.Text = ""
-                    End Try
+                            ComboBox7.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox7.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 3 Then
                     ''dose value
@@ -1925,10 +2093,10 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox8.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox8.Text = ""
-                    End Try
+                            ComboBox8.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox8.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 4 Then
                     ''dose value
@@ -1939,10 +2107,10 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox9.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox9.Text = ""
-                    End Try
+                            ComboBox9.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox9.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 5 Then
                     ''dose value
@@ -1953,10 +2121,10 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox10.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox10.Text = ""
-                    End Try
+                            ComboBox10.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox10.Text = ""
+                        End Try
 
                 ElseIf l_index_seq = 6 Then
                     ''dose value
@@ -1967,13 +2135,18 @@ Public Class Med_STD_Complex_IV
                     End Try
                     ''dose desc
                     Try
-                        ComboBox11.Text = dr_std_presc_dir_item_seq.Item(2)
-                    Catch ex As Exception
-                        ComboBox11.Text = ""
-                    End Try
+                            ComboBox11.Text = dr_std_presc_dir_item_seq.Item(2)
+                        Catch ex As Exception
+                            ComboBox11.Text = ""
+                        End Try
                 End If
                 l_index_seq = l_index_seq + 1
             End While
         End If
+        End If
+
+        g_component_selected_index = ComboBox40.SelectedIndex
+
     End Sub
+
 End Class

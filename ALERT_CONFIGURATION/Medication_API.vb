@@ -22,10 +22,34 @@ Public Class Medication_API
     End Structure
 
     Public Structure MED_SET_DOSES
-        Public id_item_seq As Integer
-        Public dose_value As Int64
-        Public id_unit_dose As Int64
+        Public dose_value_1 As Int64
+        Public id_unit_dose_1 As Int64
+        Public desc_unit_dose_1 As String
+        Public dose_value_2 As Int64
+        Public id_unit_dose_2 As Int64
+        Public desc_unit_dose_2 As String
+        Public dose_value_3 As Int64
+        Public id_unit_dose_3 As Int64
+        Public desc_unit_dose_3 As String
+        Public dose_value_4 As Int64
+        Public id_unit_dose_4 As Int64
+        Public desc_unit_dose_4 As String
+        Public dose_value_5 As Int64
+        Public id_unit_dose_5 As Int64
+        Public desc_unit_dose_5 As String
+        Public dose_value_6 As Int64
+        Public id_unit_dose_6 As Int64
+        Public desc_unit_dose_6 As String
+        Public dose_value_7 As Int64
+        Public id_unit_dose_7 As Int64
+        Public desc_unit_dose_7 As String
         Public id_product_component As String
+        Public flg_updated As String
+    End Structure
+
+    Public Structure UM_INFO
+        Public id_unit_measure As Int64
+        Public unit_measure_desc As String
     End Structure
 
     Function GET_LIST_PRODUCTS(ByVal i_institution As Int64, ByVal i_product_supplier As String, ByVal i_product_desc As String, ByRef i_dr As OracleDataReader) As Boolean
