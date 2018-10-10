@@ -204,7 +204,7 @@ Partial Class MED_STD_NON_IV
         Me.ComboBox1.FormattingEnabled = True
         Me.ComboBox1.Location = New System.Drawing.Point(272, 79)
         Me.ComboBox1.Name = "ComboBox1"
-        Me.ComboBox1.Size = New System.Drawing.Size(64, 21)
+        Me.ComboBox1.Size = New System.Drawing.Size(73, 21)
         Me.ComboBox1.TabIndex = 146
         '
         'Label1
@@ -1309,7 +1309,7 @@ Partial Class MED_STD_NON_IV
         'TextBox26
         '
         Me.TextBox26.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox26.Location = New System.Drawing.Point(343, 78)
+        Me.TextBox26.Location = New System.Drawing.Point(351, 77)
         Me.TextBox26.Name = "TextBox26"
         Me.TextBox26.Size = New System.Drawing.Size(110, 22)
         Me.TextBox26.TabIndex = 260
@@ -1317,7 +1317,7 @@ Partial Class MED_STD_NON_IV
         'Label54
         '
         Me.Label54.AutoSize = True
-        Me.Label54.Location = New System.Drawing.Point(340, 63)
+        Me.Label54.Location = New System.Drawing.Point(349, 63)
         Me.Label54.Name = "Label54"
         Me.Label54.Size = New System.Drawing.Size(114, 13)
         Me.Label54.TabIndex = 261
@@ -1344,15 +1344,15 @@ Partial Class MED_STD_NON_IV
         'TextBox27
         '
         Me.TextBox27.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox27.Location = New System.Drawing.Point(482, 77)
+        Me.TextBox27.Location = New System.Drawing.Point(467, 77)
         Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.Size = New System.Drawing.Size(92, 22)
+        Me.TextBox27.Size = New System.Drawing.Size(105, 22)
         Me.TextBox27.TabIndex = 264
         '
         'Label56
         '
         Me.Label56.AutoSize = True
-        Me.Label56.Location = New System.Drawing.Point(479, 63)
+        Me.Label56.Location = New System.Drawing.Point(469, 63)
         Me.Label56.Name = "Label56"
         Me.Label56.Size = New System.Drawing.Size(91, 13)
         Me.Label56.TabIndex = 265

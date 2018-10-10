@@ -99,7 +99,7 @@ Partial Class MEDICATION
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(175, 8)
+        Me.Label2.Location = New System.Drawing.Point(159, 8)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 13)
         Me.Label2.TabIndex = 112
@@ -124,9 +124,9 @@ Partial Class MEDICATION
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(178, 24)
+        Me.ComboBox1.Location = New System.Drawing.Point(162, 24)
         Me.ComboBox1.Name = "ComboBox1"
-        Me.ComboBox1.Size = New System.Drawing.Size(228, 21)
+        Me.ComboBox1.Size = New System.Drawing.Size(242, 21)
         Me.ComboBox1.TabIndex = 109
         '
         'Label3

@@ -271,7 +271,7 @@ Partial Class Med_STD_IV
         'Label56
         '
         Me.Label56.AutoSize = True
-        Me.Label56.Location = New System.Drawing.Point(481, 55)
+        Me.Label56.Location = New System.Drawing.Point(468, 55)
         Me.Label56.Name = "Label56"
         Me.Label56.Size = New System.Drawing.Size(91, 13)
         Me.Label56.TabIndex = 279
@@ -280,15 +280,15 @@ Partial Class Med_STD_IV
         'TextBox27
         '
         Me.TextBox27.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox27.Location = New System.Drawing.Point(480, 71)
+        Me.TextBox27.Location = New System.Drawing.Point(468, 71)
         Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.Size = New System.Drawing.Size(92, 22)
+        Me.TextBox27.Size = New System.Drawing.Size(104, 22)
         Me.TextBox27.TabIndex = 278
         '
         'Label54
         '
         Me.Label54.AutoSize = True
-        Me.Label54.Location = New System.Drawing.Point(362, 55)
+        Me.Label54.Location = New System.Drawing.Point(348, 55)
         Me.Label54.Name = "Label54"
         Me.Label54.Size = New System.Drawing.Size(114, 13)
         Me.Label54.TabIndex = 277
@@ -297,7 +297,7 @@ Partial Class Med_STD_IV
         'TextBox26
         '
         Me.TextBox26.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox26.Location = New System.Drawing.Point(365, 71)
+        Me.TextBox26.Location = New System.Drawing.Point(352, 71)
         Me.TextBox26.Name = "TextBox26"
         Me.TextBox26.Size = New System.Drawing.Size(110, 22)
         Me.TextBox26.TabIndex = 276
@@ -335,7 +335,7 @@ Partial Class Med_STD_IV
         Me.ComboBox1.FormattingEnabled = True
         Me.ComboBox1.Location = New System.Drawing.Point(295, 71)
         Me.ComboBox1.Name = "ComboBox1"
-        Me.ComboBox1.Size = New System.Drawing.Size(64, 21)
+        Me.ComboBox1.Size = New System.Drawing.Size(51, 21)
         Me.ComboBox1.TabIndex = 272
         '
         'Label52

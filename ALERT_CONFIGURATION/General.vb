@@ -247,57 +247,38 @@ Public Class General
         Dim dr As OracleDataReader
 
         Try
-
             Try
-                '     dr.Dispose()
                 dr = cmd.ExecuteReader()
-                cmd.Dispose()
-                cmd.Cancel()
             Catch ex As Exception
                 dr = cmd.ExecuteReader()
-                cmd.Dispose()
-                cmd.Cancel()
             End Try
-            cmd.Dispose()
+
             DEBUGGER.SET_DEBUG("GENERAL :: GET_INSTITUTION(" & i_ID_INST & ")")
 
             Dim l_parameters(0) As String
             l_parameters(0) = "DESC_INSTITUTION"
 
             DEBUGGER.SET_RESPONSE("GENERAL :: GET_INSTITUTION", l_parameters, dr)
+
             Try
-                '  dr.Dispose()
                 dr = cmd.ExecuteReader()
-                cmd.Dispose()
-                cmd.Cancel()
             Catch ex As Exception
                 dr = cmd.ExecuteReader()
-                cmd.Dispose()
-                cmd.Cancel()
             End Try
 
             While dr.Read()
-
                 l_inst = dr.Item(0)
-
             End While
-
-            dr.Dispose()
-            dr.Close()
-            cmd.Dispose()
-
         Catch ex As Exception
-
             DEBUGGER.SET_DEBUG_ERROR_INIT("GENERAL :: GET_INSTITUTION")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
-
-            dr.Dispose()
-            dr.Close()
-            cmd.Dispose()
-
         End Try
+
+        dr.Dispose()
+        dr.Close()
+        cmd.Dispose()
 
         Return l_inst
 
@@ -369,9 +350,8 @@ Public Class General
                                                           19,
                                                           T.desc_lang_19)) is not null
                                              order by 1 asc"
+        Dim cmd As New OracleCommand(sql, Connection.conn)
         Try
-
-            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
             DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
@@ -397,6 +377,7 @@ Public Class General
             DEBUGGER.SET_DEBUG("CONFLICT OF ALERT(R) VERSIONS. TRYING NEW QUERY.")
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
+            cmd.Dispose()
             Try
 
                 sql = "select decode(i.id_market,
@@ -468,7 +449,6 @@ Public Class General
                 cmd_Old_version.CommandType = CommandType.Text
 
                 Try
-                    '   i_dr.Dispose()
                     i_dr = cmd_Old_version.ExecuteReader()
                     cmd_Old_version.Dispose()
                     cmd_Old_version.Cancel()
@@ -539,16 +519,14 @@ Public Class General
 
         End If
 
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+
         Try
 
-            Dim cmd As New OracleCommand(sql, Connection.conn)
             cmd.CommandType = CommandType.Text
 
-            '  i_dr.Dispose()
             i_dr = cmd.ExecuteReader()
-                cmd.Dispose()
-            'cmd.Cancel()
-
+            cmd.Dispose()
             Return True
 
         Catch ex As Exception
@@ -557,6 +535,7 @@ Public Class General
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd.Dispose()
 
             Return False
 
@@ -754,7 +733,6 @@ Public Class General
         dr.Dispose()
         dr.Close()
         cmd.Dispose()
-
 
         Return l_id_language
 
@@ -1304,6 +1282,10 @@ Public Class General
                 l_id_market = dr.Item(0)
 
             End While
+
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
 
             Return l_id_market
 

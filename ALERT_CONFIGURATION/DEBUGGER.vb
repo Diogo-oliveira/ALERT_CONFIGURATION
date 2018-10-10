@@ -67,7 +67,7 @@ Public Class DEBUGGER
         Dim sw As StreamWriter
 
         sw = File.AppendText(l_debug_file)
-        sw.WriteLine(DateTime.Now & " - " & i_debug)
+        sw.WriteLine(DateTime.Now & " - " & i_debug & " - open cursors: " & GET_OPEN_CURSORS())
         sw.Dispose()
         sw.Close()
 
@@ -155,50 +155,83 @@ Public Class DEBUGGER
 
     Public Shared Function SET_RESPONSE(ByVal i_function_name As String, i_parameters As String(), i_result As OracleDataReader)
 
-        Dim l_debug_file As String = CURRENT_PATH & DEBUG_FOLDER & DEBUG_FILE
-        Dim sw As StreamWriter
+        If 2 = 1 Then
+            Dim l_debug_file As String = CURRENT_PATH & DEBUG_FOLDER & DEBUG_FILE
+            Dim sw As StreamWriter
 
-        Dim l_has_results As Boolean = False
+            Dim l_has_results As Boolean = False
 
-        sw = File.AppendText(l_debug_file)
+            sw = File.AppendText(l_debug_file)
+
+            Try
+                ' sw.WriteLine(DateTime.Now & " - " & i_function_name & " RESPONSE:")
+                sw.WriteLine("Parameters:")
+                sw.WriteLine(" ")
+
+                For i As Integer = 0 To i_parameters.Count - 1
+
+                    sw.WriteLine("[" & i & "]: " & i_parameters(i).ToUpper)
+
+                Next
+
+                sw.WriteLine(" ")
+                sw.WriteLine("Items:")
+                sw.WriteLine(" ")
+
+                Dim ii As Integer = 0
+                While i_result.Read()
+                    sw.WriteLine("[" & ii & "]")
+                    For j As Integer = 0 To i_parameters.Count - 1
+                        sw.WriteLine("   " & i_parameters(j).ToUpper & ": " & i_result.Item(j))
+                    Next
+                    sw.WriteLine(" ")
+                    ii = ii + 1
+                    l_has_results = True
+                End While
+
+                If l_has_results = False Then
+                    sw.WriteLine("   NULL")
+                    sw.WriteLine(" ")
+                End If
+
+            Catch ex As Exception
+                sw.Close()
+            End Try
+
+            sw.Dispose()
+            sw.Close()
+        End If
+    End Function
+
+    Public Shared Function GET_OPEN_CURSORS() As Int64
+
+        Dim l_count As Int64
+
+        Dim sql As String = "   select max(a.value)
+                                  from v$sesstat a, v$statname b, v$session s
+                                 where a.statistic# = b.statistic#  and s.sid=a.sid
+                                   and b.name = 'opened cursors current'
+                                   and s.USERNAME='ALERT_CONFIG'"
+
+        Dim cmd As New OracleCommand(sql, Connection.conn)
+        cmd.CommandType = CommandType.Text
+
+        Dim dr As OracleDataReader
 
         Try
-            ' sw.WriteLine(DateTime.Now & " - " & i_function_name & " RESPONSE:")
-            sw.WriteLine("Parameters:")
-            sw.WriteLine(" ")
+            dr = cmd.ExecuteReader()
 
-            For i As Integer = 0 To i_parameters.Count - 1
-
-                sw.WriteLine("[" & i & "]: " & i_parameters(i).ToUpper)
-
-            Next
-
-            sw.WriteLine(" ")
-            sw.WriteLine("Items:")
-            sw.WriteLine(" ")
-
-            Dim ii As Integer = 0
-            While i_result.Read()
-                sw.WriteLine("[" & ii & "]")
-                For j As Integer = 0 To i_parameters.Count - 1
-                    sw.WriteLine("   " & i_parameters(j).ToUpper & ": " & i_result.Item(j))
-                Next
-                sw.WriteLine(" ")
-                ii = ii + 1
-                l_has_results = True
+            While dr.Read()
+                l_count = dr.Item(0)
             End While
-
-            If l_has_results = False Then
-                sw.WriteLine("   NULL")
-                sw.WriteLine(" ")
-            End If
-
+            dr.Dispose()
+            dr.Close()
+            cmd.Dispose()
         Catch ex As Exception
-            sw.Close()
+            cmd.Dispose()
         End Try
 
-        sw.Dispose()
-        sw.Close()
+        Return l_count
 
     End Function
 

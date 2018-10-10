@@ -1051,7 +1051,7 @@ Public Class Medication_API
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
         Dim l_market As Int16 = db_access_general.GET_INSTITUTION_MARKET(i_institution)
 
-        Dim sql As String = "SELECT v3.data AS data, v3.label AS label, v3.type AS TYPE, v3.rank AS rank
+        Dim sql As String = "SELECT v3.data, v3.label AS label, v3.type AS TYPE, v3.rank AS rank
                               FROM (
                                     --frequecies from presc_list
                                     SELECT g.data AS data, g.label AS label, g.type AS TYPE, g.display_rank AS rank
@@ -1110,6 +1110,7 @@ Public Class Medication_API
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+
             cmd.Dispose()
             Return False
         End Try
@@ -1985,6 +1986,14 @@ Public Class Medication_API
 
         Dim l_id_language As Int16 = db_access_general.GET_ID_LANG(i_institution)
 
+        Dim l_id_recurrence As String
+
+        If i_a_instructions(2) = 1 Then
+            l_id_recurrence = 0
+        Else
+            l_id_recurrence = i_a_instructions(2)
+        End If
+
         Dim sql As String = "BEGIN
                              INSERT INTO alert_product_mt.std_presc_dir_item
                                 (id_std_presc_directions,
@@ -1999,7 +2008,7 @@ Public Class Medication_API
                                  rank,
                                  id_presc_dir_frequency)
                             VALUES
-                                (" & i_id_std_presc_directions & ", ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL, " & i_a_instructions(2) & ", " & i_a_instructions(3) & ", " & i_a_instructions(4) & ", " & i_a_instructions(5) & ", 10, " & i_a_instructions(0) & ", " & i_a_instructions(1) & ", " & i_index_instructions & ", " & i_a_instructions(2) & ");
+                                (" & i_id_std_presc_directions & ", ALERT_PRODUCT_MT.SEQ_STD_PRESC_DIR_ITEM.NEXTVAL, " & l_id_recurrence & ", " & i_a_instructions(3) & ", " & i_a_instructions(4) & ", " & i_a_instructions(5) & ", 10, " & i_a_instructions(0) & ", " & i_a_instructions(1) & ", " & i_index_instructions & ", " & i_a_instructions(2) & ");
                               EXCEPTION
                                     WHEN dup_val_on_index THEN
                                         UPDATE alert_product_mt.std_presc_dir_item i
@@ -2452,6 +2461,40 @@ Public Class Medication_API
             cmd_create_std.ExecuteNonQuery()
         Catch ex As Exception
             DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR_ITEM_SEQ")
+            DEBUGGER.SET_DEBUG(ex.Message)
+            DEBUGGER.SET_DEBUG(sql)
+            DEBUGGER.SET_DEBUG_ERROR_CLOSE()
+            cmd_create_std.Dispose()
+
+            Return False
+        End Try
+
+        cmd_create_std.Dispose()
+
+        Return True
+
+    End Function
+
+    Function CREATE_STD_PRESC_DIR_ADMIXTURE_SEQ(i_id_std_presc_dir_ITEM As Int64, ByVal i_id_item_seq As Int64, ByVal i_id_rate As String, ByVal i_rate_value As String, ByVal i_id_unit_rate As String, ByVal i_duration_value As String, ByVal i_id_unit_duration As String) As Boolean
+
+        Dim l_debugg_string As String = "MEDICATION_API :: CREATE_STD_PRESC_DIR_ADMIXTURE_SEQ(" & i_id_std_presc_dir_ITEM & ", " & i_id_item_seq & ", " & i_id_rate & ", " & i_rate_value & ", " & i_id_unit_rate & ", " & i_duration_value & ", " & i_id_unit_duration & ")"
+
+        DEBUGGER.SET_DEBUG(l_debugg_string)
+
+        Dim sql As String = "BEGIN
+                                INSERT INTO alert_product_mt.std_presc_dir_admixture_seq
+                                    (id_std_presc_dir_item, id_item_seq, id_rate, rate_value, id_unit_rate, duration_value, id_unit_duration)
+                                VALUES
+                                    (" & i_id_std_presc_dir_ITEM & ", " & i_id_item_seq & ", " & i_id_rate & ", " & i_rate_value & ", " & i_id_unit_rate & ", " & i_duration_value & ", " & i_id_unit_duration & ");
+                             END;"
+
+        Dim cmd_create_std As New OracleCommand(sql, Connection.conn)
+
+        Try
+            cmd_create_std.CommandType = CommandType.Text
+            cmd_create_std.ExecuteNonQuery()
+        Catch ex As Exception
+            DEBUGGER.SET_DEBUG_ERROR_INIT("MEDICATION_API :: CREATE_STD_PRESC_DIR_ADMIXTURE_SEQ")
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG(sql)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()

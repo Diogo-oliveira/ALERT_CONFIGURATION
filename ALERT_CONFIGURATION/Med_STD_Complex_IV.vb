@@ -55,6 +55,8 @@ Public Class Med_STD_Complex_IV
                 l_index_freq = l_index_freq + 1
             End While
         End If
+        dr_freq.Dispose()
+        dr_freq.Close()
     End Function
 
     Function SAVE_TO_DOSE_STRUCT()
@@ -371,6 +373,307 @@ Public Class Med_STD_Complex_IV
                     End If
                 Next
             End If
+
+            ''Gravar Rates e durações
+            For i As Integer = 0 To 6
+                Dim l_rate_value As String
+                Dim l_id_unit_rate As String
+                Dim l_id_rate As String
+                Dim l_duration As String
+                Dim l_id_unit_duration As String
+                If i = 0 Then
+                    'RATE value
+                    If TextBox17.Text <> "" And ComboBox18.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox17.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'id_unit_rate
+                    If ComboBox18.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'id_rate - BOLUS
+                    If ComboBox18.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION_VALUE
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox34.Text <> "" Then
+                        l_aux = TextBox34.Text * 60
+                    End If
+
+                    If TextBox23.Text <> "" And TextBox34.Text <> "" Then
+                        l_aux = l_aux + TextBox23.Text
+                    ElseIf TextBox23.Text <> "" And TextBox34.Text = "" Then
+                        l_aux = TextBox23.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+                    'ID_UNIT_DURATION
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+                ElseIf i = 1 Then
+                    'RATE value
+                    If TextBox16.Text <> "" And ComboBox17.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox16.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'id_unit_rate
+                    If ComboBox17.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'id_rate - BOLUS
+                    If ComboBox17.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    'DURATION_VALUE
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox33.Text <> "" Then
+                        l_aux = TextBox33.Text * 60
+                    End If
+
+                    If TextBox22.Text <> "" And TextBox33.Text <> "" Then
+                        l_aux = l_aux + TextBox22.Text
+                    ElseIf TextBox22.Text <> "" And TextBox33.Text = "" Then
+                        l_aux = TextBox22.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+                    'ID_UNIT_DURATION
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+
+                ElseIf i = 2 Then
+                    'RATE
+                    If TextBox15.Text <> "" And ComboBox16.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox15.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'RATE UNIT MEASURE
+                    If ComboBox16.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'RATE UNIT MEASURE - BOLUS
+                    If ComboBox16.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox32.Text <> "" Then
+                        l_aux = TextBox32.Text * 60
+                    End If
+
+                    If TextBox20.Text <> "" And TextBox32.Text <> "" Then
+                        l_aux = l_aux + TextBox20.Text
+                    ElseIf TextBox20.Text <> "" And TextBox32.Text = "" Then
+                        l_aux = TextBox20.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+                ElseIf i = 3 Then
+                    'RATE
+                    If TextBox14.Text <> "" And ComboBox15.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox14.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'RATE UNIT MEASURE
+                    If ComboBox15.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'RATE UNIT MEASURE - BOLUS
+                    If ComboBox15.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox29.Text <> "" Then
+                        l_aux = TextBox29.Text * 60
+                    End If
+
+                    If TextBox18.Text <> "" And TextBox29.Text <> "" Then
+                        l_aux = l_aux + TextBox18.Text
+                    ElseIf TextBox18.Text <> "" And TextBox29.Text = "" Then
+                        l_aux = TextBox18.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+                ElseIf i = 4 Then
+                    'RATE
+                    If TextBox13.Text <> "" And ComboBox14.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox13.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'RATE UNIT MEASURE
+                    If ComboBox14.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'RATE UNIT MEASURE - BOLUS
+                    If ComboBox14.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox31.Text <> "" Then
+                        l_aux = TextBox31.Text * 60
+                    End If
+
+                    If TextBox30.Text <> "" And TextBox31.Text <> "" Then
+                        l_aux = l_aux + TextBox30.Text
+                    ElseIf TextBox30.Text <> "" And TextBox31.Text = "" Then
+                        l_aux = TextBox30.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+                ElseIf i = 5 Then
+                    'RATE
+                    If TextBox12.Text <> "" And ComboBox13.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox12.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'RATE UNIT MEASURE
+                    If ComboBox13.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'RATE UNIT MEASURE - BOLUS
+                    If ComboBox13.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox28.Text <> "" Then
+                        l_aux = TextBox28.Text * 60
+                    End If
+
+                    If TextBox19.Text <> "" And TextBox28.Text <> "" Then
+                        l_aux = l_aux + TextBox19.Text
+                    ElseIf TextBox19.Text <> "" And TextBox28.Text = "" Then
+                        l_aux = TextBox19.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+
+                ElseIf i = 6 Then
+                    'RATE
+                    If TextBox11.Text <> "" And ComboBox12.SelectedIndex <> 2 Then 'INDEX 2 REFERE-SE AO BOLUS
+                        l_rate_value = (TextBox11.Text).Replace(",", ".")
+                    Else
+                        l_rate_value = "NULL"
+                    End If
+                    'RATE UNIT MEASURE
+                    If ComboBox12.SelectedIndex = 1 Then
+                        l_id_unit_rate = "10491"
+                    Else
+                        l_id_unit_rate = "NULL"
+                    End If
+                    'RATE UNIT MEASURE - BOLUS
+                    If ComboBox12.SelectedIndex = 2 Then
+                        l_id_rate = "21"
+                    Else
+                        l_id_rate = "9999"
+                    End If
+                    ''DURATION
+                    l_duration = "NULL"
+                    Dim l_aux As Int64 = 0
+                    If TextBox25.Text <> "" Then
+                        l_aux = TextBox25.Text * 60
+                    End If
+
+                    If TextBox21.Text <> "" And TextBox25.Text <> "" Then
+                        l_aux = l_aux + TextBox21.Text
+                    ElseIf TextBox21.Text <> "" And TextBox25.Text = "" Then
+                        l_aux = TextBox21.Text
+                    End If
+                    If l_aux > 0 Then
+                        l_duration = l_aux
+                    End If
+
+                    If l_duration = "NULL" Then
+                        l_id_unit_duration = "NULL"
+                    Else
+                        l_id_unit_duration = "10374"
+                    End If
+                End If
+
+                If Not medication.CREATE_STD_PRESC_DIR_ADMIXTURE_SEQ(l_id_new_std_presc_dir_item, i + 1, l_id_rate, l_rate_value, l_id_unit_rate, l_duration, l_id_unit_duration) Then
+                    MsgBox("Error creating CREATE_STD_PRESC_DIR_ADMIXTURE_SEQ!", vbCritical)
+                End If
+            Next
 
         Catch ex As Exception
             Return False
@@ -1575,7 +1878,6 @@ Public Class Med_STD_Complex_IV
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         Cursor = Cursors.WaitCursor
 
-        ''Gravar para a estrutura de doses antes de limpar
         SAVE_TO_DOSE_STRUCT()
 
         Dim l_id_grant As Int64 = -1
@@ -1854,7 +2156,7 @@ Public Class Med_STD_Complex_IV
     End Sub
 
     Private Sub ComboBox40_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox40.SelectedIndexChanged
-
+        Cursor = Cursors.WaitCursor
         ''Gravar para a estrutura de doses antes de limpar
         SAVE_TO_DOSE_STRUCT()
 
@@ -2084,6 +2386,8 @@ Public Class Med_STD_Complex_IV
         End If
 
         g_component_selected_index = ComboBox40.SelectedIndex
+
+        Cursor = Cursors.Arrow
 
     End Sub
 

@@ -75,6 +75,8 @@ Public Class MED_STD_NON_IV
                 l_index_freq = l_index_freq + 1
             End While
         End If
+        dr_freq.Dispose()
+        dr_freq.Close()
     End Function
 
     Private Sub MED_STD_NON_IV_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -151,8 +153,10 @@ Public Class MED_STD_NON_IV
                 g_a_product_um(i) = l_dr_product_um(0)
                 i = i + 1
             End While
-            l_dr_product_um.Close()
         End If
+
+        l_dr_product_um.Dispose()
+        l_dr_product_um.Close()
 
         Dim l_dr_duration_um As OracleDataReader
         If Not medication.GET_DURATION_UM(g_id_institution, l_dr_duration_um) Then
@@ -179,8 +183,10 @@ Public Class MED_STD_NON_IV
                 g_a_duration_um(i) = l_dr_duration_um(0)
                 i = i + 1
             End While
-            l_dr_duration_um.Close()
         End If
+
+        l_dr_duration_um.Dispose()
+        l_dr_duration_um.Close()
 
         Dim l_dr_admin_method As OracleDataReader
         If Not medication.GET_ADMIN_METHOD_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_method) Then
@@ -195,6 +201,8 @@ Public Class MED_STD_NON_IV
             g_a_admin_methods(i_admin_method) = l_dr_admin_method(0)
             i_admin_method = i_admin_method + 1
         End While
+        l_dr_admin_method.Dispose()
+        l_dr_admin_method.Close()
 
         Dim l_dr_admin_sites As OracleDataReader
         If Not medication.GET_ADMIN_SITE_LIST(g_id_institution, g_default_route, g_id_product_supplier, l_dr_admin_sites) Then
@@ -209,6 +217,8 @@ Public Class MED_STD_NON_IV
             g_a_admin_sites(ii) = l_dr_admin_sites.Item(0)
             ii = ii + 1
         End While
+        l_dr_admin_sites.Dispose()
+        l_dr_admin_sites.Close()
 
     End Sub
 
@@ -679,6 +689,8 @@ Public Class MED_STD_NON_IV
 
             End While
         End If
+        dr_med_set_instruction.Dispose()
+        dr_med_set_instruction.Close()
 
         Cursor = Cursors.Arrow
     End Sub
@@ -728,8 +740,10 @@ Public Class MED_STD_NON_IV
                         TextBox25.Text = ""
                     End Try
                 End While
-                dr_std_presc_dir.Close()
             End If
+
+            dr_std_presc_dir.Dispose()
+            dr_std_presc_dir.Close()
 
             Dim dr_std_presc_dir_item As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
@@ -1002,6 +1016,8 @@ Public Class MED_STD_NON_IV
                     i = i + 1
                 End While
             End If
+            dr_std_presc_dir_item.Dispose()
+            dr_std_presc_dir_item.Close()
 
             Cursor = Cursors.Arrow
         End If
@@ -1019,6 +1035,8 @@ Public Class MED_STD_NON_IV
             While l_dr_sos.Read()
                 ComboBox25.Items.Add(l_dr_sos(1))
             End While
+            l_dr_sos.Dispose()
+            l_dr_sos.Close()
 
         End If
 
@@ -1056,7 +1074,8 @@ Public Class MED_STD_NON_IV
 
                 End While
             End If
-
+            dr_med_set_instruction.Dispose()
+            dr_med_set_instruction.Close()
         End If
     End Sub
 
@@ -1224,7 +1243,7 @@ Public Class MED_STD_NON_IV
                 Exit Sub
             Else
                 Dim i As Integer = 0
-                    While dr_med_set_instruction.Read()
+                While dr_med_set_instruction.Read()
                     ReDim Preserve g_a_med_set_instructions(i)
                     g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
                     g_a_med_set_instructions(i).id_std_presc_dir = dr_med_set_instruction.Item(1)
@@ -1239,12 +1258,14 @@ Public Class MED_STD_NON_IV
 
                     ComboBox1.Items.Add(g_a_med_set_instructions(i).rank)
 
-                        i = i + 1
+                    i = i + 1
 
-                    End While
-                End If
+                End While
+            End If
+            dr_med_set_instruction.Dispose()
+            dr_med_set_instruction.Close()
 
-                MsgBox("Record inserted.", vbInformation)
+            MsgBox("Record inserted.", vbInformation)
             End If
             Cursor = Cursors.Arrow
     End Sub
@@ -1309,9 +1330,10 @@ Public Class MED_STD_NON_IV
 
                     End While
                 End If
+                dr_med_set_instruction.Dispose()
+                dr_med_set_instruction.Close()
 
             End If
-
         End If
 
     End Sub

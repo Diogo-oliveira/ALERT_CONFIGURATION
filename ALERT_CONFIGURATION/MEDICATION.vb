@@ -123,6 +123,7 @@ Public Class MEDICATION
                 i = i + 1
             End While
         End If
+        dr_routes_market.Dispose()
         dr_routes_market.Close()
 
         DataGridView1.Columns.Clear()
@@ -238,7 +239,6 @@ Public Class MEDICATION
                         g_a_list_products(l_dimension_list_products) = row.Item("ID_PRODUCT")
                         l_dimension_list_products = l_dimension_list_products + 1
                     Next
-                    dr.Close()
 
                     DataGridView1.ClearSelection()
 
@@ -265,7 +265,6 @@ Public Class MEDICATION
                                 i = i + 1
                             End While
                         End If
-                        dr_routes.Close()
 
                         'DataGridView1.DataBindings.Clear()
                         'Table.Clear()
@@ -277,7 +276,10 @@ Public Class MEDICATION
                             MsgBox("Error reseting product parameters.", vbCritical)
                         End If
                     End Try
+                    dr_routes.Dispose()
+                    dr_routes.Close()
 
+                    l_table.Dispose()
                 End If
             Else
                 MsgBox("Please write a medication description! ", vbCritical)
@@ -285,6 +287,9 @@ Public Class MEDICATION
         Else
             MsgBox("Please select an institution! ", vbCritical)
         End If
+
+        dr.Dispose()
+        dr.Close()
 
         Cursor = Cursors.Arrow
 
@@ -417,12 +422,11 @@ Public Class MEDICATION
                     g_a_product_um(i) = dr_product_um(0)
                     i = i + 1
                 End While
-
-                dr_product_um.Dispose()
-                dr_product_um.Close()
-
-
             End If
+
+            dr_product_um.Dispose()
+            dr_product_um.Close()
+
         End If
 
     End Sub
@@ -532,9 +536,8 @@ Public Class MEDICATION
                         i = i + 1
                     End While
                 End If
-                dr_routes.Close()
                 dr_routes.Dispose()
-
+                dr_routes.Close()
             Else
                 MsgBox("Please select at least one route! Medication cannot be prescribed withour a route.", vbInformation)
             End If
@@ -600,9 +603,9 @@ Public Class MEDICATION
                             g_a_product_um(i) = dr_product_um(0)
                             i = i + 1
                         End While
-                        dr_product_um.Close()
-                        dr_product_um.Dispose()
                     End If
+                    dr_product_um.Dispose()
+                    dr_product_um.Close()
                     MsgBox("Record updated.", vbInformation)
                 End If
             Else
@@ -631,9 +634,9 @@ Public Class MEDICATION
                     g_a_market_um(i) = dr_UM(0)
                     i = i + 1
                 End While
-                dr_UM.Close()
-                dr_UM.Dispose()
             End If
+            dr_UM.Dispose()
+            dr_UM.Close()
             Cursor = Cursors.Arrow
         Else
             MsgBox("Please select an Institution.")
@@ -673,9 +676,9 @@ Public Class MEDICATION
                             g_a_product_um(i) = dr_product_um(0)
                             i = i + 1
                         End While
-                        dr_product_um.Close()
-                        dr_product_um.Dispose()
                     End If
+                    dr_product_um.Dispose()
+                    dr_product_um.Close()
                 End If
                 MsgBox("Record deleted.", vbInformation)
             Else
@@ -717,6 +720,7 @@ Public Class MEDICATION
     End Sub
 
     Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+
         Form_location.x_position = Me.Location.X
         Form_location.y_position = Me.Location.Y
 
@@ -766,8 +770,8 @@ Public Class MEDICATION
                         g_a_list_products(l_dimension_list_products) = row.Item("ID_PRODUCT")
                         l_dimension_list_products = l_dimension_list_products + 1
                     Next
-                    dr.Close()
                     dr.Dispose()
+                    dr.Close()
                     DataGridView1.ClearSelection()
 
                     CheckedListBox2.Items.Clear()
@@ -793,8 +797,6 @@ Public Class MEDICATION
                                 i = i + 1
                             End While
                         End If
-                        dr_routes.Close()
-                        dr_routes.Dispose()
 
                     Catch ex As Exception
                         MsgBox("No results found.", vbInformation)
@@ -803,6 +805,8 @@ Public Class MEDICATION
                             MsgBox("Error reseting product parameters.", vbCritical)
                         End If
                     End Try
+                    dr_routes.Dispose()
+                    dr_routes.Close()
                 End If
             Else
                 MsgBox("Please insert a medication ID! ", vbCritical)
@@ -810,8 +814,8 @@ Public Class MEDICATION
         Else
             MsgBox("Please select an institution! ", vbCritical)
         End If
-        dr.Close()
         dr.Dispose()
+        dr.Close()
         Cursor = Cursors.Arrow
     End Sub
 
