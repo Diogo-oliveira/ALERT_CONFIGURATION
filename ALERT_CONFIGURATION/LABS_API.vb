@@ -1491,8 +1491,6 @@ Public Class LABS_API
             DEBUGGER.SET_DEBUG(ex.Message)
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
 
-            dr_distinct_ec.Dispose()
-            dr_distinct_ec.Close()
             Return False
 
         End Try

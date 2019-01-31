@@ -305,6 +305,7 @@
     <Compile Include="Procedures.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SCRIPT_GENERATOR.vb" />
     <Compile Include="SR_Procedures.Designer.vb">
       <DependentUpon>SR_Procedures.vb</DependentUpon>
     </Compile>

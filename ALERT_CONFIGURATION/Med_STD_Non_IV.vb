@@ -560,7 +560,7 @@ Public Class MED_STD_NON_IV
             Dim l_previous_id_directions As Int64 = 0
 
             If i_create_new = "N" Then
-                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
+                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
                     MsgBox("Error updating lnk_product_std_presc_dir!", vbCritical)
                 End If
 
@@ -670,6 +670,7 @@ Public Class MED_STD_NON_IV
             MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
         Else
             Dim i As Integer = 0
+            ComboBox1.Items.Add("")
             While dr_med_set_instruction.Read()
                 ReDim Preserve g_a_med_set_instructions(i)
                 g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
@@ -697,18 +698,18 @@ Public Class MED_STD_NON_IV
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
 
-        If ComboBox1.SelectedIndex > -1 Then
+        If ComboBox1.SelectedIndex > 0 Then ''estava -1
 
             Cursor = Cursors.WaitCursor
 
             RESET_MAIN_INSTRUCTIONS()
             RESET_SET_INSTRUCTIONS()
 
-            TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant
+            TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant
 
             Dim dr_std_presc_dir As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not medication.GET_STD_PRESC_DIR(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, dr_std_presc_dir) Then
+            If Not medication.GET_STD_PRESC_DIR(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, dr_std_presc_dir) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                 MsgBox("ERROR GETTING STANDARD_PRESC_DIR!", vbCritical)
             Else
@@ -747,7 +748,7 @@ Public Class MED_STD_NON_IV
 
             Dim dr_std_presc_dir_item As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not medication.GET_STD_PRESC_DIR_ITEM(g_id_institution, g_id_product, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, dr_std_presc_dir_item) Then
+            If Not medication.GET_STD_PRESC_DIR_ITEM(g_id_institution, g_id_product, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).rank, dr_std_presc_dir_item) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                 MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM!", vbCritical)
             Else
@@ -1055,6 +1056,7 @@ Public Class MED_STD_NON_IV
                 MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
             Else
                 Dim i As Integer = 0
+                ComboBox1.Items.Add("")
                 While dr_med_set_instruction.Read()
                     ReDim Preserve g_a_med_set_instructions(i)
                     g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
@@ -1101,7 +1103,7 @@ Public Class MED_STD_NON_IV
             MsgBox("Please select a software.", vbInformation)
         ElseIf ComboBox28.SelectedIndex < 0 Then
             MsgBox("Please select a type of prescription.", vbInformation)
-        ElseIf ComboBox1.SelectedIndex < 0 And TextBox26.Text = "" Then
+        ElseIf ComboBox1.SelectedIndex < 1 And TextBox26.Text = "" Then ''estava 0
             MsgBox("Please select a rank.", vbInformation)
         ElseIf (TextBox3.Text = "" And
         ComboBox5.Text <> "") Then
@@ -1149,7 +1151,7 @@ Public Class MED_STD_NON_IV
             MsgBox("The software and type of prescription to copy to cannot be the same as the software and type of prescription of origin. Please review the information.", vbInformation)
         Else
             'VERIFICAR SE NÃO EXISTE GRANT
-            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 0 Then
+            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 1 Then ''estava 0
                 l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
                 'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
                 If l_id_grant = -1 Then
@@ -1175,7 +1177,7 @@ Public Class MED_STD_NON_IV
                 l_id_grant = TextBox27.Text
                 Dim l_create_new As Integer = 0
 
-                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir) > 1 And ComboBox28.SelectedIndex > 0 Then
+                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir) > 1 And ComboBox28.SelectedIndex > 0 Then
                     l_create_new = MsgBox("The current standard instruction is also being usaed for other softwares and/or type of prescriptions. Do you wish to create a new instruction just for the selected software and type of prescription? (Responding 'No' will result on the update of the current standard instruction)", MessageBoxButtons.YesNo)
                 End If
 
@@ -1189,7 +1191,7 @@ Public Class MED_STD_NON_IV
                     End If
 
                     ''NESTE CASO É NECESSÁRIO FAZER UPDATE AO RANK
-                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, l_rank, l_id_grant) Then
+                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, l_rank, l_id_grant) Then
                         MsgBox("Error updating instruction rank!", vbCritical)
                         Cursor = Cursors.Arrow
                         Exit Sub
@@ -1243,6 +1245,7 @@ Public Class MED_STD_NON_IV
                 Exit Sub
             Else
                 Dim i As Integer = 0
+                ComboBox1.Items.Add("")
                 While dr_med_set_instruction.Read()
                     ReDim Preserve g_a_med_set_instructions(i)
                     g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
@@ -1285,10 +1288,10 @@ Public Class MED_STD_NON_IV
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
-        If ComboBox1.SelectedIndex < 0 Then
+        If ComboBox1.SelectedIndex < 1 Then
             MsgBox("Please select a standard instruction from the RANK dropdown menu to be deleted.", vbInformation)
         Else
-            If Not medication.DELETE_STD_INSTRUCTION(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, TextBox27.Text, ComboBox28.SelectedIndex) Then
+            If Not medication.DELETE_STD_INSTRUCTION(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).rank, TextBox27.Text, ComboBox28.SelectedIndex) Then
                 MsgBox("Error deleteing standard instruction!", vbCritical)
             Else
                 MsgBox("Record deleted.", vbInformation)
@@ -1311,6 +1314,7 @@ Public Class MED_STD_NON_IV
                     MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
                 Else
                     Dim i As Integer = 0
+                    ComboBox1.Items.Add("")
                     While dr_med_set_instruction.Read()
                         ReDim Preserve g_a_med_set_instructions(i)
                         g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)

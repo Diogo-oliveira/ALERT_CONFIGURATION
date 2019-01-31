@@ -207,7 +207,7 @@ Public Class Med_STD_Complex_IV
             If i_create_new = "N" Then
 
                 'VER MELHOR
-                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
+                If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, i_id_grant, i_id_pick_list, l_id_new_instruction, l_rank, i_id_grant) Then
                     MsgBox("Error updating lnk_product_std_presc_dir!", vbCritical)
                 End If
 
@@ -1371,6 +1371,7 @@ Public Class Med_STD_Complex_IV
             MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
         Else
             Dim i As Integer = 0
+            ComboBox1.Items.Add("")
             While dr_med_set_instruction.Read()
                 ReDim Preserve g_a_med_set_instructions(i)
                 g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
@@ -1396,18 +1397,18 @@ Public Class Med_STD_Complex_IV
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
 
-        If ComboBox1.SelectedIndex > -1 Then
+        If ComboBox1.SelectedIndex > 0 Then
 
             Cursor = Cursors.WaitCursor
 
             RESET_MAIN_INSTRUCTIONS()
             RESET_SET_INSTRUCTIONS()
 
-            TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant
+            TextBox27.Text = g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant
 
             Dim dr_std_presc_dir As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-            If Not medication.GET_STD_PRESC_DIR(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, dr_std_presc_dir) Then
+            If Not medication.GET_STD_PRESC_DIR(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, dr_std_presc_dir) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
                 MsgBox("ERROR GETTING STANDARD_PRESC_DIR!", vbCritical)
             Else
@@ -1444,43 +1445,43 @@ Public Class Med_STD_Complex_IV
 
             Dim dr_std_presc_dir_item As OracleDataReader
 #Disable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                If Not medication.GET_STD_PRESC_DIR_ITEM_IV(g_id_institution, g_id_product, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, dr_std_presc_dir_item) Then
+            If Not medication.GET_STD_PRESC_DIR_ITEM_IV(g_id_institution, g_id_product, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).rank, dr_std_presc_dir_item) Then
 #Enable Warning BC42030 ' Variable is passed by reference before it has been assigned a value
-                    MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM!", vbCritical)
-                Else
-                    While dr_std_presc_dir_item.Read()
-                        'FREQUENCY
-                        Try
-                            ComboBox3.Text = dr_std_presc_dir_item.Item(6)
-                        Catch ex As Exception
-                            ComboBox3.Text = ""
-                        End Try
-                        'DURATION
-                        Try
-                            TextBox3.Text = dr_std_presc_dir_item.Item(1)
-                        Catch ex As Exception
-                            TextBox3.Text = ""
-                        End Try
-                        'DURATION UNIT MEASURE
-                        Try
-                            ComboBox5.Text = dr_std_presc_dir_item.Item(3)
-                        Catch ex As Exception
-                            ComboBox5.Text = ""
-                        End Try
-                        'EXECUTIONS
-                        Try
-                            TextBox4.Text = dr_std_presc_dir_item.Item(4)
-                        Catch ex As Exception
-                            TextBox4.Text = ""
-                        End Try
-                        Try
-                            g_id_std_presc_dir_item = dr_std_presc_dir_item.Item(8)
-                        Catch ex As Exception
-                            g_id_std_presc_dir_item = -1
-                        End Try
+                MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM!", vbCritical)
+            Else
+                While dr_std_presc_dir_item.Read()
+                    'FREQUENCY
+                    Try
+                        ComboBox3.Text = dr_std_presc_dir_item.Item(6)
+                    Catch ex As Exception
+                        ComboBox3.Text = ""
+                    End Try
+                    'DURATION
+                    Try
+                        TextBox3.Text = dr_std_presc_dir_item.Item(1)
+                    Catch ex As Exception
+                        TextBox3.Text = ""
+                    End Try
+                    'DURATION UNIT MEASURE
+                    Try
+                        ComboBox5.Text = dr_std_presc_dir_item.Item(3)
+                    Catch ex As Exception
+                        ComboBox5.Text = ""
+                    End Try
+                    'EXECUTIONS
+                    Try
+                        TextBox4.Text = dr_std_presc_dir_item.Item(4)
+                    Catch ex As Exception
+                        TextBox4.Text = ""
+                    End Try
+                    Try
+                        g_id_std_presc_dir_item = dr_std_presc_dir_item.Item(8)
+                    Catch ex As Exception
+                        g_id_std_presc_dir_item = -1
+                    End Try
 
-                    End While
-                End If
+                End While
+            End If
 
             Dim dr_std_presc_dir_admix_seq As OracleDataReader
             Dim l_index_seq As Int16 = 0
@@ -1685,13 +1686,13 @@ Public Class Med_STD_Complex_IV
                     MsgBox("ERROR GETTING STANDARD_PRESC_DIR_ITEM_seq!", vbCritical)
                 Else
                     While dr_std_presc_dir_item_seq.Read()
-                            If l_index_seq = 0 Then
-                                ''dose value
-                                Try
-                                    TextBox1.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox1.Text = ""
-                                End Try
+                        If l_index_seq = 0 Then
+                            ''dose value
+                            Try
+                                TextBox1.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox1.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox4.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1700,12 +1701,12 @@ Public Class Med_STD_Complex_IV
                             End Try
 
                         ElseIf l_index_seq = 1 Then
-                                ''dose value
-                                Try
-                                    TextBox5.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox5.Text = ""
-                                End Try
+                            ''dose value
+                            Try
+                                TextBox5.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox5.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox6.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1714,12 +1715,12 @@ Public Class Med_STD_Complex_IV
                             End Try
 
                         ElseIf l_index_seq = 2 Then
-                                ''dose value
-                                Try
-                                    TextBox6.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox6.Text = ""
-                                End Try
+                            ''dose value
+                            Try
+                                TextBox6.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox6.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox7.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1728,12 +1729,12 @@ Public Class Med_STD_Complex_IV
                             End Try
 
                         ElseIf l_index_seq = 3 Then
-                                ''dose value
-                                Try
-                                    TextBox7.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox7.Text = ""
-                                End Try
+                            ''dose value
+                            Try
+                                TextBox7.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox7.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox8.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1742,12 +1743,12 @@ Public Class Med_STD_Complex_IV
                             End Try
 
                         ElseIf l_index_seq = 4 Then
-                                ''dose value
-                                Try
-                                    TextBox8.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox8.Text = ""
-                                End Try
+                            ''dose value
+                            Try
+                                TextBox8.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox8.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox9.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1756,12 +1757,12 @@ Public Class Med_STD_Complex_IV
                             End Try
 
                         ElseIf l_index_seq = 5 Then
-                                ''dose value
-                                Try
-                                    TextBox9.Text = dr_std_presc_dir_item_seq.Item(0)
-                                Catch ex As Exception
-                                    TextBox9.Text = ""
-                                End Try
+                            ''dose value
+                            Try
+                                TextBox9.Text = dr_std_presc_dir_item_seq.Item(0)
+                            Catch ex As Exception
+                                TextBox9.Text = ""
+                            End Try
                             ''dose desc
                             Try
                                 ComboBox10.Text = dr_std_presc_dir_item_seq.Item(2)
@@ -1783,12 +1784,12 @@ Public Class Med_STD_Complex_IV
                                 ComboBox11.Text = ""
                             End Try
                         End If
-                            l_index_seq = l_index_seq + 1
-                        End While
-                    End If
+                        l_index_seq = l_index_seq + 1
+                    End While
                 End If
-                Cursor = Cursors.Arrow
             End If
+            Cursor = Cursors.Arrow
+        End If
     End Sub
 
     Private Sub ComboBox18_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox18.SelectedIndexChanged
@@ -1886,11 +1887,11 @@ Public Class Med_STD_Complex_IV
             MsgBox("Please select a software.", vbInformation)
         ElseIf ComboBox28.SelectedIndex < 0 Then
             MsgBox("Please select a type of prescription.", vbInformation)
-        ElseIf ComboBox1.SelectedIndex < 0 And TextBox26.Text = "" Then
+        ElseIf ComboBox1.SelectedIndex < 1 And TextBox26.Text = "" Then
             MsgBox("Please select a rank.", vbInformation)
         Else
             'VERIFICAR SE NÃO EXISTE GRANT
-            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 0 Then
+            If TextBox27.Text = "" Or ComboBox1.SelectedIndex < 1 Then
                 l_id_grant = medication.GET_ID_GRANT(g_id_institution, g_selected_software, "LNK_PRODUCT_STD_PRESC_DIR")
                 'SE GRANT FOR = -1 ENTÃO É NECESSÁRIO CRIAR UM NOVO GRANT
                 If l_id_grant = -1 Then
@@ -1916,7 +1917,7 @@ Public Class Med_STD_Complex_IV
                 l_id_grant = TextBox27.Text
                 Dim l_create_new As Integer = 0
 
-                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir) > 1 And ComboBox28.SelectedIndex > 0 Then
+                If medication.CHECK_DUP_INSTRUCTIONS(g_id_institution, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir) > 1 And ComboBox28.SelectedIndex > 0 Then
                     l_create_new = MsgBox("The current standard instruction is also being usaed for other softwares and/or type of prescriptions. Do you wish to create a new instruction just for the selected software and type of prescription? (Responding 'No' will result on the update of the current standard instruction)", MessageBoxButtons.YesNo)
                 End If
 
@@ -1930,7 +1931,7 @@ Public Class Med_STD_Complex_IV
                     End If
 
                     ''NESTE CASO É NECESSÁRIO FAZER UPDATE AO RANK
-                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, l_rank, l_id_grant) Then
+                    If Not medication.UPDATE_STD_PRESC_DIR(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_grant, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_pick_list, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, l_rank, l_id_grant) Then
                         MsgBox("Error updating instruction rank!", vbCritical)
                         Cursor = Cursors.Arrow
                         Exit Sub
@@ -1985,6 +1986,7 @@ Public Class Med_STD_Complex_IV
                 Exit Sub
             Else
                 Dim i As Integer = 0
+                ComboBox1.Items.Add("")
                 While dr_med_set_instruction.Read()
                     ReDim Preserve g_a_med_set_instructions(i)
                     g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)
@@ -2014,10 +2016,10 @@ Public Class Med_STD_Complex_IV
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
 
-        If ComboBox1.SelectedIndex < 0 Then
+        If ComboBox1.SelectedIndex < 1 Then
             MsgBox("Please select a standard instruction from the RANK dropdown menu to be deleted.", vbInformation)
         Else
-            If Not medication.DELETE_STD_INSTRUCTION(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex).rank, TextBox27.Text, ComboBox28.SelectedIndex) Then
+            If Not medication.DELETE_STD_INSTRUCTION(g_id_institution, g_id_product, g_id_product_supplier, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).id_std_presc_dir, g_a_med_set_instructions(ComboBox1.SelectedIndex - 1).rank, TextBox27.Text, ComboBox28.SelectedIndex) Then
                 MsgBox("Error deleteing standard instruction!", vbCritical)
             Else
                 MsgBox("Record deleted.", vbInformation)
@@ -2040,6 +2042,7 @@ Public Class Med_STD_Complex_IV
                     MsgBox("ERROR GETTING LIST OF STANDARD INSTRUCTIONS!", vbCritical)
                 Else
                     Dim i As Integer = 0
+                    ComboBox1.Items.Add("")
                     While dr_med_set_instruction.Read()
                         ReDim Preserve g_a_med_set_instructions(i)
                         g_a_med_set_instructions(i).id_product = dr_med_set_instruction.Item(0)

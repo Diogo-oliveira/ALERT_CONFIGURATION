@@ -276,9 +276,9 @@ Public Class General
             DEBUGGER.SET_DEBUG_ERROR_CLOSE()
         End Try
 
+        cmd.Dispose()
         dr.Dispose()
         dr.Close()
-        cmd.Dispose()
 
         Return l_inst
 
@@ -357,7 +357,6 @@ Public Class General
             DEBUGGER.SET_DEBUG("GENERAL :: GET_ALL_INSTITUTIONS")
 
             i_dr = cmd.ExecuteReader()
-            cmd.Dispose()
 
             Dim l_parameters(0) As String
             l_parameters(0) = "DESC_INSTITUTION"

@@ -22,6 +22,7 @@ Partial Class MEDICATION
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -90,6 +91,7 @@ Partial Class MEDICATION
         Me.TextBox5 = New System.Windows.Forms.TextBox()
         Me.Button16 = New System.Windows.Forms.Button()
         Me.Label20 = New System.Windows.Forms.Label()
+        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -702,6 +704,10 @@ Partial Class MEDICATION
         Me.Label20.TabIndex = 172
         Me.Label20.Text = "PRODUCT ID"
         '
+        'Timer1
+        '
+        Me.Timer1.Interval = 300
+        '
         'MEDICATION
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -829,4 +835,5 @@ Partial Class MEDICATION
     Friend WithEvents TextBox5 As TextBox
     Friend WithEvents Button16 As Button
     Friend WithEvents Label20 As Label
+    Friend WithEvents Timer1 As Timer
 End Class

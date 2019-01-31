@@ -1,6 +1,8 @@
 ﻿Imports Oracle.DataAccess.Client
 Public Class MEDICATION
 
+    Dim debug As New DEBUGGER
+
     Dim db_access_general As New General
     Dim medication As New Medication_API
 
@@ -16,6 +18,9 @@ Public Class MEDICATION
     Dim g_selection_aux As Boolean = False
 
     Dim g_default_route As String = -1
+
+    Dim g_current_product As String = ""
+
 
     Function RESET_PRODUCT_PARAMETERS()
 
@@ -56,7 +61,11 @@ Public Class MEDICATION
 
     End Function
 
-    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+    Function id_institution_changed()
+
+        debug.SET_DEBUG("MEDICATION :: GETTING INSTITUTION BY ID")
+
         Cursor = Cursors.WaitCursor
 
         'Limpar arrays
@@ -129,6 +138,13 @@ Public Class MEDICATION
         DataGridView1.Columns.Clear()
 
         Cursor = Cursors.Arrow
+    End Function
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+        Timer1.Stop()
+        Timer1.Start()
+
     End Sub
 
     Private Sub MEDICATION_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -209,6 +225,9 @@ Public Class MEDICATION
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        debug.SET_DEBUG("MEDICATION :: SEARCHING PRODUCT BY DESCRIPTION")
+
         Cursor = Cursors.WaitCursor
 
         Dim l_column_width As Int64 = DataGridView1.Size.Width - 120 'Tentar evitar o scroll
@@ -302,136 +321,141 @@ Public Class MEDICATION
             g_selected_index = e.Cell.RowIndex
         End If
 
-        If g_selected_index > -1 Then
+        If g_a_list_products(g_selected_index) <> g_current_product Then
+            debug.SET_DEBUG("MEDICATION :: SELECTING PRODUCT FROM GRID")
+            If g_selected_index > -1 Then
 
-            Dim dr As OracleDataReader
+                Dim dr As OracleDataReader
 
-            If Not medication.GET_PRODUCT_OPTIONS(TextBox1.Text, g_selected_soft, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox5.SelectedIndex + 1, dr) Then
+                If Not medication.GET_PRODUCT_OPTIONS(TextBox1.Text, g_selected_soft, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox5.SelectedIndex + 1, dr) Then
 
-                MsgBox("Error getting product options!", vbCritical)
+                    MsgBox("Error getting product options!", vbCritical)
 
-            Else
-                While dr.Read
-                    Try
-                        ComboBox3.Text = dr.Item(1)
-                    Catch ex As Exception
-                        ComboBox3.Text = ""
-                    End Try
-                    Try
-                        ComboBox4.Text = dr.Item(3)
-                    Catch ex As Exception
-                        ComboBox4.Text = ""
-                    End Try
-                    Try
-                        ComboBox6.Text = dr.Item(2)
-                    Catch ex As Exception
-                        ComboBox6.Text = ""
-                    End Try
-                    Try
-                        ComboBox7.Text = dr.Item(4)
-                    Catch ex As Exception
-                        ComboBox7.Text = ""
-                    End Try
-                    Try
-                        ComboBox8.Text = dr.Item(5)
-                    Catch ex As Exception
-                        ComboBox8.Text = ""
-                    End Try
-                    Try
-                        ComboBox9.Text = dr.Item(6)
-                    Catch ex As Exception
-                        ComboBox9.Text = ""
-                    End Try
-                    Try
-                        ComboBox10.Text = dr.Item(7)
-                    Catch ex As Exception
-                        ComboBox10.Text = ""
-                    End Try
-                    Try
-                        ComboBox11.Text = dr.Item(8)
-                    Catch ex As Exception
-                        ComboBox11.Text = ""
-                    End Try
-                    Try
-                        ComboBox12.Text = dr.Item(9)
-                    Catch ex As Exception
-                        ComboBox12.Text = ""
-                    End Try
-                    Try
-                        TextBox3.Text = dr.Item(10)
-                    Catch ex As Exception
-                        TextBox3.Text = ""
-                    End Try
-                End While
+                Else
+                    While dr.Read
+                        Try
+                            ComboBox3.Text = dr.Item(1)
+                        Catch ex As Exception
+                            ComboBox3.Text = ""
+                        End Try
+                        Try
+                            ComboBox4.Text = dr.Item(3)
+                        Catch ex As Exception
+                            ComboBox4.Text = ""
+                        End Try
+                        Try
+                            ComboBox6.Text = dr.Item(2)
+                        Catch ex As Exception
+                            ComboBox6.Text = ""
+                        End Try
+                        Try
+                            ComboBox7.Text = dr.Item(4)
+                        Catch ex As Exception
+                            ComboBox7.Text = ""
+                        End Try
+                        Try
+                            ComboBox8.Text = dr.Item(5)
+                        Catch ex As Exception
+                            ComboBox8.Text = ""
+                        End Try
+                        Try
+                            ComboBox9.Text = dr.Item(6)
+                        Catch ex As Exception
+                            ComboBox9.Text = ""
+                        End Try
+                        Try
+                            ComboBox10.Text = dr.Item(7)
+                        Catch ex As Exception
+                            ComboBox10.Text = ""
+                        End Try
+                        Try
+                            ComboBox11.Text = dr.Item(8)
+                        Catch ex As Exception
+                            ComboBox11.Text = ""
+                        End Try
+                        Try
+                            ComboBox12.Text = dr.Item(9)
+                        Catch ex As Exception
+                            ComboBox12.Text = ""
+                        End Try
+                        Try
+                            TextBox3.Text = dr.Item(10)
+                        Catch ex As Exception
+                            TextBox3.Text = ""
+                        End Try
+                    End While
+                End If
 
                 dr.Dispose()
                 dr.Close()
 
-            End If
-
-            Dim dr_routes As OracleDataReader
-            If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
-                MsgBox("Error getting product routes!", vbCritical)
-            Else
-                CheckedListBox2.Items.Clear()
-                ReDim g_a_product_routes(0)
-                Dim i As Integer = 0
-                While dr_routes.Read
-                    CheckedListBox2.Items.Add(dr_routes.Item(1))
-                    If dr_routes.Item(2) = "Y" Then
-                        CheckedListBox2.SetItemChecked(i, True)
-                    End If
-                    ReDim Preserve g_a_product_routes(i)
-                    g_a_product_routes(i) = dr_routes(0)
-                    i = i + 1
-                End While
-            End If
-
-            dr_routes.Dispose()
-            dr_routes.Close()
-
-            If CheckedListBox1.Items.Count() > 0 Then
-                For i As Integer = 0 To CheckedListBox1.Items.Count - 1
-                    CheckedListBox1.SetItemChecked(i, False)
-                Next
-            End If
-
-            If g_a_market_routes.Count > 0 And g_a_product_routes.Count > 0 Then
-                For i As Integer = 0 To g_a_market_routes.Count - 1
-                    For j As Integer = 0 To g_a_product_routes.Count - 1
-                        If g_a_market_routes(i) = g_a_product_routes(j) Then
-                            CheckedListBox1.SetItemChecked(i, True)
+                Dim dr_routes As OracleDataReader
+                If Not medication.GET_PRODUCT_ROUTES(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, dr_routes) Then
+                    MsgBox("Error getting product routes!", vbCritical)
+                Else
+                    CheckedListBox2.Items.Clear()
+                    ReDim g_a_product_routes(0)
+                    Dim i As Integer = 0
+                    While dr_routes.Read
+                        CheckedListBox2.Items.Add(dr_routes.Item(1))
+                        If dr_routes.Item(2) = "Y" Then
+                            CheckedListBox2.SetItemChecked(i, True)
                         End If
+                        ReDim Preserve g_a_product_routes(i)
+                        g_a_product_routes(i) = dr_routes(0)
+                        i = i + 1
+                    End While
+                End If
+
+                dr_routes.Dispose()
+                dr_routes.Close()
+
+                If CheckedListBox1.Items.Count() > 0 Then
+                    For i As Integer = 0 To CheckedListBox1.Items.Count - 1
+                        CheckedListBox1.SetItemChecked(i, False)
                     Next
-                Next
-            End If
-            'OBTER AS UNIDADES DO PRODUTO
-            Dim dr_product_um As OracleDataReader
-            If Not medication.GET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, dr_product_um) Then
-                MsgBox("Error getting product unit measures!", vbCritical)
-            Else
-                CheckedListBox4.Items.Clear()
-                ReDim g_a_product_um(0)
-                Dim i As Integer = 0
-                While dr_product_um.Read
-                    CheckedListBox4.Items.Add(dr_product_um.Item(1))
-                    If dr_product_um.Item(2) = "Y" Then
-                        CheckedListBox4.SetItemChecked(i, True)
-                    End If
-                    ReDim Preserve g_a_product_um(i)
-                    g_a_product_um(i) = dr_product_um(0)
-                    i = i + 1
-                End While
-            End If
+                End If
 
-            dr_product_um.Dispose()
-            dr_product_um.Close()
+                If g_a_market_routes.Count > 0 And g_a_product_routes.Count > 0 Then
+                    For i As Integer = 0 To g_a_market_routes.Count - 1
+                        For j As Integer = 0 To g_a_product_routes.Count - 1
+                            If g_a_market_routes(i) = g_a_product_routes(j) Then
+                                CheckedListBox1.SetItemChecked(i, True)
+                            End If
+                        Next
+                    Next
+                End If
+                'OBTER AS UNIDADES DO PRODUTO
+                Dim dr_product_um As OracleDataReader
+                If Not medication.GET_PRODUCT_UM(TextBox1.Text, g_a_list_products(g_selected_index), g_id_product_supplier, ComboBox14.SelectedIndex + 1, dr_product_um) Then
+                    MsgBox("Error getting product unit measures!", vbCritical)
+                Else
+                    CheckedListBox4.Items.Clear()
+                    ReDim g_a_product_um(0)
+                    Dim i As Integer = 0
+                    While dr_product_um.Read
+                        CheckedListBox4.Items.Add(dr_product_um.Item(1))
+                        If dr_product_um.Item(2) = "Y" Then
+                            CheckedListBox4.SetItemChecked(i, True)
+                        End If
+                        ReDim Preserve g_a_product_um(i)
+                        g_a_product_um(i) = dr_product_um(0)
+                        i = i + 1
+                    End While
+                End If
 
+                dr_product_um.Dispose()
+                dr_product_um.Close()
+
+            End If
+            g_current_product = g_a_list_products(g_selected_index)
         End If
 
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        debug.SET_DEBUG("MEDICATION :: SAVING PRODUCT INFO")
 
         Dim l_med_type As Int16
 
@@ -740,6 +764,9 @@ Public Class MEDICATION
     End Sub
 
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+
+        debug.SET_DEBUG("MEDICATION :: SEARCHING PRODUCT BY DESCRIPTION")
+
         Cursor = Cursors.WaitCursor
 
         Dim l_column_width As Int64 = DataGridView1.Size.Width - 120 'Tentar evitar o scroll
@@ -817,6 +844,12 @@ Public Class MEDICATION
         dr.Dispose()
         dr.Close()
         Cursor = Cursors.Arrow
+    End Sub
+
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        Timer1.Stop()
+        id_institution_changed()
     End Sub
 
     Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick

@@ -1758,7 +1758,7 @@ Public Class INTERVENTIONS_API
 
             sql = sql & "   l_intervention    alert.intervention.id_intervention%TYPE;
 
-                        l_interv_physiatry_area alert.intervention.id_interv_physiatry_area%type;
+                       -- l_interv_physiatry_area alert.intervention.id_interv_physiatry_area%type;
                         l_gender            alert.intervention.gender%TYPE;
                         l_age_min           alert.intervention.age_min%TYPE;
                         l_age_max           alert.intervention.age_max%TYPE;
@@ -1796,8 +1796,8 @@ Public Class INTERVENTIONS_API
                                     WHERE di.id_content = l_a_interventions(i)
                                     AND di.flg_status = 'A';
                 
-                                    insert into ALERT.INTERVENTION (ID_INTERVENTION, CODE_INTERVENTION, FLG_STATUS, FLG_MOV_PAT, ID_INTERV_PHYSIATRY_AREA, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, CPT_CODE, REF_FORM_CODE, ID_CONTENT, BARCODE, FLG_CATEGORY_TYPE,rank)
-                                    values (l_sequence_interv, 'INTERVENTION.CODE_INTERVENTION.' || l_sequence_interv, 'A', l_flg_move_patient, l_interv_physiatry_area, l_flg_type, l_gender, l_age_min, l_age_max, l_cpt_code, l_ref_form_code, l_a_interventions(i), l_barcode,  l_flg_category_type,0);
+                                    insert into ALERT.INTERVENTION (ID_INTERVENTION, CODE_INTERVENTION, FLG_STATUS, FLG_MOV_PAT, FLG_TYPE, GENDER, AGE_MIN, AGE_MAX, CPT_CODE, REF_FORM_CODE, ID_CONTENT, BARCODE, FLG_CATEGORY_TYPE,rank)
+                                    values (l_sequence_interv, 'INTERVENTION.CODE_INTERVENTION.' || l_sequence_interv, 'A', l_flg_move_patient, l_flg_type, l_gender, l_age_min, l_age_max, l_cpt_code, l_ref_form_code, l_a_interventions(i), l_barcode,  l_flg_category_type,0);
                                 
                                     begin
                                                PK_TRANSLATION.insert_into_translation(" & l_id_language & ",'INTERVENTION.CODE_INTERVENTION.'||l_sequence_interv,l_interv_desc);
