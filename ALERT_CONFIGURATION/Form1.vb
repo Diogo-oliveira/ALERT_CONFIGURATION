@@ -3,6 +3,7 @@
 Public Class Form1
 
     Dim debug As New DEBUGGER
+    Dim script As New SCRIPT_GENERATOR
 
     Public g_oradb As String = ""
 
@@ -33,9 +34,9 @@ Public Class Form1
 
         Me.Location = New Point(Form_location.x_position, Form_location.y_position)
 
-        TextBox1.Text = "alert_config"
-        TextBox2.Text = "alert"
-        ComboBox1.Text = "dev26"
+        TextBox1.Text = "alert_ro"
+        TextBox2.Text = "alert_ro"
+        ComboBox1.Text = "qc4v2744"
 
         If Connection.conn.State = 0 Then
 
@@ -120,6 +121,12 @@ Public Class Form1
         debug.CLEAN_DEBUG()
         debug.CREATE_DEBUG_FILE()
         debug.INIT_DEBUG()
+
+        ''INICIAR SCRIPT
+        script.CREATE_SCRIPT_FOLDER()
+        script.CLEAN_SCRIPT()
+        script.CREATE_SCRIPT_FILE()
+        script.INIT_SCRIPT()
 
 
         DEBUGGER.SET_DEBUG_NEW_FORM()
@@ -467,7 +474,16 @@ Public Class Form1
 
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
 
-        MsgBox("AWAITING Development!", vbInformation)
+        Form_location.x_position = Me.Location.X
+        Form_location.y_position = Me.Location.Y
+
+        Dim FORM_DML_TOOLS As New DML_TOOLS
+
+        debug.SET_DEBUG("Loading DML Tools form.")
+
+        Me.Hide()
+
+        FORM_DML_TOOLS.ShowDialog()
 
     End Sub
 

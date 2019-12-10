@@ -243,7 +243,7 @@ Partial Class Form1
         Me.Button15.Name = "Button15"
         Me.Button15.Size = New System.Drawing.Size(116, 40)
         Me.Button15.TabIndex = 56
-        Me.Button15.Text = "Hidrics"
+        Me.Button15.Text = "DML Tools"
         Me.Button15.UseVisualStyleBackColor = True
         '
         'Button16

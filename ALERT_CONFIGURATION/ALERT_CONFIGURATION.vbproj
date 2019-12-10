@@ -223,6 +223,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DISCHARGE_API.vb" />
+    <Compile Include="DML_API.vb" />
+    <Compile Include="DML_TOOLS.Designer.vb">
+      <DependentUpon>DML_TOOLS.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DML_TOOLS.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="EXAMS_API.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
@@ -349,6 +356,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DISCHARGE_ADVANCED.resx">
       <DependentUpon>DISCHARGE_ADVANCED.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DML_TOOLS.resx">
+      <DependentUpon>DML_TOOLS.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>

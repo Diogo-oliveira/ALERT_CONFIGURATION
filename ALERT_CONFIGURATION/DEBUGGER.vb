@@ -155,7 +155,7 @@ Public Class DEBUGGER
 
     Public Shared Function SET_RESPONSE(ByVal i_function_name As String, i_parameters As String(), i_result As OracleDataReader)
 
-        If 2 = 1 Then
+        If 1 = 1 Then  'to_do: criar configuração para controlar se se apresenta info completa da resposta
             Dim l_debug_file As String = CURRENT_PATH & DEBUG_FOLDER & DEBUG_FILE
             Dim sw As StreamWriter
 

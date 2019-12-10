@@ -1247,7 +1247,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                and v.version = '" & i_version & "'
                                and e.flg_type='" & i_exam_type & "'
                                and e.flg_available='Y'
-                               and ecs.id_software= " & i_software & " "
+                               and ecs.id_software in (0, " & i_software & ") "
 
         If i_flg_type = 0 Then
 
@@ -1694,7 +1694,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                     WHERE de.id_content = l_a_exams(i)
                                                     AND de.flg_available = 'Y'
                                                     AND ecs.flg_type = l_a_flg_type(j)
-                                                    AND ecs.id_software IN (" & i_software & ");
+                                                    AND ecs.id_software IN (0, " & i_software & ");
                         
                                                     INSERT INTO alert.exam_dep_clin_serv
                                                         (ID_EXAM_DEP_CLIN_SERV,
@@ -1751,9 +1751,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                 WHERE de.id_content = l_a_exams(i)
                                                 AND de.flg_available='Y'
                                                 AND decs.flg_type IN (l_a_flg_type(j))
-                                                AND decs.id_software IN (" & i_software & ")
+                                                AND decs.id_software IN (0, " & i_software & ")
                                                 AND d.id_institution = " & i_institution & "
-                                                AND d.id_software = " & i_software & ";
+                                                AND d.id_software in (0, " & i_software & ");
                     
                                                 FOR k IN 1 .. l_a_dep_clin_serv.count()
                                                 LOOP
@@ -1844,7 +1844,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                     WHERE de.id_content = l_a_exams(i)
                                                     AND de.flg_available = 'Y'
                                                     AND ecs.flg_type = l_a_flg_type(j)
-                                                    AND ecs.id_software IN (" & i_software & ");
+                                                    AND ecs.id_software IN (0, " & i_software & ");
                         
                                                     INSERT INTO alert.exam_dep_clin_serv
                                                         (ID_EXAM_DEP_CLIN_SERV,
@@ -1901,7 +1901,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                 WHERE de.id_content = l_a_exams(i)
                                                 AND de.flg_available='Y'
                                                 AND decs.flg_type IN (l_a_flg_type(j))
-                                                AND decs.id_software IN (" & i_software & ")
+                                                AND decs.id_software IN (0, " & i_software & ")
                                                 AND d.id_institution = " & i_institution & "
                                                 AND d.id_software = " & i_software & ";
                     
@@ -1994,7 +1994,7 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                     WHERE de.id_content = l_a_exams(i)
                                                     AND de.flg_available = 'Y'
                                                     AND ecs.flg_type = l_a_flg_type(j)
-                                                    AND ecs.id_software IN (" & i_software & ");
+                                                    AND ecs.id_software IN (0, " & i_software & ");
                         
                                                     INSERT INTO alert.exam_dep_clin_serv
                                                         (ID_EXAM_DEP_CLIN_SERV,
@@ -2052,9 +2052,9 @@ and i.id_institution = " & i_ID_INST & "order by 1 asc"
                                                 WHERE de.id_content = l_a_exams(i)
                                                 AND de.flg_available='Y'
                                                 AND decs.flg_type IN (l_a_flg_type(j))
-                                                AND decs.id_software IN (" & i_software & ")
+                                                AND decs.id_software IN (0, " & i_software & ")
                                                 AND d.id_institution = " & i_institution & "
-                                                AND d.id_software = " & i_software & ";
+                                                AND d.id_software in (" & i_software & ");
                                                           
                                                FOR k IN 1 .. l_a_dep_clin_serv.count()
                                                           LOOP

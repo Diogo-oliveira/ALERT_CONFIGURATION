@@ -424,7 +424,12 @@ Public Class INSERT_IMAGING_EXAMS
                 ReDim Preserve g_a_loaded_exams_default(l_dimension_array_loaded_exams)
 
                 g_a_loaded_exams_default(l_dimension_array_loaded_exams).id_content_category = dr.Item(0)
-                g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_category = dr.Item(1)
+                Try
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_category = dr.Item(1)
+                Catch ex As Exception
+                    g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_category = ""
+                End Try
+
                 g_a_loaded_exams_default(l_dimension_array_loaded_exams).id_content_exam = dr.Item(2)
                 g_a_loaded_exams_default(l_dimension_array_loaded_exams).desc_exam = dr.Item(3)
                 g_a_loaded_exams_default(l_dimension_array_loaded_exams).flg_first_result = dr.Item(4)
